@@ -9,6 +9,7 @@ interface PolityEntry {
  */
 const POLITY_DICT: Record<string, PolityEntry> = {
   // East & Central Asia
+  'Qin State': { zh: '秦国', color: '#B84B46' },
   Qin: { zh: '秦朝', color: '#B84B46' },
   'Qin Empire': { zh: '秦帝国', color: '#B84B46' },
   Han: { zh: '汉朝', color: '#C65249' },
@@ -71,7 +72,9 @@ const POLITY_DICT: Record<string, PolityEntry> = {
   'Shu Han': { zh: '蜀汉', color: '#5F936C' },
   'Eastern Wu': { zh: '东吴', color: '#4E829C' },
   Xiongnu: { zh: '匈奴', color: '#A78458' },
+  'Southern Xiongnu': { zh: '南匈奴', color: '#A78458' },
   'Xiongnu Empire': { zh: '匈奴帝国', color: '#A78458' },
+  Xianbei: { zh: '鲜卑', color: '#9D835C' },
   Yuezhi: { zh: '大月氏', color: '#A3805B' },
   Scythians: { zh: '斯基泰人', color: '#99825E' },
   Göktürks: { zh: '突厥汗国', color: '#8D7253' },
@@ -116,6 +119,7 @@ const POLITY_DICT: Record<string, PolityEntry> = {
   Goguryeo: { zh: '高句丽', color: '#7390A3' },
   Koguryo: { zh: '高句丽', color: '#7390A3' },
   Paekche: { zh: '百济', color: '#7997AA' },
+  Gaya: { zh: '伽耶', color: '#829DAD' },
   'North Korea': { zh: '朝鲜', color: '#64819B' },
   'South Korea': { zh: '韩国', color: '#7398B5' },
   Mongolia: { zh: '蒙古国', color: '#9D835C' },
@@ -293,6 +297,7 @@ const POLITY_DICT: Record<string, PolityEntry> = {
   Spain: { zh: '西班牙', color: '#CE983D' },
   'Spanish Empire': { zh: '西班牙帝国', color: '#CE983D' },
   Castile: { zh: '卡斯蒂利亚', color: '#CE983D' },
+  Castille: { zh: '卡斯蒂利亚', color: '#CE983D' },
   Aragon: { zh: '阿拉贡', color: '#C48A3B' },
   'Aragón': { zh: '阿拉贡', color: '#C48A3B' },
   Navarre: { zh: '纳瓦拉', color: '#BD8644' },
@@ -325,6 +330,7 @@ const POLITY_DICT: Record<string, PolityEntry> = {
   'Polish-Lithuanian Commonwealth': { zh: '波兰立陶宛联邦', color: '#B86A75' },
   Lithuania: { zh: '立陶宛', color: '#A56D78' },
   Hungary: { zh: '匈牙利', color: '#83986D' },
+  'Imperial Hungary': { zh: '匈牙利王国', color: '#83986D' },
   'Kalmar Union': { zh: '卡尔马联盟', color: '#6384AA' },
   Sweden: { zh: '瑞典', color: '#5882AA' },
   Denmark: { zh: '丹麦', color: '#B35D5B' },

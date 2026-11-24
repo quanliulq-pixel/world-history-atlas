@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-24T10:02:26.052Z",
+  "generatedAt": "2026-11-24T10:40:11.349Z",
   "snapshots": [
     {
       "year": -3000,
@@ -144,7 +144,7 @@
     {
       "year": 1492,
       "file": "y_1492.topo.json",
-      "polityCount": 180
+      "polityCount": 1200
     },
     {
       "year": 1500,
@@ -154,42 +154,42 @@
     {
       "year": 1530,
       "file": "y_1530.topo.json",
-      "polityCount": 180
+      "polityCount": 262
     },
     {
       "year": 1600,
       "file": "y_1600.topo.json",
-      "polityCount": 180
+      "polityCount": 633
     },
     {
       "year": 1650,
       "file": "y_1650.topo.json",
-      "polityCount": 180
+      "polityCount": 587
     },
     {
       "year": 1700,
       "file": "y_1700.topo.json",
-      "polityCount": 180
+      "polityCount": 584
     },
     {
       "year": 1715,
       "file": "y_1715.topo.json",
-      "polityCount": 180
+      "polityCount": 600
     },
     {
       "year": 1783,
       "file": "y_1783.topo.json",
-      "polityCount": 180
+      "polityCount": 544
     },
     {
       "year": 1800,
       "file": "y_1800.topo.json",
-      "polityCount": 180
+      "polityCount": 545
     },
     {
       "year": 1815,
       "file": "y_1815.topo.json",
-      "polityCount": 180
+      "polityCount": 313
     },
     {
       "year": 1878,
@@ -229,7 +229,7 @@
     {
       "year": 1945,
       "file": "y_1945.topo.json",
-      "polityCount": 180
+      "polityCount": 182
     },
     {
       "year": 1960,
@@ -239,17 +239,17 @@
     {
       "year": 1994,
       "file": "y_1994.topo.json",
-      "polityCount": 180
+      "polityCount": 192
     },
     {
       "year": 2000,
       "file": "y_2000.topo.json",
-      "polityCount": 180
+      "polityCount": 192
     },
     {
       "year": 2010,
       "file": "y_2010.topo.json",
-      "polityCount": 180
+      "polityCount": 192
     }
   ],
   "allPolities": [
@@ -758,6 +758,38 @@
       "count": 12
     },
     {
+      "name": "French Guiana",
+      "count": 12
+    },
+    {
+      "name": "Uruguay",
+      "count": 12
+    },
+    {
+      "name": "Venezuela",
+      "count": 12
+    },
+    {
+      "name": "Ecuador",
+      "count": 12
+    },
+    {
+      "name": "Colombia",
+      "count": 12
+    },
+    {
+      "name": "Peru",
+      "count": 12
+    },
+    {
+      "name": "Bolivia",
+      "count": 12
+    },
+    {
+      "name": "Chile",
+      "count": 12
+    },
+    {
       "name": "Argentina",
       "count": 12
     },
@@ -778,30 +810,6 @@
       "count": 12
     },
     {
-      "name": "French Guiana",
-      "count": 12
-    },
-    {
-      "name": "Uruguay",
-      "count": 12
-    },
-    {
-      "name": "Venezuela",
-      "count": 12
-    },
-    {
-      "name": "Ecuador",
-      "count": 12
-    },
-    {
-      "name": "Chile",
-      "count": 12
-    },
-    {
-      "name": "Peru",
-      "count": 12
-    },
-    {
       "name": "Mexico",
       "count": 12
     },
@@ -814,19 +822,11 @@
       "count": 12
     },
     {
-      "name": "Bolivia",
-      "count": 12
-    },
-    {
       "name": "Romania",
       "count": 12
     },
     {
       "name": "Bulgaria",
-      "count": 12
-    },
-    {
-      "name": "Colombia",
       "count": 12
     },
     {
@@ -3378,11 +3378,11 @@
       "count": 5
     },
     {
-      "name": "Alans",
+      "name": "Gaya",
       "count": 5
     },
     {
-      "name": "Gaya",
+      "name": "Alans",
       "count": 5
     },
     {
@@ -3706,14 +3706,6 @@
       "count": 5
     },
     {
-      "name": "Algiers",
-      "count": 5
-    },
-    {
-      "name": "Tunis",
-      "count": 5
-    },
-    {
       "name": "Rozwi",
       "count": 5
     },
@@ -3723,6 +3715,14 @@
     },
     {
       "name": "Ceylon (Dutch)",
+      "count": 5
+    },
+    {
+      "name": "Algiers",
+      "count": 5
+    },
+    {
+      "name": "Tunis",
       "count": 5
     },
     {
@@ -3874,11 +3874,15 @@
       "count": 4
     },
     {
-      "name": "Qin",
+      "name": "Yue",
       "count": 4
     },
     {
-      "name": "Yue",
+      "name": "Qataban",
+      "count": 4
+    },
+    {
+      "name": "Bosporan Kingdom",
       "count": 4
     },
     {
@@ -3891,14 +3895,6 @@
     },
     {
       "name": "Roman Republic",
-      "count": 4
-    },
-    {
-      "name": "Qataban",
-      "count": 4
-    },
-    {
-      "name": "Bosporan Kingdom",
       "count": 4
     },
     {
@@ -3938,14 +3934,6 @@
       "count": 4
     },
     {
-      "name": "Dvaravati",
-      "count": 4
-    },
-    {
-      "name": "Hindu states",
-      "count": 4
-    },
-    {
       "name": "Mataram",
       "count": 4
     },
@@ -3955,6 +3943,14 @@
     },
     {
       "name": "Avars",
+      "count": 4
+    },
+    {
+      "name": "Dvaravati",
+      "count": 4
+    },
+    {
+      "name": "Hindu states",
       "count": 4
     },
     {
@@ -4314,6 +4310,10 @@
       "count": 3
     },
     {
+      "name": "Qin State",
+      "count": 3
+    },
+    {
       "name": "Yan",
       "count": 3
     },
@@ -4330,11 +4330,11 @@
       "count": 3
     },
     {
-      "name": "Seleucid Kingdom",
+      "name": "Numidia",
       "count": 3
     },
     {
-      "name": "Ptolemaic Kingdom",
+      "name": "Arabs",
       "count": 3
     },
     {
@@ -4342,11 +4342,11 @@
       "count": 3
     },
     {
-      "name": "Numidia",
+      "name": "Ptolemaic Kingdom",
       "count": 3
     },
     {
-      "name": "Arabs",
+      "name": "Seleucid Kingdom",
       "count": 3
     },
     {
@@ -4394,15 +4394,15 @@
       "count": 3
     },
     {
-      "name": "Lombard principalities",
-      "count": 3
-    },
-    {
       "name": "Chen-La",
       "count": 3
     },
     {
       "name": "Frankish Kingdom",
+      "count": 3
+    },
+    {
+      "name": "Lombard principalities",
       "count": 3
     },
     {
@@ -4766,11 +4766,11 @@
       "count": 3
     },
     {
-      "name": "South Australia (UK)",
+      "name": "Kingdom of Brazil",
       "count": 3
     },
     {
-      "name": "Kingdom of Brazil",
+      "name": "South Australia (UK)",
       "count": 3
     },
     {
@@ -5154,6 +5154,18 @@
       "count": 2
     },
     {
+      "name": "Atropatene",
+      "count": 2
+    },
+    {
+      "name": "Colchis",
+      "count": 2
+    },
+    {
+      "name": "Cappadocia",
+      "count": 2
+    },
+    {
       "name": "Greek colonies",
       "count": 2
     },
@@ -5171,18 +5183,6 @@
     },
     {
       "name": "Han State",
-      "count": 2
-    },
-    {
-      "name": "Atropatene",
-      "count": 2
-    },
-    {
-      "name": "Colchis",
-      "count": 2
-    },
-    {
-      "name": "Cappadocia",
       "count": 2
     },
     {
@@ -5266,6 +5266,10 @@
       "count": 2
     },
     {
+      "name": "Visigothic Kingdom",
+      "count": 2
+    },
+    {
       "name": "Broërec",
       "count": 2
     },
@@ -5278,7 +5282,11 @@
       "count": 2
     },
     {
-      "name": "Sui Empire",
+      "name": "Kamarupa",
+      "count": 2
+    },
+    {
+      "name": "Chalukyas",
       "count": 2
     },
     {
@@ -5287,10 +5295,6 @@
     },
     {
       "name": "Sasanian dependencies",
-      "count": 2
-    },
-    {
-      "name": "Vazimba",
       "count": 2
     },
     {
@@ -5322,11 +5326,19 @@
       "count": 2
     },
     {
-      "name": "Bega",
+      "name": "Vazimba",
       "count": 2
     },
     {
       "name": "Göktürks",
+      "count": 2
+    },
+    {
+      "name": "Sui Empire",
+      "count": 2
+    },
+    {
+      "name": "Bega",
       "count": 2
     },
     {
@@ -5342,19 +5354,7 @@
       "count": 2
     },
     {
-      "name": "Visigothic Kingdom",
-      "count": 2
-    },
-    {
       "name": "Western Gokturk Khaganate",
-      "count": 2
-    },
-    {
-      "name": "Chalukyas",
-      "count": 2
-    },
-    {
-      "name": "Kamarupa",
       "count": 2
     },
     {
@@ -5962,6 +5962,14 @@
       "count": 2
     },
     {
+      "name": "Dutch Formosa",
+      "count": 2
+    },
+    {
+      "name": "Arakan (Indian princely state)",
+      "count": 2
+    },
+    {
       "name": "Florida",
       "count": 2
     },
@@ -6006,23 +6014,15 @@
       "count": 2
     },
     {
+      "name": "Middag Kingdom",
+      "count": 2
+    },
+    {
       "name": "Dutch Brazil",
       "count": 2
     },
     {
       "name": "New Amsterdam",
-      "count": 2
-    },
-    {
-      "name": "Dutch Formosa",
-      "count": 2
-    },
-    {
-      "name": "Middag Kingdom",
-      "count": 2
-    },
-    {
-      "name": "Arakan (Indian princely state)",
       "count": 2
     },
     {
@@ -6114,10 +6114,6 @@
       "count": 2
     },
     {
-      "name": "Sultanate of Zanzibar",
-      "count": 2
-    },
-    {
       "name": "Algeria (FR)",
       "count": 2
     },
@@ -6151,6 +6147,10 @@
     },
     {
       "name": "Bokhara Khanate",
+      "count": 2
+    },
+    {
+      "name": "Sultanate of Zanzibar",
       "count": 2
     },
     {
@@ -6342,6 +6342,34 @@
       "count": 1
     },
     {
+      "name": "Teotihuac�n",
+      "count": 1
+    },
+    {
+      "name": "Monte Alb�n",
+      "count": 1
+    },
+    {
+      "name": "Qin",
+      "count": 1
+    },
+    {
+      "name": "Zhou states",
+      "count": 1
+    },
+    {
+      "name": "Zhow states",
+      "count": 1
+    },
+    {
+      "name": "Empire of Alexander",
+      "count": 1
+    },
+    {
+      "name": "Sabines",
+      "count": 1
+    },
+    {
       "name": "Zapotec",
       "count": 1
     },
@@ -6371,54 +6399,6 @@
     },
     {
       "name": "Proto-Thai cultures",
-      "count": 1
-    },
-    {
-      "name": "Teotihuac�n",
-      "count": 1
-    },
-    {
-      "name": "Monte Alb�n",
-      "count": 1
-    },
-    {
-      "name": "Zhou states",
-      "count": 1
-    },
-    {
-      "name": "Zhow states",
-      "count": 1
-    },
-    {
-      "name": "Empire of Alexander",
-      "count": 1
-    },
-    {
-      "name": "Sabines",
-      "count": 1
-    },
-    {
-      "name": "Damot",
-      "count": 1
-    },
-    {
-      "name": "Crete",
-      "count": 1
-    },
-    {
-      "name": "Kingdom of Lysimachus",
-      "count": 1
-    },
-    {
-      "name": "Kingdom of Kassander",
-      "count": 1
-    },
-    {
-      "name": "Bithynia",
-      "count": 1
-    },
-    {
-      "name": "Kingdom of Antigonus",
       "count": 1
     },
     {
@@ -6475,6 +6455,30 @@
     },
     {
       "name": "Turcik tribes",
+      "count": 1
+    },
+    {
+      "name": "Damot",
+      "count": 1
+    },
+    {
+      "name": "Crete",
+      "count": 1
+    },
+    {
+      "name": "Kingdom of Lysimachus",
+      "count": 1
+    },
+    {
+      "name": "Kingdom of Kassander",
+      "count": 1
+    },
+    {
+      "name": "Bithynia",
+      "count": 1
+    },
+    {
+      "name": "Kingdom of Antigonus",
       "count": 1
     },
     {
@@ -6642,6 +6646,10 @@
       "count": 1
     },
     {
+      "name": "Shaskanka",
+      "count": 1
+    },
+    {
       "name": "Barghawata",
       "count": 1
     },
@@ -6771,10 +6779,6 @@
     },
     {
       "name": "Kingdom of Zunbil",
-      "count": 1
-    },
-    {
-      "name": "Shaskanka",
       "count": 1
     },
     {
@@ -12198,6 +12202,22 @@
       "count": 1
     },
     {
+      "name": "Accra",
+      "count": 1
+    },
+    {
+      "name": "Kong",
+      "count": 1
+    },
+    {
+      "name": "Second Samori Empire",
+      "count": 1
+    },
+    {
+      "name": "First Samori Empire",
+      "count": 1
+    },
+    {
       "name": "German South-West Africa",
       "count": 1
     },
@@ -12255,22 +12275,6 @@
     },
     {
       "name": "British Empire",
-      "count": 1
-    },
-    {
-      "name": "Accra",
-      "count": 1
-    },
-    {
-      "name": "Kong",
-      "count": 1
-    },
-    {
-      "name": "Second Samori Empire",
-      "count": 1
-    },
-    {
-      "name": "First Samori Empire",
       "count": 1
     },
     {

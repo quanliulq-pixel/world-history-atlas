@@ -243,7 +243,7 @@ function extractLabelsForFeatures(features) {
 
   return Array.from(byPolity.values())
     .sort((a, b) => b.totalArea - a.totalArea)
-    .slice(0, 180)
+    .slice(0, 1200)
     .map((item) => ({
       n: item.n,
       p: item.p,
@@ -525,8 +525,12 @@ async function processSnapshot(year, polityFreqMap, landGeoJsonStr) {
       }
     }
 
-    if (patch.italyTrimNames && patch.italyTrimNames.length > 0 && patchFeats.length > 0) {
-      const trimSet = new Set(patch.italyTrimNames);
+    const trimNames = [
+      ...(patch.italyTrimNames || []),
+      ...(patch.eraseOverlapNames || []),
+    ];
+    if (trimNames.length > 0 && patchFeats.length > 0) {
+      const trimSet = new Set(trimNames);
       const toTrim = [];
       const untouched = [];
       for (const f of claimedFeatures) {

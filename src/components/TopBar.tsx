@@ -87,7 +87,8 @@ export function TopBar({
           <div className="min-w-0">
             <div className="flex items-center gap-2">
               <h1 className="truncate text-sm md:text-base font-bold tracking-tight">
-                世界通史时空图谱
+                <span className="sm:hidden">世界史图谱</span>
+                <span className="hidden sm:inline">世界通史时空图谱</span>
               </h1>
               <span
                 className="hidden sm:inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium"
@@ -105,8 +106,8 @@ export function TopBar({
                 {formatYear(currentYear)}
               </span>
               {snapshotYear !== null && (
-                <span className="truncate" style={{ color: 'var(--text-muted)' }}>
-                  · <span className="hidden sm:inline">疆域</span>截面 {formatShortYear(snapshotYear)}
+                <span className="hidden sm:inline truncate" style={{ color: 'var(--text-muted)' }}>
+                  · 疆域截面 {formatShortYear(snapshotYear)}
                 </span>
               )}
             </div>

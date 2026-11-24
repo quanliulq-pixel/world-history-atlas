@@ -333,13 +333,14 @@ export function App() {
           resolve();
           return;
         }
-        const start = performance.now();
+        let start: number | null = null;
         const step = (now: number) => {
           if (cancelled) {
             resolve();
             return;
           }
-          const rawT = Math.min(1, (now - start) / durationMs);
+          if (start === null) start = now;
+          const rawT = Math.max(0, Math.min(1, (now - start) / durationMs));
           const eased = 1 - Math.pow(1 - rawT, 2);
           setCurrentYear(Math.round(fromYear + (toYear - fromYear) * eased));
           if (rawT < 1) {
@@ -362,10 +363,15 @@ export function App() {
         const speed = Math.max(0.5, playSpeedRef.current);
         const travelMs = Math.round(1150 / Math.min(2, speed));
 
-        setRecentTriggerEventId(null);
         setSelectedFigureId(null);
+        setSelectedEventId(ev.id);
+        setFocusRouteId(ev.routeIds?.[0] || null);
+        setRecentTriggerEventId(ev.id);
         setTickerVisible(true);
         setTickerEventId(ev.id);
+        if (window.innerWidth >= 1024) {
+          setDesktopCollapsed(false);
+        }
 
         flyToLocation(ev.coords, ev.importance === 3 ? 3.25 : 3.55, {
           pitch: 18,
@@ -374,14 +380,6 @@ export function App() {
 
         await animateYearTo(currentYearRef.current, ev.year, travelMs);
         if (cancelled) break;
-
-        setSelectedEventId(ev.id);
-        setFocusRouteId(ev.routeIds?.[0] || null);
-        setRecentTriggerEventId(ev.id);
-        setTickerEventId(ev.id);
-        if (window.innerWidth >= 1024) {
-          setDesktopCollapsed(false);
-        }
 
         const holdMs = Math.max(1400, Math.round(3500 / speed));
         await sleep(holdMs);

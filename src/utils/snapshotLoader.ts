@@ -84,7 +84,7 @@ export async function loadSnapshot(meta: SnapshotMeta): Promise<DecodedSnapshot>
           enName,
           groupZhName: groupDisplay?.zhName || zhName,
           groupEnName: props.p || enName,
-          fillColor: color,
+          fillColor: isDiffuse ? 'rgba(201, 190, 166, 0.38)' : color,
           isDiffuse,
           bp: props.bp ?? 1,
         },

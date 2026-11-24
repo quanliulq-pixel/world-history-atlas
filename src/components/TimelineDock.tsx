@@ -305,7 +305,7 @@ export function TimelineDock({
         </div>
 
         {/* Non-linear or Era-Zoomed Ruler Track */}
-        <div className="relative flex-1 py-2 sm:mb-1.5">
+        <div className="relative flex-1 py-2 sm:mb-2">
           {/* Live bubble during hover or drag */}
           {previewInfo && (
             <div
@@ -394,7 +394,7 @@ export function TimelineDock({
             {snapshotTicks.map((st) => (
               <span
                 key={st.year}
-                className="pointer-events-none absolute -bottom-0.5 -translate-x-1/2 rotate-45"
+                className="pointer-events-none absolute -top-0.5 -translate-x-1/2 rotate-45"
                 style={{
                   left: `${st.progress * 100}%`,
                   width: st.isCurrent ? '6px' : '4px',
@@ -406,7 +406,7 @@ export function TimelineDock({
             ))}
 
             {/* Precision Ruler Labels below track on sm+ */}
-            <div className="pointer-events-none hidden sm:block absolute inset-x-0 -bottom-2.5 h-3">
+            <div className="pointer-events-none hidden sm:block absolute inset-x-0 -bottom-3 h-3">
               {rulerTicks.map((rt) => (
                 <span
                   key={rt.year}

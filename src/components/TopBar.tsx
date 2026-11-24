@@ -100,13 +100,13 @@ export function TopBar({
                 {currentEra.shortName} · {currentSubPeriod.name}
               </span>
             </div>
-            <div className="flex items-center gap-2 text-[11px] md:text-xs">
-              <span className="font-semibold" style={{ color: 'var(--accent-primary)' }}>
+            <div className="flex items-center gap-1.5 text-[11px] md:text-xs min-w-0 whitespace-nowrap overflow-hidden">
+              <span className="font-semibold shrink-0" style={{ color: 'var(--accent-primary)' }}>
                 {formatYear(currentYear)}
               </span>
               {snapshotYear !== null && (
-                <span style={{ color: 'var(--text-muted)' }}>
-                  · 疆域截面 {formatShortYear(snapshotYear)}
+                <span className="truncate" style={{ color: 'var(--text-muted)' }}>
+                  · <span className="hidden sm:inline">疆域</span>截面 {formatShortYear(snapshotYear)}
                 </span>
               )}
             </div>

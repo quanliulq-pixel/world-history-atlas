@@ -70,21 +70,7 @@ interface ClickedPolity {
 }
 
 const EMPTY_FC: GeoJSON.FeatureCollection = { type: 'FeatureCollection', features: [] };
-
-function buildEmpireFillOpacityExpr(
-  baseOpacity: number,
-  mixFactor = 1,
-): maplibregl.ExpressionSpecification | number {
-  if (mixFactor <= 0.001) return 0;
-  const hoverOpacity = Math.min(0.88, baseOpacity + 0.16);
-  const caseExpr: maplibregl.ExpressionSpecification = [
-    'case',
-    ['boolean', ['feature-state', 'hover'], false],
-    ['case', ['boolean', ['get', 'isDiffuse'], false], 0.42, hoverOpacity],
-    ['case', ['boolean', ['get', 'isDiffuse'], false], 0.24, baseOpacity],
-  ];
-  return mixFactor >= 0.999 ? caseExpr : ['*', caseExpr, mixFactor];
-}
+const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
 
 const THEME_COLORS = {
   parchment: {
@@ -429,7 +415,8 @@ export function WorldMap({
           source: 'empires-a',
           paint: {
             'fill-color': ['get', 'fillColor'],
-            'fill-opacity': buildEmpireFillOpacityExpr(palette.empireFillOpacity, 1),
+            'fill-opacity': palette.empireFillOpacity,
+            'fill-opacity-transition': { duration: 0, delay: 0 },
           },
         },
         {
@@ -439,6 +426,29 @@ export function WorldMap({
           paint: {
             'fill-color': ['get', 'fillColor'],
             'fill-opacity': 0,
+            'fill-opacity-transition': { duration: 0, delay: 0 },
+          },
+        },
+        {
+          id: 'empire-hover-a',
+          type: 'fill',
+          source: 'empires-a',
+          filter: ['==', ['get', 'zhName'], '__none__'],
+          paint: {
+            'fill-color': palette.empireHover,
+            'fill-opacity': 1,
+            'fill-opacity-transition': { duration: 0, delay: 0 },
+          },
+        },
+        {
+          id: 'empire-hover-b',
+          type: 'fill',
+          source: 'empires-b',
+          filter: ['==', ['get', 'zhName'], '__none__'],
+          paint: {
+            'fill-color': palette.empireHover,
+            'fill-opacity': 1,
+            'fill-opacity-transition': { duration: 0, delay: 0 },
           },
         },
         {
@@ -468,6 +478,7 @@ export function WorldMap({
             'line-color': palette.empireBorder,
             'line-width': ['interpolate', ['linear'], ['zoom'], 1, 0.5, 5, 1.3],
             'line-opacity': 1,
+            'line-opacity-transition': { duration: 0, delay: 0 },
           },
         },
         {
@@ -478,6 +489,7 @@ export function WorldMap({
             'line-color': palette.empireBorder,
             'line-width': ['interpolate', ['linear'], ['zoom'], 1, 0.5, 5, 1.3],
             'line-opacity': 0,
+            'line-opacity-transition': { duration: 0, delay: 0 },
           },
         },
         {
@@ -626,7 +638,7 @@ export function WorldMap({
       map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-left');
     }
 
-    let hoveredFeature: { source: 'empires-a' | 'empires-b'; id: string | number } | null = null;
+    let hoveredKey: string | null = null;
 
     map.on('load', () => {
       setMapReady(true);
@@ -645,21 +657,18 @@ export function WorldMap({
       if (activeBufferRef.current !== buf) return;
       if (!e.features || e.features.length === 0) return;
       const feat = e.features[0];
-      const sourceName = `empires-${buf}` as 'empires-a' | 'empires-b';
-      map.getCanvas().style.cursor = 'pointer';
-      if (
-        hoveredFeature !== null &&
-        (hoveredFeature.source !== sourceName || hoveredFeature.id !== feat.id)
-      ) {
-        map.setFeatureState({ source: hoveredFeature.source, id: hoveredFeature.id }, { hover: false });
-      }
-      if (feat.id !== undefined) {
-        hoveredFeature = { source: sourceName, id: feat.id };
-        map.setFeatureState({ source: sourceName, id: feat.id }, { hover: true });
-      }
       const props = (feat.properties || {}) as { zhName?: string; enName?: string };
+      const zhName = props.zhName || '未知政权';
+      const key = `${buf}:${zhName}`;
+      const inactiveHoverLayer = buf === 'a' ? 'empire-hover-b' : 'empire-hover-a';
+      map.getCanvas().style.cursor = 'pointer';
+      if (hoveredKey !== key) {
+        hoveredKey = key;
+        map.setFilter(`empire-hover-${buf}`, ['==', ['get', 'zhName'], zhName]);
+        map.setFilter(inactiveHoverLayer, ['==', ['get', 'zhName'], '__none__']);
+      }
       setHoveredPolity({
-        zhName: props.zhName || '未知政权',
+        zhName,
         enName: props.enName || '',
         x: e.point.x,
         y: e.point.y,
@@ -669,10 +678,9 @@ export function WorldMap({
     const handleEmpireLeave = (buf: 'a' | 'b') => {
       if (activeBufferRef.current !== buf) return;
       map.getCanvas().style.cursor = '';
-      if (hoveredFeature !== null) {
-        map.setFeatureState({ source: hoveredFeature.source, id: hoveredFeature.id }, { hover: false });
-        hoveredFeature = null;
-      }
+      hoveredKey = null;
+      map.setFilter('empire-hover-a', ['==', ['get', 'zhName'], '__none__']);
+      map.setFilter('empire-hover-b', ['==', ['get', 'zhName'], '__none__']);
       setHoveredPolity(null);
     };
 
@@ -743,12 +751,10 @@ export function WorldMap({
     map.setPaintProperty('physical-rivers-line', 'line-color', p.river);
     const activeBuf = activeBufferRef.current;
     const inactiveBuf = activeBuf === 'a' ? 'b' : 'a';
-    map.setPaintProperty(
-      `empire-fills-${activeBuf}`,
-      'fill-opacity',
-      buildEmpireFillOpacityExpr(p.empireFillOpacity, 1),
-    );
+    map.setPaintProperty(`empire-fills-${activeBuf}`, 'fill-opacity', p.empireFillOpacity);
     map.setPaintProperty(`empire-fills-${inactiveBuf}`, 'fill-opacity', 0);
+    map.setPaintProperty('empire-hover-a', 'fill-color', p.empireHover);
+    map.setPaintProperty('empire-hover-b', 'fill-color', p.empireHover);
     map.setPaintProperty('empire-borders-a', 'line-color', p.empireBorder);
     map.setPaintProperty('empire-borders-b', 'line-color', p.empireBorder);
     map.setPaintProperty('empire-labels', 'text-color', p.labelColor);
@@ -789,6 +795,9 @@ export function WorldMap({
     (map.getSource('empire-labels') as maplibregl.GeoJSONSource | undefined)?.setData(
       snapshot.labels,
     );
+    map.setFilter('empire-hover-a', ['==', ['get', 'zhName'], '__none__']);
+    map.setFilter('empire-hover-b', ['==', ['get', 'zhName'], '__none__']);
+    setHoveredPolity(null);
 
     const palette = THEME_COLORS[themeRef.current];
     const reducedMotion =
@@ -803,11 +812,7 @@ export function WorldMap({
         snapshot.polygons,
       );
       (map.getSource(`empires-${otherBuf}`) as maplibregl.GeoJSONSource | undefined)?.setData(EMPTY_FC);
-      map.setPaintProperty(
-        `empire-fills-${curBuf}`,
-        'fill-opacity',
-        buildEmpireFillOpacityExpr(palette.empireFillOpacity, 1),
-      );
+      map.setPaintProperty(`empire-fills-${curBuf}`, 'fill-opacity', palette.empireFillOpacity);
       map.setPaintProperty(`empire-borders-${curBuf}`, 'line-opacity', 1);
       map.setPaintProperty(`empire-fills-${otherBuf}`, 'fill-opacity', 0);
       map.setPaintProperty(`empire-borders-${otherBuf}`, 'line-opacity', 0);
@@ -821,33 +826,29 @@ export function WorldMap({
     activeBufferRef.current = incomingBuf;
     lastSnapshotYearRef.current = snapshot.year;
 
+    map.setPaintProperty(`empire-fills-${incomingBuf}`, 'fill-opacity', 0);
+    map.setPaintProperty(`empire-borders-${incomingBuf}`, 'line-opacity', 0);
     (map.getSource(`empires-${incomingBuf}`) as maplibregl.GeoJSONSource | undefined)?.setData(
       snapshot.polygons,
     );
 
-    const startTime = performance.now();
+    let startTime: number | null = null;
     const duration = 480;
 
     const animateFade = (now: number) => {
       if (!mapRef.current) return;
-      const rawT = Math.min(1, (now - startTime) / duration);
-      const eased = 1 - Math.pow(1 - rawT, 3);
+      if (startTime === null) startTime = now;
+      const rawT = clamp01((now - startTime) / duration);
+      const eased = clamp01(1 - Math.pow(1 - rawT, 3));
+      const outFactor = clamp01(1 - eased);
       const fillBase = THEME_COLORS[themeRef.current].empireFillOpacity;
+      const inFill = clamp01(fillBase * eased);
+      const outFill = clamp01(fillBase * outFactor);
 
       try {
-        mapRef.current.setPaintProperty(
-          `empire-fills-${incomingBuf}`,
-          'fill-opacity',
-          buildEmpireFillOpacityExpr(fillBase, eased),
-        );
+        mapRef.current.setPaintProperty(`empire-fills-${incomingBuf}`, 'fill-opacity', inFill);
         mapRef.current.setPaintProperty(`empire-borders-${incomingBuf}`, 'line-opacity', eased);
-
-        const outFactor = 1 - eased;
-        mapRef.current.setPaintProperty(
-          `empire-fills-${outgoingBuf}`,
-          'fill-opacity',
-          buildEmpireFillOpacityExpr(fillBase, outFactor),
-        );
+        mapRef.current.setPaintProperty(`empire-fills-${outgoingBuf}`, 'fill-opacity', outFill);
         mapRef.current.setPaintProperty(`empire-borders-${outgoingBuf}`, 'line-opacity', outFactor);
       } catch {
         // Ignore transient style swaps

@@ -24,6 +24,8 @@ type SnapshotTopoRaw = Topology<{
   labels?: SnapshotLabel[];
 };
 
+const DATA_V = encodeURIComponent(__DATA_VERSION__);
+
 const snapshotCache = new Map<number, DecodedSnapshot>();
 const inflightRequests = new Map<number, Promise<DecodedSnapshot>>();
 let physicalCache: PhysicalAtlasData | null = null;
@@ -36,7 +38,7 @@ function firstObjectCollection(topo: Topology): GeoJSON.FeatureCollection {
 
 export async function loadManifest(): Promise<SnapshotMeta[]> {
   if (manifestCache) return manifestCache;
-  const res = await fetch(`${import.meta.env.BASE_URL}data/snapshots/manifest.json`);
+  const res = await fetch(`${import.meta.env.BASE_URL}data/snapshots/manifest.json?v=${DATA_V}`);
   if (!res.ok) throw new Error(`Failed to load snapshot manifest: HTTP ${res.status}`);
   const json = (await res.json()) as { snapshots: SnapshotMeta[] };
   manifestCache = json.snapshots;
@@ -45,7 +47,7 @@ export async function loadManifest(): Promise<SnapshotMeta[]> {
 
 export async function loadPhysicalAtlas(): Promise<PhysicalAtlasData> {
   if (physicalCache) return physicalCache;
-  const res = await fetch(`${import.meta.env.BASE_URL}data/physical.topo.json`);
+  const res = await fetch(`${import.meta.env.BASE_URL}data/physical.topo.json?v=${DATA_V}`);
   if (!res.ok) throw new Error(`Failed to load physical atlas: HTTP ${res.status}`);
   const bundle = (await res.json()) as PhysicalBundleRaw;
   physicalCache = {
@@ -65,7 +67,7 @@ export async function loadSnapshot(meta: SnapshotMeta): Promise<DecodedSnapshot>
   if (inflight) return inflight;
 
   const promise = (async () => {
-    const res = await fetch(`${import.meta.env.BASE_URL}data/snapshots/${meta.file}`);
+    const res = await fetch(`${import.meta.env.BASE_URL}data/snapshots/${meta.file}?v=${DATA_V}`);
     if (!res.ok) throw new Error(`Failed to load snapshot ${meta.file}: HTTP ${res.status}`);
     const topo = (await res.json()) as SnapshotTopoRaw;
 

@@ -40,7 +40,9 @@ export async function loadCountryEvolutionIndex(): Promise<CountryEvolutionIndex
   if (indexPromise) return indexPromise;
 
   indexPromise = (async () => {
-    const res = await fetch(`${import.meta.env.BASE_URL}data/country-evolution-index.json`);
+    const res = await fetch(
+      `${import.meta.env.BASE_URL}data/country-evolution-index.json?v=${encodeURIComponent(__DATA_VERSION__)}`,
+    );
     if (!res.ok) {
       throw new Error(`Failed to load country evolution index: HTTP ${res.status}`);
     }

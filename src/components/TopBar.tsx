@@ -2,9 +2,11 @@ import {
   BookOpen,
   Compass,
   Globe,
+  Landmark,
   Layers,
   Map as MapIcon,
   Moon,
+  Mountain,
   Route as RouteIcon,
   Search,
   Sun,
@@ -24,6 +26,8 @@ interface TopBarProps {
   showAllEras: boolean;
   showRoutes: boolean;
   showFigures: boolean;
+  showRelief: boolean;
+  showLandmarks: boolean;
   projection: ProjectionMode;
   theme: ThemeMode;
   masteredCount: number;
@@ -32,6 +36,8 @@ interface TopBarProps {
   onToggleShowAllEras: () => void;
   onToggleRoutes: () => void;
   onToggleFigures: () => void;
+  onToggleRelief: () => void;
+  onToggleLandmarks: () => void;
   onToggleProjection: () => void;
   onToggleTheme: () => void;
   onOpenPulse: () => void;
@@ -50,6 +56,8 @@ export function TopBar({
   showAllEras,
   showRoutes,
   showFigures,
+  showRelief,
+  showLandmarks,
   projection,
   theme,
   masteredCount,
@@ -58,6 +66,8 @@ export function TopBar({
   onToggleShowAllEras,
   onToggleRoutes,
   onToggleFigures,
+  onToggleRelief,
+  onToggleLandmarks,
   onToggleProjection,
   onToggleTheme,
   onOpenPulse,
@@ -280,6 +290,36 @@ export function TopBar({
         >
           <UserRound className="h-3 w-3" />
           <span>历史人物</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={onToggleRelief}
+          className="shrink-0 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium border transition cursor-pointer"
+          style={{
+            backgroundColor: showRelief ? 'rgba(139, 90, 60, 0.14)' : 'var(--bg-surface)',
+            borderColor: showRelief ? '#8B5A3C' : 'var(--border-subtle)',
+            color: showRelief ? (theme === 'obsidian' ? '#D6A47E' : '#8B5A3C') : 'var(--text-muted)',
+          }}
+          title="开启或关闭三维山体地形晕渲与水系阴影"
+        >
+          <Mountain className="h-3 w-3" />
+          <span>地形浮雕</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={onToggleLandmarks}
+          className="shrink-0 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium border transition cursor-pointer"
+          style={{
+            backgroundColor: showLandmarks ? 'rgba(166, 84, 101, 0.14)' : 'var(--bg-surface)',
+            borderColor: showLandmarks ? '#A65465' : 'var(--border-subtle)',
+            color: showLandmarks ? (theme === 'obsidian' ? '#E490A0' : '#A65465') : 'var(--text-muted)',
+          }}
+          title="显示或隐藏历代古都、关隘与长城运河地标"
+        >
+          <Landmark className="h-3 w-3" />
+          <span>古都与地标</span>
         </button>
 
         <button

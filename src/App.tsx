@@ -85,6 +85,8 @@ export function App() {
   const [showAllEras, setShowAllEras] = useState(false);
   const [showRoutes, setShowRoutes] = useState(true);
   const [showFigures, setShowFigures] = useState(true);
+  const [showRelief, setShowRelief] = useState(true);
+  const [showLandmarks, setShowLandmarks] = useState(true);
   const [focusRouteId, setFocusRouteId] = useState<string | null>(null);
 
   const [isPlaying, setIsPlaying] = useState(false);
@@ -788,6 +790,8 @@ export function App() {
           showAllEras={showAllEras}
           showRoutes={showRoutes}
           showFigures={showFigures}
+          showRelief={showRelief}
+          showLandmarks={showLandmarks}
           projection={projection}
           theme={theme}
           masteredCount={studyData.masteredIds.length}
@@ -796,6 +800,8 @@ export function App() {
           onToggleShowAllEras={() => setShowAllEras((v) => !v)}
           onToggleRoutes={() => setShowRoutes((v) => !v)}
           onToggleFigures={() => setShowFigures((v) => !v)}
+          onToggleRelief={() => setShowRelief((v) => !v)}
+          onToggleLandmarks={() => setShowLandmarks((v) => !v)}
           onToggleProjection={toggleProjection}
           onToggleTheme={toggleTheme}
           onOpenPulse={() => setPulseOpen(true)}
@@ -831,6 +837,8 @@ export function App() {
             bookmarkedIds={bookmarkedSet}
             activeRoutes={activeRoutes}
             focusRouteId={focusRouteId}
+            showRelief={showRelief}
+            showLandmarks={showLandmarks}
             countryFocus={countryFocus}
             isCountryMode={Boolean(activeCountry)}
             flyTarget={flyTarget}

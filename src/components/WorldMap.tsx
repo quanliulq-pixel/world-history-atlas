@@ -3,6 +3,8 @@ import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { DIMENSION_META, FIGURE_ROLE_META } from '../data/eras';
 import { EVENT_MAP } from '../data/events';
+import { GEO_FEATURES } from '../data/geoFeatures';
+import { HISTORICAL_MEGA_STRUCTURES, HISTORICAL_PLACES } from '../data/historicalPlaces';
 import type {
   ClickedPolityPayload,
   HistoricalFigure,
@@ -56,6 +58,8 @@ interface WorldMapProps {
   bookmarkedIds: Set<string>;
   activeRoutes: HistoricalRoute[];
   focusRouteId: string | null;
+  showRelief?: boolean;
+  showLandmarks?: boolean;
   countryFocus?: CountryFocusSpec | null;
   isCountryMode?: boolean;
   flyTarget: {
@@ -97,34 +101,44 @@ const THEME_COLORS = {
   parchment: {
     ocean: '#C6DCE4',
     graticule: 'rgba(65, 92, 110, 0.14)',
-    land: '#EAE1CC',
-    landBorder: 'rgba(128, 110, 82, 0.28)',
-    mountain: 'rgba(148, 121, 86, 0.24)',
-    desert: 'rgba(219, 184, 116, 0.28)',
-    plateau: 'rgba(176, 146, 103, 0.20)',
-    water: '#98C1D2',
-    river: '#7CAEC4',
-    empireFillOpacity: 0.62,
-    empireBorder: 'rgba(62, 48, 34, 0.34)',
+    land: '#E8DFCB',
+    landBorder: 'rgba(120, 100, 72, 0.34)',
+    mountain: 'rgba(148, 121, 86, 0.20)',
+    desert: 'rgba(219, 184, 116, 0.24)',
+    plateau: 'rgba(176, 146, 103, 0.18)',
+    water: '#92BDD0',
+    river: '#6C9FB7',
+    empireFillOpacity: 0.54,
+    empireBorder: 'rgba(54, 41, 28, 0.44)',
     empireHover: 'rgba(255, 250, 235, 0.28)',
     labelColor: '#2B2116',
-    labelHalo: 'rgba(248, 242, 228, 0.88)',
+    labelHalo: 'rgba(248, 242, 228, 0.90)',
+    geoWaterColor: '#3A6B88',
+    geoLandColor: '#6D5840',
+    geoHalo: 'rgba(248, 242, 228, 0.84)',
+    placeText: '#2A1F14',
+    placeHalo: 'rgba(251, 248, 241, 0.92)',
   },
   obsidian: {
     ocean: '#0C1824',
     graticule: 'rgba(140, 175, 210, 0.11)',
     land: '#1D2733',
-    landBorder: 'rgba(148, 173, 198, 0.22)',
-    mountain: 'rgba(92, 112, 134, 0.28)',
-    desert: 'rgba(138, 114, 72, 0.20)',
-    plateau: 'rgba(88, 108, 128, 0.22)',
+    landBorder: 'rgba(148, 173, 198, 0.24)',
+    mountain: 'rgba(92, 112, 134, 0.24)',
+    desert: 'rgba(138, 114, 72, 0.18)',
+    plateau: 'rgba(88, 108, 128, 0.20)',
     water: '#132E45',
-    river: '#285272',
-    empireFillOpacity: 0.54,
-    empireBorder: 'rgba(218, 230, 244, 0.26)',
+    river: '#2F6288',
+    empireFillOpacity: 0.48,
+    empireBorder: 'rgba(222, 234, 246, 0.34)',
     empireHover: 'rgba(255, 255, 255, 0.18)',
     labelColor: '#EEF3F9',
-    labelHalo: 'rgba(14, 24, 36, 0.88)',
+    labelHalo: 'rgba(14, 24, 36, 0.90)',
+    geoWaterColor: '#79B1D4',
+    geoLandColor: '#A99C88',
+    geoHalo: 'rgba(14, 24, 36, 0.86)',
+    placeText: '#F1F5F9',
+    placeHalo: 'rgba(14, 24, 36, 0.92)',
   },
 };
 
@@ -144,6 +158,8 @@ export function WorldMap({
   bookmarkedIds,
   activeRoutes,
   focusRouteId,
+  showRelief = true,
+  showLandmarks = true,
   countryFocus = null,
   isCountryMode = false,
   flyTarget,
@@ -189,6 +205,11 @@ export function WorldMap({
   countryFocusRef.current = countryFocus;
   const snapshotYearRef = useRef<number>(snapshot?.year ?? -3000);
   snapshotYearRef.current = snapshot?.year ?? -3000;
+  const showReliefRef = useRef(showRelief);
+  showReliefRef.current = showRelief;
+  const showLandmarksRef = useRef(showLandmarks);
+  showLandmarksRef.current = showLandmarks;
+  const pointerOverMarkerRef = useRef(false);
 
   const syncGlobeMarkerVisibility = useCallback((map: maplibregl.Map) => {
     const isGlobe = projectionRef.current === 'globe';
@@ -219,6 +240,46 @@ export function WorldMap({
   }, []);
 
   const graticuleData = useMemo(() => buildGraticuleGeoJSON(), []);
+
+  const geoLabelsData = useMemo<GeoJSON.FeatureCollection<GeoJSON.Point>>(
+    () => ({
+      type: 'FeatureCollection',
+      features: GEO_FEATURES.map((g) => ({
+        type: 'Feature',
+        properties: { name: g.name, kind: g.kind, minZoom: g.minZoom },
+        geometry: { type: 'Point', coordinates: g.coords },
+      })),
+    }),
+    [],
+  );
+
+  const placesGeoJSON = useMemo<GeoJSON.FeatureCollection<GeoJSON.Point>>(() => {
+    const activePlaces = HISTORICAL_PLACES.filter(
+      (pl) => currentYear >= pl.startYear && currentYear <= pl.endYear,
+    );
+    return {
+      type: 'FeatureCollection',
+      features: activePlaces.map((pl) => ({
+        type: 'Feature',
+        properties: { name: pl.name, kind: pl.kind, minZoom: pl.minZoom },
+        geometry: { type: 'Point', coordinates: pl.coords },
+      })),
+    };
+  }, [currentYear]);
+
+  const megaStructuresGeoJSON = useMemo<GeoJSON.FeatureCollection<GeoJSON.LineString>>(() => {
+    const activeStructures = HISTORICAL_MEGA_STRUCTURES.filter(
+      (ms) => currentYear >= ms.startYear && currentYear <= ms.endYear,
+    );
+    return {
+      type: 'FeatureCollection',
+      features: activeStructures.map((ms) => ({
+        type: 'Feature',
+        properties: { name: ms.name, kind: ms.kind, color: ms.color },
+        geometry: { type: 'LineString', coordinates: ms.coords },
+      })),
+    };
+  }, [currentYear]);
 
   const routesRenderMeta = useMemo<{
     geojson: GeoJSON.FeatureCollection;
@@ -384,6 +445,15 @@ export function WorldMap({
       glyphs: `${origin}${base}fonts/{fontstack}/{range}.pbf`,
       projection: { type: projection },
       sources: {
+        'shaded-relief': {
+          type: 'raster',
+          tiles: [
+            'https://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}',
+          ],
+          tileSize: 256,
+          maxzoom: 13,
+          attribution: '地形浮雕: Esri World Shaded Relief',
+        },
         graticule: { type: 'geojson', data: graticuleData },
         'physical-land': { type: 'geojson', data: EMPTY_FC },
         'physical-relief': { type: 'geojson', data: EMPTY_FC },
@@ -391,7 +461,10 @@ export function WorldMap({
         'physical-rivers': { type: 'geojson', data: EMPTY_FC },
         'empires-a': { type: 'geojson', data: EMPTY_FC, generateId: true },
         'empires-b': { type: 'geojson', data: EMPTY_FC, generateId: true },
+        'mega-structures': { type: 'geojson', data: megaStructuresGeoJSON },
+        'geo-labels': { type: 'geojson', data: geoLabelsData },
         'empire-labels': { type: 'geojson', data: EMPTY_FC },
+        'historical-places': { type: 'geojson', data: placesGeoJSON },
         routes: { type: 'geojson', data: EMPTY_FC },
         'route-particles': { type: 'geojson', data: EMPTY_FC },
         'causal-arcs': { type: 'geojson', data: EMPTY_FC },
@@ -403,6 +476,19 @@ export function WorldMap({
           id: 'ocean-bg',
           type: 'background',
           paint: { 'background-color': palette.ocean },
+        },
+        {
+          id: 'shaded-relief-layer',
+          type: 'raster',
+          source: 'shaded-relief',
+          paint: {
+            'raster-opacity': showReliefRef.current ? (theme === 'obsidian' ? 0.24 : 0.62) : 0,
+            'raster-contrast': theme === 'obsidian' ? 0.24 : 0.16,
+            'raster-saturation': theme === 'obsidian' ? -0.82 : -0.25,
+            'raster-brightness-min': theme === 'obsidian' ? 0 : 0.08,
+            'raster-brightness-max': theme === 'obsidian' ? 0.42 : 1,
+            'raster-opacity-transition': { duration: 150, delay: 0 },
+          },
         },
         {
           id: 'graticule-lines',
@@ -420,6 +506,8 @@ export function WorldMap({
           paint: {
             'fill-color': palette.land,
             'fill-outline-color': palette.landBorder,
+            'fill-opacity': showReliefRef.current ? (theme === 'obsidian' ? 0.62 : 0.42) : 1,
+            'fill-opacity-transition': { duration: 150, delay: 0 },
           },
         },
         {
@@ -522,23 +610,77 @@ export function WorldMap({
           },
         },
         {
-          id: 'empire-borders-a',
+          id: 'empire-border-glow-a',
           type: 'line',
           source: 'empires-a',
+          layout: { 'line-join': 'round', 'line-cap': 'round' },
           paint: {
-            'line-color': palette.empireBorder,
-            'line-width': ['interpolate', ['linear'], ['zoom'], 1, 0.5, 5, 1.3],
-            'line-opacity': 1,
+            'line-color': ['get', 'fillColor'],
+            'line-width': ['interpolate', ['linear'], ['zoom'], 1, 2.0, 5, 5.6],
+            'line-blur': 1.6,
+            'line-opacity': 0.34,
             'line-opacity-transition': { duration: 0, delay: 0 },
           },
         },
         {
-          id: 'empire-borders-b',
+          id: 'empire-border-glow-b',
           type: 'line',
           source: 'empires-b',
+          layout: { 'line-join': 'round', 'line-cap': 'round' },
+          paint: {
+            'line-color': ['get', 'fillColor'],
+            'line-width': ['interpolate', ['linear'], ['zoom'], 1, 2.0, 5, 5.6],
+            'line-blur': 1.6,
+            'line-opacity': 0,
+            'line-opacity-transition': { duration: 0, delay: 0 },
+          },
+        },
+        {
+          id: 'empire-borders-solid-a',
+          type: 'line',
+          source: 'empires-a',
+          filter: ['>=', ['get', 'bp'], 2],
           paint: {
             'line-color': palette.empireBorder,
-            'line-width': ['interpolate', ['linear'], ['zoom'], 1, 0.5, 5, 1.3],
+            'line-width': ['interpolate', ['linear'], ['zoom'], 1, 0.75, 5, 1.5],
+            'line-opacity': 0.95,
+            'line-opacity-transition': { duration: 0, delay: 0 },
+          },
+        },
+        {
+          id: 'empire-borders-dashed-a',
+          type: 'line',
+          source: 'empires-a',
+          filter: ['<', ['get', 'bp'], 2],
+          paint: {
+            'line-color': palette.empireBorder,
+            'line-width': ['interpolate', ['linear'], ['zoom'], 1, 0.55, 5, 1.2],
+            'line-dasharray': [5, 2.5],
+            'line-opacity': 0.78,
+            'line-opacity-transition': { duration: 0, delay: 0 },
+          },
+        },
+        {
+          id: 'empire-borders-solid-b',
+          type: 'line',
+          source: 'empires-b',
+          filter: ['>=', ['get', 'bp'], 2],
+          paint: {
+            'line-color': palette.empireBorder,
+            'line-width': ['interpolate', ['linear'], ['zoom'], 1, 0.75, 5, 1.5],
+            'line-opacity': 0,
+            'line-opacity-transition': { duration: 0, delay: 0 },
+          },
+        },
+        {
+          id: 'empire-borders-dashed-b',
+          type: 'line',
+          source: 'empires-b',
+          filter: ['<', ['get', 'bp'], 2],
+          paint: {
+            'line-color': palette.empireBorder,
+            'line-width': ['interpolate', ['linear'], ['zoom'], 1, 0.55, 5, 1.2],
+            'line-dasharray': [5, 2.5],
             'line-opacity': 0,
             'line-opacity-transition': { duration: 0, delay: 0 },
           },
@@ -567,6 +709,55 @@ export function WorldMap({
             'line-width': ['interpolate', ['linear'], ['zoom'], 1, 2.0, 5, 3.6],
             'line-opacity': 0,
             'line-opacity-transition': { duration: 0, delay: 0 },
+          },
+        },
+        {
+          id: 'mega-structures-wall-casing',
+          type: 'line',
+          source: 'mega-structures',
+          filter: ['==', ['get', 'kind'], 'wall'],
+          layout: {
+            'line-cap': 'round',
+            'line-join': 'round',
+            visibility: showLandmarksRef.current ? 'visible' : 'none',
+          },
+          paint: {
+            'line-color': 'rgba(255, 248, 232, 0.72)',
+            'line-width': ['interpolate', ['linear'], ['zoom'], 2, 3.2, 6, 6.2],
+            'line-opacity': ['interpolate', ['linear'], ['zoom'], 1.8, 0, 2.8, 0.82],
+          },
+        },
+        {
+          id: 'mega-structures-wall',
+          type: 'line',
+          source: 'mega-structures',
+          filter: ['==', ['get', 'kind'], 'wall'],
+          layout: {
+            'line-cap': 'butt',
+            'line-join': 'round',
+            visibility: showLandmarksRef.current ? 'visible' : 'none',
+          },
+          paint: {
+            'line-color': ['get', 'color'],
+            'line-width': ['interpolate', ['linear'], ['zoom'], 2, 1.8, 6, 3.4],
+            'line-dasharray': [2.2, 1.1],
+            'line-opacity': ['interpolate', ['linear'], ['zoom'], 1.8, 0, 2.8, 0.92],
+          },
+        },
+        {
+          id: 'mega-structures-canal',
+          type: 'line',
+          source: 'mega-structures',
+          filter: ['==', ['get', 'kind'], 'canal'],
+          layout: {
+            'line-cap': 'round',
+            'line-join': 'round',
+            visibility: showLandmarksRef.current ? 'visible' : 'none',
+          },
+          paint: {
+            'line-color': ['get', 'color'],
+            'line-width': ['interpolate', ['linear'], ['zoom'], 2, 1.6, 6, 3.2],
+            'line-opacity': ['interpolate', ['linear'], ['zoom'], 2.2, 0, 3.1, 0.88],
           },
         },
         {
@@ -661,13 +852,93 @@ export function WorldMap({
           },
         },
         {
+          id: 'geo-labels-water-major',
+          type: 'symbol',
+          source: 'geo-labels',
+          minzoom: 1.8,
+          filter: ['all', ['==', ['get', 'kind'], 'water'], ['<=', ['get', 'minZoom'], 3.2]],
+          layout: {
+            'text-field': ['get', 'name'],
+            'text-font': ['atlas'],
+            'text-size': ['interpolate', ['linear'], ['zoom'], 2, 10, 5, 13],
+            'text-allow-overlap': false,
+            'text-ignore-placement': false,
+          },
+          paint: {
+            'text-color': palette.geoWaterColor,
+            'text-halo-color': palette.geoHalo,
+            'text-halo-width': 1.2,
+            'text-opacity': ['interpolate', ['linear'], ['zoom'], 2.0, 0.5, 3.2, 0.85],
+          },
+        },
+        {
+          id: 'geo-labels-water-minor',
+          type: 'symbol',
+          source: 'geo-labels',
+          minzoom: 3.4,
+          filter: ['all', ['==', ['get', 'kind'], 'water'], ['>', ['get', 'minZoom'], 3.2]],
+          layout: {
+            'text-field': ['get', 'name'],
+            'text-font': ['atlas'],
+            'text-size': 11,
+            'text-allow-overlap': false,
+            'text-ignore-placement': false,
+          },
+          paint: {
+            'text-color': palette.geoWaterColor,
+            'text-halo-color': palette.geoHalo,
+            'text-halo-width': 1.2,
+            'text-opacity': 0.82,
+          },
+        },
+        {
+          id: 'geo-labels-land-major',
+          type: 'symbol',
+          source: 'geo-labels',
+          minzoom: 2.3,
+          filter: ['all', ['==', ['get', 'kind'], 'land'], ['<=', ['get', 'minZoom'], 3.2]],
+          layout: {
+            'text-field': ['get', 'name'],
+            'text-font': ['atlas'],
+            'text-size': ['interpolate', ['linear'], ['zoom'], 2.3, 10, 5, 12.5],
+            'text-allow-overlap': false,
+            'text-ignore-placement': false,
+          },
+          paint: {
+            'text-color': palette.geoLandColor,
+            'text-halo-color': palette.geoHalo,
+            'text-halo-width': 1.2,
+            'text-opacity': 0.8,
+          },
+        },
+        {
+          id: 'geo-labels-land-minor',
+          type: 'symbol',
+          source: 'geo-labels',
+          minzoom: 3.5,
+          filter: ['all', ['==', ['get', 'kind'], 'land'], ['>', ['get', 'minZoom'], 3.2]],
+          layout: {
+            'text-field': ['get', 'name'],
+            'text-font': ['atlas'],
+            'text-size': 11,
+            'text-allow-overlap': false,
+            'text-ignore-placement': false,
+          },
+          paint: {
+            'text-color': palette.geoLandColor,
+            'text-halo-color': palette.geoHalo,
+            'text-halo-width': 1.2,
+            'text-opacity': 0.78,
+          },
+        },
+        {
           id: 'empire-labels',
           type: 'symbol',
           source: 'empire-labels',
           layout: {
             'text-field': ['get', 'zhName'],
             'text-font': ['atlas'],
-            'text-size': ['interpolate', ['linear'], ['zoom'], 1.5, 10, 4, 13, 6, 15],
+            'text-size': ['interpolate', ['linear'], ['zoom'], 1.5, 10, 4, 13.5, 6, 15.5],
             'text-max-width': 8,
             'text-allow-overlap': false,
             'text-ignore-placement': false,
@@ -676,16 +947,108 @@ export function WorldMap({
           paint: {
             'text-color': palette.labelColor,
             'text-halo-color': palette.labelHalo,
-            'text-halo-width': 1.5,
+            'text-halo-width': 1.6,
             'text-opacity': [
               'step',
               ['zoom'],
               ['case', ['<=', ['get', 'rank'], 18], 0.85, 0],
               2.6,
               ['case', ['<=', ['get', 'rank'], 38], 0.88, 0],
-              4.0,
-              0.92,
+              3.8,
+              0.94,
             ],
+          },
+        },
+        {
+          id: 'historical-places-ring',
+          type: 'circle',
+          source: 'historical-places',
+          minzoom: 2.5,
+          filter: ['==', ['get', 'kind'], 'capital'],
+          layout: {
+            visibility: showLandmarksRef.current ? 'visible' : 'none',
+          },
+          paint: {
+            'circle-radius': ['interpolate', ['linear'], ['zoom'], 2.5, 4.5, 5, 6.2],
+            'circle-color': 'transparent',
+            'circle-stroke-color': '#9E3434',
+            'circle-stroke-width': 1.4,
+            'circle-opacity': 0.9,
+          },
+        },
+        {
+          id: 'historical-places-dot',
+          type: 'circle',
+          source: 'historical-places',
+          minzoom: 2.5,
+          layout: {
+            visibility: showLandmarksRef.current ? 'visible' : 'none',
+          },
+          paint: {
+            'circle-radius': [
+              'match',
+              ['get', 'kind'],
+              'capital',
+              2.8,
+              'pass',
+              2.6,
+              2.2,
+            ],
+            'circle-color': [
+              'match',
+              ['get', 'kind'],
+              'capital',
+              '#B83B3B',
+              'pass',
+              '#8B5A3C',
+              '#475569',
+            ],
+            'circle-stroke-color': '#FBF8F1',
+            'circle-stroke-width': 1,
+          },
+        },
+        {
+          id: 'historical-places-capital-label',
+          type: 'symbol',
+          source: 'historical-places',
+          minzoom: 2.7,
+          filter: ['==', ['get', 'kind'], 'capital'],
+          layout: {
+            'text-field': ['get', 'name'],
+            'text-font': ['atlas'],
+            'text-size': ['interpolate', ['linear'], ['zoom'], 2.7, 10, 5.5, 12],
+            'text-offset': [0, 1.0],
+            'text-anchor': 'top',
+            'text-allow-overlap': false,
+            'text-ignore-placement': false,
+            visibility: showLandmarksRef.current ? 'visible' : 'none',
+          },
+          paint: {
+            'text-color': palette.placeText,
+            'text-halo-color': palette.placeHalo,
+            'text-halo-width': 1.3,
+          },
+        },
+        {
+          id: 'historical-places-minor-label',
+          type: 'symbol',
+          source: 'historical-places',
+          minzoom: 3.7,
+          filter: ['!=', ['get', 'kind'], 'capital'],
+          layout: {
+            'text-field': ['get', 'name'],
+            'text-font': ['atlas'],
+            'text-size': 10.5,
+            'text-offset': [0, 0.9],
+            'text-anchor': 'top',
+            'text-allow-overlap': false,
+            'text-ignore-placement': false,
+            visibility: showLandmarksRef.current ? 'visible' : 'none',
+          },
+          paint: {
+            'text-color': palette.geoLandColor,
+            'text-halo-color': palette.placeHalo,
+            'text-halo-width': 1.2,
           },
         },
       ],
@@ -706,7 +1069,7 @@ export function WorldMap({
     map.addControl(
       new maplibregl.AttributionControl({
         compact: true,
-        customAttribution: '疆域: historical-basemaps | 地形: Natural Earth',
+        customAttribution: '疆域: historical-basemaps | 地形: Natural Earth & Esri',
       }),
       'bottom-left',
     );
@@ -723,7 +1086,8 @@ export function WorldMap({
     if (map.loaded()) {
       setMapReady(true);
     }
-    map.on('error', (e) => {
+    map.on('error', (e: { sourceId?: string; error?: unknown }) => {
+      if (e?.sourceId === 'shaded-relief') return;
       console.error('[WorldMap] MapLibre error:', e.error || e);
     });
     map.on('move', () => {
@@ -732,6 +1096,7 @@ export function WorldMap({
 
     const handleEmpireMove = (buf: 'a' | 'b', e: maplibregl.MapLayerMouseEvent) => {
       if (activeBufferRef.current !== buf) return;
+      if (pointerOverMarkerRef.current) return;
       if (!e.features || e.features.length === 0) return;
       const feat = e.features[0];
       const props = (feat.properties || {}) as { zhName?: string; enName?: string };
@@ -824,9 +1189,27 @@ export function WorldMap({
     if (!map || !mapReady) return;
     const p = THEME_COLORS[theme];
     map.setPaintProperty('ocean-bg', 'background-color', p.ocean);
+    map.setPaintProperty(
+      'shaded-relief-layer',
+      'raster-opacity',
+      showRelief ? (theme === 'obsidian' ? 0.24 : 0.62) : 0,
+    );
+    map.setPaintProperty('shaded-relief-layer', 'raster-contrast', theme === 'obsidian' ? 0.24 : 0.16);
+    map.setPaintProperty(
+      'shaded-relief-layer',
+      'raster-saturation',
+      theme === 'obsidian' ? -0.82 : -0.25,
+    );
+    map.setPaintProperty('shaded-relief-layer', 'raster-brightness-min', theme === 'obsidian' ? 0 : 0.08);
+    map.setPaintProperty('shaded-relief-layer', 'raster-brightness-max', theme === 'obsidian' ? 0.42 : 1);
     map.setPaintProperty('graticule-lines', 'line-color', p.graticule);
     map.setPaintProperty('physical-land-fill', 'fill-color', p.land);
     map.setPaintProperty('physical-land-fill', 'fill-outline-color', p.landBorder);
+    map.setPaintProperty(
+      'physical-land-fill',
+      'fill-opacity',
+      showRelief ? (theme === 'obsidian' ? 0.62 : 0.42) : 1,
+    );
     map.setPaintProperty('physical-relief-fill', 'fill-color', [
       'match',
       ['get', 'k'],
@@ -844,11 +1227,58 @@ export function WorldMap({
     map.setPaintProperty(`empire-fills-${inactiveBuf}`, 'fill-opacity', 0);
     map.setPaintProperty('empire-hover-a', 'fill-color', p.empireHover);
     map.setPaintProperty('empire-hover-b', 'fill-color', p.empireHover);
-    map.setPaintProperty('empire-borders-a', 'line-color', p.empireBorder);
-    map.setPaintProperty('empire-borders-b', 'line-color', p.empireBorder);
+    for (const layerId of [
+      'empire-borders-solid-a',
+      'empire-borders-dashed-a',
+      'empire-borders-solid-b',
+      'empire-borders-dashed-b',
+    ]) {
+      map.setPaintProperty(layerId, 'line-color', p.empireBorder);
+    }
     map.setPaintProperty('empire-labels', 'text-color', p.labelColor);
     map.setPaintProperty('empire-labels', 'text-halo-color', p.labelHalo);
-  }, [theme, mapReady]);
+    map.setPaintProperty('geo-labels-water-major', 'text-color', p.geoWaterColor);
+    map.setPaintProperty('geo-labels-water-major', 'text-halo-color', p.geoHalo);
+    map.setPaintProperty('geo-labels-water-minor', 'text-color', p.geoWaterColor);
+    map.setPaintProperty('geo-labels-water-minor', 'text-halo-color', p.geoHalo);
+    map.setPaintProperty('geo-labels-land-major', 'text-color', p.geoLandColor);
+    map.setPaintProperty('geo-labels-land-major', 'text-halo-color', p.geoHalo);
+    map.setPaintProperty('geo-labels-land-minor', 'text-color', p.geoLandColor);
+    map.setPaintProperty('geo-labels-land-minor', 'text-halo-color', p.geoHalo);
+    map.setPaintProperty('historical-places-capital-label', 'text-color', p.placeText);
+    map.setPaintProperty('historical-places-capital-label', 'text-halo-color', p.placeHalo);
+    map.setPaintProperty('historical-places-minor-label', 'text-color', p.geoLandColor);
+    map.setPaintProperty('historical-places-minor-label', 'text-halo-color', p.placeHalo);
+  }, [theme, showRelief, mapReady]);
+
+  // Synchronize landmark & mega-structure visibility and dynamic year sources
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapReady) return;
+    (map.getSource('historical-places') as maplibregl.GeoJSONSource | undefined)?.setData(
+      placesGeoJSON,
+    );
+    (map.getSource('mega-structures') as maplibregl.GeoJSONSource | undefined)?.setData(
+      megaStructuresGeoJSON,
+    );
+  }, [placesGeoJSON, megaStructuresGeoJSON, mapReady]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapReady) return;
+    const vis = showLandmarks ? 'visible' : 'none';
+    for (const layerId of [
+      'mega-structures-wall-casing',
+      'mega-structures-wall',
+      'mega-structures-canal',
+      'historical-places-ring',
+      'historical-places-dot',
+      'historical-places-capital-label',
+      'historical-places-minor-label',
+    ]) {
+      map.setLayoutProperty(layerId, 'visibility', vis);
+    }
+  }, [showLandmarks, mapReady]);
 
   // Update projection live
   useEffect(() => {
@@ -903,9 +1333,13 @@ export function WorldMap({
       );
       (map.getSource(`empires-${otherBuf}`) as maplibregl.GeoJSONSource | undefined)?.setData(EMPTY_FC);
       map.setPaintProperty(`empire-fills-${curBuf}`, 'fill-opacity', palette.empireFillOpacity);
-      map.setPaintProperty(`empire-borders-${curBuf}`, 'line-opacity', 1);
+      map.setPaintProperty(`empire-border-glow-${curBuf}`, 'line-opacity', 0.34);
+      map.setPaintProperty(`empire-borders-solid-${curBuf}`, 'line-opacity', 0.95);
+      map.setPaintProperty(`empire-borders-dashed-${curBuf}`, 'line-opacity', 0.78);
       map.setPaintProperty(`empire-fills-${otherBuf}`, 'fill-opacity', 0);
-      map.setPaintProperty(`empire-borders-${otherBuf}`, 'line-opacity', 0);
+      map.setPaintProperty(`empire-border-glow-${otherBuf}`, 'line-opacity', 0);
+      map.setPaintProperty(`empire-borders-solid-${otherBuf}`, 'line-opacity', 0);
+      map.setPaintProperty(`empire-borders-dashed-${otherBuf}`, 'line-opacity', 0);
       map.setPaintProperty(`empire-focus-fill-${curBuf}`, 'fill-opacity', hasFocus ? 0.18 : 0);
       map.setPaintProperty(`empire-focus-border-${curBuf}`, 'line-opacity', hasFocus ? 0.95 : 0);
       map.setPaintProperty(`empire-focus-fill-${otherBuf}`, 'fill-opacity', 0);
@@ -921,7 +1355,9 @@ export function WorldMap({
     lastSnapshotYearRef.current = snapshot.year;
 
     map.setPaintProperty(`empire-fills-${incomingBuf}`, 'fill-opacity', 0);
-    map.setPaintProperty(`empire-borders-${incomingBuf}`, 'line-opacity', 0);
+    map.setPaintProperty(`empire-border-glow-${incomingBuf}`, 'line-opacity', 0);
+    map.setPaintProperty(`empire-borders-solid-${incomingBuf}`, 'line-opacity', 0);
+    map.setPaintProperty(`empire-borders-dashed-${incomingBuf}`, 'line-opacity', 0);
     map.setPaintProperty(`empire-focus-fill-${incomingBuf}`, 'fill-opacity', 0);
     map.setPaintProperty(`empire-focus-border-${incomingBuf}`, 'line-opacity', 0);
     (map.getSource(`empires-${incomingBuf}`) as maplibregl.GeoJSONSource | undefined)?.setData(
@@ -944,9 +1380,37 @@ export function WorldMap({
 
       try {
         mapRef.current.setPaintProperty(`empire-fills-${incomingBuf}`, 'fill-opacity', inFill);
-        mapRef.current.setPaintProperty(`empire-borders-${incomingBuf}`, 'line-opacity', eased);
+        mapRef.current.setPaintProperty(
+          `empire-border-glow-${incomingBuf}`,
+          'line-opacity',
+          clamp01(0.34 * eased),
+        );
+        mapRef.current.setPaintProperty(
+          `empire-borders-solid-${incomingBuf}`,
+          'line-opacity',
+          clamp01(0.95 * eased),
+        );
+        mapRef.current.setPaintProperty(
+          `empire-borders-dashed-${incomingBuf}`,
+          'line-opacity',
+          clamp01(0.78 * eased),
+        );
         mapRef.current.setPaintProperty(`empire-fills-${outgoingBuf}`, 'fill-opacity', outFill);
-        mapRef.current.setPaintProperty(`empire-borders-${outgoingBuf}`, 'line-opacity', outFactor);
+        mapRef.current.setPaintProperty(
+          `empire-border-glow-${outgoingBuf}`,
+          'line-opacity',
+          clamp01(0.34 * outFactor),
+        );
+        mapRef.current.setPaintProperty(
+          `empire-borders-solid-${outgoingBuf}`,
+          'line-opacity',
+          clamp01(0.95 * outFactor),
+        );
+        mapRef.current.setPaintProperty(
+          `empire-borders-dashed-${outgoingBuf}`,
+          'line-opacity',
+          clamp01(0.78 * outFactor),
+        );
         mapRef.current.setPaintProperty(
           `empire-focus-fill-${incomingBuf}`,
           'fill-opacity',
@@ -1188,6 +1652,13 @@ export function WorldMap({
         btn.style.border = 'none';
         btn.style.padding = '0';
 
+        btn.addEventListener('mouseenter', () => {
+          pointerOverMarkerRef.current = true;
+          setHoveredPolity(null);
+        });
+        btn.addEventListener('mouseleave', () => {
+          pointerOverMarkerRef.current = false;
+        });
         btn.addEventListener('click', (ev) => {
           ev.stopPropagation();
           onSelectRef.current(event);
@@ -1284,6 +1755,13 @@ export function WorldMap({
         btn.style.border = 'none';
         btn.style.padding = '0';
 
+        btn.addEventListener('mouseenter', () => {
+          pointerOverMarkerRef.current = true;
+          setHoveredPolity(null);
+        });
+        btn.addEventListener('mouseleave', () => {
+          pointerOverMarkerRef.current = false;
+        });
         btn.addEventListener('click', (ev) => {
           ev.stopPropagation();
           onSelectFigureRef.current(figure);

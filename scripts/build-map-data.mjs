@@ -4,6 +4,7 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
 import mapshaper from 'mapshaper';
+import { EXTRA_SNAPSHOT_CLONES, HISTORICAL_PATCHES } from './historical-patches.mjs';
 
 const execFileAsync = promisify(execFile);
 
@@ -17,7 +18,7 @@ const SNAPSHOTS_DIR = path.join(DATA_DIR, 'snapshots');
 
 const SNAPSHOT_YEARS = [
   -3000, -2000, -1500, -1000, -700, -500, -400, -323, -300, -200, -100, -1,
-  100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1279, 1300,
+  100, 200, 220, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1279, 1300,
   1400, 1492, 1500, 1530, 1600, 1650, 1700, 1715, 1783, 1800, 1815, 1878, 1880,
   1900, 1914, 1920, 1930, 1938, 1945, 1960, 1994, 2000, 2010,
 ];
@@ -242,7 +243,7 @@ function extractLabelsForFeatures(features) {
 
   return Array.from(byPolity.values())
     .sort((a, b) => b.totalArea - a.totalArea)
-    .slice(0, 75)
+    .slice(0, 180)
     .map((item) => ({
       n: item.n,
       p: item.p,
@@ -250,6 +251,83 @@ function extractLabelsForFeatures(features) {
       lat: Math.round(item.lat * 100) / 100,
       a: Math.round(item.totalArea * 10) / 10,
     }));
+}
+
+function featureIntersectsBbox(geom, bbox) {
+  if (!geom || !bbox) return true;
+  const [minX, minY, maxX, maxY] = bbox;
+  let hit = false;
+  const walk = (c) => {
+    if (hit) return;
+    if (typeof c[0] === 'number') {
+      if (c[0] >= minX && c[0] <= maxX && c[1] >= minY && c[1] <= maxY) hit = true;
+    } else {
+      for (let i = 0; i < c.length; i++) walk(c[i]);
+    }
+  };
+  walk(geom.coordinates);
+  return hit;
+}
+
+function chaikinRing(ring) {
+  if (!ring || ring.length < 5) return ring;
+  let maxEdge = 0;
+  for (let i = 0; i < ring.length - 1; i++) {
+    const dx = ring[i + 1][0] - ring[i][0];
+    const dy = ring[i + 1][1] - ring[i][1];
+    const d = Math.hypot(dx, dy);
+    if (d > maxEdge) maxEdge = d;
+  }
+  if (maxEdge < 1.1) return ring;
+
+  const out = [];
+  for (let i = 0; i < ring.length - 1; i++) {
+    const p0 = ring[i];
+    const p1 = ring[i + 1];
+    if (Math.hypot(p1[0] - p0[0], p1[1] - p0[1]) > 15) {
+      out.push(p0);
+      continue;
+    }
+    out.push([
+      Number((0.75 * p0[0] + 0.25 * p1[0]).toFixed(4)),
+      Number((0.75 * p0[1] + 0.25 * p1[1]).toFixed(4)),
+    ]);
+    out.push([
+      Number((0.25 * p0[0] + 0.75 * p1[0]).toFixed(4)),
+      Number((0.25 * p0[1] + 0.75 * p1[1]).toFixed(4)),
+    ]);
+  }
+  if (out.length < 3) return ring;
+  out.push(out[0]);
+  return out;
+}
+
+function smoothCoarseFeature(feat) {
+  const geom = feat.geometry;
+  if (!geom || (feat.properties?.bp ?? 1) > 1) return feat;
+  if (geom.type === 'Polygon') {
+    const outer = geom.coordinates[0];
+    if (!outer || outer.length >= 100) return feat;
+    return {
+      ...feat,
+      geometry: {
+        type: 'Polygon',
+        coordinates: geom.coordinates.map((ring) => chaikinRing(ring)),
+      },
+    };
+  }
+  if (geom.type === 'MultiPolygon') {
+    return {
+      ...feat,
+      geometry: {
+        type: 'MultiPolygon',
+        coordinates: geom.coordinates.map((poly) =>
+          poly[0] && poly[0].length < 100 ? poly.map((ring) => chaikinRing(ring)) : poly,
+        ),
+      },
+    };
+  }
+  return feat;
 }
 
 async function buildFonts() {
@@ -267,14 +345,39 @@ async function buildFonts() {
 async function simplifyToTopo(geojsonObj, simplifyCmd) {
   const inputStr = JSON.stringify(geojsonObj);
   const out = await runMapshaper(
-    `-i input.geojson ${simplifyCmd} -o out.topo.json format=topojson quantization=1e4`,
+    `-i input.geojson ${simplifyCmd} -o out.topo.json format=topojson quantization=1e5`,
     { 'input.geojson': inputStr },
   );
   return JSON.parse(out['out.topo.json'].toString('utf8'));
 }
 
+async function clipGeoJsonFeatures(features, maskGeoJsonStr) {
+  if (!features || features.length === 0) return [];
+  const fcStr = JSON.stringify({ type: 'FeatureCollection', features });
+  const out = await runMapshaper(
+    '-i target.geojson -clip mask.geojson -o out.geojson format=geojson',
+    { 'target.geojson': fcStr, 'mask.geojson': maskGeoJsonStr },
+  );
+  const parsed = JSON.parse(out['out.geojson'].toString('utf8'));
+  return parsed.features || [];
+}
+
+async function eraseGeoJsonFeatures(features, eraseFeatures) {
+  if (!features || features.length === 0 || !eraseFeatures || eraseFeatures.length === 0) {
+    return features;
+  }
+  const targetStr = JSON.stringify({ type: 'FeatureCollection', features });
+  const eraseStr = JSON.stringify({ type: 'FeatureCollection', features: eraseFeatures });
+  const out = await runMapshaper(
+    '-i target.geojson -erase erase.geojson -o out.geojson format=geojson',
+    { 'target.geojson': targetStr, 'erase.geojson': eraseStr },
+  );
+  const parsed = JSON.parse(out['out.geojson'].toString('utf8'));
+  return parsed.features || [];
+}
+
 async function buildPhysicalAtlas() {
-  console.log('2/3 Building physical geography TopoJSON...');
+  console.log('2/3 Building high-precision physical geography TopoJSON...');
   const neBase = 'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson';
   const files = [
     'ne_50m_land.geojson',
@@ -289,7 +392,8 @@ async function buildPhysicalAtlas() {
     console.log(`   - ${f} ${downloaded ? '(downloaded)' : '(cached)'}`);
   }
 
-  const landRaw = JSON.parse(await fs.readFile(path.join(CACHE_RAW, 'ne_50m_land.geojson'), 'utf8'));
+  const landRawStr = await fs.readFile(path.join(CACHE_RAW, 'ne_50m_land.geojson'), 'utf8');
+  const landRaw = JSON.parse(landRawStr);
   const landFiltered = {
     type: 'FeatureCollection',
     features: landRaw.features.map((f) => ({
@@ -303,7 +407,7 @@ async function buildPhysicalAtlas() {
   const lakesFiltered = {
     type: 'FeatureCollection',
     features: lakesRaw.features
-      .filter((f) => Number(f.properties?.scalerank ?? 99) <= 3)
+      .filter((f) => Number(f.properties?.scalerank ?? 99) <= 6)
       .map((f) => ({
         type: 'Feature',
         properties: { n: cleanStr(f.properties?.name) },
@@ -317,7 +421,7 @@ async function buildPhysicalAtlas() {
   const riversFiltered = {
     type: 'FeatureCollection',
     features: riversRaw.features
-      .filter((f) => Number(f.properties?.scalerank ?? 99) <= 5)
+      .filter((f) => Number(f.properties?.scalerank ?? 99) <= 8)
       .map((f) => ({
         type: 'Feature',
         properties: { n: cleanStr(f.properties?.name) },
@@ -335,9 +439,9 @@ async function buildPhysicalAtlas() {
         const cls = f.properties?.featurecla;
         const rank = Number(f.properties?.scalerank ?? 99);
         return (
-          (cls === 'Range/mtn' && rank <= 4) ||
-          (cls === 'Desert' && rank <= 4) ||
-          (cls === 'Plateau' && rank <= 3)
+          (cls === 'Range/mtn' && rank <= 6) ||
+          (cls === 'Desert' && rank <= 6) ||
+          (cls === 'Plateau' && rank <= 5)
         );
       })
       .map((f) => ({
@@ -351,10 +455,10 @@ async function buildPhysicalAtlas() {
   };
 
   const bundle = {
-    land: await simplifyToTopo(landFiltered, '-simplify 12% keep-shapes'),
-    lakes: await simplifyToTopo(lakesFiltered, '-simplify 16% keep-shapes'),
-    rivers: await simplifyToTopo(riversFiltered, '-simplify 16%'),
-    relief: await simplifyToTopo(reliefFiltered, '-simplify 14% keep-shapes'),
+    land: await simplifyToTopo(landFiltered, '-simplify 55% keep-shapes'),
+    lakes: await simplifyToTopo(lakesFiltered, '-simplify 55% keep-shapes'),
+    rivers: await simplifyToTopo(riversFiltered, '-simplify 55%'),
+    relief: await simplifyToTopo(reliefFiltered, '-simplify 45% keep-shapes'),
   };
 
   await ensureDir(DATA_DIR);
@@ -362,16 +466,19 @@ async function buildPhysicalAtlas() {
   const outJson = JSON.stringify(bundle);
   await fs.writeFile(outPath, outJson, 'utf8');
   console.log(`   => Wrote physical.topo.json (${(Buffer.byteLength(outJson) / 1024).toFixed(1)} KB)`);
+  return landRawStr;
 }
 
-async function processSnapshot(year, polityFreqMap) {
-  const srcName = snapshotSourceFilename(year);
+async function processSnapshot(year, polityFreqMap, landGeoJsonStr) {
+  const cloneEntry = EXTRA_SNAPSHOT_CLONES.find((c) => c.year === year);
+  const sourceYear = cloneEntry ? cloneEntry.baseYear : year;
+  const srcName = snapshotSourceFilename(sourceYear);
   const cachePath = path.join(CACHE_RAW, 'snapshots', srcName);
   const url = `https://raw.githubusercontent.com/aourednik/historical-basemaps/master/geojson/${srcName}`;
   await downloadToFile(url, cachePath, false);
 
   const raw = JSON.parse(await fs.readFile(cachePath, 'utf8'));
-  const claimedFeatures = [];
+  let claimedFeatures = [];
 
   for (const f of raw.features || []) {
     if (!f.geometry) continue;
@@ -387,7 +494,55 @@ async function processSnapshot(year, polityFreqMap) {
       properties: { n: n || p, p, bp },
       geometry: f.geometry,
     });
+  }
 
+  // Smooth only coarse legacy polygons before applying high-resolution historical patches
+  claimedFeatures = claimedFeatures.map(smoothCoarseFeature);
+
+  // Apply fine-grained curated regional patches (e.g., Spring & Autumn, Warring States, Three Kingdoms, Italy)
+  const patches = HISTORICAL_PATCHES[year] || [];
+  for (const patch of patches) {
+    if (patch.removeNames && patch.removeNames.length > 0) {
+      const rmSet = new Set(patch.removeNames);
+      claimedFeatures = claimedFeatures.filter((feat) => {
+        if (!rmSet.has(feat.properties?.n) && !rmSet.has(feat.properties?.p)) return true;
+        if (patch.removeInBbox) {
+          return !featureIntersectsBbox(feat.geometry, patch.removeInBbox);
+        }
+        return false;
+      });
+    }
+
+    let patchFeats = patch.clipLand
+      ? await clipGeoJsonFeatures(patch.features, landGeoJsonStr)
+      : patch.features;
+
+    if (patch.italyKeepNames && patch.italyKeepNames.length > 0) {
+      const keepSet = new Set(patch.italyKeepNames);
+      const keepFeats = claimedFeatures.filter((f) => keepSet.has(f.properties?.n));
+      if (keepFeats.length > 0) {
+        patchFeats = await eraseGeoJsonFeatures(patchFeats, keepFeats);
+      }
+    }
+
+    if (patch.italyTrimNames && patch.italyTrimNames.length > 0 && patchFeats.length > 0) {
+      const trimSet = new Set(patch.italyTrimNames);
+      const toTrim = [];
+      const untouched = [];
+      for (const f of claimedFeatures) {
+        if (trimSet.has(f.properties?.n) || trimSet.has(f.properties?.p)) toTrim.push(f);
+        else untouched.push(f);
+      }
+      const trimmed = await eraseGeoJsonFeatures(toTrim, patchFeats);
+      claimedFeatures = [...untouched, ...trimmed];
+    }
+
+    claimedFeatures.push(...patchFeats);
+  }
+
+  for (const feat of claimedFeatures) {
+    const n = feat.properties?.n;
+    const p = feat.properties?.p;
     if (n) polityFreqMap.set(n, (polityFreqMap.get(n) || 0) + 1);
     if (p && p !== n) polityFreqMap.set(p, (polityFreqMap.get(p) || 0) + 1);
   }
@@ -398,7 +553,7 @@ async function processSnapshot(year, polityFreqMap) {
     features: claimedFeatures,
   };
 
-  const topo = await simplifyToTopo(cleanedCollection, '-simplify 12% keep-shapes');
+  const topo = await simplifyToTopo(cleanedCollection, '-simplify 45% keep-shapes');
   topo.labels = labels;
 
   const outFile = snapshotOutFilename(year);
@@ -414,8 +569,8 @@ async function processSnapshot(year, polityFreqMap) {
   };
 }
 
-async function buildSnapshots() {
-  console.log(`3/3 Building ${SNAPSHOT_YEARS.length} historical empire snapshots...`);
+async function buildSnapshots(landGeoJsonStr) {
+  console.log(`3/3 Building ${SNAPSHOT_YEARS.length} high-precision historical empire snapshots...`);
   await ensureDir(SNAPSHOTS_DIR);
   const polityFreqMap = new Map();
   const results = [];
@@ -424,7 +579,9 @@ async function buildSnapshots() {
   const batchSize = 2;
   for (let i = 0; i < SNAPSHOT_YEARS.length; i += batchSize) {
     const batch = SNAPSHOT_YEARS.slice(i, i + batchSize);
-    const batchRes = await Promise.all(batch.map((y) => processSnapshot(y, polityFreqMap)));
+    const batchRes = await Promise.all(
+      batch.map((y) => processSnapshot(y, polityFreqMap, landGeoJsonStr)),
+    );
     results.push(...batchRes);
     console.log(
       `   - Processed ${Math.min(i + batchSize, SNAPSHOT_YEARS.length)}/${SNAPSHOT_YEARS.length} (${batchRes
@@ -453,8 +610,8 @@ async function buildSnapshots() {
 
 async function main() {
   await buildFonts();
-  await buildPhysicalAtlas();
-  await buildSnapshots();
+  const landGeoJsonStr = await buildPhysicalAtlas();
+  await buildSnapshots(landGeoJsonStr);
   console.log('Done building map data.');
 }
 

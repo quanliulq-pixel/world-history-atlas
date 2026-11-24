@@ -5,6 +5,8 @@ import { ERAS } from '../src/data/eras.ts';
 import { ALL_EVENTS, EVENT_MAP } from '../src/data/events/index.ts';
 import { ALL_FIGURES, FIGURE_MAP } from '../src/data/figures/index.ts';
 import { COUNTRY_PROFILES } from '../src/data/countries/index.ts';
+import { GEO_FEATURES } from '../src/data/geoFeatures.ts';
+import { HISTORICAL_MEGA_STRUCTURES, HISTORICAL_PLACES } from '../src/data/historicalPlaces.ts';
 import { HISTORICAL_ROUTES } from '../src/data/routes.ts';
 import { STORYLINES } from '../src/data/storylines.ts';
 import { WORLD_PULSE_SLICES } from '../src/data/worldPulse.ts';
@@ -234,11 +236,53 @@ if (errors.length > 0) {
   process.exit(1);
 }
 
+const unsupportedSymbolRe = /[\u2500-\u27FF]/;
+if (GEO_FEATURES.length < 60) {
+  errors.push(`Expected >= 60 GEO_FEATURES, found ${GEO_FEATURES.length}`);
+}
+for (const gf of GEO_FEATURES) {
+  if (unsupportedSymbolRe.test(gf.name)) {
+    errors.push(`Geo feature ${gf.id} contains unsupported glyph: ${gf.name}`);
+  }
+}
+if (HISTORICAL_PLACES.length < 95) {
+  errors.push(`Expected >= 95 HISTORICAL_PLACES, found ${HISTORICAL_PLACES.length}`);
+}
+for (const pl of HISTORICAL_PLACES) {
+  if (unsupportedSymbolRe.test(pl.name)) {
+    errors.push(`Historical place ${pl.id} contains unsupported glyph: ${pl.name}`);
+  }
+}
+if (HISTORICAL_MEGA_STRUCTURES.length < 4) {
+  errors.push(`Expected >= 4 HISTORICAL_MEGA_STRUCTURES, found ${HISTORICAL_MEGA_STRUCTURES.length}`);
+}
+
+const manifestPath = path.resolve(__validateDir, '..', 'public', 'data', 'snapshots', 'manifest.json');
+if (!fs.existsSync(manifestPath)) {
+  errors.push(`Missing snapshot manifest at ${manifestPath}`);
+} else {
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  if ((manifest.snapshots || []).length < 50) {
+    errors.push(`Expected >= 50 snapshots in manifest.json, found ${(manifest.snapshots || []).length}`);
+  }
+  if (!manifest.snapshots?.some((s) => s.year === 220)) {
+    errors.push('Missing AD 220 Three Kingdoms snapshot in manifest.json');
+  }
+}
+
+if (errors.length > 0) {
+  console.error('Content validation FAILED:');
+  for (const err of errors) console.error('  -', err);
+  process.exit(1);
+}
+
 console.log('Content validation PASSED:');
 console.log(`  - Eras: ${ERAS.length}`);
 console.log(`  - Events: ${ALL_EVENTS.length}`);
 console.log(`  - Figures: ${ALL_FIGURES.length}`);
 console.log(`  - Countries: ${COUNTRY_PROFILES.length}`);
+console.log(`  - Geo labels: ${GEO_FEATURES.length}`);
+console.log(`  - Historical places: ${HISTORICAL_PLACES.length}`);
 console.log(`  - Routes: ${HISTORICAL_ROUTES.length}`);
 console.log(`  - Storylines: ${STORYLINES.length}`);
 console.log(`  - World pulse slices: ${WORLD_PULSE_SLICES.length}`);

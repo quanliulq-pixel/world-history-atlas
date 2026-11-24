@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "postinstall": "node scripts/copy-worker.mjs",
     "data:build": "node scripts/build-map-data.mjs",
+    "data:country-index": "npx tsx scripts/build-country-index.mjs",
     "data:validate": "npx tsx scripts/validate-content.mjs"
   },
   "dependencies": {

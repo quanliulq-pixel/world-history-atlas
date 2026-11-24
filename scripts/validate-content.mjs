@@ -1,6 +1,10 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { ERAS } from '../src/data/eras.ts';
 import { ALL_EVENTS, EVENT_MAP } from '../src/data/events/index.ts';
-import { ALL_FIGURES } from '../src/data/figures/index.ts';
+import { ALL_FIGURES, FIGURE_MAP } from '../src/data/figures/index.ts';
+import { COUNTRY_PROFILES } from '../src/data/countries/index.ts';
 import { HISTORICAL_ROUTES } from '../src/data/routes.ts';
 import { STORYLINES } from '../src/data/storylines.ts';
 import { WORLD_PULSE_SLICES } from '../src/data/worldPulse.ts';
@@ -170,6 +174,60 @@ for (const fig of ALL_FIGURES) {
   }
 }
 
+if (COUNTRY_PROFILES.length < 28) {
+  errors.push(`Expected >= 28 curated country profiles, found ${COUNTRY_PROFILES.length}`);
+}
+
+const __validateDir = path.dirname(fileURLToPath(import.meta.url));
+const countryIdxPath = path.resolve(__validateDir, '..', 'public', 'data', 'country-evolution-index.json');
+let countryIndexJson = null;
+if (!fs.existsSync(countryIdxPath)) {
+  errors.push(`Missing generated country index at ${countryIdxPath}`);
+} else {
+  countryIndexJson = JSON.parse(fs.readFileSync(countryIdxPath, 'utf8'));
+  const mcCount = Object.keys(countryIndexJson.modernCountries || {}).length;
+  if (mcCount < 180) {
+    errors.push(`Expected >= 180 modernCountries in country-evolution-index.json, found ${mcCount}`);
+  }
+}
+
+const seenCountryIds = new Set();
+for (const c of COUNTRY_PROFILES) {
+  if (seenCountryIds.has(c.id)) {
+    errors.push(`Duplicate country profile id: ${c.id}`);
+  }
+  seenCountryIds.add(c.id);
+
+  const [lng, lat] = c.coords;
+  if (!Number.isFinite(lng) || !Number.isFinite(lat) || lng < -180 || lng > 180 || lat < -90 || lat > 90) {
+    errors.push(`Country ${c.id} has invalid coords: ${JSON.stringify(c.coords)}`);
+  }
+  if (!Number.isFinite(c.zoom) || c.zoom < 1 || c.zoom > 8) {
+    errors.push(`Country ${c.id} has invalid zoom: ${c.zoom}`);
+  }
+  if (!Array.isArray(c.stages) || c.stages.length < 2) {
+    errors.push(`Country ${c.id} must have >= 2 evolution stages`);
+  }
+  for (const field of ['geography', 'politics', 'economy', 'culture']) {
+    if (!c.overview[field] || c.overview[field].trim().length < 8) {
+      errors.push(`Country ${c.id} missing or too short overview.${field}`);
+    }
+  }
+  for (const evId of c.eventIds || []) {
+    if (!EVENT_MAP[evId]) {
+      errors.push(`Country ${c.id} unknown eventId: ${evId}`);
+    }
+  }
+  for (const figId of c.figureIds || []) {
+    if (!FIGURE_MAP[figId]) {
+      errors.push(`Country ${c.id} unknown figureId: ${figId}`);
+    }
+  }
+  if (countryIndexJson && !countryIndexJson.modernCountries?.[c.modernCountryKey]) {
+    errors.push(`Country ${c.id} modernCountryKey "${c.modernCountryKey}" missing in country-evolution-index.json`);
+  }
+}
+
 if (errors.length > 0) {
   console.error('Content validation FAILED:');
   for (const err of errors) console.error('  -', err);
@@ -180,6 +238,7 @@ console.log('Content validation PASSED:');
 console.log(`  - Eras: ${ERAS.length}`);
 console.log(`  - Events: ${ALL_EVENTS.length}`);
 console.log(`  - Figures: ${ALL_FIGURES.length}`);
+console.log(`  - Countries: ${COUNTRY_PROFILES.length}`);
 console.log(`  - Routes: ${HISTORICAL_ROUTES.length}`);
 console.log(`  - Storylines: ${STORYLINES.length}`);
 console.log(`  - World pulse slices: ${WORLD_PULSE_SLICES.length}`);

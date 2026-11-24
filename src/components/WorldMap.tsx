@@ -4,6 +4,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { DIMENSION_META, FIGURE_ROLE_META } from '../data/eras';
 import { EVENT_MAP } from '../data/events';
 import type {
+  ClickedPolityPayload,
   HistoricalFigure,
   HistoricalRoute,
   HistoryEvent,
@@ -19,7 +20,6 @@ import {
   slicePolylineByFraction,
 } from '../utils/geo';
 import type { DecodedSnapshot, PhysicalAtlasData } from '../utils/snapshotLoader';
-import { formatShortYear } from '../utils/timeline';
 
 export interface VisibleEventItem {
   event: HistoryEvent;
@@ -32,6 +32,12 @@ export interface VisibleFigureItem {
   active: boolean;
   isAlive: boolean;
   opacity: number;
+}
+
+export interface CountryFocusSpec {
+  accentColor: string;
+  matchEnNames: string[];
+  matchZhNames: string[];
 }
 
 interface WorldMapProps {
@@ -50,27 +56,42 @@ interface WorldMapProps {
   bookmarkedIds: Set<string>;
   activeRoutes: HistoricalRoute[];
   focusRouteId: string | null;
+  countryFocus?: CountryFocusSpec | null;
+  isCountryMode?: boolean;
   flyTarget: {
     center: [number, number];
     zoom: number;
+    exactZoom?: boolean;
     pitch?: number;
     duration?: number;
     nonce: number;
   } | null;
   onSelectEvent: (ev: HistoryEvent) => void;
   onSelectFigure: (fig: HistoricalFigure) => void;
+  onSelectPolity?: (polity: ClickedPolityPayload) => void;
   onDeselectEvent?: () => void;
-}
-
-interface ClickedPolity {
-  zhName: string;
-  enName: string;
-  groupZhName: string;
-  snapshotYear: number;
 }
 
 const EMPTY_FC: GeoJSON.FeatureCollection = { type: 'FeatureCollection', features: [] };
 const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
+const NONE_FILTER: maplibregl.FilterSpecification = ['==', ['get', 'zhName'], '__none__'];
+
+function buildCountryFocusFilter(
+  focus: CountryFocusSpec | null | undefined,
+): maplibregl.FilterSpecification {
+  if (!focus || (focus.matchEnNames.length === 0 && focus.matchZhNames.length === 0)) {
+    return NONE_FILTER;
+  }
+  const clauses: maplibregl.ExpressionSpecification[] = [];
+  if (focus.matchEnNames.length > 0) {
+    clauses.push(['in', ['get', 'enName'], ['literal', focus.matchEnNames]]);
+    clauses.push(['in', ['get', 'groupEnName'], ['literal', focus.matchEnNames]]);
+  }
+  if (focus.matchZhNames.length > 0) {
+    clauses.push(['in', ['get', 'zhName'], ['literal', focus.matchZhNames]]);
+  }
+  return ['any', ...clauses] as maplibregl.FilterSpecification;
+}
 
 const THEME_COLORS = {
   parchment: {
@@ -123,9 +144,12 @@ export function WorldMap({
   bookmarkedIds,
   activeRoutes,
   focusRouteId,
+  countryFocus = null,
+  isCountryMode = false,
   flyTarget,
   onSelectEvent,
   onSelectFigure,
+  onSelectPolity,
   onDeselectEvent,
 }: WorldMapProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -143,7 +167,6 @@ export function WorldMap({
     x: number;
     y: number;
   } | null>(null);
-  const [clickedPolity, setClickedPolity] = useState<ClickedPolity | null>(null);
 
   const themeRef = useRef(theme);
   themeRef.current = theme;
@@ -156,8 +179,14 @@ export function WorldMap({
   onSelectRef.current = onSelectEvent;
   const onSelectFigureRef = useRef(onSelectFigure);
   onSelectFigureRef.current = onSelectFigure;
+  const onSelectPolityRef = useRef(onSelectPolity);
+  onSelectPolityRef.current = onSelectPolity;
   const onDeselectRef = useRef(onDeselectEvent);
   onDeselectRef.current = onDeselectEvent;
+  const isCountryModeRef = useRef(isCountryMode);
+  isCountryModeRef.current = isCountryMode;
+  const countryFocusRef = useRef(countryFocus);
+  countryFocusRef.current = countryFocus;
   const snapshotYearRef = useRef<number>(snapshot?.year ?? -3000);
   snapshotYearRef.current = snapshot?.year ?? -3000;
 
@@ -452,6 +481,28 @@ export function WorldMap({
           },
         },
         {
+          id: 'empire-focus-fill-a',
+          type: 'fill',
+          source: 'empires-a',
+          filter: NONE_FILTER,
+          paint: {
+            'fill-color': '#D97706',
+            'fill-opacity': 0,
+            'fill-opacity-transition': { duration: 0, delay: 0 },
+          },
+        },
+        {
+          id: 'empire-focus-fill-b',
+          type: 'fill',
+          source: 'empires-b',
+          filter: NONE_FILTER,
+          paint: {
+            'fill-color': '#D97706',
+            'fill-opacity': 0,
+            'fill-opacity-transition': { duration: 0, delay: 0 },
+          },
+        },
+        {
           id: 'physical-lakes-fill',
           type: 'fill',
           source: 'physical-lakes',
@@ -488,6 +539,32 @@ export function WorldMap({
           paint: {
             'line-color': palette.empireBorder,
             'line-width': ['interpolate', ['linear'], ['zoom'], 1, 0.5, 5, 1.3],
+            'line-opacity': 0,
+            'line-opacity-transition': { duration: 0, delay: 0 },
+          },
+        },
+        {
+          id: 'empire-focus-border-a',
+          type: 'line',
+          source: 'empires-a',
+          filter: NONE_FILTER,
+          layout: { 'line-join': 'round', 'line-cap': 'round' },
+          paint: {
+            'line-color': '#D97706',
+            'line-width': ['interpolate', ['linear'], ['zoom'], 1, 2.0, 5, 3.6],
+            'line-opacity': 0,
+            'line-opacity-transition': { duration: 0, delay: 0 },
+          },
+        },
+        {
+          id: 'empire-focus-border-b',
+          type: 'line',
+          source: 'empires-b',
+          filter: NONE_FILTER,
+          layout: { 'line-join': 'round', 'line-cap': 'round' },
+          paint: {
+            'line-color': '#D97706',
+            'line-width': ['interpolate', ['linear'], ['zoom'], 1, 2.0, 5, 3.6],
             'line-opacity': 0,
             'line-opacity-transition': { duration: 0, delay: 0 },
           },
@@ -697,21 +774,33 @@ export function WorldMap({
           zhName?: string;
           enName?: string;
           groupZhName?: string;
+          groupEnName?: string;
+          fillColor?: string;
+          isDiffuse?: boolean;
         };
-        setClickedPolity({
+        onSelectPolityRef.current?.({
           zhName: props.zhName || '未知政权',
           enName: props.enName || '',
           groupZhName: props.groupZhName || '',
+          groupEnName: props.groupEnName || '',
+          fillColor: props.fillColor || '#8A5D3B',
+          isDiffuse: Boolean(props.isDiffuse),
           snapshotYear: snapshotYearRef.current,
+          coords: [Number(e.lngLat.lng.toFixed(2)), Number(e.lngLat.lat.toFixed(2))],
         });
-      } else {
-        setClickedPolity(null);
+      } else if (!isCountryModeRef.current) {
         onDeselectRef.current?.();
       }
     });
 
+    const resizeObserver = new ResizeObserver(() => {
+      map.resize();
+    });
+    resizeObserver.observe(container);
+
     mapRef.current = map;
     return () => {
+      resizeObserver.disconnect();
       window.cancelAnimationFrame(crossfadeRafRef.current);
       for (const { marker } of markersRef.current.values()) {
         marker.remove();
@@ -808,6 +897,7 @@ export function WorldMap({
       window.cancelAnimationFrame(crossfadeRafRef.current);
       const curBuf = activeBufferRef.current;
       const otherBuf = curBuf === 'a' ? 'b' : 'a';
+      const hasFocus = Boolean(countryFocusRef.current);
       (map.getSource(`empires-${curBuf}`) as maplibregl.GeoJSONSource | undefined)?.setData(
         snapshot.polygons,
       );
@@ -816,6 +906,10 @@ export function WorldMap({
       map.setPaintProperty(`empire-borders-${curBuf}`, 'line-opacity', 1);
       map.setPaintProperty(`empire-fills-${otherBuf}`, 'fill-opacity', 0);
       map.setPaintProperty(`empire-borders-${otherBuf}`, 'line-opacity', 0);
+      map.setPaintProperty(`empire-focus-fill-${curBuf}`, 'fill-opacity', hasFocus ? 0.18 : 0);
+      map.setPaintProperty(`empire-focus-border-${curBuf}`, 'line-opacity', hasFocus ? 0.95 : 0);
+      map.setPaintProperty(`empire-focus-fill-${otherBuf}`, 'fill-opacity', 0);
+      map.setPaintProperty(`empire-focus-border-${otherBuf}`, 'line-opacity', 0);
       lastSnapshotYearRef.current = snapshot.year;
       return;
     }
@@ -828,6 +922,8 @@ export function WorldMap({
 
     map.setPaintProperty(`empire-fills-${incomingBuf}`, 'fill-opacity', 0);
     map.setPaintProperty(`empire-borders-${incomingBuf}`, 'line-opacity', 0);
+    map.setPaintProperty(`empire-focus-fill-${incomingBuf}`, 'fill-opacity', 0);
+    map.setPaintProperty(`empire-focus-border-${incomingBuf}`, 'line-opacity', 0);
     (map.getSource(`empires-${incomingBuf}`) as maplibregl.GeoJSONSource | undefined)?.setData(
       snapshot.polygons,
     );
@@ -844,12 +940,33 @@ export function WorldMap({
       const fillBase = THEME_COLORS[themeRef.current].empireFillOpacity;
       const inFill = clamp01(fillBase * eased);
       const outFill = clamp01(fillBase * outFactor);
+      const hasFocus = Boolean(countryFocusRef.current);
 
       try {
         mapRef.current.setPaintProperty(`empire-fills-${incomingBuf}`, 'fill-opacity', inFill);
         mapRef.current.setPaintProperty(`empire-borders-${incomingBuf}`, 'line-opacity', eased);
         mapRef.current.setPaintProperty(`empire-fills-${outgoingBuf}`, 'fill-opacity', outFill);
         mapRef.current.setPaintProperty(`empire-borders-${outgoingBuf}`, 'line-opacity', outFactor);
+        mapRef.current.setPaintProperty(
+          `empire-focus-fill-${incomingBuf}`,
+          'fill-opacity',
+          hasFocus ? clamp01(0.18 * eased) : 0,
+        );
+        mapRef.current.setPaintProperty(
+          `empire-focus-border-${incomingBuf}`,
+          'line-opacity',
+          hasFocus ? clamp01(0.95 * eased) : 0,
+        );
+        mapRef.current.setPaintProperty(
+          `empire-focus-fill-${outgoingBuf}`,
+          'fill-opacity',
+          hasFocus ? clamp01(0.18 * outFactor) : 0,
+        );
+        mapRef.current.setPaintProperty(
+          `empire-focus-border-${outgoingBuf}`,
+          'line-opacity',
+          hasFocus ? clamp01(0.95 * outFactor) : 0,
+        );
       } catch {
         // Ignore transient style swaps
       }
@@ -866,6 +983,28 @@ export function WorldMap({
     crossfadeRafRef.current = window.requestAnimationFrame(animateFade);
     return () => window.cancelAnimationFrame(crossfadeRafRef.current);
   }, [snapshot, mapReady]);
+
+  // Synchronize country highlight border & translucent fill overlay
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapReady) return;
+    const filter = buildCountryFocusFilter(countryFocus);
+    const accent = countryFocus?.accentColor || '#D97706';
+    const activeBuf = activeBufferRef.current;
+    const otherBuf = activeBuf === 'a' ? 'b' : 'a';
+
+    for (const buf of ['a', 'b'] as const) {
+      map.setFilter(`empire-focus-fill-${buf}`, filter);
+      map.setFilter(`empire-focus-border-${buf}`, filter);
+      map.setPaintProperty(`empire-focus-fill-${buf}`, 'fill-color', accent);
+      map.setPaintProperty(`empire-focus-border-${buf}`, 'line-color', accent);
+    }
+
+    map.setPaintProperty(`empire-focus-fill-${activeBuf}`, 'fill-opacity', countryFocus ? 0.18 : 0);
+    map.setPaintProperty(`empire-focus-border-${activeBuf}`, 'line-opacity', countryFocus ? 0.95 : 0);
+    map.setPaintProperty(`empire-focus-fill-${otherBuf}`, 'fill-opacity', 0);
+    map.setPaintProperty(`empire-focus-border-${otherBuf}`, 'line-opacity', 0);
+  }, [countryFocus, mapReady]);
 
   // Update historical routes
   useEffect(() => {
@@ -988,20 +1127,25 @@ export function WorldMap({
     return () => window.cancelAnimationFrame(rafId);
   }, [routesRenderMeta, causalGeoJSON, isPlaying, mapReady]);
 
-  // Handle smooth camera easing when selecting an event or stepping storyline / cinema mode
+  // Handle smooth camera easing when selecting an event, switching countries, or stepping storyline
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady || !flyTarget) return;
     const isDesktop = window.innerWidth >= 1024;
     const targetPitch = projectionRef.current === 'globe' ? 0 : (flyTarget.pitch ?? 0);
+    const padding = isCountryModeRef.current
+      ? isDesktop
+        ? { top: 20, bottom: 84, left: 20, right: 20 }
+        : { top: 14, bottom: 68, left: 14, right: 14 }
+      : isDesktop
+        ? { top: 28, bottom: 32, left: 24, right: 430 }
+        : { top: 24, bottom: 220, left: 16, right: 16 };
     map.easeTo({
       center: flyTarget.center,
-      zoom: Math.max(map.getZoom(), flyTarget.zoom),
+      zoom: flyTarget.exactZoom ? flyTarget.zoom : Math.max(map.getZoom(), flyTarget.zoom),
       pitch: targetPitch,
       duration: flyTarget.duration ?? 850,
-      padding: isDesktop
-        ? { top: 28, bottom: 32, left: 24, right: 430 }
-        : { top: 24, bottom: 220, left: 16, right: 16 },
+      padding,
     });
   }, [flyTarget, mapReady]);
 
@@ -1208,7 +1352,7 @@ export function WorldMap({
           className="pointer-events-none absolute z-20 hidden md:block rounded-lg px-2.5 py-1.5 text-xs shadow-md backdrop-blur-sm"
           style={{
             left: Math.min(hoveredPolity.x + 14, window.innerWidth - 220),
-            top: Math.max(hoveredPolity.y - 36, 72),
+            top: Math.max(hoveredPolity.y - 44, 72),
             backgroundColor: 'var(--bg-surface)',
             border: '1px solid var(--border-subtle)',
             color: 'var(--text-primary)',
@@ -1220,45 +1364,9 @@ export function WorldMap({
               {hoveredPolity.enName}
             </div>
           )}
-        </div>
-      )}
-
-      {/* Clicked/tapped polity inspection pill */}
-      {clickedPolity && (
-        <div
-          className="absolute left-3 bottom-16 lg:bottom-8 z-20 flex items-center gap-3 rounded-xl px-3.5 py-2 text-xs shadow-lg backdrop-blur-md"
-          style={{
-            backgroundColor: 'var(--bg-surface)',
-            border: '1px solid var(--border-strong)',
-            color: 'var(--text-primary)',
-          }}
-        >
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-semibold text-sm">{clickedPolity.zhName}</span>
-              <span
-                className="rounded px-1.5 py-0.5 text-[10px]"
-                style={{ backgroundColor: 'var(--bg-muted)', color: 'var(--text-secondary)' }}
-              >
-                {formatShortYear(clickedPolity.snapshotYear)} 版图
-              </span>
-            </div>
-            <div className="mt-0.5 text-[11px]" style={{ color: 'var(--text-muted)' }}>
-              {clickedPolity.enName}
-              {clickedPolity.groupZhName && clickedPolity.groupZhName !== clickedPolity.zhName
-                ? ` · 归属：${clickedPolity.groupZhName}`
-                : ''}
-            </div>
+          <div className="mt-0.5 text-[10px] font-medium" style={{ color: 'var(--accent-primary)' }}>
+            点击查看国家历史演变 →
           </div>
-          <button
-            type="button"
-            onClick={() => setClickedPolity(null)}
-            className="rounded-md px-1.5 py-0.5 text-xs hover:opacity-80 cursor-pointer"
-            style={{ color: 'var(--text-muted)' }}
-            aria-label="关闭政权信息"
-          >
-            ✕
-          </button>
         </div>
       )}
     </div>

@@ -1,18 +1,45 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ChronicleTicker } from './components/ChronicleTicker';
+import {
+  CountryEvolutionHeader,
+  CountryEvolutionPanel,
+  CountryMapDock,
+} from './components/CountryEvolutionView';
 import { EventCardPanel } from './components/EventCardPanel';
 import { SearchAndProgressModal } from './components/SearchAndProgressModal';
 import { StorylinePickerModal, StorylinePlayerBar } from './components/StorylineOverlay';
 import { TimelineDock } from './components/TimelineDock';
 import { TopBar } from './components/TopBar';
-import { WorldMap, type VisibleEventItem, type VisibleFigureItem } from './components/WorldMap';
+import {
+  WorldMap,
+  type CountryFocusSpec,
+  type VisibleEventItem,
+  type VisibleFigureItem,
+} from './components/WorldMap';
 import { WorldPulseModal } from './components/WorldPulseModal';
+import {
+  COUNTRY_PROFILE_MAP,
+  findMatchingStageIndex,
+  loadCountryEvolutionIndex,
+  resolveCountryEvolution,
+  resolveCuratedCountry,
+  resolveModernCountry,
+} from './data/countries';
 import { MAX_YEAR, MIN_YEAR } from './data/eras';
 import { ALL_EVENTS, EVENT_MAP } from './data/events';
 import { ALL_FIGURES, FIGURE_MAP } from './data/figures';
 import { HISTORICAL_ROUTES } from './data/routes';
 import { useStudyStore } from './hooks/useStudyStore';
-import type { Dimension, HistoricalFigure, HistoryEvent, SnapshotMeta, Storyline } from './types/history';
+import type {
+  ClickedPolityPayload,
+  CountryEvolutionIndex,
+  Dimension,
+  HistoricalFigure,
+  HistoryEvent,
+  ResolvedCountryEvolution,
+  SnapshotMeta,
+  Storyline,
+} from './types/history';
 import {
   loadManifest,
   loadPhysicalAtlas,
@@ -77,6 +104,7 @@ export function App() {
   const [flyTarget, setFlyTarget] = useState<{
     center: [number, number];
     zoom: number;
+    exactZoom?: boolean;
     pitch?: number;
     duration?: number;
     nonce: number;
@@ -89,6 +117,12 @@ export function App() {
   const [activeStoryline, setActiveStoryline] = useState<Storyline | null>(null);
   const [storyStepIdx, setStoryStepIdx] = useState(0);
   const [storyAutoPlay, setStoryAutoPlay] = useState(false);
+
+  // Country Historical Evolution view state
+  const [countryIndex, setCountryIndex] = useState<CountryEvolutionIndex | null>(null);
+  const [activeCountry, setActiveCountry] = useState<ResolvedCountryEvolution | null>(null);
+  const [countryPlaying, setCountryPlaying] = useState(false);
+  const [countryFullReading, setCountryFullReading] = useState(false);
 
   // Map geospatial datasets
   const [physical, setPhysical] = useState<PhysicalAtlasData | null>(null);
@@ -103,7 +137,7 @@ export function App() {
     [currentYear, snapshots],
   );
 
-  // Load static physical atlas & snapshot manifest once on mount
+  // Load static physical atlas, snapshot manifest, and country evolution index once on mount
   useEffect(() => {
     let cancelled = false;
     Promise.all([loadPhysicalAtlas(), loadManifest()])
@@ -115,6 +149,15 @@ export function App() {
       .catch((err) => {
         if (!cancelled) setDataError(err instanceof Error ? err.message : '地图数据加载失败');
       });
+
+    loadCountryEvolutionIndex()
+      .then((idx) => {
+        if (!cancelled) setCountryIndex(idx);
+      })
+      .catch(() => {
+        // Non-blocking fallback handled on demand when clicking a polity
+      });
+
     return () => {
       cancelled = true;
     };
@@ -288,11 +331,12 @@ export function App() {
     (
       center: [number, number],
       zoom = 3.2,
-      opts?: { pitch?: number; duration?: number },
+      opts?: { pitch?: number; duration?: number; exactZoom?: boolean },
     ) => {
       setFlyTarget({
         center,
         zoom,
+        exactZoom: opts?.exactZoom,
         pitch: opts?.pitch ?? 0,
         duration: opts?.duration ?? 850,
         nonce: Date.now() + Math.random(),
@@ -561,189 +605,412 @@ export function App() {
 
   const tickerEvent = tickerEventId ? EVENT_MAP[tickerEventId] || null : null;
 
+  const countryFocus = useMemo<CountryFocusSpec | null>(() => {
+    if (!activeCountry) return null;
+    return {
+      accentColor: activeCountry.accentColor,
+      matchEnNames: activeCountry.highlightEnNames,
+      matchZhNames: activeCountry.highlightZhNames,
+    };
+  }, [activeCountry]);
+
+  const enterCountryEvolution = useCallback(
+    (resolved: ResolvedCountryEvolution, preserveYear = false) => {
+      setIsPlaying(false);
+      setCinemaMode(false);
+      setActiveStoryline(null);
+      setStoryAutoPlay(false);
+      setRecentTriggerEventId(null);
+      setSelectedEventId(null);
+      setSelectedFigureId(null);
+      setFocusRouteId(null);
+      setTickerVisible(false);
+      setCountryPlaying(false);
+      setCountryFullReading(false);
+      setActiveCountry(resolved);
+
+      if (!preserveYear && resolved.stages.length > 0) {
+        const curStage = findMatchingStageIndex(resolved.stages, currentYearRef.current);
+        if (curStage === -1) {
+          setCurrentYear(resolved.stages[resolved.stages.length - 1].snapshotYear);
+        }
+      }
+
+      window.requestAnimationFrame(() => {
+        flyToLocation(resolved.coords, resolved.zoom, { exactZoom: true, duration: 750 });
+      });
+    },
+    [flyToLocation],
+  );
+
+  const handleSelectPolity = useCallback(
+    async (polity: ClickedPolityPayload) => {
+      let idx = countryIndex;
+      if (!idx) {
+        try {
+          idx = await loadCountryEvolutionIndex();
+          setCountryIndex(idx);
+        } catch {
+          idx = null;
+        }
+      }
+      const resolved = resolveCountryEvolution(polity, idx);
+      enterCountryEvolution(resolved, true);
+    },
+    [countryIndex, enterCountryEvolution],
+  );
+
+  const handleSelectCuratedCountry = useCallback(
+    async (profileId: string) => {
+      const profile = COUNTRY_PROFILE_MAP[profileId];
+      if (!profile) return;
+      let idx = countryIndex;
+      if (!idx) {
+        try {
+          idx = await loadCountryEvolutionIndex();
+          setCountryIndex(idx);
+        } catch {
+          idx = null;
+        }
+      }
+      const resolved = resolveCuratedCountry(profile, idx);
+      enterCountryEvolution(resolved, false);
+    },
+    [countryIndex, enterCountryEvolution],
+  );
+
+  const handleSelectModernCountry = useCallback(
+    async (modernKey: string) => {
+      let idx = countryIndex;
+      if (!idx) {
+        try {
+          idx = await loadCountryEvolutionIndex();
+          setCountryIndex(idx);
+        } catch {
+          idx = null;
+        }
+      }
+      const resolved = resolveModernCountry(modernKey, idx);
+      if (resolved) enterCountryEvolution(resolved, true);
+    },
+    [countryIndex, enterCountryEvolution],
+  );
+
+  const handleExitCountryMode = useCallback(() => {
+    setCountryPlaying(false);
+    setCountryFullReading(false);
+    setActiveCountry(null);
+    window.requestAnimationFrame(() => {
+      flyToLocation(window.innerWidth >= 1024 ? [52, 22] : [28, 22], window.innerWidth < 640 ? 1.2 : 1.5, {
+        exactZoom: true,
+        duration: 700,
+      });
+    });
+  }, [flyToLocation]);
+
+  const handleJumpFromCountryToEvent = useCallback(
+    (ev: HistoryEvent) => {
+      setCountryPlaying(false);
+      setCountryFullReading(false);
+      setActiveCountry(null);
+      handleSelectEvent(ev);
+    },
+    [handleSelectEvent],
+  );
+
+  const handleJumpFromCountryToFigure = useCallback(
+    (fig: HistoricalFigure) => {
+      setCountryPlaying(false);
+      setCountryFullReading(false);
+      setActiveCountry(null);
+      handleSelectFigure(fig);
+    },
+    [handleSelectFigure],
+  );
+
+  // Country Mode stage autoplay
+  useEffect(() => {
+    if (!activeCountry || !countryPlaying) return;
+    const stages = activeCountry.stages;
+    if (stages.length === 0) {
+      setCountryPlaying(false);
+      return;
+    }
+
+    const timer = window.setInterval(() => {
+      const curIdx = findMatchingStageIndex(stages, currentYearRef.current);
+      if (curIdx >= stages.length - 1) {
+        setCountryPlaying(false);
+        return;
+      }
+      const nextStage = stages[curIdx + 1];
+      if (nextStage) {
+        setCurrentYear(nextStage.snapshotYear);
+      }
+    }, 1900);
+
+    return () => window.clearInterval(timer);
+  }, [activeCountry, countryPlaying]);
+
+  // Escape key returns to World Map when in Country Mode and no modal is open
+  useEffect(() => {
+    if (!activeCountry || pulseOpen || storyPickerOpen || searchOpen) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') handleExitCountryMode();
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [activeCountry, pulseOpen, storyPickerOpen, searchOpen, handleExitCountryMode]);
+
   return (
     <div className="relative flex h-full w-full flex-col overflow-hidden">
-      <TopBar
-        currentYear={currentYear}
-        currentEra={currentEra}
-        currentSubPeriod={currentSubPeriod}
-        snapshotYear={activeSnapshot?.year ?? null}
-        selectedDimensions={selectedDimensions}
-        showAllEras={showAllEras}
-        showRoutes={showRoutes}
-        showFigures={showFigures}
-        projection={projection}
-        theme={theme}
-        masteredCount={studyData.masteredIds.length}
-        totalEventsCount={ALL_EVENTS.length + ALL_FIGURES.length}
-        onToggleDimension={handleToggleDimension}
-        onToggleShowAllEras={() => setShowAllEras((v) => !v)}
-        onToggleRoutes={() => setShowRoutes((v) => !v)}
-        onToggleFigures={() => setShowFigures((v) => !v)}
-        onToggleProjection={toggleProjection}
-        onToggleTheme={toggleTheme}
-        onOpenPulse={() => setPulseOpen(true)}
-        onOpenStorylines={() => setStoryPickerOpen(true)}
-        onOpenSearch={() => setSearchOpen(true)}
-      />
-
-      <main className="relative flex-1 overflow-hidden">
-        <WorldMap
-          theme={theme}
-          projection={projection}
+      {activeCountry ? (
+        <CountryEvolutionHeader
+          country={activeCountry}
           currentYear={currentYear}
-          isPlaying={isPlaying || cinemaMode}
-          physical={physical}
-          snapshot={activeSnapshot}
-          events={visibleEvents}
-          figures={visibleFigures}
-          selectedEvent={selectedEvent}
-          selectedFigure={selectedFigure}
-          recentTriggerEventId={recentTriggerEventId}
-          masteredIds={masteredSet}
-          bookmarkedIds={bookmarkedSet}
-          activeRoutes={activeRoutes}
-          focusRouteId={focusRouteId}
-          flyTarget={flyTarget}
-          onSelectEvent={(ev) => handleSelectEvent(ev)}
-          onSelectFigure={(fig) => handleSelectFigure(fig)}
-          onDeselectEvent={() => {
-            setSelectedEventId(null);
-            setSelectedFigureId(null);
-          }}
+          snapshotYear={activeSnapshot?.year ?? null}
+          projection={projection}
+          theme={theme}
+          fullReading={countryFullReading}
+          onExit={handleExitCountryMode}
+          onSelectCuratedCountry={handleSelectCuratedCountry}
+          onToggleFullReading={() => setCountryFullReading((v) => !v)}
+          onToggleProjection={toggleProjection}
+          onToggleTheme={toggleTheme}
         />
-
-        <ChronicleTicker
-          visible={!activeStoryline && tickerVisible}
-          cinemaMode={cinemaMode}
-          isPlaying={isPlaying}
+      ) : (
+        <TopBar
           currentYear={currentYear}
           currentEra={currentEra}
           currentSubPeriod={currentSubPeriod}
-          event={tickerEvent || selectedEvent}
+          snapshotYear={activeSnapshot?.year ?? null}
+          selectedDimensions={selectedDimensions}
+          showAllEras={showAllEras}
+          showRoutes={showRoutes}
+          showFigures={showFigures}
+          projection={projection}
           theme={theme}
-          onSelectEvent={(ev) => handleSelectEvent(ev)}
-          onStopPlayback={() => {
-            setIsPlaying(false);
-            setCinemaMode(false);
-            setRecentTriggerEventId(null);
-          }}
-          onDismiss={() => setTickerVisible(false)}
+          masteredCount={studyData.masteredIds.length}
+          totalEventsCount={ALL_EVENTS.length + ALL_FIGURES.length}
+          onToggleDimension={handleToggleDimension}
+          onToggleShowAllEras={() => setShowAllEras((v) => !v)}
+          onToggleRoutes={() => setShowRoutes((v) => !v)}
+          onToggleFigures={() => setShowFigures((v) => !v)}
+          onToggleProjection={toggleProjection}
+          onToggleTheme={toggleTheme}
+          onOpenPulse={() => setPulseOpen(true)}
+          onOpenStorylines={() => setStoryPickerOpen(true)}
+          onOpenSearch={() => setSearchOpen(true)}
         />
+      )}
 
-        {dataError && (
-          <div
-            className="absolute left-1/2 top-4 -translate-x-1/2 z-40 rounded-xl border px-4 py-2 text-xs shadow-lg"
-            style={{
-              backgroundColor: 'var(--bg-surface)',
-              borderColor: '#B83B3B',
-              color: '#B83B3B',
-            }}
-          >
-            地图底图加载异常：{dataError}
-          </div>
-        )}
-
-        {activeStoryline && (
-          <StorylinePlayerBar
-            storyline={activeStoryline}
-            stepIndex={storyStepIdx}
-            autoPlaying={storyAutoPlay}
+      <main className="relative flex-1 flex flex-col lg:flex-row overflow-hidden">
+        <div
+          className={
+            activeCountry
+              ? countryFullReading
+                ? 'hidden'
+                : 'relative h-[36vh] min-h-[220px] lg:h-full lg:w-[52%] shrink-0 overflow-hidden border-b lg:border-b-0 lg:border-r'
+              : 'relative flex-1 h-full w-full overflow-hidden'
+          }
+          style={activeCountry ? { borderColor: 'var(--border-subtle)' } : undefined}
+        >
+          <WorldMap
             theme={theme}
-            onPrev={() => applyStoryStep(activeStoryline, Math.max(0, storyStepIdx - 1))}
-            onNext={() =>
-              applyStoryStep(
-                activeStoryline,
-                Math.min(activeStoryline.steps.length - 1, storyStepIdx + 1),
-              )
-            }
-            onToggleAuto={() => setStoryAutoPlay((v) => !v)}
-            onExit={() => {
-              setActiveStoryline(null);
-              setStoryAutoPlay(false);
-            }}
-            onExpandCard={() => {
-              setDesktopCollapsed(false);
-              setSheetState('half');
+            projection={projection}
+            currentYear={currentYear}
+            isPlaying={isPlaying || cinemaMode || countryPlaying}
+            physical={physical}
+            snapshot={activeSnapshot}
+            events={visibleEvents}
+            figures={visibleFigures}
+            selectedEvent={selectedEvent}
+            selectedFigure={selectedFigure}
+            recentTriggerEventId={recentTriggerEventId}
+            masteredIds={masteredSet}
+            bookmarkedIds={bookmarkedSet}
+            activeRoutes={activeRoutes}
+            focusRouteId={focusRouteId}
+            countryFocus={countryFocus}
+            isCountryMode={Boolean(activeCountry)}
+            flyTarget={flyTarget}
+            onSelectEvent={(ev) => handleSelectEvent(ev)}
+            onSelectFigure={(fig) => handleSelectFigure(fig)}
+            onSelectPolity={handleSelectPolity}
+            onDeselectEvent={() => {
+              setSelectedEventId(null);
+              setSelectedFigureId(null);
             }}
           />
-        )}
 
-        <EventCardPanel
+          {activeCountry && (
+            <CountryMapDock
+              country={activeCountry}
+              currentYear={currentYear}
+              isPlaying={countryPlaying}
+              theme={theme}
+              onTogglePlay={() => setCountryPlaying((p) => !p)}
+              onSelectYear={(yr) => {
+                setCountryPlaying(false);
+                setCurrentYear(yr);
+              }}
+            />
+          )}
+
+          {!activeCountry && (
+            <>
+              <ChronicleTicker
+                visible={!activeStoryline && tickerVisible}
+                cinemaMode={cinemaMode}
+                isPlaying={isPlaying}
+                currentYear={currentYear}
+                currentEra={currentEra}
+                currentSubPeriod={currentSubPeriod}
+                event={tickerEvent || selectedEvent}
+                theme={theme}
+                onSelectEvent={(ev) => handleSelectEvent(ev)}
+                onStopPlayback={() => {
+                  setIsPlaying(false);
+                  setCinemaMode(false);
+                  setRecentTriggerEventId(null);
+                }}
+                onDismiss={() => setTickerVisible(false)}
+              />
+
+              {dataError && (
+                <div
+                  className="absolute left-1/2 top-4 -translate-x-1/2 z-40 rounded-xl border px-4 py-2 text-xs shadow-lg"
+                  style={{
+                    backgroundColor: 'var(--bg-surface)',
+                    borderColor: '#B83B3B',
+                    color: '#B83B3B',
+                  }}
+                >
+                  地图底图加载异常：{dataError}
+                </div>
+              )}
+
+              {activeStoryline && (
+                <StorylinePlayerBar
+                  storyline={activeStoryline}
+                  stepIndex={storyStepIdx}
+                  autoPlaying={storyAutoPlay}
+                  theme={theme}
+                  onPrev={() => applyStoryStep(activeStoryline, Math.max(0, storyStepIdx - 1))}
+                  onNext={() =>
+                    applyStoryStep(
+                      activeStoryline,
+                      Math.min(activeStoryline.steps.length - 1, storyStepIdx + 1),
+                    )
+                  }
+                  onToggleAuto={() => setStoryAutoPlay((v) => !v)}
+                  onExit={() => {
+                    setActiveStoryline(null);
+                    setStoryAutoPlay(false);
+                  }}
+                  onExpandCard={() => {
+                    setDesktopCollapsed(false);
+                    setSheetState('half');
+                  }}
+                />
+              )}
+
+              <EventCardPanel
+                currentYear={currentYear}
+                currentEra={currentEra}
+                currentSubPeriod={currentSubPeriod}
+                selectedEvent={selectedEvent}
+                selectedFigure={selectedFigure}
+                activeEvents={activeWindowEvents}
+                activeFigures={activeWindowFigures}
+                masteredIds={masteredSet}
+                bookmarkedIds={bookmarkedSet}
+                notes={studyData.notes}
+                theme={theme}
+                sheetState={sheetState}
+                desktopCollapsed={desktopCollapsed}
+                onChangeSheetState={setSheetState}
+                onToggleDesktopCollapse={() => setDesktopCollapsed((v) => !v)}
+                onSelectEvent={(ev) => handleSelectEvent(ev)}
+                onSelectFigure={(fig) => handleSelectFigure(fig)}
+                onCloseEvent={() => {
+                  setSelectedEventId(null);
+                  setFocusRouteId(null);
+                }}
+                onCloseFigure={() => {
+                  setSelectedFigureId(null);
+                }}
+                onToggleMastered={toggleMastered}
+                onToggleBookmark={toggleBookmark}
+                onUpdateNote={setNote}
+                onFocusRoute={(routeId) => {
+                  setShowRoutes(true);
+                  setFocusRouteId((cur) => (cur === routeId ? null : routeId));
+                }}
+              />
+            </>
+          )}
+        </div>
+
+        {activeCountry && (
+          <CountryEvolutionPanel
+            country={activeCountry}
+            currentYear={currentYear}
+            theme={theme}
+            fullReading={countryFullReading}
+            onSelectYear={(yr) => {
+              setCountryPlaying(false);
+              setCurrentYear(yr);
+            }}
+            onSelectModernCountry={handleSelectModernCountry}
+            onSelectEventInWorld={handleJumpFromCountryToEvent}
+            onSelectFigureInWorld={handleJumpFromCountryToFigure}
+          />
+        )}
+      </main>
+
+      {!activeCountry && (
+        <TimelineDock
           currentYear={currentYear}
           currentEra={currentEra}
           currentSubPeriod={currentSubPeriod}
-          selectedEvent={selectedEvent}
-          selectedFigure={selectedFigure}
-          activeEvents={activeWindowEvents}
-          activeFigures={activeWindowFigures}
-          masteredIds={masteredSet}
-          bookmarkedIds={bookmarkedSet}
-          notes={studyData.notes}
+          events={dimensionFilteredEvents}
+          snapshots={snapshots}
+          activeSnapshotYear={activeSnapshot?.year ?? null}
+          isPlaying={isPlaying}
+          cinemaMode={cinemaMode}
+          playSpeed={playSpeed}
+          timelineZoom={timelineZoom}
           theme={theme}
-          sheetState={sheetState}
-          desktopCollapsed={desktopCollapsed}
-          onChangeSheetState={setSheetState}
-          onToggleDesktopCollapse={() => setDesktopCollapsed((v) => !v)}
-          onSelectEvent={(ev) => handleSelectEvent(ev)}
-          onSelectFigure={(fig) => handleSelectFigure(fig)}
-          onCloseEvent={() => {
-            setSelectedEventId(null);
-            setFocusRouteId(null);
+          onChangeYear={applyYearChange}
+          onTogglePlay={() => {
+            setCinemaMode(false);
+            setIsPlaying((p) => {
+              const next = !p;
+              if (next) setTickerVisible(true);
+              return next;
+            });
           }}
-          onCloseFigure={() => {
-            setSelectedFigureId(null);
+          onToggleCinemaMode={() => {
+            setIsPlaying(false);
+            setActiveStoryline(null);
+            setStoryAutoPlay(false);
+            setCinemaMode((c) => {
+              const next = !c;
+              if (next) setTickerVisible(true);
+              else setRecentTriggerEventId(null);
+              return next;
+            });
           }}
-          onToggleMastered={toggleMastered}
-          onToggleBookmark={toggleBookmark}
-          onUpdateNote={setNote}
-          onFocusRoute={(routeId) => {
-            setShowRoutes(true);
-            setFocusRouteId((cur) => (cur === routeId ? null : routeId));
-          }}
+          onCycleSpeed={() =>
+            setPlaySpeed((s) => PLAY_SPEEDS[(PLAY_SPEEDS.indexOf(s) + 1) % PLAY_SPEEDS.length])
+          }
+          onToggleTimelineZoom={() => setTimelineZoom((z) => (z === 'global' ? 'era' : 'global'))}
+          onPrevMilestone={() => handleStepMilestone(-1)}
+          onNextMilestone={() => handleStepMilestone(1)}
+          onStepSnapshot={handleStepSnapshot}
         />
-      </main>
-
-      <TimelineDock
-        currentYear={currentYear}
-        currentEra={currentEra}
-        currentSubPeriod={currentSubPeriod}
-        events={dimensionFilteredEvents}
-        snapshots={snapshots}
-        activeSnapshotYear={activeSnapshot?.year ?? null}
-        isPlaying={isPlaying}
-        cinemaMode={cinemaMode}
-        playSpeed={playSpeed}
-        timelineZoom={timelineZoom}
-        theme={theme}
-        onChangeYear={applyYearChange}
-        onTogglePlay={() => {
-          setCinemaMode(false);
-          setIsPlaying((p) => {
-            const next = !p;
-            if (next) setTickerVisible(true);
-            return next;
-          });
-        }}
-        onToggleCinemaMode={() => {
-          setIsPlaying(false);
-          setActiveStoryline(null);
-          setStoryAutoPlay(false);
-          setCinemaMode((c) => {
-            const next = !c;
-            if (next) setTickerVisible(true);
-            else setRecentTriggerEventId(null);
-            return next;
-          });
-        }}
-        onCycleSpeed={() =>
-          setPlaySpeed((s) => PLAY_SPEEDS[(PLAY_SPEEDS.indexOf(s) + 1) % PLAY_SPEEDS.length])
-        }
-        onToggleTimelineZoom={() => setTimelineZoom((z) => (z === 'global' ? 'era' : 'global'))}
-        onPrevMilestone={() => handleStepMilestone(-1)}
-        onNextMilestone={() => handleStepMilestone(1)}
-        onStepSnapshot={handleStepSnapshot}
-      />
+      )}
 
       <WorldPulseModal
         open={pulseOpen}

@@ -171,3 +171,115 @@ export interface HistoricalFigure {
   card: FigureCardContent;
   wikiUrl: string;
 }
+
+export interface ClickedPolityPayload {
+  zhName: string;
+  enName: string;
+  groupZhName: string;
+  groupEnName: string;
+  fillColor: string;
+  isDiffuse: boolean;
+  snapshotYear: number;
+  coords: [number, number];
+}
+
+export interface CountryEvolutionStage {
+  id: string;
+  name: string;
+  periodDisplay: string;
+  startYear: number;
+  endYear: number;
+  snapshotYear: number;
+  capital?: string;
+  polityNames?: string[];
+  summary: string;
+  politics: string;
+  economy: string;
+  culture: string;
+}
+
+export interface CountryEvolutionProfile {
+  id: string;
+  name: string;
+  enName: string;
+  region: Exclude<WorldRegion, 'global'>;
+  accentColor: string;
+  modernCountryKey: string;
+  coords: [number, number];
+  zoom: number;
+  tagline: string;
+  matchEnNames: string[];
+  matchEnPatterns?: string[];
+  matchZhNames?: string[];
+  bbox: [number, number, number, number];
+  overview: {
+    geography: string;
+    politics: string;
+    economy: string;
+    culture: string;
+  };
+  stages: CountryEvolutionStage[];
+  eventIds: string[];
+  figureIds: string[];
+}
+
+export interface CountrySnapshotEntry {
+  year: number;
+  enName: string;
+  groupEnName: string;
+  zhName: string;
+  area: number;
+}
+
+export interface ModernCountryIndexEntry {
+  enName: string;
+  zhName: string;
+  center: [number, number];
+  bbox: [number, number, number, number];
+  timeline: CountrySnapshotEntry[];
+}
+
+export interface PolityIndexEntry {
+  years: number[];
+  peakYear: number;
+  peakArea: number;
+  center: [number, number];
+  modernCountry: string | null;
+}
+
+export interface CountryEvolutionIndex {
+  snapshotYears: number[];
+  modernCountries: Record<string, ModernCountryIndexEntry>;
+  polities: Record<string, PolityIndexEntry>;
+}
+
+export interface ResolvedCountryEvolution {
+  id: string;
+  name: string;
+  enName: string;
+  region: WorldRegion;
+  accentColor: string;
+  coords: [number, number];
+  zoom: number;
+  tagline: string;
+  isCurated: boolean;
+  clickedPolity: ClickedPolityPayload | null;
+  localAlternative?: {
+    modernCountryKey: string;
+    zhName: string;
+    enName: string;
+    coords: [number, number];
+  } | null;
+  overview: {
+    geography: string;
+    politics: string;
+    economy: string;
+    culture: string;
+  };
+  stages: CountryEvolutionStage[];
+  snapshotLedger: CountrySnapshotEntry[];
+  highlightEnNames: string[];
+  highlightZhNames: string[];
+  events: HistoryEvent[];
+  figures: HistoricalFigure[];
+}

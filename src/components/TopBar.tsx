@@ -12,12 +12,13 @@ import {
   UserRound,
 } from 'lucide-react';
 import { DIMENSION_META } from '../data/eras';
-import type { Dimension, Era, ProjectionMode, ThemeMode } from '../types/history';
+import type { Dimension, Era, ProjectionMode, SubPeriod, ThemeMode } from '../types/history';
 import { formatShortYear, formatYear } from '../utils/timeline';
 
 interface TopBarProps {
   currentYear: number;
   currentEra: Era;
+  currentSubPeriod: SubPeriod;
   snapshotYear: number | null;
   selectedDimensions: Set<Dimension>;
   showAllEras: boolean;
@@ -43,6 +44,7 @@ const DIMENSIONS: Dimension[] = ['politics', 'economy', 'culture', 'tech'];
 export function TopBar({
   currentYear,
   currentEra,
+  currentSubPeriod,
   snapshotYear,
   selectedDimensions,
   showAllEras,
@@ -93,8 +95,9 @@ export function TopBar({
                   backgroundColor: 'var(--bg-muted)',
                   color: 'var(--text-secondary)',
                 }}
+                title={currentSubPeriod.themeSummary}
               >
-                {currentEra.name}
+                {currentEra.shortName} · {currentSubPeriod.name}
               </span>
             </div>
             <div className="flex items-center gap-2 text-[11px] md:text-xs">

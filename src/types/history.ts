@@ -9,6 +9,15 @@ export type WorldRegion =
   | 'americas'
   | 'global';
 
+export interface SubPeriod {
+  id: string;
+  eraId: string;
+  name: string;
+  startYear: number;
+  endYear: number;
+  themeSummary: string;
+}
+
 export interface Era {
   id: string;
   name: string;
@@ -17,6 +26,7 @@ export interface Era {
   endYear: number;
   weight: number;
   accentColor: string;
+  subPeriods: SubPeriod[];
   overview: {
     geopolitics: string;
     economy: string;

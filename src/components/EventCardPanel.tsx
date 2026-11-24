@@ -26,7 +26,7 @@ import { DIMENSION_META, FIGURE_ROLE_META, REGION_META } from '../data/eras';
 import { EVENT_MAP } from '../data/events';
 import { findFigureByName, getContemporaryFigures } from '../data/figures';
 import { HISTORICAL_ROUTES } from '../data/routes';
-import type { Era, HistoricalFigure, HistoryEvent, ThemeMode } from '../types/history';
+import type { Era, HistoricalFigure, HistoryEvent, SubPeriod, ThemeMode } from '../types/history';
 import { formatYear } from '../utils/timeline';
 
 type SheetState = 'peek' | 'half' | 'full';
@@ -34,6 +34,7 @@ type SheetState = 'peek' | 'half' | 'full';
 interface EventCardPanelProps {
   currentYear: number;
   currentEra: Era;
+  currentSubPeriod: SubPeriod;
   selectedEvent: HistoryEvent | null;
   selectedFigure: HistoricalFigure | null;
   activeEvents: HistoryEvent[];
@@ -61,6 +62,7 @@ const ROUTE_MAP = Object.fromEntries(HISTORICAL_ROUTES.map((r) => [r.id, r]));
 export function EventCardPanel({
   currentYear,
   currentEra,
+  currentSubPeriod,
   selectedEvent,
   selectedFigure,
   activeEvents,
@@ -762,6 +764,27 @@ export function EventCardPanel({
         </span>
       </div>
 
+      {/* Active sub-period context */}
+      <div
+        className="rounded-xl border px-3 py-2 text-xs"
+        style={{
+          backgroundColor: `${currentEra.accentColor}12`,
+          borderColor: `${currentEra.accentColor}44`,
+        }}
+      >
+        <div className="flex items-center justify-between gap-2">
+          <span className="font-bold text-[11px]" style={{ color: currentEra.accentColor }}>
+            细分阶段：{currentSubPeriod.name}
+          </span>
+          <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
+            {formatYear(currentSubPeriod.startYear)} — {formatYear(currentSubPeriod.endYear)}
+          </span>
+        </div>
+        <p className="mt-1 text-[11px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+          {currentSubPeriod.themeSummary}
+        </p>
+      </div>
+
       {/* Macro era framework */}
       <div
         className="rounded-xl border p-2.5 space-y-2 text-xs"
@@ -925,11 +948,16 @@ export function EventCardPanel({
               </div>
             )}
             <div className="atlas-scroll flex-1 overflow-y-auto px-4 pt-3.5">
-              {selectedEvent
-                ? renderCardBody(selectedEvent)
-                : selectedFigure
-                  ? renderFigureBody(selectedFigure)
-                  : renderEraOverview()}
+              <div
+                key={selectedEvent?.id || selectedFigure?.id || `${currentEra.id}-${currentSubPeriod.id}`}
+                className="atlas-card-enter"
+              >
+                {selectedEvent
+                  ? renderCardBody(selectedEvent)
+                  : selectedFigure
+                    ? renderFigureBody(selectedFigure)
+                    : renderEraOverview()}
+              </div>
             </div>
           </div>
         )}
@@ -976,11 +1004,16 @@ export function EventCardPanel({
 
         {sheetState !== 'peek' && (
           <div className="atlas-scroll flex-1 overflow-y-auto px-3.5 pt-3">
-            {selectedEvent
-              ? renderCardBody(selectedEvent)
-              : selectedFigure
-                ? renderFigureBody(selectedFigure)
-                : renderEraOverview()}
+            <div
+              key={selectedEvent?.id || selectedFigure?.id || `${currentEra.id}-${currentSubPeriod.id}`}
+              className="atlas-card-enter"
+            >
+              {selectedEvent
+                ? renderCardBody(selectedEvent)
+                : selectedFigure
+                  ? renderFigureBody(selectedFigure)
+                  : renderEraOverview()}
+            </div>
           </div>
         )}
       </section>

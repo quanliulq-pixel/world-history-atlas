@@ -90,6 +90,32 @@ export const ERAS: Era[] = [
     endYear: -800,
     weight: 0.1,
     accentColor: '#A66E38',
+    subPeriods: [
+      {
+        id: 'sp-1-1',
+        eraId: 'era-1',
+        name: '城邦与文字起源',
+        startYear: -3000,
+        endYear: -2000,
+        themeSummary: '苏美尔楔形文字、古埃及统一与金字塔工程、印度河谷都市成形',
+      },
+      {
+        id: 'sp-1-2',
+        eraId: 'era-1',
+        name: '青铜帝国与礼制',
+        startYear: -2000,
+        endYear: -1200,
+        themeSummary: '汉谟拉比法典、二里头至殷商青铜礼制、赫梯—埃及卡迭石外交均势',
+      },
+      {
+        id: 'sp-1-3',
+        eraId: 'era-1',
+        name: '青铜崩溃与周制',
+        startYear: -1200,
+        endYear: -800,
+        themeSummary: '东地中海青铜体系崩溃与铁器外溢、腓尼基字母、西周分封与宗法',
+      },
+    ],
     overview: {
       geopolitics:
         '两河、尼罗河、印度河与黄河流域率先跨过城市与国家门槛，王权与神权合一的早期领土国家兴起，东地中海与安纳托利亚形成最早的多极均势外交。',
@@ -107,6 +133,32 @@ export const ERAS: Era[] = [
     endYear: 220,
     weight: 0.13,
     accentColor: '#B83B3B',
+    subPeriods: [
+      {
+        id: 'sp-2-1',
+        eraId: 'era-2',
+        name: '轴心思想大觉醒',
+        startYear: -800,
+        endYear: -400,
+        themeSummary: '希腊城邦民主、波斯一统近东、孔子百家争鸣与释迦牟尼沙门思潮同步绽放',
+      },
+      {
+        id: 'sp-2-2',
+        eraId: 'era-2',
+        name: '变法兼并与希腊化',
+        startYear: -400,
+        endYear: -200,
+        themeSummary: '商鞅耕战变法、亚历山大东征、阿育王护持佛教普世传播与秦灭六国',
+      },
+      {
+        id: 'sp-2-3',
+        eraId: 'era-2',
+        name: '秦汉与罗马双雄',
+        startYear: -200,
+        endYear: 220,
+        themeSummary: '张骞凿空打通丝路、奥古斯都开启罗马和平、基督教兴起与蔡伦改良造纸术',
+      },
+    ],
     overview: {
       geopolitics:
         '铁器普及加速吞并战，欧亚大陆两端诞生秦汉郡县官僚帝国与罗马地中海霸权，中间经由波斯、孔雀与贵霜连接。',
@@ -124,6 +176,32 @@ export const ERAS: Era[] = [
     endYear: 1000,
     weight: 0.11,
     accentColor: '#734B9B',
+    subPeriods: [
+      {
+        id: 'sp-3-1',
+        eraId: 'era-3',
+        name: '帝国裂变与迁徙',
+        startYear: 220,
+        endYear: 580,
+        themeSummary: '欧亚大迁徙、西罗马落幕、东亚门阀南北融合与《查士丁尼法典》汇编',
+      },
+      {
+        id: 'sp-3-2',
+        eraId: 'era-3',
+        name: '盛唐与伊斯兰兴起',
+        startYear: 580,
+        endYear: 800,
+        themeSummary: '隋唐大运河与科举确立、伊斯兰帝国横跨亚非欧、怛罗斯促成造纸术西传',
+      },
+      {
+        id: 'sp-3-3',
+        eraId: 'era-3',
+        name: '封建化与多中心',
+        startYear: 800,
+        endYear: 1000,
+        themeSummary: '查理曼奠基西欧采邑制度、维京罗斯河道贸易网与北宋文官体制成型',
+      },
+    ],
     overview: {
       geopolitics:
         '古典帝国受游牧南下与瘟疫冲击而分裂重组：西欧进入封建碎片化，东罗马坚守千载，阿拉伯哈里发横跨亚非欧，隋唐重建东亚帝国秩序。',
@@ -141,6 +219,32 @@ export const ERAS: Era[] = [
     endYear: 1453,
     weight: 0.12,
     accentColor: '#C5831F',
+    subPeriods: [
+      {
+        id: 'sp-4-1',
+        eraId: 'era-4',
+        name: '宋商潮与十字军',
+        startYear: 1000,
+        endYear: 1200,
+        themeSummary: '北宋纸币交子与海外市舶、靖康经济南移、十字军东征与欧洲大学兴起',
+      },
+      {
+        id: 'sp-4-2',
+        eraId: 'era-4',
+        name: '蒙古欧亚大贯通',
+        startYear: 1200,
+        endYear: 1350,
+        themeSummary: '成吉思汗至忽必烈驿站畅行欧亚、英国《大宪章》、黑死病冲击西欧劳役',
+      },
+      {
+        id: 'sp-4-3',
+        eraId: 'era-4',
+        name: '明海权与文艺复兴',
+        startYear: 1350,
+        endYear: 1453,
+        themeSummary: '佛罗伦萨复式记账银行业、郑和下西洋、古登堡活字与奥斯曼攻陷君士坦丁堡',
+      },
+    ],
     overview: {
       geopolitics:
         '蒙古征服打造人类史上最大连续陆地帝国并重构欧亚政区；西欧王权借城市复兴崛起，奥斯曼帝国崛起并最终攻陷君士坦丁堡。',
@@ -158,6 +262,32 @@ export const ERAS: Era[] = [
     endYear: 1750,
     weight: 0.13,
     accentColor: '#296B9E',
+    subPeriods: [
+      {
+        id: 'sp-5-1',
+        eraId: 'era-5',
+        name: '远洋地理大发现',
+        startYear: 1453,
+        endYear: 1525,
+        themeSummary: '哥伦布大交换、达·伽马直航印度、路德宗教改革与麦哲伦首次环球航行',
+      },
+      {
+        id: 'sp-5-2',
+        eraId: 'era-5',
+        name: '白银环流与改革',
+        startYear: 1525,
+        endYear: 1618,
+        themeSummary: '哥白尼日心启蒙、波托西银山、大帆船银链汇入张居正一条鞭法及 VOC 成立',
+      },
+      {
+        id: 'sp-5-3',
+        eraId: 'era-5',
+        name: '主权国家与启蒙',
+        startYear: 1618,
+        endYear: 1750,
+        themeSummary: '《威斯特伐利亚和约》、光荣革命与英格兰银行信用体制、欧洲启蒙思想',
+      },
+    ],
     overview: {
       geopolitics:
         '欧洲借远洋船炮建立跨洋帝国，威斯特伐利亚体系确立主权国家法则；同时东亚明清、奥斯曼、萨法维与莫卧儿仍维持强大陆权秩序。',
@@ -175,6 +305,32 @@ export const ERAS: Era[] = [
     endYear: 1914,
     weight: 0.15,
     accentColor: '#1E5B70',
+    subPeriods: [
+      {
+        id: 'sp-6-1',
+        eraId: 'era-6',
+        name: '蒸汽与双元革命',
+        startYear: 1750,
+        endYear: 1815,
+        themeSummary: '瓦特蒸汽机、美法革命立宪、《国富论》《拿破仑法典》与维也纳均势',
+      },
+      {
+        id: 'sp-6-2',
+        eraId: 'era-6',
+        name: '铁路殖民与大分流',
+        startYear: 1815,
+        endYear: 1870,
+        themeSummary: '拉美独立、鸦片战争与晚清震荡、《共产党宣言》、达尔文进化论与美国内战',
+      },
+      {
+        id: 'sp-6-3',
+        eraId: 'era-6',
+        name: '电气时代与争霸',
+        startYear: 1870,
+        endYear: 1914,
+        themeSummary: '德意志统一、明治维新工业化、电气流水线、柏林瓜分非洲与帝国同盟积聚',
+      },
+    ],
     overview: {
       geopolitics:
         '美法革命普及民族主权与宪政浪潮，英国凭制海权与工业霸权构建日不落帝国，列强瓜分亚非并迫使清朝、奥斯曼与日本应对近代化冲击。',
@@ -192,6 +348,32 @@ export const ERAS: Era[] = [
     endYear: 1991,
     weight: 0.15,
     accentColor: '#8C2D2D',
+    subPeriods: [
+      {
+        id: 'sp-7-1',
+        eraId: 'era-7',
+        name: '大战、革命与萧条',
+        startYear: 1914,
+        endYear: 1945,
+        themeSummary: '一战四帝国解体、十月革命、1929大萧条、凯恩斯新政与二战反法西斯胜利',
+      },
+      {
+        id: 'sp-7-2',
+        eraId: 'era-7',
+        name: '冷战两极与独立潮',
+        startYear: 1945,
+        endYear: 1971,
+        themeSummary: '联合国与布雷顿森林、《罗马条约》、印巴非殖民化、新中国诞生与阿帕网雏形',
+      },
+      {
+        id: 'sp-7-3',
+        eraId: 'era-7',
+        name: '滞胀、改革与剧变',
+        startYear: 1971,
+        endYear: 1991,
+        themeSummary: '石油危机与尼克松冲击、1978中国改革开放、广场协议与柏林墙倒塌苏联解体',
+      },
+    ],
     overview: {
       geopolitics:
         '两次世界大战终结欧洲数百年全球霸权，美苏两极冷战重塑地球阵营，同时亚非拉掀起大规模非殖民化与民族独立浪潮。',
@@ -209,6 +391,32 @@ export const ERAS: Era[] = [
     endYear: 2025,
     weight: 0.11,
     accentColor: '#2E7D6B',
+    subPeriods: [
+      {
+        id: 'sp-8-1',
+        eraId: 'era-8',
+        name: '万维网与入世分工',
+        startYear: 1991,
+        endYear: 2008,
+        themeSummary: '万维网商用与欧盟诞生、亚洲金融危机、2001中国入世构建全球超级制造业网',
+      },
+      {
+        id: 'sp-8-2',
+        eraId: 'era-8',
+        name: '移动互联与危机反思',
+        startYear: 2008,
+        endYear: 2019,
+        themeSummary: '2008金融海啸、比特币实验、移动智能手机普及、《巴黎协定》与供应链调整',
+      },
+      {
+        id: 'sp-8-3',
+        eraId: 'era-8',
+        name: 'AI 算力与多极秩序',
+        startYear: 2019,
+        endYear: 2025,
+        themeSummary: '新冠疫情压力测试、俄乌地缘重构、生成式 AI 浪潮与全球南方多极化兴起',
+      },
+    ],
     overview: {
       geopolitics:
         '冷战结束后的“单极时刻”逐步过渡为中美欧印等多极博弈与供应链重构；气候治理与地区冲突考验既有国际机制。',

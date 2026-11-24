@@ -1,5 +1,5 @@
 import { ERAS, MAX_YEAR, MIN_YEAR } from '../data/eras';
-import type { Era, HistoricalFigure, HistoryEvent, SnapshotMeta } from '../types/history';
+import type { Era, HistoricalFigure, HistoryEvent, SnapshotMeta, SubPeriod } from '../types/history';
 
 interface EraSegment {
   era: Era;
@@ -53,6 +53,75 @@ export function getEraForYear(year: number): Era {
     if (year <= era.endYear) return era;
   }
   return ERAS[ERAS.length - 1];
+}
+
+export function getSubPeriodForYear(year: number): SubPeriod {
+  const era = getEraForYear(year);
+  for (const sp of era.subPeriods) {
+    if (year <= sp.endYear) return sp;
+  }
+  return era.subPeriods[era.subPeriods.length - 1];
+}
+
+export function eraYearToProgress(year: number, era: Era): number {
+  const span = Math.max(1, era.endYear - era.startYear);
+  return Math.max(0, Math.min(1, (year - era.startYear) / span));
+}
+
+export function eraProgressToYear(progress: number, era: Era): number {
+  const clamped = Math.max(0, Math.min(1, progress));
+  return Math.round(era.startYear + clamped * (era.endYear - era.startYear));
+}
+
+export function findAdjacentSnapshot(
+  currentYear: number,
+  snapshots: SnapshotMeta[],
+  direction: -1 | 1,
+): SnapshotMeta | null {
+  if (snapshots.length === 0) return null;
+  const active = findNearestSnapshot(currentYear, snapshots);
+  if (!active) return null;
+  const idx = snapshots.findIndex((s) => s.year === active.year);
+  if (idx === -1) return null;
+  // If user scrubbed slightly past an earlier snapshot, jumping -1 lands cleanly on previous or current exact boundary
+  if (direction === -1 && currentYear > active.year + 2) {
+    return active;
+  }
+  const nextIdx = Math.max(0, Math.min(snapshots.length - 1, idx + direction));
+  return snapshots[nextIdx] || null;
+}
+
+export function generateRulerTicks(
+  era: Era | null,
+): { year: number; progress: number; label: string; major: boolean }[] {
+  if (!era) {
+    const anchors = [-3000, -1500, -500, 1, 600, 1000, 1453, 1750, 1914, 1991, 2025];
+    return anchors.map((year) => ({
+      year,
+      progress: yearToProgress(year),
+      label: formatShortYear(year),
+      major: true,
+    }));
+  }
+
+  const span = era.endYear - era.startYear;
+  const step =
+    span <= 45 ? 5 : span <= 100 ? 10 : span <= 250 ? 25 : span <= 500 ? 50 : span <= 1200 ? 100 : 250;
+
+  const ticks: { year: number; progress: number; label: string; major: boolean }[] = [];
+  const firstMultiple = Math.ceil(era.startYear / step) * step;
+  for (let y = firstMultiple; y <= era.endYear; y += step) {
+    const normalizedYear = y === 0 ? 1 : y;
+    const progress = eraYearToProgress(normalizedYear, era);
+    if (progress < 0.03 || progress > 0.97) continue;
+    ticks.push({
+      year: normalizedYear,
+      progress,
+      label: formatShortYear(normalizedYear),
+      major: step <= 25 ? normalizedYear % (step * 2) === 0 : true,
+    });
+  }
+  return ticks;
 }
 
 export function formatYear(year: number): string {

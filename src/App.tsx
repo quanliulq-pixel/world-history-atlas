@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ChronicleTicker } from './components/ChronicleTicker';
 import { EventCardPanel } from './components/EventCardPanel';
 import { SearchAndProgressModal } from './components/SearchAndProgressModal';
 import { StorylinePickerModal, StorylinePlayerBar } from './components/StorylineOverlay';
@@ -21,8 +22,12 @@ import {
   type PhysicalAtlasData,
 } from './utils/snapshotLoader';
 import {
+  eraProgressToYear,
+  eraYearToProgress,
+  findAdjacentSnapshot,
   findNearestSnapshot,
   getEraForYear,
+  getSubPeriodForYear,
   isEventVisibleAtYear,
   isFigureVisibleAtYear,
   progressToYear,
@@ -30,7 +35,7 @@ import {
 } from './utils/timeline';
 
 const ALL_DIMENSIONS: Dimension[] = ['politics', 'economy', 'culture', 'tech'];
-const PLAY_SPEEDS = [0.5, 1, 2];
+const PLAY_SPEEDS = [0.5, 1, 2, 4];
 
 export function App() {
   const {
@@ -56,10 +61,15 @@ export function App() {
   const [focusRouteId, setFocusRouteId] = useState<string | null>(null);
 
   const [isPlaying, setIsPlaying] = useState(false);
+  const [cinemaMode, setCinemaMode] = useState(false);
   const [playSpeed, setPlaySpeed] = useState(1);
+  const [timelineZoom, setTimelineZoom] = useState<'global' | 'era'>('global');
 
   const [selectedEventId, setSelectedEventId] = useState<string | null>('e5-columbus');
   const [selectedFigureId, setSelectedFigureId] = useState<string | null>(null);
+  const [recentTriggerEventId, setRecentTriggerEventId] = useState<string | null>(null);
+  const [tickerEventId, setTickerEventId] = useState<string | null>(null);
+  const [tickerVisible, setTickerVisible] = useState(false);
   const [sheetState, setSheetState] = useState<'peek' | 'half' | 'full'>(() =>
     window.innerWidth < 1024 ? 'peek' : 'half',
   );
@@ -67,6 +77,8 @@ export function App() {
   const [flyTarget, setFlyTarget] = useState<{
     center: [number, number];
     zoom: number;
+    pitch?: number;
+    duration?: number;
     nonce: number;
   } | null>(null);
 
@@ -85,6 +97,7 @@ export function App() {
   const [dataError, setDataError] = useState<string | null>(null);
 
   const currentEra = useMemo(() => getEraForYear(currentYear), [currentYear]);
+  const currentSubPeriod = useMemo(() => getSubPeriodForYear(currentYear), [currentYear]);
   const nearestSnapshotMeta = useMemo(
     () => findNearestSnapshot(currentYear, snapshots),
     [currentYear, snapshots],
@@ -124,39 +137,80 @@ export function App() {
     };
   }, [nearestSnapshotMeta, snapshots]);
 
-  // Smooth non-linear timeline playback via requestAnimationFrame
-  const progressRef = useRef(yearToProgress(currentYear));
-  progressRef.current = yearToProgress(currentYear);
-
-  useEffect(() => {
-    if (!isPlaying) return;
-    let rafId = 0;
-    let lastTime = performance.now();
-
-    const tick = (now: number) => {
-      const dt = Math.min(0.1, (now - lastTime) / 1000);
-      lastTime = now;
-      // Full 5025-year journey takes ~62 seconds at 1x speed
-      const nextProgress = progressRef.current + (dt * playSpeed) / 62;
-      if (nextProgress >= 1) {
-        setCurrentYear(MAX_YEAR);
-        setIsPlaying(false);
-        return;
-      }
-      progressRef.current = nextProgress;
-      setCurrentYear(progressToYear(nextProgress));
-      rafId = requestAnimationFrame(tick);
-    };
-
-    rafId = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafId);
-  }, [isPlaying, playSpeed]);
-
   // Filter events by dimensions & compute current-year visibility
   const dimensionFilteredEvents = useMemo(
     () => ALL_EVENTS.filter((ev) => ev.dimensions.some((d) => selectedDimensions.has(d))),
     [selectedDimensions],
   );
+
+  // Live refs for playback & cinema documentary orchestration without restarting mid-animation
+  const currentYearRef = useRef(currentYear);
+  currentYearRef.current = currentYear;
+  const currentEraRef = useRef(currentEra);
+  currentEraRef.current = currentEra;
+  const playSpeedRef = useRef(playSpeed);
+  playSpeedRef.current = playSpeed;
+
+  // Auto-clear event shockwave halo outside Cinema Mode holds
+  useEffect(() => {
+    if (!recentTriggerEventId || cinemaMode) return;
+    const timer = window.setTimeout(() => setRecentTriggerEventId(null), 2400);
+    return () => window.clearTimeout(timer);
+  }, [recentTriggerEventId, cinemaMode]);
+
+  // Smooth chronological playback via requestAnimationFrame
+  useEffect(() => {
+    if (!isPlaying || cinemaMode) return;
+    let rafId = 0;
+    let lastTime = performance.now();
+    const scopedEra = timelineZoom === 'era' ? currentEraRef.current : null;
+    let progress = scopedEra
+      ? eraYearToProgress(currentYearRef.current, scopedEra)
+      : yearToProgress(currentYearRef.current);
+    let lastCrossYear = currentYearRef.current;
+
+    const tick = (now: number) => {
+      const dt = Math.min(0.1, (now - lastTime) / 1000);
+      lastTime = now;
+      const baseDurationSec = scopedEra ? 22 : 62;
+      const nextProgress = progress + (dt * playSpeedRef.current) / baseDurationSec;
+
+      if (nextProgress >= 1) {
+        const endYear = scopedEra ? scopedEra.endYear : MAX_YEAR;
+        setCurrentYear(endYear);
+        setIsPlaying(false);
+        return;
+      }
+
+      progress = nextProgress;
+      const nextYear = scopedEra
+        ? eraProgressToYear(nextProgress, scopedEra)
+        : progressToYear(nextProgress);
+
+      if (nextYear !== lastCrossYear) {
+        let bestCrossed: HistoryEvent | null = null;
+        for (const ev of dimensionFilteredEvents) {
+          if (ev.year > lastCrossYear && ev.year <= nextYear) {
+            if (!bestCrossed || ev.importance >= bestCrossed.importance) {
+              bestCrossed = ev;
+            }
+          }
+        }
+        if (bestCrossed) {
+          setRecentTriggerEventId(bestCrossed.id);
+          setTickerEventId(bestCrossed.id);
+          setTickerVisible(true);
+        }
+        lastCrossYear = nextYear;
+        setCurrentYear(nextYear);
+      }
+
+      rafId = requestAnimationFrame(tick);
+    };
+
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
+  }, [isPlaying, cinemaMode, timelineZoom, dimensionFilteredEvents]);
 
   const visibleEvents = useMemo<VisibleEventItem[]>(() => {
     const items: VisibleEventItem[] = [];
@@ -230,17 +284,169 @@ export function App() {
   const masteredSet = useMemo(() => new Set(studyData.masteredIds), [studyData.masteredIds]);
   const bookmarkedSet = useMemo(() => new Set(studyData.bookmarkedIds), [studyData.bookmarkedIds]);
 
-  const flyToLocation = useCallback((center: [number, number], zoom = 3.2) => {
-    setFlyTarget({ center, zoom, nonce: Date.now() + Math.random() });
-  }, []);
+  const flyToLocation = useCallback(
+    (
+      center: [number, number],
+      zoom = 3.2,
+      opts?: { pitch?: number; duration?: number },
+    ) => {
+      setFlyTarget({
+        center,
+        zoom,
+        pitch: opts?.pitch ?? 0,
+        duration: opts?.duration ?? 850,
+        nonce: Date.now() + Math.random(),
+      });
+    },
+    [],
+  );
+
+  // Cinema Documentary Mode: smooth year progression + tilted camera flight + shockwave + ticker
+  useEffect(() => {
+    if (!cinemaMode) return;
+    let cancelled = false;
+    let rafId = 0;
+    let timerId = 0;
+
+    const scopedEra = timelineZoom === 'era' ? currentEraRef.current : null;
+    const pool = dimensionFilteredEvents.filter((ev) =>
+      scopedEra ? ev.eraId === scopedEra.id : ev.importance === 3,
+    );
+    const milestones =
+      pool.length >= 2
+        ? pool
+        : dimensionFilteredEvents.filter((ev) =>
+            scopedEra ? ev.eraId === scopedEra.id : ev.importance >= 2,
+          );
+    if (milestones.length === 0) {
+      setCinemaMode(false);
+      return;
+    }
+
+    let idx = milestones.findIndex((ev) => ev.year >= currentYearRef.current);
+    if (idx === -1) idx = 0;
+
+    const animateYearTo = (fromYear: number, toYear: number, durationMs: number) =>
+      new Promise<void>((resolve) => {
+        if (Math.abs(toYear - fromYear) < 1 || durationMs <= 0) {
+          setCurrentYear(toYear);
+          resolve();
+          return;
+        }
+        const start = performance.now();
+        const step = (now: number) => {
+          if (cancelled) {
+            resolve();
+            return;
+          }
+          const rawT = Math.min(1, (now - start) / durationMs);
+          const eased = 1 - Math.pow(1 - rawT, 2);
+          setCurrentYear(Math.round(fromYear + (toYear - fromYear) * eased));
+          if (rawT < 1) {
+            rafId = requestAnimationFrame(step);
+          } else {
+            resolve();
+          }
+        };
+        rafId = requestAnimationFrame(step);
+      });
+
+    const sleep = (ms: number) =>
+      new Promise<void>((resolve) => {
+        timerId = window.setTimeout(resolve, ms);
+      });
+
+    (async () => {
+      for (let i = idx; i < milestones.length && !cancelled; i++) {
+        const ev = milestones[i];
+        const speed = Math.max(0.5, playSpeedRef.current);
+        const travelMs = Math.round(1150 / Math.min(2, speed));
+
+        setRecentTriggerEventId(null);
+        setSelectedFigureId(null);
+        setTickerVisible(true);
+        setTickerEventId(ev.id);
+
+        flyToLocation(ev.coords, ev.importance === 3 ? 3.25 : 3.55, {
+          pitch: 18,
+          duration: travelMs,
+        });
+
+        await animateYearTo(currentYearRef.current, ev.year, travelMs);
+        if (cancelled) break;
+
+        setSelectedEventId(ev.id);
+        setFocusRouteId(ev.routeIds?.[0] || null);
+        setRecentTriggerEventId(ev.id);
+        setTickerEventId(ev.id);
+        if (window.innerWidth >= 1024) {
+          setDesktopCollapsed(false);
+        }
+
+        const holdMs = Math.max(1400, Math.round(3500 / speed));
+        await sleep(holdMs);
+      }
+
+      if (!cancelled) {
+        setCinemaMode(false);
+        setRecentTriggerEventId(null);
+        const lastEv = milestones[milestones.length - 1];
+        if (lastEv) {
+          flyToLocation(lastEv.coords, 2.8, { pitch: 0, duration: 750 });
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(rafId);
+      window.clearTimeout(timerId);
+    };
+  }, [cinemaMode, timelineZoom, dimensionFilteredEvents, flyToLocation]);
+
+  const applyYearChange = useCallback(
+    (yr: number) => {
+      setIsPlaying(false);
+      setCinemaMode(false);
+      const clamped = Math.max(MIN_YEAR, Math.min(MAX_YEAR, yr));
+      setCurrentYear(clamped);
+      if (selectedEventId) {
+        const ev = EVENT_MAP[selectedEventId];
+        if (!ev || !isEventVisibleAtYear(ev, clamped, false).active) {
+          setSelectedEventId(null);
+          setFocusRouteId(null);
+        }
+      }
+      if (selectedFigureId) {
+        const fig = FIGURE_MAP[selectedFigureId];
+        if (!fig || !isFigureVisibleAtYear(fig, clamped, false).active) {
+          setSelectedFigureId(null);
+        }
+      }
+    },
+    [selectedEventId, selectedFigureId],
+  );
+
+  const handleStepSnapshot = useCallback(
+    (direction: -1 | 1) => {
+      const snap = findAdjacentSnapshot(currentYear, snapshots, direction);
+      if (!snap) return;
+      applyYearChange(snap.year);
+      setTickerEventId(null);
+      setTickerVisible(true);
+    },
+    [currentYear, snapshots, applyYearChange],
+  );
 
   const handleSelectEvent = useCallback(
     (ev: HistoryEvent, fromStoryline = false) => {
       setIsPlaying(false);
+      setCinemaMode(false);
       setSelectedFigureId(null);
       setSelectedEventId(ev.id);
       setCurrentYear(ev.year);
       setFocusRouteId(ev.routeIds?.[0] || null);
+      setRecentTriggerEventId(ev.id);
       if (!fromStoryline) {
         setDesktopCollapsed(false);
         if (window.innerWidth < 1024) {
@@ -255,8 +461,10 @@ export function App() {
   const handleSelectFigure = useCallback(
     (fig: HistoricalFigure) => {
       setIsPlaying(false);
+      setCinemaMode(false);
       setSelectedEventId(null);
       setFocusRouteId(null);
+      setRecentTriggerEventId(null);
       setSelectedFigureId(fig.id);
       setCurrentYear(fig.activeYear);
       setDesktopCollapsed(false);
@@ -275,11 +483,13 @@ export function App() {
       const ev = EVENT_MAP[step.eventId];
       if (!ev) return;
       setIsPlaying(false);
+      setCinemaMode(false);
       setStoryStepIdx(idx);
       setSelectedFigureId(null);
       setSelectedEventId(ev.id);
       setCurrentYear(ev.year);
       setFocusRouteId(step.highlightRouteIds?.[0] || ev.routeIds?.[0] || null);
+      setRecentTriggerEventId(ev.id);
       flyToLocation(step.center || ev.coords, step.zoom || 3.4);
     },
     [flyToLocation],
@@ -351,11 +561,14 @@ export function App() {
     [dimensionFilteredEvents, selectedEvent, currentYear, handleSelectEvent],
   );
 
+  const tickerEvent = tickerEventId ? EVENT_MAP[tickerEventId] || null : null;
+
   return (
     <div className="relative flex h-full w-full flex-col overflow-hidden">
       <TopBar
         currentYear={currentYear}
         currentEra={currentEra}
+        currentSubPeriod={currentSubPeriod}
         snapshotYear={activeSnapshot?.year ?? null}
         selectedDimensions={selectedDimensions}
         showAllEras={showAllEras}
@@ -380,12 +593,15 @@ export function App() {
         <WorldMap
           theme={theme}
           projection={projection}
+          currentYear={currentYear}
+          isPlaying={isPlaying || cinemaMode}
           physical={physical}
           snapshot={activeSnapshot}
           events={visibleEvents}
           figures={visibleFigures}
           selectedEvent={selectedEvent}
           selectedFigure={selectedFigure}
+          recentTriggerEventId={recentTriggerEventId}
           masteredIds={masteredSet}
           bookmarkedIds={bookmarkedSet}
           activeRoutes={activeRoutes}
@@ -397,6 +613,24 @@ export function App() {
             setSelectedEventId(null);
             setSelectedFigureId(null);
           }}
+        />
+
+        <ChronicleTicker
+          visible={!activeStoryline && tickerVisible}
+          cinemaMode={cinemaMode}
+          isPlaying={isPlaying}
+          currentYear={currentYear}
+          currentEra={currentEra}
+          currentSubPeriod={currentSubPeriod}
+          event={tickerEvent || selectedEvent}
+          theme={theme}
+          onSelectEvent={(ev) => handleSelectEvent(ev)}
+          onStopPlayback={() => {
+            setIsPlaying(false);
+            setCinemaMode(false);
+            setRecentTriggerEventId(null);
+          }}
+          onDismiss={() => setTickerVisible(false)}
         />
 
         {dataError && (
@@ -440,6 +674,7 @@ export function App() {
         <EventCardPanel
           currentYear={currentYear}
           currentEra={currentEra}
+          currentSubPeriod={currentSubPeriod}
           selectedEvent={selectedEvent}
           selectedFigure={selectedFigure}
           activeEvents={activeWindowEvents}
@@ -474,34 +709,42 @@ export function App() {
       <TimelineDock
         currentYear={currentYear}
         currentEra={currentEra}
+        currentSubPeriod={currentSubPeriod}
         events={dimensionFilteredEvents}
+        snapshots={snapshots}
+        activeSnapshotYear={activeSnapshot?.year ?? null}
         isPlaying={isPlaying}
+        cinemaMode={cinemaMode}
         playSpeed={playSpeed}
+        timelineZoom={timelineZoom}
         theme={theme}
-        onChangeYear={(yr) => {
-          setIsPlaying(false);
-          const clamped = Math.max(MIN_YEAR, Math.min(MAX_YEAR, yr));
-          setCurrentYear(clamped);
-          if (selectedEventId) {
-            const ev = EVENT_MAP[selectedEventId];
-            if (!ev || !isEventVisibleAtYear(ev, clamped, false).active) {
-              setSelectedEventId(null);
-              setFocusRouteId(null);
-            }
-          }
-          if (selectedFigureId) {
-            const fig = FIGURE_MAP[selectedFigureId];
-            if (!fig || !isFigureVisibleAtYear(fig, clamped, false).active) {
-              setSelectedFigureId(null);
-            }
-          }
+        onChangeYear={applyYearChange}
+        onTogglePlay={() => {
+          setCinemaMode(false);
+          setIsPlaying((p) => {
+            const next = !p;
+            if (next) setTickerVisible(true);
+            return next;
+          });
         }}
-        onTogglePlay={() => setIsPlaying((p) => !p)}
+        onToggleCinemaMode={() => {
+          setIsPlaying(false);
+          setActiveStoryline(null);
+          setStoryAutoPlay(false);
+          setCinemaMode((c) => {
+            const next = !c;
+            if (next) setTickerVisible(true);
+            else setRecentTriggerEventId(null);
+            return next;
+          });
+        }}
         onCycleSpeed={() =>
           setPlaySpeed((s) => PLAY_SPEEDS[(PLAY_SPEEDS.indexOf(s) + 1) % PLAY_SPEEDS.length])
         }
+        onToggleTimelineZoom={() => setTimelineZoom((z) => (z === 'global' ? 'era' : 'global'))}
         onPrevMilestone={() => handleStepMilestone(-1)}
         onNextMilestone={() => handleStepMilestone(1)}
+        onStepSnapshot={handleStepSnapshot}
       />
 
       <WorldPulseModal
@@ -510,10 +753,7 @@ export function App() {
         theme={theme}
         onClose={() => setPulseOpen(false)}
         onJumpToYear={(yr) => {
-          setIsPlaying(false);
-          setCurrentYear(yr);
-          setSelectedEventId(null);
-          setSelectedFigureId(null);
+          applyYearChange(yr);
         }}
         onSelectEvent={(ev) => handleSelectEvent(ev)}
       />
@@ -523,6 +763,7 @@ export function App() {
         theme={theme}
         onClose={() => setStoryPickerOpen(false)}
         onStartStoryline={(sl) => {
+          setCinemaMode(false);
           setActiveStoryline(sl);
           setStoryAutoPlay(false);
           if (window.innerWidth < 1024) setSheetState('peek');

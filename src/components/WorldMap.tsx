@@ -10,7 +10,14 @@ import type {
   ProjectionMode,
   ThemeMode,
 } from '../types/history';
-import { buildCausalArc, buildGraticuleGeoJSON, buildSmoothRouteLine } from '../utils/geo';
+import {
+  buildCausalArc,
+  buildGraticuleGeoJSON,
+  buildSmoothRouteLine,
+  computePolylineLengths,
+  samplePolylineAt,
+  slicePolylineByFraction,
+} from '../utils/geo';
 import type { DecodedSnapshot, PhysicalAtlasData } from '../utils/snapshotLoader';
 import { formatShortYear } from '../utils/timeline';
 
@@ -30,17 +37,26 @@ export interface VisibleFigureItem {
 interface WorldMapProps {
   theme: ThemeMode;
   projection: ProjectionMode;
+  currentYear: number;
+  isPlaying: boolean;
   physical: PhysicalAtlasData | null;
   snapshot: DecodedSnapshot | null;
   events: VisibleEventItem[];
   figures: VisibleFigureItem[];
   selectedEvent: HistoryEvent | null;
   selectedFigure: HistoricalFigure | null;
+  recentTriggerEventId: string | null;
   masteredIds: Set<string>;
   bookmarkedIds: Set<string>;
   activeRoutes: HistoricalRoute[];
   focusRouteId: string | null;
-  flyTarget: { center: [number, number]; zoom: number; nonce: number } | null;
+  flyTarget: {
+    center: [number, number];
+    zoom: number;
+    pitch?: number;
+    duration?: number;
+    nonce: number;
+  } | null;
   onSelectEvent: (ev: HistoryEvent) => void;
   onSelectFigure: (fig: HistoricalFigure) => void;
   onDeselectEvent?: () => void;
@@ -54,6 +70,21 @@ interface ClickedPolity {
 }
 
 const EMPTY_FC: GeoJSON.FeatureCollection = { type: 'FeatureCollection', features: [] };
+
+function buildEmpireFillOpacityExpr(
+  baseOpacity: number,
+  mixFactor = 1,
+): maplibregl.ExpressionSpecification | number {
+  if (mixFactor <= 0.001) return 0;
+  const hoverOpacity = Math.min(0.88, baseOpacity + 0.16);
+  const caseExpr: maplibregl.ExpressionSpecification = [
+    'case',
+    ['boolean', ['feature-state', 'hover'], false],
+    ['case', ['boolean', ['get', 'isDiffuse'], false], 0.42, hoverOpacity],
+    ['case', ['boolean', ['get', 'isDiffuse'], false], 0.24, baseOpacity],
+  ];
+  return mixFactor >= 0.999 ? caseExpr : ['*', caseExpr, mixFactor];
+}
 
 const THEME_COLORS = {
   parchment: {
@@ -93,12 +124,15 @@ const THEME_COLORS = {
 export function WorldMap({
   theme,
   projection,
+  currentYear,
+  isPlaying,
   physical,
   snapshot,
   events,
   figures,
   selectedEvent,
   selectedFigure,
+  recentTriggerEventId,
   masteredIds,
   bookmarkedIds,
   activeRoutes,
@@ -125,8 +159,13 @@ export function WorldMap({
   } | null>(null);
   const [clickedPolity, setClickedPolity] = useState<ClickedPolity | null>(null);
 
+  const themeRef = useRef(theme);
+  themeRef.current = theme;
   const projectionRef = useRef(projection);
   projectionRef.current = projection;
+  const activeBufferRef = useRef<'a' | 'b'>('a');
+  const lastSnapshotYearRef = useRef<number | null>(null);
+  const crossfadeRafRef = useRef<number>(0);
   const onSelectRef = useRef(onSelectEvent);
   onSelectRef.current = onSelectEvent;
   const onSelectFigureRef = useRef(onSelectFigure);
@@ -166,33 +205,75 @@ export function WorldMap({
 
   const graticuleData = useMemo(() => buildGraticuleGeoJSON(), []);
 
-  const routesGeoJSON = useMemo<GeoJSON.FeatureCollection>(() => {
-    const features: GeoJSON.Feature[] = activeRoutes.map((route) => {
+  const routesRenderMeta = useMemo<{
+    geojson: GeoJSON.FeatureCollection;
+    particlesMeta: {
+      coords: [number, number][];
+      cum: number[];
+      color: string;
+      focused: boolean;
+      bidirectional: boolean;
+    }[];
+  }>(() => {
+    const features: GeoJSON.Feature[] = [];
+    const particlesMeta: {
+      coords: [number, number][];
+      cum: number[];
+      color: string;
+      focused: boolean;
+      bidirectional: boolean;
+    }[] = [];
+
+    for (const route of activeRoutes) {
       const smoothCoords = buildSmoothRouteLine(route.waypoints);
-      return {
+      const fullCum = computePolylineLengths(smoothCoords);
+      const introSpan = Math.max(12, Math.min(40, (route.endYear - route.startYear) * 0.2));
+      const fraction = Math.max(0.12, Math.min(1, (currentYear - route.startYear + 3) / introSpan));
+      const drawnCoords =
+        fraction >= 0.999 ? smoothCoords : slicePolylineByFraction(smoothCoords, fullCum, fraction);
+      const drawnCum = fraction >= 0.999 ? fullCum : computePolylineLengths(drawnCoords);
+      const focused = focusRouteId === route.id;
+
+      features.push({
         type: 'Feature',
         properties: {
           id: route.id,
           name: route.name,
           color: route.color,
-          focused: focusRouteId === route.id ? 1 : 0,
+          focused: focused ? 1 : 0,
         },
         geometry: {
           type: 'LineString',
-          coordinates: smoothCoords,
+          coordinates: drawnCoords,
         },
-      };
-    });
-    return { type: 'FeatureCollection', features };
-  }, [activeRoutes, focusRouteId]);
+      });
+
+      particlesMeta.push({
+        coords: drawnCoords,
+        cum: drawnCum,
+        color: route.color,
+        focused,
+        bidirectional: !!route.bidirectional,
+      });
+    }
+
+    return {
+      geojson: { type: 'FeatureCollection', features },
+      particlesMeta,
+    };
+  }, [activeRoutes, focusRouteId, currentYear]);
 
   const causalGeoJSON = useMemo<{
     arcs: GeoJSON.FeatureCollection;
     points: GeoJSON.FeatureCollection;
+    arcsMeta: { coords: [number, number][]; cum: number[]; color: string }[];
   }>(() => {
-    if (!selectedEvent && !selectedFigure) return { arcs: EMPTY_FC, points: EMPTY_FC };
+    if (!selectedEvent && !selectedFigure) {
+      return { arcs: EMPTY_FC, points: EMPTY_FC, arcsMeta: [] };
+    }
     const arcFeatures: GeoJSON.Feature[] = [];
     const pointFeatures: GeoJSON.Feature[] = [];
+    const arcsMeta: { coords: [number, number][]; cum: number[]; color: string }[] = [];
 
     if (selectedEvent) {
       for (const causeId of selectedEvent.causes || []) {
@@ -209,6 +290,11 @@ export function WorldMap({
           properties: { kind: 'cause', title: target.title },
           geometry: { type: 'Point', coordinates: line[0] },
         });
+        arcsMeta.push({
+          coords: line,
+          cum: computePolylineLengths(line),
+          color: '#F59E0B',
+        });
       }
 
       for (const effectId of selectedEvent.effects || []) {
@@ -224,6 +310,11 @@ export function WorldMap({
           type: 'Feature',
           properties: { kind: 'effect', title: target.title },
           geometry: { type: 'Point', coordinates: line[line.length - 1] },
+        });
+        arcsMeta.push({
+          coords: line,
+          cum: computePolylineLengths(line),
+          color: '#10B981',
         });
       }
     } else if (selectedFigure) {
@@ -247,12 +338,18 @@ export function WorldMap({
           properties: { kind: 'effect', title: target.title },
           geometry: { type: 'Point', coordinates: line[line.length - 1] },
         });
+        arcsMeta.push({
+          coords: line,
+          cum: computePolylineLengths(line),
+          color: '#10B981',
+        });
       }
     }
 
     return {
       arcs: { type: 'FeatureCollection', features: arcFeatures },
       points: { type: 'FeatureCollection', features: pointFeatures },
+      arcsMeta,
     };
   }, [selectedEvent, selectedFigure]);
 
@@ -277,10 +374,13 @@ export function WorldMap({
         'physical-relief': { type: 'geojson', data: EMPTY_FC },
         'physical-lakes': { type: 'geojson', data: EMPTY_FC },
         'physical-rivers': { type: 'geojson', data: EMPTY_FC },
-        empires: { type: 'geojson', data: EMPTY_FC, generateId: true },
+        'empires-a': { type: 'geojson', data: EMPTY_FC, generateId: true },
+        'empires-b': { type: 'geojson', data: EMPTY_FC, generateId: true },
         'empire-labels': { type: 'geojson', data: EMPTY_FC },
         routes: { type: 'geojson', data: EMPTY_FC },
+        'route-particles': { type: 'geojson', data: EMPTY_FC },
         'causal-arcs': { type: 'geojson', data: EMPTY_FC },
+        'causal-particles': { type: 'geojson', data: EMPTY_FC },
         'causal-points': { type: 'geojson', data: EMPTY_FC },
       },
       layers: [
@@ -324,17 +424,21 @@ export function WorldMap({
           },
         },
         {
-          id: 'empire-fills',
+          id: 'empire-fills-a',
           type: 'fill',
-          source: 'empires',
+          source: 'empires-a',
           paint: {
             'fill-color': ['get', 'fillColor'],
-            'fill-opacity': [
-              'case',
-              ['boolean', ['feature-state', 'hover'], false],
-              ['case', ['boolean', ['get', 'isDiffuse'], false], 0.42, Math.min(0.88, palette.empireFillOpacity + 0.16)],
-              ['case', ['boolean', ['get', 'isDiffuse'], false], 0.24, palette.empireFillOpacity],
-            ],
+            'fill-opacity': buildEmpireFillOpacityExpr(palette.empireFillOpacity, 1),
+          },
+        },
+        {
+          id: 'empire-fills-b',
+          type: 'fill',
+          source: 'empires-b',
+          paint: {
+            'fill-color': ['get', 'fillColor'],
+            'fill-opacity': 0,
           },
         },
         {
@@ -357,12 +461,23 @@ export function WorldMap({
           },
         },
         {
-          id: 'empire-borders',
+          id: 'empire-borders-a',
           type: 'line',
-          source: 'empires',
+          source: 'empires-a',
           paint: {
             'line-color': palette.empireBorder,
             'line-width': ['interpolate', ['linear'], ['zoom'], 1, 0.5, 5, 1.3],
+            'line-opacity': 1,
+          },
+        },
+        {
+          id: 'empire-borders-b',
+          type: 'line',
+          source: 'empires-b',
+          paint: {
+            'line-color': palette.empireBorder,
+            'line-width': ['interpolate', ['linear'], ['zoom'], 1, 0.5, 5, 1.3],
+            'line-opacity': 0,
           },
         },
         {
@@ -389,6 +504,29 @@ export function WorldMap({
           },
         },
         {
+          id: 'route-particles-halo',
+          type: 'circle',
+          source: 'route-particles',
+          paint: {
+            'circle-radius': ['case', ['==', ['get', 'focused'], 1], 7.5, 5.5],
+            'circle-color': ['get', 'color'],
+            'circle-opacity': 0.34,
+            'circle-blur': 0.7,
+          },
+        },
+        {
+          id: 'route-particles-core',
+          type: 'circle',
+          source: 'route-particles',
+          paint: {
+            'circle-radius': ['case', ['==', ['get', 'focused'], 1], 3.4, 2.5],
+            'circle-color': '#FFFBEB',
+            'circle-stroke-color': ['get', 'color'],
+            'circle-stroke-width': 1.2,
+            'circle-opacity': 0.96,
+          },
+        },
+        {
           id: 'causal-arcs-line',
           type: 'line',
           source: 'causal-arcs',
@@ -398,6 +536,28 @@ export function WorldMap({
             'line-width': 2.2,
             'line-dasharray': [1.5, 1.2],
             'line-opacity': 0.9,
+          },
+        },
+        {
+          id: 'causal-particles-halo',
+          type: 'circle',
+          source: 'causal-particles',
+          paint: {
+            'circle-radius': 6.5,
+            'circle-color': ['get', 'color'],
+            'circle-opacity': 0.35,
+            'circle-blur': 0.6,
+          },
+        },
+        {
+          id: 'causal-particles-core',
+          type: 'circle',
+          source: 'causal-particles',
+          paint: {
+            'circle-radius': 2.8,
+            'circle-color': '#FFFFFF',
+            'circle-stroke-color': ['get', 'color'],
+            'circle-stroke-width': 1.2,
           },
         },
         {
@@ -466,7 +626,7 @@ export function WorldMap({
       map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-left');
     }
 
-    let hoveredFeatureId: string | number | null = null;
+    let hoveredFeature: { source: 'empires-a' | 'empires-b'; id: string | number } | null = null;
 
     map.on('load', () => {
       setMapReady(true);
@@ -481,16 +641,21 @@ export function WorldMap({
       syncGlobeMarkerVisibility(map);
     });
 
-    map.on('mousemove', 'empire-fills', (e: maplibregl.MapLayerMouseEvent) => {
+    const handleEmpireMove = (buf: 'a' | 'b', e: maplibregl.MapLayerMouseEvent) => {
+      if (activeBufferRef.current !== buf) return;
       if (!e.features || e.features.length === 0) return;
       const feat = e.features[0];
+      const sourceName = `empires-${buf}` as 'empires-a' | 'empires-b';
       map.getCanvas().style.cursor = 'pointer';
-      if (hoveredFeatureId !== null && hoveredFeatureId !== feat.id) {
-        map.setFeatureState({ source: 'empires', id: hoveredFeatureId }, { hover: false });
+      if (
+        hoveredFeature !== null &&
+        (hoveredFeature.source !== sourceName || hoveredFeature.id !== feat.id)
+      ) {
+        map.setFeatureState({ source: hoveredFeature.source, id: hoveredFeature.id }, { hover: false });
       }
       if (feat.id !== undefined) {
-        hoveredFeatureId = feat.id;
-        map.setFeatureState({ source: 'empires', id: feat.id }, { hover: true });
+        hoveredFeature = { source: sourceName, id: feat.id };
+        map.setFeatureState({ source: sourceName, id: feat.id }, { hover: true });
       }
       const props = (feat.properties || {}) as { zhName?: string; enName?: string };
       setHoveredPolity({
@@ -499,19 +664,26 @@ export function WorldMap({
         x: e.point.x,
         y: e.point.y,
       });
-    });
+    };
 
-    map.on('mouseleave', 'empire-fills', () => {
+    const handleEmpireLeave = (buf: 'a' | 'b') => {
+      if (activeBufferRef.current !== buf) return;
       map.getCanvas().style.cursor = '';
-      if (hoveredFeatureId !== null) {
-        map.setFeatureState({ source: 'empires', id: hoveredFeatureId }, { hover: false });
-        hoveredFeatureId = null;
+      if (hoveredFeature !== null) {
+        map.setFeatureState({ source: hoveredFeature.source, id: hoveredFeature.id }, { hover: false });
+        hoveredFeature = null;
       }
       setHoveredPolity(null);
-    });
+    };
+
+    map.on('mousemove', 'empire-fills-a', (e) => handleEmpireMove('a', e));
+    map.on('mousemove', 'empire-fills-b', (e) => handleEmpireMove('b', e));
+    map.on('mouseleave', 'empire-fills-a', () => handleEmpireLeave('a'));
+    map.on('mouseleave', 'empire-fills-b', () => handleEmpireLeave('b'));
 
     map.on('click', (e: maplibregl.MapMouseEvent) => {
-      const features = map.queryRenderedFeatures(e.point, { layers: ['empire-fills'] });
+      const activeLayer = activeBufferRef.current === 'a' ? 'empire-fills-a' : 'empire-fills-b';
+      const features = map.queryRenderedFeatures(e.point, { layers: [activeLayer] });
       if (features.length > 0) {
         const props = (features[0].properties || {}) as {
           zhName?: string;
@@ -532,6 +704,7 @@ export function WorldMap({
 
     mapRef.current = map;
     return () => {
+      window.cancelAnimationFrame(crossfadeRafRef.current);
       for (const { marker } of markersRef.current.values()) {
         marker.remove();
       }
@@ -568,13 +741,16 @@ export function WorldMap({
     ]);
     map.setPaintProperty('physical-lakes-fill', 'fill-color', p.water);
     map.setPaintProperty('physical-rivers-line', 'line-color', p.river);
-    map.setPaintProperty('empire-fills', 'fill-opacity', [
-      'case',
-      ['boolean', ['feature-state', 'hover'], false],
-      ['case', ['boolean', ['get', 'isDiffuse'], false], 0.42, Math.min(0.88, p.empireFillOpacity + 0.16)],
-      ['case', ['boolean', ['get', 'isDiffuse'], false], 0.24, p.empireFillOpacity],
-    ]);
-    map.setPaintProperty('empire-borders', 'line-color', p.empireBorder);
+    const activeBuf = activeBufferRef.current;
+    const inactiveBuf = activeBuf === 'a' ? 'b' : 'a';
+    map.setPaintProperty(
+      `empire-fills-${activeBuf}`,
+      'fill-opacity',
+      buildEmpireFillOpacityExpr(p.empireFillOpacity, 1),
+    );
+    map.setPaintProperty(`empire-fills-${inactiveBuf}`, 'fill-opacity', 0);
+    map.setPaintProperty('empire-borders-a', 'line-color', p.empireBorder);
+    map.setPaintProperty('empire-borders-b', 'line-color', p.empireBorder);
     map.setPaintProperty('empire-labels', 'text-color', p.labelColor);
     map.setPaintProperty('empire-labels', 'text-halo-color', p.labelHalo);
   }, [theme, mapReady]);
@@ -605,22 +781,97 @@ export function WorldMap({
     );
   }, [physical, mapReady]);
 
-  // Update historical empire polygons and labels when snapshot changes
+  // Update historical empire polygons & labels with smooth 480ms dual-buffer cross-fade
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady || !snapshot) return;
-    (map.getSource('empires') as maplibregl.GeoJSONSource | undefined)?.setData(snapshot.polygons);
+
     (map.getSource('empire-labels') as maplibregl.GeoJSONSource | undefined)?.setData(
       snapshot.labels,
     );
+
+    const palette = THEME_COLORS[themeRef.current];
+    const reducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (lastSnapshotYearRef.current === null || lastSnapshotYearRef.current === snapshot.year || reducedMotion) {
+      window.cancelAnimationFrame(crossfadeRafRef.current);
+      const curBuf = activeBufferRef.current;
+      const otherBuf = curBuf === 'a' ? 'b' : 'a';
+      (map.getSource(`empires-${curBuf}`) as maplibregl.GeoJSONSource | undefined)?.setData(
+        snapshot.polygons,
+      );
+      (map.getSource(`empires-${otherBuf}`) as maplibregl.GeoJSONSource | undefined)?.setData(EMPTY_FC);
+      map.setPaintProperty(
+        `empire-fills-${curBuf}`,
+        'fill-opacity',
+        buildEmpireFillOpacityExpr(palette.empireFillOpacity, 1),
+      );
+      map.setPaintProperty(`empire-borders-${curBuf}`, 'line-opacity', 1);
+      map.setPaintProperty(`empire-fills-${otherBuf}`, 'fill-opacity', 0);
+      map.setPaintProperty(`empire-borders-${otherBuf}`, 'line-opacity', 0);
+      lastSnapshotYearRef.current = snapshot.year;
+      return;
+    }
+
+    window.cancelAnimationFrame(crossfadeRafRef.current);
+    const incomingBuf = activeBufferRef.current === 'a' ? 'b' : 'a';
+    const outgoingBuf = activeBufferRef.current;
+    activeBufferRef.current = incomingBuf;
+    lastSnapshotYearRef.current = snapshot.year;
+
+    (map.getSource(`empires-${incomingBuf}`) as maplibregl.GeoJSONSource | undefined)?.setData(
+      snapshot.polygons,
+    );
+
+    const startTime = performance.now();
+    const duration = 480;
+
+    const animateFade = (now: number) => {
+      if (!mapRef.current) return;
+      const rawT = Math.min(1, (now - startTime) / duration);
+      const eased = 1 - Math.pow(1 - rawT, 3);
+      const fillBase = THEME_COLORS[themeRef.current].empireFillOpacity;
+
+      try {
+        mapRef.current.setPaintProperty(
+          `empire-fills-${incomingBuf}`,
+          'fill-opacity',
+          buildEmpireFillOpacityExpr(fillBase, eased),
+        );
+        mapRef.current.setPaintProperty(`empire-borders-${incomingBuf}`, 'line-opacity', eased);
+
+        const outFactor = 1 - eased;
+        mapRef.current.setPaintProperty(
+          `empire-fills-${outgoingBuf}`,
+          'fill-opacity',
+          buildEmpireFillOpacityExpr(fillBase, outFactor),
+        );
+        mapRef.current.setPaintProperty(`empire-borders-${outgoingBuf}`, 'line-opacity', outFactor);
+      } catch {
+        // Ignore transient style swaps
+      }
+
+      if (rawT < 1) {
+        crossfadeRafRef.current = window.requestAnimationFrame(animateFade);
+      } else {
+        (
+          mapRef.current.getSource(`empires-${outgoingBuf}`) as maplibregl.GeoJSONSource | undefined
+        )?.setData(EMPTY_FC);
+      }
+    };
+
+    crossfadeRafRef.current = window.requestAnimationFrame(animateFade);
+    return () => window.cancelAnimationFrame(crossfadeRafRef.current);
   }, [snapshot, mapReady]);
 
   // Update historical routes
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady) return;
-    (map.getSource('routes') as maplibregl.GeoJSONSource | undefined)?.setData(routesGeoJSON);
-  }, [routesGeoJSON, mapReady]);
+    (map.getSource('routes') as maplibregl.GeoJSONSource | undefined)?.setData(routesRenderMeta.geojson);
+  }, [routesRenderMeta, mapReady]);
 
   // Update causal arcs
   useEffect(() => {
@@ -632,11 +883,27 @@ export function WorldMap({
     );
   }, [causalGeoJSON, mapReady]);
 
-  // Subtle dashed animation for active historical routes
+  // Luminous flow particles (~30fps) & route dash animation along revealed routes and causal arcs
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !mapReady || activeRoutes.length === 0) return;
-    let step = 0;
+    if (!map || !mapReady) return;
+
+    const reducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const routeParticlesSrc = map.getSource('route-particles') as maplibregl.GeoJSONSource | undefined;
+    const causalParticlesSrc = map.getSource('causal-particles') as maplibregl.GeoJSONSource | undefined;
+
+    if (
+      reducedMotion ||
+      (routesRenderMeta.particlesMeta.length === 0 && causalGeoJSON.arcsMeta.length === 0)
+    ) {
+      routeParticlesSrc?.setData(EMPTY_FC);
+      causalParticlesSrc?.setData(EMPTY_FC);
+      return;
+    }
+
     const patterns: [number, number, number, number][] = [
       [2.2, 1.4, 0.01, 0.01],
       [1.6, 1.4, 0.6, 0.01],
@@ -644,27 +911,93 @@ export function WorldMap({
       [0.4, 1.4, 1.8, 0.01],
       [0.01, 1.0, 2.2, 0.4],
     ];
-    const timer = window.setInterval(() => {
-      if (!mapRef.current) return;
-      step = (step + 1) % patterns.length;
-      try {
-        mapRef.current.setPaintProperty('historical-routes-line', 'line-dasharray', patterns[step]);
-      } catch {
-        // Ignore if style transitioning
-      }
-    }, 140);
-    return () => window.clearInterval(timer);
-  }, [activeRoutes.length, mapReady]);
 
-  // Handle smooth camera easing when selecting an event or stepping storyline
+    let rafId = 0;
+    let lastDraw = 0;
+    let lastDash = 0;
+    let dashStep = 0;
+    const speedFactor = isPlaying ? 1.35 : 1;
+
+    const loop = (now: number) => {
+      if (!mapRef.current) return;
+      if (document.hidden || now - lastDraw < 33) {
+        rafId = window.requestAnimationFrame(loop);
+        return;
+      }
+      lastDraw = now;
+
+      if (routesRenderMeta.particlesMeta.length > 0 && now - lastDash >= 140) {
+        lastDash = now;
+        dashStep = (dashStep + 1) % patterns.length;
+        try {
+          mapRef.current.setPaintProperty('historical-routes-line', 'line-dasharray', patterns[dashStep]);
+        } catch {
+          // Ignore transient style changes
+        }
+      }
+
+      if (routeParticlesSrc) {
+        const features: GeoJSON.Feature<GeoJSON.Point>[] = [];
+        const phase = ((now * 0.00016 * speedFactor) % 1 + 1) % 1;
+        for (const rm of routesRenderMeta.particlesMeta) {
+          if (rm.coords.length < 2) continue;
+          const count = rm.focused ? 4 : 2;
+          for (let i = 0; i < count; i++) {
+            const f = (phase + i / count) % 1;
+            const pt = samplePolylineAt(rm.coords, rm.cum, f);
+            features.push({
+              type: 'Feature',
+              properties: { color: rm.color, focused: rm.focused ? 1 : 0 },
+              geometry: { type: 'Point', coordinates: pt },
+            });
+            if (rm.bidirectional) {
+              const revPt = samplePolylineAt(rm.coords, rm.cum, (1 - f + 1) % 1);
+              features.push({
+                type: 'Feature',
+                properties: { color: rm.color, focused: rm.focused ? 1 : 0 },
+                geometry: { type: 'Point', coordinates: revPt },
+              });
+            }
+          }
+        }
+        routeParticlesSrc.setData({ type: 'FeatureCollection', features });
+      }
+
+      if (causalParticlesSrc) {
+        const features: GeoJSON.Feature<GeoJSON.Point>[] = [];
+        const cPhase = ((now * 0.00032) % 1 + 1) % 1;
+        for (const arc of causalGeoJSON.arcsMeta) {
+          if (arc.coords.length < 2) continue;
+          for (let i = 0; i < 2; i++) {
+            const pt = samplePolylineAt(arc.coords, arc.cum, (cPhase + i * 0.5) % 1);
+            features.push({
+              type: 'Feature',
+              properties: { color: arc.color },
+              geometry: { type: 'Point', coordinates: pt },
+            });
+          }
+        }
+        causalParticlesSrc.setData({ type: 'FeatureCollection', features });
+      }
+
+      rafId = window.requestAnimationFrame(loop);
+    };
+
+    rafId = window.requestAnimationFrame(loop);
+    return () => window.cancelAnimationFrame(rafId);
+  }, [routesRenderMeta, causalGeoJSON, isPlaying, mapReady]);
+
+  // Handle smooth camera easing when selecting an event or stepping storyline / cinema mode
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady || !flyTarget) return;
     const isDesktop = window.innerWidth >= 1024;
+    const targetPitch = projectionRef.current === 'globe' ? 0 : (flyTarget.pitch ?? 0);
     map.easeTo({
       center: flyTarget.center,
       zoom: Math.max(map.getZoom(), flyTarget.zoom),
-      duration: 850,
+      pitch: targetPitch,
+      duration: flyTarget.duration ?? 850,
       padding: isDesktop
         ? { top: 28, bottom: 32, left: 24, right: 430 }
         : { top: 24, bottom: 220, left: 16, right: 16 },
@@ -691,6 +1024,7 @@ export function WorldMap({
     for (const item of events) {
       const { event, active, opacity } = item;
       const isSelected = selectedEvent?.id === event.id;
+      const isTriggered = recentTriggerEventId === event.id;
       const isMastered = masteredIds.has(event.id);
       const isBookmarked = bookmarkedIds.has(event.id);
       const dim = DIMENSION_META[event.primaryDimension];
@@ -723,17 +1057,19 @@ export function WorldMap({
 
       entry.coords = event.coords;
       const btn = entry.el;
-      btn.style.opacity = String(isSelected ? 1 : opacity);
-      btn.style.zIndex = isSelected ? '35' : active ? (event.importance === 3 ? '20' : '12') : '5';
+      btn.style.opacity = String(isSelected || isTriggered ? 1 : opacity);
+      btn.style.zIndex = isSelected || isTriggered ? '35' : active ? (event.importance === 3 ? '20' : '12') : '5';
 
-      const sizePx = isSelected ? 18 : event.importance === 3 ? 14 : 11;
-      const borderColor = isSelected ? '#FFFFFF' : theme === 'obsidian' ? '#0D141D' : '#FBF8F1';
+      const sizePx = isSelected || isTriggered ? 18 : event.importance === 3 ? 14 : 11;
+      const borderColor = isSelected || isTriggered ? '#FFFFFF' : theme === 'obsidian' ? '#0D141D' : '#FBF8F1';
 
       btn.innerHTML = `
         ${
-          isSelected
-            ? `<span class="atlas-beacon absolute left-1/2 top-1/2 rounded-full pointer-events-none" style="width:26px;height:26px;border:2px solid ${pinColor};background:${pinColor}33;"></span>`
-            : ''
+          isTriggered
+            ? `<span class="atlas-shockwave absolute left-1/2 top-1/2 rounded-full pointer-events-none" style="width:26px;height:26px;border:2px solid ${pinColor};background:${pinColor}24;"></span><span class="atlas-shockwave-delayed absolute left-1/2 top-1/2 rounded-full pointer-events-none" style="width:26px;height:26px;border:1.8px solid ${pinColor};"></span>`
+            : isSelected
+              ? `<span class="atlas-beacon absolute left-1/2 top-1/2 rounded-full pointer-events-none" style="width:26px;height:26px;border:2px solid ${pinColor};background:${pinColor}33;"></span>`
+              : ''
         }
         <span class="relative block rounded-full transition-transform duration-150 group-hover:scale-125" style="width:${sizePx}px;height:${sizePx}px;background:${pinColor};border:2.2px solid ${borderColor};box-shadow:0 2px 8px rgba(0,0,0,0.32);">
           ${
@@ -756,7 +1092,16 @@ export function WorldMap({
       `;
     }
     syncGlobeMarkerVisibility(map);
-  }, [events, selectedEvent, masteredIds, bookmarkedIds, theme, mapReady, syncGlobeMarkerVisibility]);
+  }, [
+    events,
+    selectedEvent,
+    recentTriggerEventId,
+    masteredIds,
+    bookmarkedIds,
+    theme,
+    mapReady,
+    syncGlobeMarkerVisibility,
+  ]);
 
   // Render & synchronize HTML historical figure portrait seals
   useEffect(() => {

@@ -13,8 +13,26 @@ if (Math.abs(weightSum - 1) > 1e-6) {
   errors.push(`ERAS weights sum to ${weightSum}, expected 1.0`);
 }
 
-if (ALL_EVENTS.length < 125) {
-  errors.push(`Expected >= 125 events, found ${ALL_EVENTS.length}`);
+if (ALL_EVENTS.length < 165) {
+  errors.push(`Expected >= 165 events, found ${ALL_EVENTS.length}`);
+}
+
+for (const era of ERAS) {
+  if (!Array.isArray(era.subPeriods) || era.subPeriods.length < 3) {
+    errors.push(`Era ${era.id} must have >= 3 subPeriods`);
+    continue;
+  }
+  if (era.subPeriods[0].startYear !== era.startYear) {
+    errors.push(`Era ${era.id} first subPeriod startYear mismatch`);
+  }
+  for (let i = 0; i < era.subPeriods.length - 1; i++) {
+    if (era.subPeriods[i].endYear !== era.subPeriods[i + 1].startYear) {
+      errors.push(`Era ${era.id} subPeriod gap between ${era.subPeriods[i].id} and ${era.subPeriods[i + 1].id}`);
+    }
+  }
+  if (era.subPeriods[era.subPeriods.length - 1].endYear !== era.endYear) {
+    errors.push(`Era ${era.id} last subPeriod endYear mismatch`);
+  }
 }
 
 const routeMap = new Map(HISTORICAL_ROUTES.map((r) => [r.id, r]));

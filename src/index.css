@@ -117,3 +117,66 @@ body,
 .atlas-beacon {
   animation: pulseBeacon 2.1s cubic-bezier(0.22, 1, 0.36, 1) infinite;
 }
+
+@keyframes atlasShockwave {
+  0% {
+    transform: translate(-50%, -50%) scale(0.45);
+    opacity: 0.92;
+  }
+  80% {
+    transform: translate(-50%, -50%) scale(3.2);
+    opacity: 0.08;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(3.6);
+    opacity: 0;
+  }
+}
+
+.atlas-shockwave {
+  animation: atlasShockwave 1.9s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+.atlas-shockwave-delayed {
+  animation: atlasShockwave 1.9s cubic-bezier(0.16, 1, 0.3, 1) 0.55s infinite;
+}
+
+@keyframes atlasCardEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.atlas-card-enter {
+  animation: atlasCardEnter 240ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes atlasTickerEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.atlas-ticker-enter {
+  animation: atlasTickerEnter 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atlas-beacon,
+  .atlas-shockwave,
+  .atlas-shockwave-delayed,
+  .atlas-card-enter,
+  .atlas-ticker-enter {
+    animation: none !important;
+  }
+}

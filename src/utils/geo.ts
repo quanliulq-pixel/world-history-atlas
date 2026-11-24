@@ -120,3 +120,79 @@ export function buildGraticuleGeoJSON(): GeoJSON.FeatureCollection<GeoJSON.LineS
   }
   return { type: 'FeatureCollection', features };
 }
+
+/**
+ * Computes cumulative 2D coordinate length along a polyline for particle and draw-in interpolation.
+ */
+export function computePolylineLengths(coords: [number, number][]): number[] {
+  if (coords.length === 0) return [];
+  const cum: number[] = [0];
+  let total = 0;
+  for (let i = 1; i < coords.length; i++) {
+    total += Math.hypot(coords[i][0] - coords[i - 1][0], coords[i][1] - coords[i - 1][1]);
+    cum.push(total);
+  }
+  return cum;
+}
+
+/**
+ * Samples a single [lng, lat] point at `fraction` ∈ [0, 1] along a polyline.
+ */
+export function samplePolylineAt(
+  coords: [number, number][],
+  cumLengths: number[],
+  fraction: number,
+): [number, number] {
+  if (coords.length === 0) return [0, 0];
+  if (coords.length === 1 || cumLengths.length !== coords.length) return coords[0];
+  const total = cumLengths[cumLengths.length - 1];
+  if (total <= 1e-9) return coords[0];
+
+  const f = Math.max(0, Math.min(1, fraction));
+  const target = f * total;
+  let lo = 0;
+  let hi = cumLengths.length - 1;
+  while (lo + 1 < hi) {
+    const mid = (lo + hi) >> 1;
+    if (cumLengths[mid] <= target) lo = mid;
+    else hi = mid;
+  }
+  const segLen = Math.max(1e-9, cumLengths[hi] - cumLengths[lo]);
+  const ratio = Math.max(0, Math.min(1, (target - cumLengths[lo]) / segLen));
+  return [
+    coords[lo][0] + (coords[hi][0] - coords[lo][0]) * ratio,
+    coords[lo][1] + (coords[hi][1] - coords[lo][1]) * ratio,
+  ];
+}
+
+/**
+ * Returns the revealed prefix of a polyline up to `fraction` ∈ [0, 1] for progressive route animations.
+ */
+export function slicePolylineByFraction(
+  coords: [number, number][],
+  cumLengths: number[],
+  fraction: number,
+): [number, number][] {
+  if (coords.length < 2) return coords;
+  const f = Math.max(0, Math.min(1, fraction));
+  if (f >= 0.999) return coords;
+  if (f <= 0.001) return [coords[0], coords[0]];
+
+  const total = cumLengths[cumLengths.length - 1];
+  const target = f * total;
+  const sliced: [number, number][] = [coords[0]];
+  for (let i = 1; i < coords.length; i++) {
+    if (cumLengths[i] <= target) {
+      sliced.push(coords[i]);
+    } else {
+      const segLen = Math.max(1e-9, cumLengths[i] - cumLengths[i - 1]);
+      const ratio = Math.max(0, Math.min(1, (target - cumLengths[i - 1]) / segLen));
+      sliced.push([
+        coords[i - 1][0] + (coords[i][0] - coords[i - 1][0]) * ratio,
+        coords[i - 1][1] + (coords[i][1] - coords[i - 1][1]) * ratio,
+      ]);
+      break;
+    }
+  }
+  return sliced.length >= 2 ? sliced : [coords[0], coords[0]];
+}

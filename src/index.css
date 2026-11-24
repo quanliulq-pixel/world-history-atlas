@@ -1,0 +1,119 @@
+@import "tailwindcss";
+
+:root {
+  --bg-canvas: #f5efe0;
+  --bg-surface: #fbf8f1;
+  --bg-elevated: #ffffff;
+  --bg-muted: #ede4d1;
+  --border-subtle: rgba(107, 89, 64, 0.18);
+  --border-strong: rgba(107, 89, 64, 0.34);
+  --text-primary: #1f1a14;
+  --text-secondary: #5a4e3f;
+  --text-muted: #847563;
+  --accent-primary: #8c2d2d;
+  --accent-gold: #b47417;
+  color-scheme: light;
+}
+
+.theme-obsidian {
+  --bg-canvas: #0d141d;
+  --bg-surface: #141e2b;
+  --bg-elevated: #1b2838;
+  --bg-muted: #1f2e40;
+  --border-subtle: rgba(164, 189, 219, 0.16);
+  --border-strong: rgba(164, 189, 219, 0.32);
+  --text-primary: #eef2f7;
+  --text-secondary: #b9c6d6;
+  --text-muted: #7f91a8;
+  --accent-primary: #e0635a;
+  --accent-gold: #e0a64b;
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family:
+    "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC",
+    system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  touch-action: manipulation;
+}
+
+/* Custom thin scrollbars */
+.atlas-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.atlas-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.atlas-scroll::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 9999px;
+}
+
+/* Hide scrollbars on horizontal mobile strips */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* MapLibre overrides for compact attribution and smooth markers */
+.maplibregl-ctrl-attrib {
+  font-size: 10px !important;
+  background: rgba(251, 248, 241, 0.72) !important;
+  color: #4b4134 !important;
+  border-radius: 6px !important;
+  backdrop-filter: blur(4px);
+}
+.theme-obsidian .maplibregl-ctrl-attrib {
+  background: rgba(20, 30, 43, 0.75) !important;
+  color: #9cb0c9 !important;
+}
+.theme-obsidian .maplibregl-ctrl-attrib a {
+  color: #b7cae0 !important;
+}
+
+.maplibregl-ctrl-group {
+  border-radius: 10px !important;
+  border: 1px solid var(--border-subtle) !important;
+  background: var(--bg-surface) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12) !important;
+  overflow: hidden;
+}
+
+.theme-obsidian .maplibregl-ctrl-group button {
+  filter: invert(0.88) hue-rotate(180deg);
+}
+
+@keyframes pulseBeacon {
+  0% {
+    transform: translate(-50%, -50%) scale(0.85);
+    opacity: 0.75;
+  }
+  70% {
+    transform: translate(-50%, -50%) scale(2.1);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2.1);
+    opacity: 0;
+  }
+}
+
+.atlas-beacon {
+  animation: pulseBeacon 2.1s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}

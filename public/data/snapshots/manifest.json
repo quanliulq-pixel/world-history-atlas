@@ -1,0 +1,12352 @@
+{
+  "generatedAt": "2026-11-24T02:51:56.340Z",
+  "snapshots": [
+    {
+      "year": -3000,
+      "file": "y_-3000.topo.json",
+      "polityCount": 25
+    },
+    {
+      "year": -2000,
+      "file": "y_-2000.topo.json",
+      "polityCount": 45
+    },
+    {
+      "year": -1500,
+      "file": "y_-1500.topo.json",
+      "polityCount": 68
+    },
+    {
+      "year": -1000,
+      "file": "y_-1000.topo.json",
+      "polityCount": 69
+    },
+    {
+      "year": -700,
+      "file": "y_-700.topo.json",
+      "polityCount": 72
+    },
+    {
+      "year": -500,
+      "file": "y_-500.topo.json",
+      "polityCount": 58
+    },
+    {
+      "year": -400,
+      "file": "y_-400.topo.json",
+      "polityCount": 66
+    },
+    {
+      "year": -323,
+      "file": "y_-323.topo.json",
+      "polityCount": 60
+    },
+    {
+      "year": -300,
+      "file": "y_-300.topo.json",
+      "polityCount": 66
+    },
+    {
+      "year": -200,
+      "file": "y_-200.topo.json",
+      "polityCount": 75
+    },
+    {
+      "year": -100,
+      "file": "y_-100.topo.json",
+      "polityCount": 74
+    },
+    {
+      "year": -1,
+      "file": "y_-1.topo.json",
+      "polityCount": 71
+    },
+    {
+      "year": 100,
+      "file": "y_100.topo.json",
+      "polityCount": 75
+    },
+    {
+      "year": 200,
+      "file": "y_200.topo.json",
+      "polityCount": 69
+    },
+    {
+      "year": 300,
+      "file": "y_300.topo.json",
+      "polityCount": 71
+    },
+    {
+      "year": 400,
+      "file": "y_400.topo.json",
+      "polityCount": 75
+    },
+    {
+      "year": 500,
+      "file": "y_500.topo.json",
+      "polityCount": 75
+    },
+    {
+      "year": 600,
+      "file": "y_600.topo.json",
+      "polityCount": 75
+    },
+    {
+      "year": 700,
+      "file": "y_700.topo.json",
+      "polityCount": 75
+    },
+    {
+      "year": 800,
+      "file": "y_800.topo.json",
+      "polityCount": 75
+    },
+    {
+      "year": 900,
+      "file": "y_900.topo.json",
+      "polityCount": 75
+    },
+    {
+      "year": 1000,
+      "file": "y_1000.topo.json",
+      "polityCount": 75
+    },
+    {
+      "year": 1100,
+      "file": "y_1100.topo.json",
+      "polityCount": 75
+    },
+    {
+      "year": 1200,
+      "file": "y_1200.topo.json",
+      "polityCount": 75
+    },
+    {
+      "year": 1279,
+      "file": "y_1279.topo.json",
+      "polityCount": 75
+    },
+    {
+      "year": 1300,
+      "file": "y_1300.topo.json",
+      "polityCount": 75
+    },
+    {
+      "year": 1400,
+      "file": "y_1400.topo.json",
+      "polityCount": 75
+    },
+    {
+      "year": 1492,
+      "file": "y_1492.topo.json",
+      "polityCount": 75
+    },
+    {
+      "year": 1500,
+      "file": "y_1500.topo.json",
+      "polityCount": 75
+    },
+    {
+      "year": 1530,
+      "file": "y_1530.topo.json",
+      "polityCount": 75
+    },
+    {
+      "year": 1600,
+      "file": "y_1600.topo.json",
+      "polityCount": 75
+    },
+    {
+      "year": 1650,
+      "file": "y_1650.topo.json",
+      "polityCount": 75
+    },
+    {
+      "year": 1700,
+      "file": "y_1700.topo.json",
+      "polityCount": 75
+    },
+    {
+      "year": 1715,
+      "file": "y_1715.topo.json",
+      "polityCount": 75
+    },
+    {
+      "year": 1783,
+      "file": "y_1783.topo.json",
+      "polityCount": 75
+    },
+    {
+      "year": 1800,
+      "file": "y_1800.topo.json",
+      "polityCount": 75
+    },
+    {
+      "year": 1815,
+      "file": "y_1815.topo.json",
+      "polityCount": 75
+    },
+    {
+      "year": 1878,
+      "file": "y_1878.topo.json",
+      "polityCount": 75
+    },
+    {
+      "year": 1880,
+      "file": "y_1880.topo.json",
+      "polityCount": 75
+    },
+    {
+      "year": 1900,
+      "file": "y_1900.topo.json",
+      "polityCount": 75
+    },
+    {
+      "year": 1914,
+      "file": "y_1914.topo.json",
+      "polityCount": 75
+    },
+    {
+      "year": 1920,
+      "file": "y_1920.topo.json",
+      "polityCount": 75
+    },
+    {
+      "year": 1930,
+      "file": "y_1930.topo.json",
+      "polityCount": 75
+    },
+    {
+      "year": 1938,
+      "file": "y_1938.topo.json",
+      "polityCount": 75
+    },
+    {
+      "year": 1945,
+      "file": "y_1945.topo.json",
+      "polityCount": 75
+    },
+    {
+      "year": 1960,
+      "file": "y_1960.topo.json",
+      "polityCount": 75
+    },
+    {
+      "year": 1994,
+      "file": "y_1994.topo.json",
+      "polityCount": 75
+    },
+    {
+      "year": 2000,
+      "file": "y_2000.topo.json",
+      "polityCount": 75
+    },
+    {
+      "year": 2010,
+      "file": "y_2010.topo.json",
+      "polityCount": 75
+    }
+  ],
+  "allPolities": [
+    {
+      "name": "Baltic archeological cultures",
+      "count": 72
+    },
+    {
+      "name": "Fiji",
+      "count": 46
+    },
+    {
+      "name": "Hindu kingdoms",
+      "count": 38
+    },
+    {
+      "name": "Sweden",
+      "count": 37
+    },
+    {
+      "name": "Australian aboriginal hunter-gatherers",
+      "count": 36
+    },
+    {
+      "name": "Pampas cultures",
+      "count": 35
+    },
+    {
+      "name": "Patagonian shellfish and marine mammal hunters",
+      "count": 35
+    },
+    {
+      "name": "Guanches",
+      "count": 34
+    },
+    {
+      "name": "Tasmanian hunter-gatherers",
+      "count": 32
+    },
+    {
+      "name": "Amazon hunter-gatherers",
+      "count": 32
+    },
+    {
+      "name": "Savanna hunter-gatherers",
+      "count": 32
+    },
+    {
+      "name": "Andean hunter-gatherers",
+      "count": 32
+    },
+    {
+      "name": "Subarctic forest hunter-gatherers",
+      "count": 32
+    },
+    {
+      "name": "Finno-Ugric taiga hunter-gatherers",
+      "count": 31
+    },
+    {
+      "name": "Caribbean hunter-gatherers",
+      "count": 31
+    },
+    {
+      "name": "Polynesians",
+      "count": 31
+    },
+    {
+      "name": "France",
+      "count": 31
+    },
+    {
+      "name": "Khoisan",
+      "count": 30
+    },
+    {
+      "name": "Portugal",
+      "count": 29
+    },
+    {
+      "name": "Ainu",
+      "count": 28
+    },
+    {
+      "name": "Khoiasan",
+      "count": 28
+    },
+    {
+      "name": "Plateau fichers and hunter gatherers",
+      "count": 27
+    },
+    {
+      "name": "West African cereal farmers",
+      "count": 27
+    },
+    {
+      "name": "Plain bison hunters",
+      "count": 26
+    },
+    {
+      "name": "Desert hunter-gatherers",
+      "count": 26
+    },
+    {
+      "name": "North American Pacific foraging, hunting and fishing peoples",
+      "count": 26
+    },
+    {
+      "name": "Ottoman Empire",
+      "count": 26
+    },
+    {
+      "name": "Tonga",
+      "count": 26
+    },
+    {
+      "name": "Spain",
+      "count": 25
+    },
+    {
+      "name": "Arctic marine mammal hunters",
+      "count": 24
+    },
+    {
+      "name": "Italy",
+      "count": 24
+    },
+    {
+      "name": "Ethiopia",
+      "count": 24
+    },
+    {
+      "name": "Paleo-Siberian hunter-gatherers",
+      "count": 23
+    },
+    {
+      "name": "Madagascar",
+      "count": 22
+    },
+    {
+      "name": "United Kingdom",
+      "count": 22
+    },
+    {
+      "name": "Hadramaut",
+      "count": 21
+    },
+    {
+      "name": "Denmark",
+      "count": 21
+    },
+    {
+      "name": "United States",
+      "count": 21
+    },
+    {
+      "name": "Egypt",
+      "count": 20
+    },
+    {
+      "name": "Eastern North American hunter-gatherers",
+      "count": 20
+    },
+    {
+      "name": "Yemen",
+      "count": 20
+    },
+    {
+      "name": "Philippines",
+      "count": 20
+    },
+    {
+      "name": "Deccan Sultanates",
+      "count": 20
+    },
+    {
+      "name": "Saharan pastoral nomads",
+      "count": 19
+    },
+    {
+      "name": "Tibet",
+      "count": 19
+    },
+    {
+      "name": "Bhutan",
+      "count": 19
+    },
+    {
+      "name": "Morocco",
+      "count": 19
+    },
+    {
+      "name": "Greece",
+      "count": 19
+    },
+    {
+      "name": "Shellfish gatherers",
+      "count": 18
+    },
+    {
+      "name": "Tuʻi Tonga Empire",
+      "count": 18
+    },
+    {
+      "name": "Nepal",
+      "count": 18
+    },
+    {
+      "name": "Congo",
+      "count": 18
+    },
+    {
+      "name": "Brunei",
+      "count": 18
+    },
+    {
+      "name": "Luxembourg",
+      "count": 18
+    },
+    {
+      "name": "Hong Kong",
+      "count": 18
+    },
+    {
+      "name": "Armenia",
+      "count": 17
+    },
+    {
+      "name": "Holy Roman Empire",
+      "count": 17
+    },
+    {
+      "name": "Benin",
+      "count": 17
+    },
+    {
+      "name": "central Asian khanates",
+      "count": 17
+    },
+    {
+      "name": "Netherlands",
+      "count": 17
+    },
+    {
+      "name": "United Kingdom of Great Britain and Ireland",
+      "count": 17
+    },
+    {
+      "name": "Saami",
+      "count": 16
+    },
+    {
+      "name": "Papal States",
+      "count": 16
+    },
+    {
+      "name": "Merina Kingdom",
+      "count": 16
+    },
+    {
+      "name": "Expansionist Kingdom of Merina",
+      "count": 16
+    },
+    {
+      "name": "Mali",
+      "count": 16
+    },
+    {
+      "name": "Kanem-Bornu",
+      "count": 16
+    },
+    {
+      "name": "Papua New Guinea",
+      "count": 16
+    },
+    {
+      "name": "Cambodia",
+      "count": 16
+    },
+    {
+      "name": "Oman",
+      "count": 16
+    },
+    {
+      "name": "Dutch East Indies",
+      "count": 16
+    },
+    {
+      "name": "American Samoa",
+      "count": 16
+    },
+    {
+      "name": "Saharan Pastoral Nomads",
+      "count": 15
+    },
+    {
+      "name": "Korea",
+      "count": 15
+    },
+    {
+      "name": "Belize",
+      "count": 15
+    },
+    {
+      "name": "Dominica",
+      "count": 15
+    },
+    {
+      "name": "Anguilla",
+      "count": 15
+    },
+    {
+      "name": "Netherlands Antilles",
+      "count": 15
+    },
+    {
+      "name": "Saint Martin",
+      "count": 15
+    },
+    {
+      "name": "Saint Barthelemy",
+      "count": 15
+    },
+    {
+      "name": "Paraguay",
+      "count": 15
+    },
+    {
+      "name": "Afghanistan",
+      "count": 15
+    },
+    {
+      "name": "Greek city-states",
+      "count": 14
+    },
+    {
+      "name": "Simhala",
+      "count": 14
+    },
+    {
+      "name": "Blemmyes",
+      "count": 14
+    },
+    {
+      "name": "Hainan",
+      "count": 14
+    },
+    {
+      "name": "Cyprus",
+      "count": 14
+    },
+    {
+      "name": "Poland",
+      "count": 14
+    },
+    {
+      "name": "Đại Việt",
+      "count": 14
+    },
+    {
+      "name": "Senegal",
+      "count": 14
+    },
+    {
+      "name": "Prussia",
+      "count": 14
+    },
+    {
+      "name": "Minang",
+      "count": 14
+    },
+    {
+      "name": "Haiti",
+      "count": 14
+    },
+    {
+      "name": "Champa",
+      "count": 13
+    },
+    {
+      "name": "Caloosahatchee culture",
+      "count": 13
+    },
+    {
+      "name": "Thule",
+      "count": 13
+    },
+    {
+      "name": "Venice",
+      "count": 13
+    },
+    {
+      "name": "Georgia",
+      "count": 13
+    },
+    {
+      "name": "Norway",
+      "count": 13
+    },
+    {
+      "name": "Hungary",
+      "count": 13
+    },
+    {
+      "name": "Mongol Empire",
+      "count": 13
+    },
+    {
+      "name": "Mossi States",
+      "count": 13
+    },
+    {
+      "name": "Oyo",
+      "count": 13
+    },
+    {
+      "name": "Antigua and Barbuda",
+      "count": 13
+    },
+    {
+      "name": "Montserrat",
+      "count": 13
+    },
+    {
+      "name": "Guadeloupe",
+      "count": 13
+    },
+    {
+      "name": "Canada",
+      "count": 13
+    },
+    {
+      "name": "Switzerland",
+      "count": 13
+    },
+    {
+      "name": "Qatar",
+      "count": 13
+    },
+    {
+      "name": "Sierra Leone",
+      "count": 13
+    },
+    {
+      "name": "Wallis and Futuna Islands",
+      "count": 13
+    },
+    {
+      "name": "Samoa",
+      "count": 13
+    },
+    {
+      "name": "Teotihuacan",
+      "count": 12
+    },
+    {
+      "name": "Monte Albán",
+      "count": 12
+    },
+    {
+      "name": "Arakan",
+      "count": 12
+    },
+    {
+      "name": "Alwa",
+      "count": 12
+    },
+    {
+      "name": "Athabaskan",
+      "count": 12
+    },
+    {
+      "name": "Scotland",
+      "count": 12
+    },
+    {
+      "name": "Shuar",
+      "count": 12
+    },
+    {
+      "name": "Ceylon",
+      "count": 12
+    },
+    {
+      "name": "Russian Empire",
+      "count": 12
+    },
+    {
+      "name": "Dominican Republic",
+      "count": 12
+    },
+    {
+      "name": "Nicaragua",
+      "count": 12
+    },
+    {
+      "name": "Costa Rica",
+      "count": 12
+    },
+    {
+      "name": "French Guiana",
+      "count": 12
+    },
+    {
+      "name": "Uruguay",
+      "count": 12
+    },
+    {
+      "name": "Venezuela",
+      "count": 12
+    },
+    {
+      "name": "Ecuador",
+      "count": 12
+    },
+    {
+      "name": "Colombia",
+      "count": 12
+    },
+    {
+      "name": "Peru",
+      "count": 12
+    },
+    {
+      "name": "Bolivia",
+      "count": 12
+    },
+    {
+      "name": "Chile",
+      "count": 12
+    },
+    {
+      "name": "Argentina",
+      "count": 12
+    },
+    {
+      "name": "Belgium",
+      "count": 12
+    },
+    {
+      "name": "Guatemala",
+      "count": 12
+    },
+    {
+      "name": "Honduras",
+      "count": 12
+    },
+    {
+      "name": "El Salvador",
+      "count": 12
+    },
+    {
+      "name": "Mexico",
+      "count": 12
+    },
+    {
+      "name": "Swaziland",
+      "count": 12
+    },
+    {
+      "name": "Burundi",
+      "count": 12
+    },
+    {
+      "name": "Liberia",
+      "count": 12
+    },
+    {
+      "name": "Romania",
+      "count": 12
+    },
+    {
+      "name": "Bulgaria",
+      "count": 12
+    },
+    {
+      "name": "Saint Kitts and Nevis",
+      "count": 12
+    },
+    {
+      "name": "Niue",
+      "count": 12
+    },
+    {
+      "name": "Glades Culture",
+      "count": 11
+    },
+    {
+      "name": "Makkura",
+      "count": 11
+    },
+    {
+      "name": "Ghana",
+      "count": 11
+    },
+    {
+      "name": "Britany",
+      "count": 11
+    },
+    {
+      "name": "Serbia",
+      "count": 11
+    },
+    {
+      "name": "Sardinia",
+      "count": 11
+    },
+    {
+      "name": "Laos",
+      "count": 11
+    },
+    {
+      "name": "Lunda",
+      "count": 11
+    },
+    {
+      "name": "Iceland",
+      "count": 11
+    },
+    {
+      "name": "Algeria",
+      "count": 11
+    },
+    {
+      "name": "United States Virgin Islands",
+      "count": 11
+    },
+    {
+      "name": "Germany",
+      "count": 11
+    },
+    {
+      "name": "White Russia",
+      "count": 11
+    },
+    {
+      "name": "Meroe",
+      "count": 10
+    },
+    {
+      "name": "Axum",
+      "count": 10
+    },
+    {
+      "name": "Japan",
+      "count": 10
+    },
+    {
+      "name": "Bantu peoples",
+      "count": 10
+    },
+    {
+      "name": "Bantou",
+      "count": 10
+    },
+    {
+      "name": "Islamic city-states",
+      "count": 10
+    },
+    {
+      "name": "Denmark-Norway",
+      "count": 10
+    },
+    {
+      "name": "Ayutthaya",
+      "count": 10
+    },
+    {
+      "name": "Luba",
+      "count": 10
+    },
+    {
+      "name": "Malaya",
+      "count": 10
+    },
+    {
+      "name": "Portuguese Guinea",
+      "count": 10
+    },
+    {
+      "name": "Trinidad",
+      "count": 10
+    },
+    {
+      "name": "Grenada",
+      "count": 10
+    },
+    {
+      "name": "Saint Lucia",
+      "count": 10
+    },
+    {
+      "name": "Saint Vincent and the Grenadines",
+      "count": 10
+    },
+    {
+      "name": "Tunisia",
+      "count": 10
+    },
+    {
+      "name": "Rapa Nui",
+      "count": 10
+    },
+    {
+      "name": "Chorrera",
+      "count": 9
+    },
+    {
+      "name": "Manioc farmers",
+      "count": 9
+    },
+    {
+      "name": "Milograd culture",
+      "count": 9
+    },
+    {
+      "name": "Maya chiefdoms and states",
+      "count": 9
+    },
+    {
+      "name": "Swift Creek Culture",
+      "count": 9
+    },
+    {
+      "name": "Silla",
+      "count": 9
+    },
+    {
+      "name": "Koguryo",
+      "count": 9
+    },
+    {
+      "name": "Paekche",
+      "count": 9
+    },
+    {
+      "name": "Sámi",
+      "count": 9
+    },
+    {
+      "name": "Dorset",
+      "count": 9
+    },
+    {
+      "name": "Palas",
+      "count": 9
+    },
+    {
+      "name": "Maya city-states",
+      "count": 9
+    },
+    {
+      "name": "minor Hindu and Buddhist states",
+      "count": 9
+    },
+    {
+      "name": "Beothuk",
+      "count": 9
+    },
+    {
+      "name": "Innu",
+      "count": 9
+    },
+    {
+      "name": "Byzantine Empire",
+      "count": 9
+    },
+    {
+      "name": "Maori",
+      "count": 9
+    },
+    {
+      "name": "Sicily",
+      "count": 9
+    },
+    {
+      "name": "Songhai",
+      "count": 9
+    },
+    {
+      "name": "Hausa States",
+      "count": 9
+    },
+    {
+      "name": "Taiwan",
+      "count": 9
+    },
+    {
+      "name": "Manchu Empire",
+      "count": 9
+    },
+    {
+      "name": "Martinique",
+      "count": 9
+    },
+    {
+      "name": "Rattanakosin Kingdom",
+      "count": 9
+    },
+    {
+      "name": "Mozambique",
+      "count": 9
+    },
+    {
+      "name": "Rwanda",
+      "count": 9
+    },
+    {
+      "name": "Angola",
+      "count": 9
+    },
+    {
+      "name": "Barbados",
+      "count": 9
+    },
+    {
+      "name": "Cuba",
+      "count": 9
+    },
+    {
+      "name": "Puerto Rico",
+      "count": 9
+    },
+    {
+      "name": "Panama",
+      "count": 9
+    },
+    {
+      "name": "Guyana",
+      "count": 9
+    },
+    {
+      "name": "Botswana",
+      "count": 9
+    },
+    {
+      "name": "Lesotho",
+      "count": 9
+    },
+    {
+      "name": "New Zealand",
+      "count": 9
+    },
+    {
+      "name": "Mongolia",
+      "count": 9
+    },
+    {
+      "name": "Albania",
+      "count": 9
+    },
+    {
+      "name": "Suriname",
+      "count": 9
+    },
+    {
+      "name": "Equatorial Guinea",
+      "count": 9
+    },
+    {
+      "name": "Brazil",
+      "count": 9
+    },
+    {
+      "name": "Australia",
+      "count": 9
+    },
+    {
+      "name": "Nigeria",
+      "count": 9
+    },
+    {
+      "name": "Gambia, The",
+      "count": 9
+    },
+    {
+      "name": "Uganda",
+      "count": 9
+    },
+    {
+      "name": "Finland",
+      "count": 9
+    },
+    {
+      "name": "Saba",
+      "count": 8
+    },
+    {
+      "name": "Chavin",
+      "count": 8
+    },
+    {
+      "name": "Pomeranian culture",
+      "count": 8
+    },
+    {
+      "name": "Sambian-Nothangian culture",
+      "count": 8
+    },
+    {
+      "name": "Bell-shaped burials culture",
+      "count": 8
+    },
+    {
+      "name": "Western Masurian culture",
+      "count": 8
+    },
+    {
+      "name": "Eastern Masurian culture",
+      "count": 8
+    },
+    {
+      "name": "Curonians",
+      "count": 8
+    },
+    {
+      "name": "Brushed Pottery culture",
+      "count": 8
+    },
+    {
+      "name": "Plain-Pottery culture",
+      "count": 8
+    },
+    {
+      "name": "Teotihuacán",
+      "count": 8
+    },
+    {
+      "name": "Moche",
+      "count": 8
+    },
+    {
+      "name": "Persia",
+      "count": 8
+    },
+    {
+      "name": "Bulgars",
+      "count": 8
+    },
+    {
+      "name": "Srivijaya Empire",
+      "count": 8
+    },
+    {
+      "name": "Papuans",
+      "count": 8
+    },
+    {
+      "name": "Muscat",
+      "count": 8
+    },
+    {
+      "name": "Navarre",
+      "count": 8
+    },
+    {
+      "name": "Aragón",
+      "count": 8
+    },
+    {
+      "name": "Orissa",
+      "count": 8
+    },
+    {
+      "name": "Lithuania",
+      "count": 8
+    },
+    {
+      "name": "Swiss Confederation",
+      "count": 8
+    },
+    {
+      "name": "Mi'kma'ki",
+      "count": 8
+    },
+    {
+      "name": "Viceroyalty of New Spain",
+      "count": 8
+    },
+    {
+      "name": "Montenegro",
+      "count": 8
+    },
+    {
+      "name": "Burma",
+      "count": 8
+    },
+    {
+      "name": "Lozi",
+      "count": 8
+    },
+    {
+      "name": "Turks and Caicos Islands",
+      "count": 8
+    },
+    {
+      "name": "Bahamas",
+      "count": 8
+    },
+    {
+      "name": "India",
+      "count": 8
+    },
+    {
+      "name": "Ivory Coast",
+      "count": 8
+    },
+    {
+      "name": "Gabon",
+      "count": 8
+    },
+    {
+      "name": "Tanzania, United Republic of",
+      "count": 8
+    },
+    {
+      "name": "Malawi",
+      "count": 8
+    },
+    {
+      "name": "Togo",
+      "count": 8
+    },
+    {
+      "name": "Malaysia",
+      "count": 8
+    },
+    {
+      "name": "Sudan",
+      "count": 8
+    },
+    {
+      "name": "Eritrea",
+      "count": 8
+    },
+    {
+      "name": "Kenya",
+      "count": 8
+    },
+    {
+      "name": "Iran",
+      "count": 8
+    },
+    {
+      "name": "Turkey",
+      "count": 8
+    },
+    {
+      "name": "Austronesians",
+      "count": 7
+    },
+    {
+      "name": "Maize farmers",
+      "count": 7
+    },
+    {
+      "name": "Cimerians",
+      "count": 7
+    },
+    {
+      "name": "Paleo-Inuit",
+      "count": 7
+    },
+    {
+      "name": "Marksville Culture",
+      "count": 7
+    },
+    {
+      "name": "Fourche Maline Culture",
+      "count": 7
+    },
+    {
+      "name": "Mill Creek Culture",
+      "count": 7
+    },
+    {
+      "name": "Miller",
+      "count": 7
+    },
+    {
+      "name": "Laurel complex",
+      "count": 7
+    },
+    {
+      "name": "Copena",
+      "count": 7
+    },
+    {
+      "name": "Porter",
+      "count": 7
+    },
+    {
+      "name": "Goodall Focus",
+      "count": 7
+    },
+    {
+      "name": "Saugeen Complex",
+      "count": 7
+    },
+    {
+      "name": "Couture Complex",
+      "count": 7
+    },
+    {
+      "name": "Point Peninsula",
+      "count": 7
+    },
+    {
+      "name": "Hopewell Culture",
+      "count": 7
+    },
+    {
+      "name": "Nazca",
+      "count": 7
+    },
+    {
+      "name": "Tiahuanaco Empire",
+      "count": 7
+    },
+    {
+      "name": "Huari Empire",
+      "count": 7
+    },
+    {
+      "name": "Arawaks",
+      "count": 7
+    },
+    {
+      "name": "Khmer Empire",
+      "count": 7
+    },
+    {
+      "name": "Annam",
+      "count": 7
+    },
+    {
+      "name": "Taino",
+      "count": 7
+    },
+    {
+      "name": "Aceh",
+      "count": 7
+    },
+    {
+      "name": "Catawba",
+      "count": 7
+    },
+    {
+      "name": "Cheyenne",
+      "count": 7
+    },
+    {
+      "name": "Atakapa",
+      "count": 7
+    },
+    {
+      "name": "Wadai",
+      "count": 7
+    },
+    {
+      "name": "Darfur",
+      "count": 7
+    },
+    {
+      "name": "Oromo",
+      "count": 7
+    },
+    {
+      "name": "T'atsaot'ine",
+      "count": 7
+    },
+    {
+      "name": "Yup'ik & Cup'ik",
+      "count": 7
+    },
+    {
+      "name": "Suspiaq",
+      "count": 7
+    },
+    {
+      "name": "Inupiaq",
+      "count": 7
+    },
+    {
+      "name": "Eyaq",
+      "count": 7
+    },
+    {
+      "name": "Portuguese East Africa",
+      "count": 7
+    },
+    {
+      "name": "Austrian Empire",
+      "count": 7
+    },
+    {
+      "name": "Kalaako/Malpa",
+      "count": 7
+    },
+    {
+      "name": "Kadjerong",
+      "count": 7
+    },
+    {
+      "name": "Gooniyandi",
+      "count": 7
+    },
+    {
+      "name": "Pinikura",
+      "count": 7
+    },
+    {
+      "name": "Yiiji",
+      "count": 7
+    },
+    {
+      "name": "Martuthunira",
+      "count": 7
+    },
+    {
+      "name": "Yinhawangka",
+      "count": 7
+    },
+    {
+      "name": "Jabirrjabirr",
+      "count": 7
+    },
+    {
+      "name": "Kuwarra",
+      "count": 7
+    },
+    {
+      "name": "Payungu",
+      "count": 7
+    },
+    {
+      "name": "Maya",
+      "count": 7
+    },
+    {
+      "name": "Jawoyn",
+      "count": 7
+    },
+    {
+      "name": "Warumungu",
+      "count": 7
+    },
+    {
+      "name": "Luritja",
+      "count": 7
+    },
+    {
+      "name": "Kaytej",
+      "count": 7
+    },
+    {
+      "name": "Malkana",
+      "count": 7
+    },
+    {
+      "name": "Yawuru",
+      "count": 7
+    },
+    {
+      "name": "Kaniyang",
+      "count": 7
+    },
+    {
+      "name": "Ngarinman",
+      "count": 7
+    },
+    {
+      "name": "Jukun",
+      "count": 7
+    },
+    {
+      "name": "Maranunggu",
+      "count": 7
+    },
+    {
+      "name": "Thiin",
+      "count": 7
+    },
+    {
+      "name": "Doolboong/Miriwoong",
+      "count": 7
+    },
+    {
+      "name": "Warlpiri",
+      "count": 7
+    },
+    {
+      "name": "Walmatjarri",
+      "count": 7
+    },
+    {
+      "name": "Jaburrara",
+      "count": 7
+    },
+    {
+      "name": "Nyaki-nyaki",
+      "count": 7
+    },
+    {
+      "name": "Ngarluma",
+      "count": 7
+    },
+    {
+      "name": "Marramaninjsji",
+      "count": 7
+    },
+    {
+      "name": "Punuba",
+      "count": 7
+    },
+    {
+      "name": "Warlmanpa",
+      "count": 7
+    },
+    {
+      "name": "Worla",
+      "count": 7
+    },
+    {
+      "name": "Tjupany",
+      "count": 7
+    },
+    {
+      "name": "Yankuntjatjara",
+      "count": 7
+    },
+    {
+      "name": "Nakako",
+      "count": 7
+    },
+    {
+      "name": "Mandjindja",
+      "count": 7
+    },
+    {
+      "name": "Ngalea",
+      "count": 7
+    },
+    {
+      "name": "Kariyarra",
+      "count": 7
+    },
+    {
+      "name": "Nyul Nyul",
+      "count": 7
+    },
+    {
+      "name": "Antakarinja",
+      "count": 7
+    },
+    {
+      "name": "Karangpurru",
+      "count": 7
+    },
+    {
+      "name": "Kurrama",
+      "count": 7
+    },
+    {
+      "name": "Nana",
+      "count": 7
+    },
+    {
+      "name": "Gunibidji",
+      "count": 7
+    },
+    {
+      "name": "Mangarayi",
+      "count": 7
+    },
+    {
+      "name": "Yuat",
+      "count": 7
+    },
+    {
+      "name": "Wajuk",
+      "count": 7
+    },
+    {
+      "name": "Jingili",
+      "count": 7
+    },
+    {
+      "name": "Nhuwala",
+      "count": 7
+    },
+    {
+      "name": "Jaru",
+      "count": 7
+    },
+    {
+      "name": "Ngan’gikurunggurr",
+      "count": 7
+    },
+    {
+      "name": "Limilngan",
+      "count": 7
+    },
+    {
+      "name": "Kalaamaya",
+      "count": 7
+    },
+    {
+      "name": "Jiwarli",
+      "count": 7
+    },
+    {
+      "name": "Wunambul",
+      "count": 7
+    },
+    {
+      "name": "Mudburra",
+      "count": 7
+    },
+    {
+      "name": "Ngalkbun",
+      "count": 7
+    },
+    {
+      "name": "Ngalawangka",
+      "count": 7
+    },
+    {
+      "name": "Mangala",
+      "count": 7
+    },
+    {
+      "name": "Bukurnidja",
+      "count": 7
+    },
+    {
+      "name": "Wangkathaa",
+      "count": 7
+    },
+    {
+      "name": "Tharrgari",
+      "count": 7
+    },
+    {
+      "name": "Worora",
+      "count": 7
+    },
+    {
+      "name": "Nyikina",
+      "count": 7
+    },
+    {
+      "name": "Unggarangi",
+      "count": 7
+    },
+    {
+      "name": "Nimanburu",
+      "count": 7
+    },
+    {
+      "name": "Kokatha",
+      "count": 7
+    },
+    {
+      "name": "Gunbalang",
+      "count": 7
+    },
+    {
+      "name": "Badimaya",
+      "count": 7
+    },
+    {
+      "name": "Kungarakany",
+      "count": 7
+    },
+    {
+      "name": "Ngalakan",
+      "count": 7
+    },
+    {
+      "name": "Mirning",
+      "count": 7
+    },
+    {
+      "name": "Nungali",
+      "count": 7
+    },
+    {
+      "name": "Yindjibarndi",
+      "count": 7
+    },
+    {
+      "name": "Karajarri",
+      "count": 7
+    },
+    {
+      "name": "Wudjari",
+      "count": 7
+    },
+    {
+      "name": "Bilinara",
+      "count": 7
+    },
+    {
+      "name": "Tjerratj",
+      "count": 7
+    },
+    {
+      "name": "Mardu",
+      "count": 7
+    },
+    {
+      "name": "Goreng",
+      "count": 7
+    },
+    {
+      "name": "Gunwinggu",
+      "count": 7
+    },
+    {
+      "name": "Yinggarda",
+      "count": 7
+    },
+    {
+      "name": "Arrernte",
+      "count": 7
+    },
+    {
+      "name": "Konbudj",
+      "count": 7
+    },
+    {
+      "name": "Ngaanyatjarra",
+      "count": 7
+    },
+    {
+      "name": "Ngarinyin",
+      "count": 7
+    },
+    {
+      "name": "Kija",
+      "count": 7
+    },
+    {
+      "name": "Wagiman",
+      "count": 7
+    },
+    {
+      "name": "Ngombur",
+      "count": 7
+    },
+    {
+      "name": "Alyawarre",
+      "count": 7
+    },
+    {
+      "name": "Iwaidja",
+      "count": 7
+    },
+    {
+      "name": "Mbukarla",
+      "count": 7
+    },
+    {
+      "name": "Warriyangga",
+      "count": 7
+    },
+    {
+      "name": "Gagudju",
+      "count": 7
+    },
+    {
+      "name": "Bardi",
+      "count": 7
+    },
+    {
+      "name": "Maung",
+      "count": 7
+    },
+    {
+      "name": "Nyamal",
+      "count": 7
+    },
+    {
+      "name": "Marringarr",
+      "count": 7
+    },
+    {
+      "name": "Bibbulman",
+      "count": 7
+    },
+    {
+      "name": "Gamberre",
+      "count": 7
+    },
+    {
+      "name": "Ngatatjara",
+      "count": 7
+    },
+    {
+      "name": "Wawula",
+      "count": 7
+    },
+    {
+      "name": "Nyangumarda",
+      "count": 7
+    },
+    {
+      "name": "Alawa",
+      "count": 7
+    },
+    {
+      "name": "Yangman",
+      "count": 7
+    },
+    {
+      "name": "Wirangu",
+      "count": 7
+    },
+    {
+      "name": "Kwini",
+      "count": 7
+    },
+    {
+      "name": "Larrakia",
+      "count": 7
+    },
+    {
+      "name": "Amangu",
+      "count": 7
+    },
+    {
+      "name": "Gungurugoni",
+      "count": 7
+    },
+    {
+      "name": "Ngatjumay",
+      "count": 7
+    },
+    {
+      "name": "Ngaliwuru",
+      "count": 7
+    },
+    {
+      "name": "Thalanyji",
+      "count": 7
+    },
+    {
+      "name": "Woolna",
+      "count": 7
+    },
+    {
+      "name": "Rembarnga",
+      "count": 7
+    },
+    {
+      "name": "Murrinh-patha",
+      "count": 7
+    },
+    {
+      "name": "Pitjantjatjara",
+      "count": 7
+    },
+    {
+      "name": "Wardandi",
+      "count": 7
+    },
+    {
+      "name": "Amarak",
+      "count": 7
+    },
+    {
+      "name": "Umida",
+      "count": 7
+    },
+    {
+      "name": "Kundjey’mi",
+      "count": 7
+    },
+    {
+      "name": "Palyku",
+      "count": 7
+    },
+    {
+      "name": "Watjarri",
+      "count": 7
+    },
+    {
+      "name": "Ngarti",
+      "count": 7
+    },
+    {
+      "name": "Warwa",
+      "count": 7
+    },
+    {
+      "name": "Dangbon",
+      "count": 7
+    },
+    {
+      "name": "Wardaman",
+      "count": 7
+    },
+    {
+      "name": "Wiilman",
+      "count": 7
+    },
+    {
+      "name": "Warray",
+      "count": 7
+    },
+    {
+      "name": "Kukatja",
+      "count": 7
+    },
+    {
+      "name": "Jurruru",
+      "count": 7
+    },
+    {
+      "name": "Purduna",
+      "count": 7
+    },
+    {
+      "name": "Pintupi",
+      "count": 7
+    },
+    {
+      "name": "Miwa",
+      "count": 7
+    },
+    {
+      "name": "Banjima",
+      "count": 7
+    },
+    {
+      "name": "Kuwema",
+      "count": 7
+    },
+    {
+      "name": "Gurindji",
+      "count": 7
+    },
+    {
+      "name": "Anmatyerre",
+      "count": 7
+    },
+    {
+      "name": "Marrithiyel",
+      "count": 7
+    },
+    {
+      "name": "Malak malak",
+      "count": 7
+    },
+    {
+      "name": "Unggumi",
+      "count": 7
+    },
+    {
+      "name": "Tjalkanti",
+      "count": 7
+    },
+    {
+      "name": "Ngumbarl",
+      "count": 7
+    },
+    {
+      "name": "Nhanta",
+      "count": 7
+    },
+    {
+      "name": "Ngarla",
+      "count": 7
+    },
+    {
+      "name": "Jaminjung",
+      "count": 7
+    },
+    {
+      "name": "Ballardong",
+      "count": 7
+    },
+    {
+      "name": "Yulparitja",
+      "count": 7
+    },
+    {
+      "name": "Wuningangk",
+      "count": 7
+    },
+    {
+      "name": "Ngan’giwumirri",
+      "count": 7
+    },
+    {
+      "name": "Pinjarup",
+      "count": 7
+    },
+    {
+      "name": "Nyanganyatjara",
+      "count": 7
+    },
+    {
+      "name": "Cape Colony",
+      "count": 7
+    },
+    {
+      "name": "Oldenburg",
+      "count": 7
+    },
+    {
+      "name": "Asante",
+      "count": 7
+    },
+    {
+      "name": "Cochin China",
+      "count": 7
+    },
+    {
+      "name": "Thuringia",
+      "count": 7
+    },
+    {
+      "name": "Greenland",
+      "count": 7
+    },
+    {
+      "name": "Trucial Oman",
+      "count": 7
+    },
+    {
+      "name": "Malta",
+      "count": 7
+    },
+    {
+      "name": "British Raj",
+      "count": 7
+    },
+    {
+      "name": "Jamaica",
+      "count": 7
+    },
+    {
+      "name": "Austria",
+      "count": 7
+    },
+    {
+      "name": "Guinea-Bissau",
+      "count": 7
+    },
+    {
+      "name": "Kuwait",
+      "count": 7
+    },
+    {
+      "name": "state societies and Aramaean kingdoms",
+      "count": 6
+    },
+    {
+      "name": "Ethiopian highland farmers",
+      "count": 6
+    },
+    {
+      "name": "Proto-Altaic pastoralists",
+      "count": 6
+    },
+    {
+      "name": "Carthaginian Empire",
+      "count": 6
+    },
+    {
+      "name": "Magadha",
+      "count": 6
+    },
+    {
+      "name": "Scythians",
+      "count": 6
+    },
+    {
+      "name": "Himyarite Kingdom",
+      "count": 6
+    },
+    {
+      "name": "Kalinga",
+      "count": 6
+    },
+    {
+      "name": "Western Roman Empire",
+      "count": 6
+    },
+    {
+      "name": "Ostrogoths",
+      "count": 6
+    },
+    {
+      "name": "Danes",
+      "count": 6
+    },
+    {
+      "name": "Chauhans",
+      "count": 6
+    },
+    {
+      "name": "Carolingian Empire",
+      "count": 6
+    },
+    {
+      "name": "Great Zimbabwe",
+      "count": 6
+    },
+    {
+      "name": "Corsica",
+      "count": 6
+    },
+    {
+      "name": "Croatia",
+      "count": 6
+    },
+    {
+      "name": "Chimú Empire",
+      "count": 6
+    },
+    {
+      "name": "England",
+      "count": 6
+    },
+    {
+      "name": "Guanahatabeyes",
+      "count": 6
+    },
+    {
+      "name": "Bulgar Khanate",
+      "count": 6
+    },
+    {
+      "name": "Sultanate of Delhi",
+      "count": 6
+    },
+    {
+      "name": "Ainus",
+      "count": 6
+    },
+    {
+      "name": "Akan",
+      "count": 6
+    },
+    {
+      "name": "Ponca",
+      "count": 6
+    },
+    {
+      "name": "Yokuts",
+      "count": 6
+    },
+    {
+      "name": "Tonkawa",
+      "count": 6
+    },
+    {
+      "name": "Iowa",
+      "count": 6
+    },
+    {
+      "name": "Tunica",
+      "count": 6
+    },
+    {
+      "name": "Kalispel",
+      "count": 6
+    },
+    {
+      "name": "Natchez",
+      "count": 6
+    },
+    {
+      "name": "Modoc",
+      "count": 6
+    },
+    {
+      "name": "Caddo",
+      "count": 6
+    },
+    {
+      "name": "Erie",
+      "count": 6
+    },
+    {
+      "name": "Yankton",
+      "count": 6
+    },
+    {
+      "name": "Arapaho",
+      "count": 6
+    },
+    {
+      "name": "Wichita",
+      "count": 6
+    },
+    {
+      "name": "Kalapuya",
+      "count": 6
+    },
+    {
+      "name": "England and Ireland",
+      "count": 6
+    },
+    {
+      "name": "Comanche",
+      "count": 6
+    },
+    {
+      "name": "Crow",
+      "count": 6
+    },
+    {
+      "name": "Pomo",
+      "count": 6
+    },
+    {
+      "name": "Cherokee",
+      "count": 6
+    },
+    {
+      "name": "Iroquois",
+      "count": 6
+    },
+    {
+      "name": "Nez Perce",
+      "count": 6
+    },
+    {
+      "name": "Republic of the Seven Zenden",
+      "count": 6
+    },
+    {
+      "name": "Samoyedic people",
+      "count": 6
+    },
+    {
+      "name": "Tsardom of Muscovy",
+      "count": 6
+    },
+    {
+      "name": "Vice-Royalty of New Spain",
+      "count": 6
+    },
+    {
+      "name": "Parma",
+      "count": 6
+    },
+    {
+      "name": "Pontremoli",
+      "count": 6
+    },
+    {
+      "name": "Fivizzano",
+      "count": 6
+    },
+    {
+      "name": "Lucca",
+      "count": 6
+    },
+    {
+      "name": "Tuscany",
+      "count": 6
+    },
+    {
+      "name": "Modena",
+      "count": 6
+    },
+    {
+      "name": "Massa",
+      "count": 6
+    },
+    {
+      "name": "Delagoa Bay",
+      "count": 6
+    },
+    {
+      "name": "Lombardy",
+      "count": 6
+    },
+    {
+      "name": "Viceroyalty of Peru",
+      "count": 6
+    },
+    {
+      "name": "Kandy",
+      "count": 6
+    },
+    {
+      "name": "Eora",
+      "count": 6
+    },
+    {
+      "name": "Ganggalida",
+      "count": 6
+    },
+    {
+      "name": "Umpila",
+      "count": 6
+    },
+    {
+      "name": "Awngthim",
+      "count": 6
+    },
+    {
+      "name": "Kuyani",
+      "count": 6
+    },
+    {
+      "name": "Wangkumara",
+      "count": 6
+    },
+    {
+      "name": "Nari Nari",
+      "count": 6
+    },
+    {
+      "name": "Wambaya",
+      "count": 6
+    },
+    {
+      "name": "Wailwan",
+      "count": 6
+    },
+    {
+      "name": "Dainggatti",
+      "count": 6
+    },
+    {
+      "name": "Andegerebenha",
+      "count": 6
+    },
+    {
+      "name": "Wakaya",
+      "count": 6
+    },
+    {
+      "name": "Madi Madi",
+      "count": 6
+    },
+    {
+      "name": "Gunu",
+      "count": 6
+    },
+    {
+      "name": "Dyungungoo (Gubbi Gubbi)",
+      "count": 6
+    },
+    {
+      "name": "Nguburinji",
+      "count": 6
+    },
+    {
+      "name": "Dja Dja Wurrung",
+      "count": 6
+    },
+    {
+      "name": "Yir Yoront",
+      "count": 6
+    },
+    {
+      "name": "Karangura",
+      "count": 6
+    },
+    {
+      "name": "Meru",
+      "count": 6
+    },
+    {
+      "name": "Yilba",
+      "count": 6
+    },
+    {
+      "name": "Yawarawarka",
+      "count": 6
+    },
+    {
+      "name": "Nakara",
+      "count": 6
+    },
+    {
+      "name": "Mara",
+      "count": 6
+    },
+    {
+      "name": "Dharawala",
+      "count": 6
+    },
+    {
+      "name": "Kuungkari",
+      "count": 6
+    },
+    {
+      "name": "Kureinji",
+      "count": 6
+    },
+    {
+      "name": "Dadi Dadi",
+      "count": 6
+    },
+    {
+      "name": "Kaurna Pangkarra",
+      "count": 6
+    },
+    {
+      "name": "Waka Waka",
+      "count": 6
+    },
+    {
+      "name": "Thaayorre",
+      "count": 6
+    },
+    {
+      "name": "Yorta Yorta",
+      "count": 6
+    },
+    {
+      "name": "Ngarigo",
+      "count": 6
+    },
+    {
+      "name": "Muruwari",
+      "count": 6
+    },
+    {
+      "name": "Mbara",
+      "count": 6
+    },
+    {
+      "name": "Gumbainggir",
+      "count": 6
+    },
+    {
+      "name": "Yinwum",
+      "count": 6
+    },
+    {
+      "name": "Barna",
+      "count": 6
+    },
+    {
+      "name": "Uutaalnganu",
+      "count": 6
+    },
+    {
+      "name": "Wergaia",
+      "count": 6
+    },
+    {
+      "name": "Nguri",
+      "count": 6
+    },
+    {
+      "name": "Gunggari",
+      "count": 6
+    },
+    {
+      "name": "Nganyaywana",
+      "count": 6
+    },
+    {
+      "name": "Kalkadoon",
+      "count": 6
+    },
+    {
+      "name": "Wunumara",
+      "count": 6
+    },
+    {
+      "name": "Jaitmatang",
+      "count": 6
+    },
+    {
+      "name": "Wurundjeri",
+      "count": 6
+    },
+    {
+      "name": "Gadubanud",
+      "count": 6
+    },
+    {
+      "name": "Ngurraiillam",
+      "count": 6
+    },
+    {
+      "name": "Taungurung",
+      "count": 6
+    },
+    {
+      "name": "Karuwali",
+      "count": 6
+    },
+    {
+      "name": "Kunjen",
+      "count": 6
+    },
+    {
+      "name": "Gabalbara",
+      "count": 6
+    },
+    {
+      "name": "Narangga",
+      "count": 6
+    },
+    {
+      "name": "Yuggera",
+      "count": 6
+    },
+    {
+      "name": "Barindji",
+      "count": 6
+    },
+    {
+      "name": "Bundjalung",
+      "count": 6
+    },
+    {
+      "name": "Ngunawal",
+      "count": 6
+    },
+    {
+      "name": "Mayi-Thakurti",
+      "count": 6
+    },
+    {
+      "name": "Teppathiggi",
+      "count": 6
+    },
+    {
+      "name": "Binbinga",
+      "count": 6
+    },
+    {
+      "name": "Gunindiri",
+      "count": 6
+    },
+    {
+      "name": "Yirandali",
+      "count": 6
+    },
+    {
+      "name": "Wargamaygan",
+      "count": 6
+    },
+    {
+      "name": "Bandjigali",
+      "count": 6
+    },
+    {
+      "name": "Gangulu",
+      "count": 6
+    },
+    {
+      "name": "Mayi-Kulan",
+      "count": 6
+    },
+    {
+      "name": "Kuku-yalanji",
+      "count": 6
+    },
+    {
+      "name": "Mpalitjanh",
+      "count": 6
+    },
+    {
+      "name": "Yiman",
+      "count": 6
+    },
+    {
+      "name": "Yitha Yitha",
+      "count": 6
+    },
+    {
+      "name": "Mbeiwum",
+      "count": 6
+    },
+    {
+      "name": "Yalarrnga",
+      "count": 6
+    },
+    {
+      "name": "Nawu",
+      "count": 6
+    },
+    {
+      "name": "Mithaka",
+      "count": 6
+    },
+    {
+      "name": "Wadjigu",
+      "count": 6
+    },
+    {
+      "name": "Nukunu",
+      "count": 6
+    },
+    {
+      "name": "Barundji",
+      "count": 6
+    },
+    {
+      "name": "Badtjala",
+      "count": 6
+    },
+    {
+      "name": "Birria",
+      "count": 6
+    },
+    {
+      "name": "Banggarla",
+      "count": 6
+    },
+    {
+      "name": "Ngambri",
+      "count": 6
+    },
+    {
+      "name": "Maiawali",
+      "count": 6
+    },
+    {
+      "name": "Waanyi",
+      "count": 6
+    },
+    {
+      "name": "Wadigali",
+      "count": 6
+    },
+    {
+      "name": "Guringai",
+      "count": 6
+    },
+    {
+      "name": "Mbabaram",
+      "count": 6
+    },
+    {
+      "name": "Gureng Gureng",
+      "count": 6
+    },
+    {
+      "name": "Bularnu",
+      "count": 6
+    },
+    {
+      "name": "Djabwurung",
+      "count": 6
+    },
+    {
+      "name": "Garawa",
+      "count": 6
+    },
+    {
+      "name": "Wandjiwalgu",
+      "count": 6
+    },
+    {
+      "name": "Wakabunga",
+      "count": 6
+    },
+    {
+      "name": "Winda Winda",
+      "count": 6
+    },
+    {
+      "name": "Margany",
+      "count": 6
+    },
+    {
+      "name": "Worimi",
+      "count": 6
+    },
+    {
+      "name": "Kokomini",
+      "count": 6
+    },
+    {
+      "name": "Arabana",
+      "count": 6
+    },
+    {
+      "name": "Nunggubuyu",
+      "count": 6
+    },
+    {
+      "name": "Wangan",
+      "count": 6
+    },
+    {
+      "name": "Mandandanji",
+      "count": 6
+    },
+    {
+      "name": "Bindjali",
+      "count": 6
+    },
+    {
+      "name": "Mayi-Kutuna",
+      "count": 6
+    },
+    {
+      "name": "Darumbal",
+      "count": 6
+    },
+    {
+      "name": "Boonwurrung",
+      "count": 6
+    },
+    {
+      "name": "Yanda",
+      "count": 6
+    },
+    {
+      "name": "Gugu-Badhun",
+      "count": 6
+    },
+    {
+      "name": "Biripi",
+      "count": 6
+    },
+    {
+      "name": "Karenggapa",
+      "count": 6
+    },
+    {
+      "name": "Gungabula",
+      "count": 6
+    },
+    {
+      "name": "Kaantju",
+      "count": 6
+    },
+    {
+      "name": "Wiradjuri",
+      "count": 6
+    },
+    {
+      "name": "Wulgurukaba",
+      "count": 6
+    },
+    {
+      "name": "Ngamini",
+      "count": 6
+    },
+    {
+      "name": "Giraiwurung",
+      "count": 6
+    },
+    {
+      "name": "Kuuku-ya’u",
+      "count": 6
+    },
+    {
+      "name": "Yidinjdji",
+      "count": 6
+    },
+    {
+      "name": "Yadhaigana",
+      "count": 6
+    },
+    {
+      "name": "Peramangk",
+      "count": 6
+    },
+    {
+      "name": "Wangkamana",
+      "count": 6
+    },
+    {
+      "name": "Gayiri",
+      "count": 6
+    },
+    {
+      "name": "Dhirari",
+      "count": 6
+    },
+    {
+      "name": "Yuwi",
+      "count": 6
+    },
+    {
+      "name": "Turrbal",
+      "count": 6
+    },
+    {
+      "name": "Yupangathi",
+      "count": 6
+    },
+    {
+      "name": "Djabuganjdji",
+      "count": 6
+    },
+    {
+      "name": "Geawegal",
+      "count": 6
+    },
+    {
+      "name": "Ngandji",
+      "count": 6
+    },
+    {
+      "name": "Wongaibon",
+      "count": 6
+    },
+    {
+      "name": "Kooma",
+      "count": 6
+    },
+    {
+      "name": "Anguthimri",
+      "count": 6
+    },
+    {
+      "name": "Kunja",
+      "count": 6
+    },
+    {
+      "name": "Andyamathanha",
+      "count": 6
+    },
+    {
+      "name": "Yanga",
+      "count": 6
+    },
+    {
+      "name": "Giya",
+      "count": 6
+    },
+    {
+      "name": "Ngarrindjeri",
+      "count": 6
+    },
+    {
+      "name": "Yarluyandi",
+      "count": 6
+    },
+    {
+      "name": "Yuru",
+      "count": 6
+    },
+    {
+      "name": "Wuli-wuli",
+      "count": 6
+    },
+    {
+      "name": "Wadi Wadi",
+      "count": 6
+    },
+    {
+      "name": "Yambina",
+      "count": 6
+    },
+    {
+      "name": "Gananggalinda",
+      "count": 6
+    },
+    {
+      "name": "Warluwarra",
+      "count": 6
+    },
+    {
+      "name": "Mayi-Yapi",
+      "count": 6
+    },
+    {
+      "name": "Biri",
+      "count": 6
+    },
+    {
+      "name": "Kamilaroi",
+      "count": 6
+    },
+    {
+      "name": "Agwarmin",
+      "count": 6
+    },
+    {
+      "name": "Yuin",
+      "count": 6
+    },
+    {
+      "name": "Yangga",
+      "count": 6
+    },
+    {
+      "name": "Bigambul",
+      "count": 6
+    },
+    {
+      "name": "Gunditjmara",
+      "count": 6
+    },
+    {
+      "name": "Waveroo",
+      "count": 6
+    },
+    {
+      "name": "Wemba Wemba",
+      "count": 6
+    },
+    {
+      "name": "Barunggam",
+      "count": 6
+    },
+    {
+      "name": "Bayali",
+      "count": 6
+    },
+    {
+      "name": "Ngawun",
+      "count": 6
+    },
+    {
+      "name": "Baradha",
+      "count": 6
+    },
+    {
+      "name": "Budjari",
+      "count": 6
+    },
+    {
+      "name": "Dieri",
+      "count": 6
+    },
+    {
+      "name": "Wik",
+      "count": 6
+    },
+    {
+      "name": "Mutumui",
+      "count": 6
+    },
+    {
+      "name": "Tjungundji",
+      "count": 6
+    },
+    {
+      "name": "Jardwadjali",
+      "count": 6
+    },
+    {
+      "name": "Luthigh",
+      "count": 6
+    },
+    {
+      "name": "Guugu-Yimidhirr",
+      "count": 6
+    },
+    {
+      "name": "Walangama",
+      "count": 6
+    },
+    {
+      "name": "Anggamudi",
+      "count": 6
+    },
+    {
+      "name": "Pitta-Pitta",
+      "count": 6
+    },
+    {
+      "name": "Ngarabal",
+      "count": 6
+    },
+    {
+      "name": "Djargurdwurung",
+      "count": 6
+    },
+    {
+      "name": "Yanyuwa",
+      "count": 6
+    },
+    {
+      "name": "Barkindji",
+      "count": 6
+    },
+    {
+      "name": "Gulidjan",
+      "count": 6
+    },
+    {
+      "name": "Ngadjuri",
+      "count": 6
+    },
+    {
+      "name": "Yandruwandha",
+      "count": 6
+    },
+    {
+      "name": "Yugambeh",
+      "count": 6
+    },
+    {
+      "name": "Lamalama",
+      "count": 6
+    },
+    {
+      "name": "Kurnai",
+      "count": 6
+    },
+    {
+      "name": "Malyangaba",
+      "count": 6
+    },
+    {
+      "name": "Kokowarra",
+      "count": 6
+    },
+    {
+      "name": "Pirlatapa",
+      "count": 6
+    },
+    {
+      "name": "Dharug",
+      "count": 6
+    },
+    {
+      "name": "Wathaurong",
+      "count": 6
+    },
+    {
+      "name": "Kurtjar",
+      "count": 6
+    },
+    {
+      "name": "Thul Garrie Waja (Bindal)",
+      "count": 6
+    },
+    {
+      "name": "Kukatj",
+      "count": 6
+    },
+    {
+      "name": "Yolngu",
+      "count": 6
+    },
+    {
+      "name": "Iningai",
+      "count": 6
+    },
+    {
+      "name": "Wuthathi",
+      "count": 6
+    },
+    {
+      "name": "Mingin",
+      "count": 6
+    },
+    {
+      "name": "Wiljali",
+      "count": 6
+    },
+    {
+      "name": "Latje Latje",
+      "count": 6
+    },
+    {
+      "name": "Gundungurra",
+      "count": 6
+    },
+    {
+      "name": "Bidwell",
+      "count": 6
+    },
+    {
+      "name": "Wangkangurru",
+      "count": 6
+    },
+    {
+      "name": "Djirbalngan",
+      "count": 6
+    },
+    {
+      "name": "Koko-bera",
+      "count": 6
+    },
+    {
+      "name": "Yagalingu",
+      "count": 6
+    },
+    {
+      "name": "Ngargad",
+      "count": 6
+    },
+    {
+      "name": "Guwinmal",
+      "count": 6
+    },
+    {
+      "name": "Tharawal",
+      "count": 6
+    },
+    {
+      "name": "Bakanh",
+      "count": 6
+    },
+    {
+      "name": "Takalak",
+      "count": 6
+    },
+    {
+      "name": "Bidjara",
+      "count": 6
+    },
+    {
+      "name": "Burarra",
+      "count": 6
+    },
+    {
+      "name": "Darkinung",
+      "count": 6
+    },
+    {
+      "name": "Kullilla",
+      "count": 6
+    },
+    {
+      "name": "Buandig",
+      "count": 6
+    },
+    {
+      "name": "Koknar",
+      "count": 6
+    },
+    {
+      "name": "Umbindhamu",
+      "count": 6
+    },
+    {
+      "name": "Ngandi",
+      "count": 6
+    },
+    {
+      "name": "Kuuku-yani",
+      "count": 6
+    },
+    {
+      "name": "Nyawaygi",
+      "count": 6
+    },
+    {
+      "name": "Miyan",
+      "count": 6
+    },
+    {
+      "name": "Garingbal",
+      "count": 6
+    },
+    {
+      "name": "Baraba Baraba",
+      "count": 6
+    },
+    {
+      "name": "Kuthant",
+      "count": 6
+    },
+    {
+      "name": "Wonnarua",
+      "count": 6
+    },
+    {
+      "name": "Danggali",
+      "count": 6
+    },
+    {
+      "name": "Barranbinya",
+      "count": 6
+    },
+    {
+      "name": "Awabakal",
+      "count": 6
+    },
+    {
+      "name": "Guwa",
+      "count": 6
+    },
+    {
+      "name": "Brunswick",
+      "count": 6
+    },
+    {
+      "name": "Anhalt",
+      "count": 6
+    },
+    {
+      "name": "Somalia",
+      "count": 6
+    },
+    {
+      "name": "Zambia",
+      "count": 6
+    },
+    {
+      "name": "Zimbabwe",
+      "count": 6
+    },
+    {
+      "name": "Estonia",
+      "count": 6
+    },
+    {
+      "name": "Latvia",
+      "count": 6
+    },
+    {
+      "name": "USSR",
+      "count": 6
+    },
+    {
+      "name": "Azerbaijan",
+      "count": 6
+    },
+    {
+      "name": "South Africa",
+      "count": 6
+    },
+    {
+      "name": "Djibouti",
+      "count": 6
+    },
+    {
+      "name": "Libya",
+      "count": 6
+    },
+    {
+      "name": "Ireland",
+      "count": 6
+    },
+    {
+      "name": "Jordan",
+      "count": 6
+    },
+    {
+      "name": "Israel",
+      "count": 6
+    },
+    {
+      "name": "Saudi Arabia",
+      "count": 6
+    },
+    {
+      "name": "Andorra",
+      "count": 6
+    },
+    {
+      "name": "Indonesia",
+      "count": 6
+    },
+    {
+      "name": "China",
+      "count": 6
+    },
+    {
+      "name": "Elam",
+      "count": 5
+    },
+    {
+      "name": "Dravidians",
+      "count": 5
+    },
+    {
+      "name": "Austro-Asiatic rice cultures",
+      "count": 5
+    },
+    {
+      "name": "Papuan neolithic farmers",
+      "count": 5
+    },
+    {
+      "name": "Olmec",
+      "count": 5
+    },
+    {
+      "name": "Late Jomon culture",
+      "count": 5
+    },
+    {
+      "name": "N. European Bronze Age cultures",
+      "count": 5
+    },
+    {
+      "name": "Adena Culture",
+      "count": 5
+    },
+    {
+      "name": "Celts",
+      "count": 5
+    },
+    {
+      "name": "Wankarani",
+      "count": 5
+    },
+    {
+      "name": "Zhangzhung Kingdom",
+      "count": 5
+    },
+    {
+      "name": "Nabatean Kingdom",
+      "count": 5
+    },
+    {
+      "name": "Satavahanihara",
+      "count": 5
+    },
+    {
+      "name": "Dumonii",
+      "count": 5
+    },
+    {
+      "name": "Suren Kingdom",
+      "count": 5
+    },
+    {
+      "name": "Alans",
+      "count": 5
+    },
+    {
+      "name": "Empire of Ghana",
+      "count": 5
+    },
+    {
+      "name": "Hejaz",
+      "count": 5
+    },
+    {
+      "name": "Khazars",
+      "count": 5
+    },
+    {
+      "name": "Toltec Empire",
+      "count": 5
+    },
+    {
+      "name": "Mesoamerican city-states and chiefdoms",
+      "count": 5
+    },
+    {
+      "name": "Nan Chao",
+      "count": 5
+    },
+    {
+      "name": "Pandya state",
+      "count": 5
+    },
+    {
+      "name": "Kanem",
+      "count": 5
+    },
+    {
+      "name": "Celtic kingdoms",
+      "count": 5
+    },
+    {
+      "name": "Volga Bulgars",
+      "count": 5
+    },
+    {
+      "name": "Chola Empire",
+      "count": 5
+    },
+    {
+      "name": "Chola state",
+      "count": 5
+    },
+    {
+      "name": "Kingdom of France",
+      "count": 5
+    },
+    {
+      "name": "Teutonic Knights",
+      "count": 5
+    },
+    {
+      "name": "Chagatai Khanate",
+      "count": 5
+    },
+    {
+      "name": "Siberians",
+      "count": 5
+    },
+    {
+      "name": "Mamluke Sultanate",
+      "count": 5
+    },
+    {
+      "name": "Hafsid Caliphate",
+      "count": 5
+    },
+    {
+      "name": "Sukhothai",
+      "count": 5
+    },
+    {
+      "name": "Poland-Lithuania",
+      "count": 5
+    },
+    {
+      "name": "Bengal",
+      "count": 5
+    },
+    {
+      "name": "Vijayanagara",
+      "count": 5
+    },
+    {
+      "name": "Santee",
+      "count": 5
+    },
+    {
+      "name": "Cree",
+      "count": 5
+    },
+    {
+      "name": "Houma",
+      "count": 5
+    },
+    {
+      "name": "Ahmadnagar",
+      "count": 5
+    },
+    {
+      "name": "Bidar",
+      "count": 5
+    },
+    {
+      "name": "Bijapur",
+      "count": 5
+    },
+    {
+      "name": "Golkonda",
+      "count": 5
+    },
+    {
+      "name": "Cuba (Spain)",
+      "count": 5
+    },
+    {
+      "name": "Naples",
+      "count": 5
+    },
+    {
+      "name": "Safavid Empire",
+      "count": 5
+    },
+    {
+      "name": "Mughal Empire",
+      "count": 5
+    },
+    {
+      "name": "Shan states",
+      "count": 5
+    },
+    {
+      "name": "Genoa",
+      "count": 5
+    },
+    {
+      "name": "Shawnee",
+      "count": 5
+    },
+    {
+      "name": "Chtimacha",
+      "count": 5
+    },
+    {
+      "name": "Pawnee",
+      "count": 5
+    },
+    {
+      "name": "Alabama",
+      "count": 5
+    },
+    {
+      "name": "Illinois",
+      "count": 5
+    },
+    {
+      "name": "Illinnois",
+      "count": 5
+    },
+    {
+      "name": "Kiowa",
+      "count": 5
+    },
+    {
+      "name": "Serano",
+      "count": 5
+    },
+    {
+      "name": "Arikara",
+      "count": 5
+    },
+    {
+      "name": "Miwok",
+      "count": 5
+    },
+    {
+      "name": "Naskapi Innu",
+      "count": 5
+    },
+    {
+      "name": "Kawahsu",
+      "count": 5
+    },
+    {
+      "name": "Shoshoni",
+      "count": 5
+    },
+    {
+      "name": "Cayuse",
+      "count": 5
+    },
+    {
+      "name": "Montagnais Innu",
+      "count": 5
+    },
+    {
+      "name": "Missouri",
+      "count": 5
+    },
+    {
+      "name": "Kansa",
+      "count": 5
+    },
+    {
+      "name": "Osage",
+      "count": 5
+    },
+    {
+      "name": "Quapaw",
+      "count": 5
+    },
+    {
+      "name": "Apache",
+      "count": 5
+    },
+    {
+      "name": "Ute",
+      "count": 5
+    },
+    {
+      "name": "Assiniboin",
+      "count": 5
+    },
+    {
+      "name": "Blackfoot",
+      "count": 5
+    },
+    {
+      "name": "Oto",
+      "count": 5
+    },
+    {
+      "name": "Omaha",
+      "count": 5
+    },
+    {
+      "name": "Teton",
+      "count": 5
+    },
+    {
+      "name": "Mandan",
+      "count": 5
+    },
+    {
+      "name": "Yankontai",
+      "count": 5
+    },
+    {
+      "name": "Fox",
+      "count": 5
+    },
+    {
+      "name": "Winebago",
+      "count": 5
+    },
+    {
+      "name": "Potawatomi",
+      "count": 5
+    },
+    {
+      "name": "Miami",
+      "count": 5
+    },
+    {
+      "name": "Menomini",
+      "count": 5
+    },
+    {
+      "name": "Yakima",
+      "count": 5
+    },
+    {
+      "name": "Umatilla",
+      "count": 5
+    },
+    {
+      "name": "Tenimo",
+      "count": 5
+    },
+    {
+      "name": "Maiou",
+      "count": 5
+    },
+    {
+      "name": "Northern Paiute",
+      "count": 5
+    },
+    {
+      "name": "Southern Paiute",
+      "count": 5
+    },
+    {
+      "name": "Milan",
+      "count": 5
+    },
+    {
+      "name": "Bagirmi",
+      "count": 5
+    },
+    {
+      "name": "Khiva Khanate",
+      "count": 5
+    },
+    {
+      "name": "Nogai Horde",
+      "count": 5
+    },
+    {
+      "name": "Quazaq Khanate",
+      "count": 5
+    },
+    {
+      "name": "Algiers",
+      "count": 5
+    },
+    {
+      "name": "Tunis",
+      "count": 5
+    },
+    {
+      "name": "Rozwi",
+      "count": 5
+    },
+    {
+      "name": "Awsa",
+      "count": 5
+    },
+    {
+      "name": "Athabascan",
+      "count": 5
+    },
+    {
+      "name": "Ceylon (Dutch)",
+      "count": 5
+    },
+    {
+      "name": "Hanover",
+      "count": 5
+    },
+    {
+      "name": "British Guiana",
+      "count": 5
+    },
+    {
+      "name": "Dahomey",
+      "count": 5
+    },
+    {
+      "name": "United States of America",
+      "count": 5
+    },
+    {
+      "name": "Kingdom of Sardinia",
+      "count": 5
+    },
+    {
+      "name": "Indian princely states",
+      "count": 5
+    },
+    {
+      "name": "Madagascar (France)",
+      "count": 5
+    },
+    {
+      "name": "Yugoslavia",
+      "count": 5
+    },
+    {
+      "name": "British Somaliland",
+      "count": 5
+    },
+    {
+      "name": "Czechoslovakia",
+      "count": 5
+    },
+    {
+      "name": "Xinjiang",
+      "count": 5
+    },
+    {
+      "name": "Western Sahara",
+      "count": 5
+    },
+    {
+      "name": "United Arab Emirates",
+      "count": 5
+    },
+    {
+      "name": "Niger",
+      "count": 5
+    },
+    {
+      "name": "Chad",
+      "count": 5
+    },
+    {
+      "name": "Burkina Faso",
+      "count": 5
+    },
+    {
+      "name": "Central African Republic",
+      "count": 5
+    },
+    {
+      "name": "Sri Lanka",
+      "count": 5
+    },
+    {
+      "name": "Zaire",
+      "count": 5
+    },
+    {
+      "name": "Namibia",
+      "count": 5
+    },
+    {
+      "name": "Iraq",
+      "count": 5
+    },
+    {
+      "name": "Syria",
+      "count": 5
+    },
+    {
+      "name": "Lebanon",
+      "count": 5
+    },
+    {
+      "name": "Thailand",
+      "count": 5
+    },
+    {
+      "name": "Cameroon",
+      "count": 5
+    },
+    {
+      "name": "Mauritania",
+      "count": 5
+    },
+    {
+      "name": "Guinea",
+      "count": 5
+    },
+    {
+      "name": "Pakistan",
+      "count": 5
+    },
+    {
+      "name": "Russia",
+      "count": 5
+    },
+    {
+      "name": "Hittites",
+      "count": 4
+    },
+    {
+      "name": "Kush",
+      "count": 4
+    },
+    {
+      "name": "El Paraiso",
+      "count": 4
+    },
+    {
+      "name": "Chinchoros",
+      "count": 4
+    },
+    {
+      "name": "Berbers",
+      "count": 4
+    },
+    {
+      "name": "Illyrians",
+      "count": 4
+    },
+    {
+      "name": "Urnfield cultures",
+      "count": 4
+    },
+    {
+      "name": "Zhou states",
+      "count": 4
+    },
+    {
+      "name": "Paracas",
+      "count": 4
+    },
+    {
+      "name": "Xiongnu",
+      "count": 4
+    },
+    {
+      "name": "Roman Republic",
+      "count": 4
+    },
+    {
+      "name": "Qataban",
+      "count": 4
+    },
+    {
+      "name": "Bosporan Kingdom",
+      "count": 4
+    },
+    {
+      "name": "Tungus",
+      "count": 4
+    },
+    {
+      "name": "Saka Kingdom",
+      "count": 4
+    },
+    {
+      "name": "Parthian Empire",
+      "count": 4
+    },
+    {
+      "name": "Yueban",
+      "count": 4
+    },
+    {
+      "name": "Gaya",
+      "count": 4
+    },
+    {
+      "name": "Eastern Roman Empire",
+      "count": 4
+    },
+    {
+      "name": "Franks",
+      "count": 4
+    },
+    {
+      "name": "Swedes",
+      "count": 4
+    },
+    {
+      "name": "Yamato",
+      "count": 4
+    },
+    {
+      "name": "Mataram",
+      "count": 4
+    },
+    {
+      "name": "minor states under Indian influence",
+      "count": 4
+    },
+    {
+      "name": "Avars",
+      "count": 4
+    },
+    {
+      "name": "Dvaravati",
+      "count": 4
+    },
+    {
+      "name": "Cholas",
+      "count": 4
+    },
+    {
+      "name": "Hindu states",
+      "count": 4
+    },
+    {
+      "name": "Magyars",
+      "count": 4
+    },
+    {
+      "name": "Pagan",
+      "count": 4
+    },
+    {
+      "name": "Rajput kingdoms",
+      "count": 4
+    },
+    {
+      "name": "Hindu Kingdoms",
+      "count": 4
+    },
+    {
+      "name": "Mixtec Empire",
+      "count": 4
+    },
+    {
+      "name": "Ryazan",
+      "count": 4
+    },
+    {
+      "name": "Malacca",
+      "count": 4
+    },
+    {
+      "name": "Malaysian Islamic states",
+      "count": 4
+    },
+    {
+      "name": "Adal",
+      "count": 4
+    },
+    {
+      "name": "Funj",
+      "count": 4
+    },
+    {
+      "name": "Mwenemutapa",
+      "count": 4
+    },
+    {
+      "name": "Burmese kingdoms",
+      "count": 4
+    },
+    {
+      "name": "Pegu",
+      "count": 4
+    },
+    {
+      "name": "Crimean Khanate",
+      "count": 4
+    },
+    {
+      "name": "Karankawa",
+      "count": 4
+    },
+    {
+      "name": "Moldova",
+      "count": 4
+    },
+    {
+      "name": "Hispaniola (Spain)",
+      "count": 4
+    },
+    {
+      "name": "Mahra",
+      "count": 4
+    },
+    {
+      "name": "Gharra",
+      "count": 4
+    },
+    {
+      "name": "Islamic and Hindu states",
+      "count": 4
+    },
+    {
+      "name": "Hopie",
+      "count": 4
+    },
+    {
+      "name": "Yavapai",
+      "count": 4
+    },
+    {
+      "name": "Papous",
+      "count": 4
+    },
+    {
+      "name": "Lipan",
+      "count": 4
+    },
+    {
+      "name": "Cusabo",
+      "count": 4
+    },
+    {
+      "name": "Yuchi",
+      "count": 4
+    },
+    {
+      "name": "Mescalero",
+      "count": 4
+    },
+    {
+      "name": "Jicarilla",
+      "count": 4
+    },
+    {
+      "name": "Tano",
+      "count": 4
+    },
+    {
+      "name": "Obiwa",
+      "count": 4
+    },
+    {
+      "name": "Itelmen",
+      "count": 4
+    },
+    {
+      "name": "Koryaks",
+      "count": 4
+    },
+    {
+      "name": "Chukchi",
+      "count": 4
+    },
+    {
+      "name": "Spanish Habsburg",
+      "count": 4
+    },
+    {
+      "name": "Dutch Republic",
+      "count": 4
+    },
+    {
+      "name": "Finnmark",
+      "count": 4
+    },
+    {
+      "name": "Lan Na",
+      "count": 4
+    },
+    {
+      "name": "Hohenzollern",
+      "count": 4
+    },
+    {
+      "name": "Bremen",
+      "count": 4
+    },
+    {
+      "name": "Hamburg",
+      "count": 4
+    },
+    {
+      "name": "Tripolitania",
+      "count": 4
+    },
+    {
+      "name": "Cyrenaica",
+      "count": 4
+    },
+    {
+      "name": "Zanzibar",
+      "count": 4
+    },
+    {
+      "name": "Lübeck",
+      "count": 4
+    },
+    {
+      "name": "Viceroyalty of Brazil",
+      "count": 4
+    },
+    {
+      "name": "Vice-Royalty of Peru",
+      "count": 4
+    },
+    {
+      "name": "Baden",
+      "count": 4
+    },
+    {
+      "name": "Māori",
+      "count": 4
+    },
+    {
+      "name": "Kong Empire",
+      "count": 4
+    },
+    {
+      "name": "Bavaria",
+      "count": 4
+    },
+    {
+      "name": "British East India Company",
+      "count": 4
+    },
+    {
+      "name": "Netherlands Indies",
+      "count": 4
+    },
+    {
+      "name": "Bunyoro",
+      "count": 4
+    },
+    {
+      "name": "Buganda",
+      "count": 4
+    },
+    {
+      "name": "Angola (Portugal)",
+      "count": 4
+    },
+    {
+      "name": "Sweden–Norway",
+      "count": 4
+    },
+    {
+      "name": "Kingdom of Hawaii",
+      "count": 4
+    },
+    {
+      "name": "French Indochina",
+      "count": 4
+    },
+    {
+      "name": "Italian Somaliland",
+      "count": 4
+    },
+    {
+      "name": "French West Africa",
+      "count": 4
+    },
+    {
+      "name": "French Equatorial Africa",
+      "count": 4
+    },
+    {
+      "name": "Spanish Sahara",
+      "count": 4
+    },
+    {
+      "name": "Rio De Oro",
+      "count": 4
+    },
+    {
+      "name": "Syria (France)",
+      "count": 4
+    },
+    {
+      "name": "Empire of Japan",
+      "count": 4
+    },
+    {
+      "name": "Ukraine",
+      "count": 4
+    },
+    {
+      "name": "Vietnam",
+      "count": 4
+    },
+    {
+      "name": "Korea, Democratic People's Republic of",
+      "count": 4
+    },
+    {
+      "name": "Korea, Republic of",
+      "count": 4
+    },
+    {
+      "name": "Bangladesh",
+      "count": 4
+    },
+    {
+      "name": "Aboriginal Tasmanians",
+      "count": 3
+    },
+    {
+      "name": "Zhoa",
+      "count": 3
+    },
+    {
+      "name": "Kingdom of David and Solomon",
+      "count": 3
+    },
+    {
+      "name": "Arabian pastoral nomads",
+      "count": 3
+    },
+    {
+      "name": "Assyria",
+      "count": 3
+    },
+    {
+      "name": "Babylonia",
+      "count": 3
+    },
+    {
+      "name": "Celtiberians",
+      "count": 3
+    },
+    {
+      "name": "Tibetans",
+      "count": 3
+    },
+    {
+      "name": "Wu",
+      "count": 3
+    },
+    {
+      "name": "Vedic Aryans",
+      "count": 3
+    },
+    {
+      "name": "Burmese",
+      "count": 3
+    },
+    {
+      "name": "Thrace",
+      "count": 3
+    },
+    {
+      "name": "Phrygians",
+      "count": 3
+    },
+    {
+      "name": "Urartu",
+      "count": 3
+    },
+    {
+      "name": "Paleo-Koreans",
+      "count": 3
+    },
+    {
+      "name": "Karasuk culture",
+      "count": 3
+    },
+    {
+      "name": "Iranian pastoralists",
+      "count": 3
+    },
+    {
+      "name": "Arameans",
+      "count": 3
+    },
+    {
+      "name": "Sinic",
+      "count": 3
+    },
+    {
+      "name": "Rome",
+      "count": 3
+    },
+    {
+      "name": "Greek colonies",
+      "count": 3
+    },
+    {
+      "name": "Hindu kingdoms and republics",
+      "count": 3
+    },
+    {
+      "name": "Seleucid Kingdom",
+      "count": 3
+    },
+    {
+      "name": "Ptolemaic Kingdom",
+      "count": 3
+    },
+    {
+      "name": "Mauryan Empire",
+      "count": 3
+    },
+    {
+      "name": "Numidia",
+      "count": 3
+    },
+    {
+      "name": "Arabs",
+      "count": 3
+    },
+    {
+      "name": "Kushan Empire",
+      "count": 3
+    },
+    {
+      "name": "Boihaenum",
+      "count": 3
+    },
+    {
+      "name": "Bosporian Kingdom",
+      "count": 3
+    },
+    {
+      "name": "Roman Empire",
+      "count": 3
+    },
+    {
+      "name": "Han",
+      "count": 3
+    },
+    {
+      "name": "Gupta Empire",
+      "count": 3
+    },
+    {
+      "name": "Teotihuacàn",
+      "count": 3
+    },
+    {
+      "name": "Maya states",
+      "count": 3
+    },
+    {
+      "name": "Veracruz civilization",
+      "count": 3
+    },
+    {
+      "name": "Chen-La",
+      "count": 3
+    },
+    {
+      "name": "Pallavas",
+      "count": 3
+    },
+    {
+      "name": "Sasanian Empire",
+      "count": 3
+    },
+    {
+      "name": "Saxons",
+      "count": 3
+    },
+    {
+      "name": "Frankish Kingdom",
+      "count": 3
+    },
+    {
+      "name": "Lombard principalities",
+      "count": 3
+    },
+    {
+      "name": "Uyghurs",
+      "count": 3
+    },
+    {
+      "name": "Mon state",
+      "count": 3
+    },
+    {
+      "name": "Pyu state",
+      "count": 3
+    },
+    {
+      "name": "Sinhalese kingdoms",
+      "count": 3
+    },
+    {
+      "name": "Papou",
+      "count": 3
+    },
+    {
+      "name": "Baltic tribes",
+      "count": 3
+    },
+    {
+      "name": "Imperial Japan (Fujiwara)",
+      "count": 3
+    },
+    {
+      "name": "East Java",
+      "count": 3
+    },
+    {
+      "name": "Xixia",
+      "count": 3
+    },
+    {
+      "name": "Song Empire",
+      "count": 3
+    },
+    {
+      "name": "Liao",
+      "count": 3
+    },
+    {
+      "name": "Ghaznavid Emirate",
+      "count": 3
+    },
+    {
+      "name": "Duchy of Benevento",
+      "count": 3
+    },
+    {
+      "name": "Dutchy of Benevento",
+      "count": 3
+    },
+    {
+      "name": "Fatimid Caliphate",
+      "count": 3
+    },
+    {
+      "name": "Burgandy",
+      "count": 3
+    },
+    {
+      "name": "Takrur",
+      "count": 3
+    },
+    {
+      "name": "Boethuk",
+      "count": 3
+    },
+    {
+      "name": "León",
+      "count": 3
+    },
+    {
+      "name": "Castilla",
+      "count": 3
+    },
+    {
+      "name": "Sinhalese kingdom",
+      "count": 3
+    },
+    {
+      "name": "Shoa",
+      "count": 3
+    },
+    {
+      "name": "Zapotec Empire",
+      "count": 3
+    },
+    {
+      "name": "Aymara kingdoms",
+      "count": 3
+    },
+    {
+      "name": "Andean states and chiefdoms",
+      "count": 3
+    },
+    {
+      "name": "Kashmir and Ladakh",
+      "count": 3
+    },
+    {
+      "name": "Novgorod",
+      "count": 3
+    },
+    {
+      "name": "Granada",
+      "count": 3
+    },
+    {
+      "name": "Castile",
+      "count": 3
+    },
+    {
+      "name": "Trebizond",
+      "count": 3
+    },
+    {
+      "name": "Seljuk Caliphate",
+      "count": 3
+    },
+    {
+      "name": "Kediri",
+      "count": 3
+    },
+    {
+      "name": "English territory",
+      "count": 3
+    },
+    {
+      "name": "Shogun Japan (Kamakura)",
+      "count": 3
+    },
+    {
+      "name": "Grand Duchy of Moscow",
+      "count": 3
+    },
+    {
+      "name": "Great Khanate",
+      "count": 3
+    },
+    {
+      "name": "Khanate of Sibir",
+      "count": 3
+    },
+    {
+      "name": "Biloxi",
+      "count": 3
+    },
+    {
+      "name": "Chumash",
+      "count": 3
+    },
+    {
+      "name": "Spokane",
+      "count": 3
+    },
+    {
+      "name": "Pennacook",
+      "count": 3
+    },
+    {
+      "name": "Tutelo",
+      "count": 3
+    },
+    {
+      "name": "Tecuexe",
+      "count": 3
+    },
+    {
+      "name": "Patwin",
+      "count": 3
+    },
+    {
+      "name": "Timucua",
+      "count": 3
+    },
+    {
+      "name": "Cochimí",
+      "count": 3
+    },
+    {
+      "name": "White Horde",
+      "count": 3
+    },
+    {
+      "name": "Inca Empire",
+      "count": 3
+    },
+    {
+      "name": "Ming Chinese Empire",
+      "count": 3
+    },
+    {
+      "name": "Delaware",
+      "count": 3
+    },
+    {
+      "name": "Islamic states",
+      "count": 3
+    },
+    {
+      "name": "Tokugawa shogunate",
+      "count": 3
+    },
+    {
+      "name": "Laotian states",
+      "count": 3
+    },
+    {
+      "name": "Ava",
+      "count": 3
+    },
+    {
+      "name": "South Carolina",
+      "count": 3
+    },
+    {
+      "name": "Sardinia-Piedmont",
+      "count": 3
+    },
+    {
+      "name": "Cayenne",
+      "count": 3
+    },
+    {
+      "name": "Polish–Lithuanian Commonwealth",
+      "count": 3
+    },
+    {
+      "name": "Gros Ventre",
+      "count": 3
+    },
+    {
+      "name": "Austrian Netherlands",
+      "count": 3
+    },
+    {
+      "name": "Segu",
+      "count": 3
+    },
+    {
+      "name": "Air",
+      "count": 3
+    },
+    {
+      "name": "Vice-Royalty of Brazil",
+      "count": 3
+    },
+    {
+      "name": "Rupert's Land",
+      "count": 3
+    },
+    {
+      "name": "Kingdom of Ireland",
+      "count": 3
+    },
+    {
+      "name": "Geneva",
+      "count": 3
+    },
+    {
+      "name": "Viceroyalty of New Granada",
+      "count": 3
+    },
+    {
+      "name": "Vice-Royalty of New Granada",
+      "count": 3
+    },
+    {
+      "name": "Kingdom of the Two Sicilies",
+      "count": 3
+    },
+    {
+      "name": "Waldeck",
+      "count": 3
+    },
+    {
+      "name": "Lippe-Detmold",
+      "count": 3
+    },
+    {
+      "name": "Cuxhaven",
+      "count": 3
+    },
+    {
+      "name": "Holstein",
+      "count": 3
+    },
+    {
+      "name": "Schaumburg-Lippe",
+      "count": 3
+    },
+    {
+      "name": "Nejd",
+      "count": 3
+    },
+    {
+      "name": "Venetia",
+      "count": 3
+    },
+    {
+      "name": "Goa",
+      "count": 3
+    },
+    {
+      "name": "Xhosa",
+      "count": 3
+    },
+    {
+      "name": "Zulu",
+      "count": 3
+    },
+    {
+      "name": "Kaarta",
+      "count": 3
+    },
+    {
+      "name": "Sotho",
+      "count": 3
+    },
+    {
+      "name": "Travancore",
+      "count": 3
+    },
+    {
+      "name": "Mecklenburg-Strelitz",
+      "count": 3
+    },
+    {
+      "name": "Mecklenburg-Schwerin",
+      "count": 3
+    },
+    {
+      "name": "Saxony",
+      "count": 3
+    },
+    {
+      "name": "Württemberg",
+      "count": 3
+    },
+    {
+      "name": "Oudh",
+      "count": 3
+    },
+    {
+      "name": "Maratha Confederacy",
+      "count": 3
+    },
+    {
+      "name": "Imperial Japan",
+      "count": 3
+    },
+    {
+      "name": "Dutch Guiana",
+      "count": 3
+    },
+    {
+      "name": "Kingdom of Brazil",
+      "count": 3
+    },
+    {
+      "name": "South Australia (UK)",
+      "count": 3
+    },
+    {
+      "name": "Natal",
+      "count": 3
+    },
+    {
+      "name": "Basutoland",
+      "count": 3
+    },
+    {
+      "name": "Zululand",
+      "count": 3
+    },
+    {
+      "name": "Orange Free State",
+      "count": 3
+    },
+    {
+      "name": "Transvaal",
+      "count": 3
+    },
+    {
+      "name": "Griqualand West",
+      "count": 3
+    },
+    {
+      "name": "Ndebele",
+      "count": 3
+    },
+    {
+      "name": "Ngwato",
+      "count": 3
+    },
+    {
+      "name": "Shona",
+      "count": 3
+    },
+    {
+      "name": "Barotse",
+      "count": 3
+    },
+    {
+      "name": "Yeke",
+      "count": 3
+    },
+    {
+      "name": "Mirambo Unyanyembe Ukimbu",
+      "count": 3
+    },
+    {
+      "name": "Nguni",
+      "count": 3
+    },
+    {
+      "name": "Sultanate of Utetera",
+      "count": 3
+    },
+    {
+      "name": "Kuba",
+      "count": 3
+    },
+    {
+      "name": "Ovimbundu",
+      "count": 3
+    },
+    {
+      "name": "Mbailundu",
+      "count": 3
+    },
+    {
+      "name": "Teke",
+      "count": 3
+    },
+    {
+      "name": "Yaka",
+      "count": 3
+    },
+    {
+      "name": "Arabia",
+      "count": 3
+    },
+    {
+      "name": "Ibadan",
+      "count": 3
+    },
+    {
+      "name": "Lagos",
+      "count": 3
+    },
+    {
+      "name": "Cotonou",
+      "count": 3
+    },
+    {
+      "name": "Gambia",
+      "count": 3
+    },
+    {
+      "name": "Futa Toro",
+      "count": 3
+    },
+    {
+      "name": "Futa Jalon",
+      "count": 3
+    },
+    {
+      "name": "Ato trading confederacy",
+      "count": 3
+    },
+    {
+      "name": "Spanish Guinea",
+      "count": 3
+    },
+    {
+      "name": "Harer (Egypt)",
+      "count": 3
+    },
+    {
+      "name": "Bosnia-Herzegovina",
+      "count": 3
+    },
+    {
+      "name": "Imerina",
+      "count": 3
+    },
+    {
+      "name": "Sokoto Caliphate",
+      "count": 3
+    },
+    {
+      "name": "Borgu States",
+      "count": 3
+    },
+    {
+      "name": "Calabar",
+      "count": 3
+    },
+    {
+      "name": "Opobo",
+      "count": 3
+    },
+    {
+      "name": "Western Australia (UK)",
+      "count": 3
+    },
+    {
+      "name": "Victoria (UK)",
+      "count": 3
+    },
+    {
+      "name": "Queensland (UK)",
+      "count": 3
+    },
+    {
+      "name": "New South Wales (UK)",
+      "count": 3
+    },
+    {
+      "name": "Northern Territory (UK)",
+      "count": 3
+    },
+    {
+      "name": "Tukular Caliphate",
+      "count": 3
+    },
+    {
+      "name": "Austria Hungary",
+      "count": 3
+    },
+    {
+      "name": "Muscat and Oman",
+      "count": 3
+    },
+    {
+      "name": "Rwanda (Belgium)",
+      "count": 3
+    },
+    {
+      "name": "French Cameroons",
+      "count": 3
+    },
+    {
+      "name": "Mandatory Palestine (GB)",
+      "count": 3
+    },
+    {
+      "name": "French Somaliland",
+      "count": 3
+    },
+    {
+      "name": "Union of South Africa",
+      "count": 3
+    },
+    {
+      "name": "Manchuria",
+      "count": 3
+    },
+    {
+      "name": "French Indo-China",
+      "count": 3
+    },
+    {
+      "name": "Dominion of Newfoundland",
+      "count": 3
+    },
+    {
+      "name": "Mesopotamia (GB)",
+      "count": 3
+    },
+    {
+      "name": "Emirate of Bin Shal'an",
+      "count": 3
+    },
+    {
+      "name": "Hail",
+      "count": 3
+    },
+    {
+      "name": "Gold Coast",
+      "count": 3
+    },
+    {
+      "name": "Byelarus",
+      "count": 3
+    },
+    {
+      "name": "Kazakhstan",
+      "count": 3
+    },
+    {
+      "name": "Slovakia",
+      "count": 3
+    },
+    {
+      "name": "Slovenia",
+      "count": 3
+    },
+    {
+      "name": "Uzbekistan",
+      "count": 3
+    },
+    {
+      "name": "Bosnia and Herzegovina",
+      "count": 3
+    },
+    {
+      "name": "Kyrgyzstan",
+      "count": 3
+    },
+    {
+      "name": "Turkmenistan",
+      "count": 3
+    },
+    {
+      "name": "Macedonia",
+      "count": 3
+    },
+    {
+      "name": "Tajikistan",
+      "count": 3
+    },
+    {
+      "name": "Czech Republic",
+      "count": 3
+    },
+    {
+      "name": "Turkish Cypriot-administered area",
+      "count": 3
+    },
+    {
+      "name": "Liechtenstein",
+      "count": 3
+    },
+    {
+      "name": "Dakapeng culture",
+      "count": 2
+    },
+    {
+      "name": "Jōmon",
+      "count": 2
+    },
+    {
+      "name": "Norte Chico",
+      "count": 2
+    },
+    {
+      "name": "city-states",
+      "count": 2
+    },
+    {
+      "name": "Ur",
+      "count": 2
+    },
+    {
+      "name": "Indus valley civilization",
+      "count": 2
+    },
+    {
+      "name": "Hurrian Kingdoms",
+      "count": 2
+    },
+    {
+      "name": "Valdivia",
+      "count": 2
+    },
+    {
+      "name": "Kerma",
+      "count": 2
+    },
+    {
+      "name": "Hunters-gatherers",
+      "count": 2
+    },
+    {
+      "name": "Afanasevo",
+      "count": 2
+    },
+    {
+      "name": "Namazga",
+      "count": 2
+    },
+    {
+      "name": "Minoan",
+      "count": 2
+    },
+    {
+      "name": "Cycladic",
+      "count": 2
+    },
+    {
+      "name": "Bantu",
+      "count": 2
+    },
+    {
+      "name": "Semites",
+      "count": 2
+    },
+    {
+      "name": "Thai",
+      "count": 2
+    },
+    {
+      "name": "Poverty point culture",
+      "count": 2
+    },
+    {
+      "name": "Achaemenid Empire",
+      "count": 2
+    },
+    {
+      "name": "Sabini",
+      "count": 2
+    },
+    {
+      "name": "Boii",
+      "count": 2
+    },
+    {
+      "name": "Etrurians",
+      "count": 2
+    },
+    {
+      "name": "Samnites",
+      "count": 2
+    },
+    {
+      "name": "Yayoi",
+      "count": 2
+    },
+    {
+      "name": "Qin",
+      "count": 2
+    },
+    {
+      "name": "Zhow states",
+      "count": 2
+    },
+    {
+      "name": "Yue",
+      "count": 2
+    },
+    {
+      "name": "Atropatene",
+      "count": 2
+    },
+    {
+      "name": "Colchis",
+      "count": 2
+    },
+    {
+      "name": "Cappadocia",
+      "count": 2
+    },
+    {
+      "name": "minor states",
+      "count": 2
+    },
+    {
+      "name": "Parthia",
+      "count": 2
+    },
+    {
+      "name": "Maan",
+      "count": 2
+    },
+    {
+      "name": "Min-Yue",
+      "count": 2
+    },
+    {
+      "name": "Nan-Yue",
+      "count": 2
+    },
+    {
+      "name": "Mauretania",
+      "count": 2
+    },
+    {
+      "name": "Malays",
+      "count": 2
+    },
+    {
+      "name": "Han Empire",
+      "count": 2
+    },
+    {
+      "name": "Dacia",
+      "count": 2
+    },
+    {
+      "name": "Southern Xiongnu",
+      "count": 2
+    },
+    {
+      "name": "Heruli",
+      "count": 2
+    },
+    {
+      "name": "Jin",
+      "count": 2
+    },
+    {
+      "name": "Visigoths",
+      "count": 2
+    },
+    {
+      "name": "Ruanruan",
+      "count": 2
+    },
+    {
+      "name": "Burgundians",
+      "count": 2
+    },
+    {
+      "name": "Monte Alb?n",
+      "count": 2
+    },
+    {
+      "name": "Nobatia",
+      "count": 2
+    },
+    {
+      "name": "Visigothic Kingdom",
+      "count": 2
+    },
+    {
+      "name": "Broërec",
+      "count": 2
+    },
+    {
+      "name": "Thai Kingdoms",
+      "count": 2
+    },
+    {
+      "name": "Kanauj",
+      "count": 2
+    },
+    {
+      "name": "Kamarupa",
+      "count": 2
+    },
+    {
+      "name": "Chalukyas",
+      "count": 2
+    },
+    {
+      "name": "Mazun",
+      "count": 2
+    },
+    {
+      "name": "Sasanian dependencies",
+      "count": 2
+    },
+    {
+      "name": "Guta",
+      "count": 2
+    },
+    {
+      "name": "Cantia",
+      "count": 2
+    },
+    {
+      "name": "Dumnonia",
+      "count": 2
+    },
+    {
+      "name": "Vasconia",
+      "count": 2
+    },
+    {
+      "name": "Neustria",
+      "count": 2
+    },
+    {
+      "name": "Frisians",
+      "count": 2
+    },
+    {
+      "name": "Slavs",
+      "count": 2
+    },
+    {
+      "name": "Vazimba",
+      "count": 2
+    },
+    {
+      "name": "Göktürks",
+      "count": 2
+    },
+    {
+      "name": "Funan",
+      "count": 2
+    },
+    {
+      "name": "Sui Empire",
+      "count": 2
+    },
+    {
+      "name": "Pandyas",
+      "count": 2
+    },
+    {
+      "name": "Cheras",
+      "count": 2
+    },
+    {
+      "name": "Western Gangas",
+      "count": 2
+    },
+    {
+      "name": "Bega",
+      "count": 2
+    },
+    {
+      "name": "Tufan Empire",
+      "count": 2
+    },
+    {
+      "name": "Karluks",
+      "count": 2
+    },
+    {
+      "name": "Czechs",
+      "count": 2
+    },
+    {
+      "name": "Western Gokturk Khaganate",
+      "count": 2
+    },
+    {
+      "name": "Ciboney",
+      "count": 2
+    },
+    {
+      "name": "Wessex",
+      "count": 2
+    },
+    {
+      "name": "Mixtecs",
+      "count": 2
+    },
+    {
+      "name": "Aghlabid Emirate",
+      "count": 2
+    },
+    {
+      "name": "Asturias",
+      "count": 2
+    },
+    {
+      "name": "Lombard duchies",
+      "count": 2
+    },
+    {
+      "name": "Idrisid Caliphate",
+      "count": 2
+    },
+    {
+      "name": "Emirate of Córdoba",
+      "count": 2
+    },
+    {
+      "name": "Welsh",
+      "count": 2
+    },
+    {
+      "name": "Abbasid Caliphate",
+      "count": 2
+    },
+    {
+      "name": "Vallabhi",
+      "count": 2
+    },
+    {
+      "name": "Rashtrakuta state",
+      "count": 2
+    },
+    {
+      "name": "Tang Empire",
+      "count": 2
+    },
+    {
+      "name": "minor Hindu & Buddhist states",
+      "count": 2
+    },
+    {
+      "name": "Mogollon",
+      "count": 2
+    },
+    {
+      "name": "Anasazi",
+      "count": 2
+    },
+    {
+      "name": "Tupis",
+      "count": 2
+    },
+    {
+      "name": "Malagasy",
+      "count": 2
+    },
+    {
+      "name": "Malay",
+      "count": 2
+    },
+    {
+      "name": "Northumbria",
+      "count": 2
+    },
+    {
+      "name": "Nothumbria",
+      "count": 2
+    },
+    {
+      "name": "Kent",
+      "count": 2
+    },
+    {
+      "name": "Essex",
+      "count": 2
+    },
+    {
+      "name": "Mercia",
+      "count": 2
+    },
+    {
+      "name": "Gurjara Pratihara",
+      "count": 2
+    },
+    {
+      "name": "Swedes and Goths",
+      "count": 2
+    },
+    {
+      "name": "Picts",
+      "count": 2
+    },
+    {
+      "name": "Scots",
+      "count": 2
+    },
+    {
+      "name": "Irlanda",
+      "count": 2
+    },
+    {
+      "name": "Northmen",
+      "count": 2
+    },
+    {
+      "name": "Tibetan Empire",
+      "count": 2
+    },
+    {
+      "name": "Karelians",
+      "count": 2
+    },
+    {
+      "name": "Sindh",
+      "count": 2
+    },
+    {
+      "name": "Slavic tribes",
+      "count": 2
+    },
+    {
+      "name": "Emirate of Sicily",
+      "count": 2
+    },
+    {
+      "name": "Chuds",
+      "count": 2
+    },
+    {
+      "name": "Multan",
+      "count": 2
+    },
+    {
+      "name": "Kyivan Rus",
+      "count": 2
+    },
+    {
+      "name": "Buwayhid Emirates",
+      "count": 2
+    },
+    {
+      "name": "Prussians",
+      "count": 2
+    },
+    {
+      "name": "Samis",
+      "count": 2
+    },
+    {
+      "name": "Kingdom of Georgia",
+      "count": 2
+    },
+    {
+      "name": "Arran",
+      "count": 2
+    },
+    {
+      "name": "Shirvan",
+      "count": 2
+    },
+    {
+      "name": "Peshemegs",
+      "count": 2
+    },
+    {
+      "name": "Icelandic Commonwealth",
+      "count": 2
+    },
+    {
+      "name": "Senas",
+      "count": 2
+    },
+    {
+      "name": "Pratiharas",
+      "count": 2
+    },
+    {
+      "name": "Tuareg Nomadic Tribes",
+      "count": 2
+    },
+    {
+      "name": "Kievan Rus",
+      "count": 2
+    },
+    {
+      "name": "minor Hindu kingdoms",
+      "count": 2
+    },
+    {
+      "name": "Luva",
+      "count": 2
+    },
+    {
+      "name": "Ilkhanate",
+      "count": 2
+    },
+    {
+      "name": "Khanate of the Golden Horde",
+      "count": 2
+    },
+    {
+      "name": "minor Hindu and Buddhist kingdoms",
+      "count": 2
+    },
+    {
+      "name": "Scottland",
+      "count": 2
+    },
+    {
+      "name": "Pskov",
+      "count": 2
+    },
+    {
+      "name": "Imperial Hungary",
+      "count": 2
+    },
+    {
+      "name": "Castille",
+      "count": 2
+    },
+    {
+      "name": "Wattasid Caliphate",
+      "count": 2
+    },
+    {
+      "name": "Zayyanid Caliphate",
+      "count": 2
+    },
+    {
+      "name": "Ndongo",
+      "count": 2
+    },
+    {
+      "name": "Emirate of the White Sheep Turks",
+      "count": 2
+    },
+    {
+      "name": "Golden Horde",
+      "count": 2
+    },
+    {
+      "name": "Tsnungwe",
+      "count": 2
+    },
+    {
+      "name": "Kaw (Oklahoma)",
+      "count": 2
+    },
+    {
+      "name": "Nahua",
+      "count": 2
+    },
+    {
+      "name": "Pawnee (Oklahoma)",
+      "count": 2
+    },
+    {
+      "name": "Calusa",
+      "count": 2
+    },
+    {
+      "name": "Beaver",
+      "count": 2
+    },
+    {
+      "name": "WiYaPeMiAk (Weapemeoc-Yeopim)",
+      "count": 2
+    },
+    {
+      "name": "Oirat Confederation",
+      "count": 2
+    },
+    {
+      "name": "Timurid Emirates",
+      "count": 2
+    },
+    {
+      "name": "Sind",
+      "count": 2
+    },
+    {
+      "name": "Rajastan",
+      "count": 2
+    },
+    {
+      "name": "Kalmar Union",
+      "count": 2
+    },
+    {
+      "name": "Maoris",
+      "count": 2
+    },
+    {
+      "name": "Mayas",
+      "count": 2
+    },
+    {
+      "name": "Rajputana",
+      "count": 2
+    },
+    {
+      "name": "Saylan",
+      "count": 2
+    },
+    {
+      "name": "Habsburg Netherlands",
+      "count": 2
+    },
+    {
+      "name": "Watassid Morocco",
+      "count": 2
+    },
+    {
+      "name": "Florence",
+      "count": 2
+    },
+    {
+      "name": "Navaho",
+      "count": 2
+    },
+    {
+      "name": "Apalachee",
+      "count": 2
+    },
+    {
+      "name": "Ninticoy",
+      "count": 2
+    },
+    {
+      "name": "Wappynger",
+      "count": 2
+    },
+    {
+      "name": "Mahican",
+      "count": 2
+    },
+    {
+      "name": "Pocumtuk",
+      "count": 2
+    },
+    {
+      "name": "Abnaki",
+      "count": 2
+    },
+    {
+      "name": "Massachusett",
+      "count": 2
+    },
+    {
+      "name": "Susquehanna",
+      "count": 2
+    },
+    {
+      "name": "Riro",
+      "count": 2
+    },
+    {
+      "name": "Kwakwaka'wakw",
+      "count": 2
+    },
+    {
+      "name": "Papago",
+      "count": 2
+    },
+    {
+      "name": "Luiseno",
+      "count": 2
+    },
+    {
+      "name": "Zuni",
+      "count": 2
+    },
+    {
+      "name": "Cahulia",
+      "count": 2
+    },
+    {
+      "name": "Walapai",
+      "count": 2
+    },
+    {
+      "name": "Pewa",
+      "count": 2
+    },
+    {
+      "name": "Nayarit",
+      "count": 2
+    },
+    {
+      "name": "Conoy",
+      "count": 2
+    },
+    {
+      "name": "Aaniiih",
+      "count": 2
+    },
+    {
+      "name": "Hitchiti",
+      "count": 2
+    },
+    {
+      "name": "Choctaw",
+      "count": 2
+    },
+    {
+      "name": "Chickasaw",
+      "count": 2
+    },
+    {
+      "name": "Naniaho",
+      "count": 2
+    },
+    {
+      "name": "Knucati",
+      "count": 2
+    },
+    {
+      "name": "Flathead",
+      "count": 2
+    },
+    {
+      "name": "Kijkitat",
+      "count": 2
+    },
+    {
+      "name": "Havasupai",
+      "count": 2
+    },
+    {
+      "name": "Pima",
+      "count": 2
+    },
+    {
+      "name": "Chiricahua",
+      "count": 2
+    },
+    {
+      "name": "Guachimis",
+      "count": 2
+    },
+    {
+      "name": "Kamia",
+      "count": 2
+    },
+    {
+      "name": "Yuma",
+      "count": 2
+    },
+    {
+      "name": "Saunan",
+      "count": 2
+    },
+    {
+      "name": "Costanoan",
+      "count": 2
+    },
+    {
+      "name": "Zacatecs",
+      "count": 2
+    },
+    {
+      "name": "Caxcane",
+      "count": 2
+    },
+    {
+      "name": "Guachichiles",
+      "count": 2
+    },
+    {
+      "name": "Guamar / Pecchichitane",
+      "count": 2
+    },
+    {
+      "name": "Xecora",
+      "count": 2
+    },
+    {
+      "name": "Vice Royalty of New Spain",
+      "count": 2
+    },
+    {
+      "name": "Tamalipueca",
+      "count": 2
+    },
+    {
+      "name": "Cahitas",
+      "count": 2
+    },
+    {
+      "name": "Tepehuane",
+      "count": 2
+    },
+    {
+      "name": "Acaxea",
+      "count": 2
+    },
+    {
+      "name": "Chisos",
+      "count": 2
+    },
+    {
+      "name": "Otomies",
+      "count": 2
+    },
+    {
+      "name": "Irritilas",
+      "count": 2
+    },
+    {
+      "name": "Toboso",
+      "count": 2
+    },
+    {
+      "name": "Lagunero",
+      "count": 2
+    },
+    {
+      "name": "Coahuiltec",
+      "count": 2
+    },
+    {
+      "name": "Tancalba",
+      "count": 2
+    },
+    {
+      "name": "Pisones",
+      "count": 2
+    },
+    {
+      "name": "Janabres",
+      "count": 2
+    },
+    {
+      "name": "Maratines",
+      "count": 2
+    },
+    {
+      "name": "Muskogee",
+      "count": 2
+    },
+    {
+      "name": "Japan (Warring States)",
+      "count": 2
+    },
+    {
+      "name": "Savoy",
+      "count": 2
+    },
+    {
+      "name": "Montana",
+      "count": 2
+    },
+    {
+      "name": "Chatot",
+      "count": 2
+    },
+    {
+      "name": "Thompson",
+      "count": 2
+    },
+    {
+      "name": "Enets",
+      "count": 2
+    },
+    {
+      "name": "Nganasan",
+      "count": 2
+    },
+    {
+      "name": "Yukagir",
+      "count": 2
+    },
+    {
+      "name": "Florida",
+      "count": 2
+    },
+    {
+      "name": "Franche-Comté",
+      "count": 2
+    },
+    {
+      "name": "Portuguese Brazil",
+      "count": 2
+    },
+    {
+      "name": "Vice Royalty of Peru",
+      "count": 2
+    },
+    {
+      "name": "Essequibo",
+      "count": 2
+    },
+    {
+      "name": "Surinam",
+      "count": 2
+    },
+    {
+      "name": "Virginia",
+      "count": 2
+    },
+    {
+      "name": "Massachusetts Bay",
+      "count": 2
+    },
+    {
+      "name": "New France",
+      "count": 2
+    },
+    {
+      "name": "Post-Ming Warlords",
+      "count": 2
+    },
+    {
+      "name": "Scottalnd",
+      "count": 2
+    },
+    {
+      "name": "Dutch Brazil",
+      "count": 2
+    },
+    {
+      "name": "New Amsterdam",
+      "count": 2
+    },
+    {
+      "name": "Dutch Formosa",
+      "count": 2
+    },
+    {
+      "name": "Middag Kingdom",
+      "count": 2
+    },
+    {
+      "name": "Jamaica (UK)",
+      "count": 2
+    },
+    {
+      "name": "Arakan (Indian princely state)",
+      "count": 2
+    },
+    {
+      "name": "Sahtu",
+      "count": 2
+    },
+    {
+      "name": "Siam",
+      "count": 2
+    },
+    {
+      "name": "Viceroyalty of the Río de la Plata",
+      "count": 2
+    },
+    {
+      "name": "Dutch settlements",
+      "count": 2
+    },
+    {
+      "name": "Acadian Peninsula (UK)",
+      "count": 2
+    },
+    {
+      "name": "Africa",
+      "count": 2
+    },
+    {
+      "name": "Rift Valley States",
+      "count": 2
+    },
+    {
+      "name": "Ambur",
+      "count": 2
+    },
+    {
+      "name": "Malabar",
+      "count": 2
+    },
+    {
+      "name": "Cochin",
+      "count": 2
+    },
+    {
+      "name": "Carnatic",
+      "count": 2
+    },
+    {
+      "name": "Madras",
+      "count": 2
+    },
+    {
+      "name": "Gooty",
+      "count": 2
+    },
+    {
+      "name": "Quebec",
+      "count": 2
+    },
+    {
+      "name": "Luisiana",
+      "count": 2
+    },
+    {
+      "name": "Kuril Islands",
+      "count": 2
+    },
+    {
+      "name": "(Russian and Japanese claim)",
+      "count": 2
+    },
+    {
+      "name": "Mysore",
+      "count": 2
+    },
+    {
+      "name": "Qing Empire",
+      "count": 2
+    },
+    {
+      "name": "Assam",
+      "count": 2
+    },
+    {
+      "name": "Algeria (FR)",
+      "count": 2
+    },
+    {
+      "name": "Gold Coast (GB)",
+      "count": 2
+    },
+    {
+      "name": "Senegal (FR)",
+      "count": 2
+    },
+    {
+      "name": "Sultanate of Damagaram",
+      "count": 2
+    },
+    {
+      "name": "Wadai Empire",
+      "count": 2
+    },
+    {
+      "name": "Dendi Kingdom",
+      "count": 2
+    },
+    {
+      "name": "Wassoulou Empire",
+      "count": 2
+    },
+    {
+      "name": "Rabih az-Zubayr",
+      "count": 2
+    },
+    {
+      "name": "Bokhara Khanate",
+      "count": 2
+    },
+    {
+      "name": "Grand Duchy of Hesse",
+      "count": 2
+    },
+    {
+      "name": "Sultanate of Zanzibar",
+      "count": 2
+    },
+    {
+      "name": "Zaire (Belgium)",
+      "count": 2
+    },
+    {
+      "name": "Libya (IT)",
+      "count": 2
+    },
+    {
+      "name": "East Prussia",
+      "count": 2
+    },
+    {
+      "name": "Chinese Warlords",
+      "count": 2
+    },
+    {
+      "name": "Far Eastern SSR",
+      "count": 2
+    },
+    {
+      "name": "Belgian Congo",
+      "count": 2
+    },
+    {
+      "name": "German Empire",
+      "count": 2
+    },
+    {
+      "name": "Rhodesia",
+      "count": 2
+    },
+    {
+      "name": "Arabia (Nejd)",
+      "count": 2
+    },
+    {
+      "name": "Northern Rhodesia",
+      "count": 2
+    },
+    {
+      "name": "Mozambique (Portugal)",
+      "count": 2
+    },
+    {
+      "name": "Antarctica",
+      "count": 2
+    },
+    {
+      "name": "Dapenkeng culture",
+      "count": 1
+    },
+    {
+      "name": "Aboriginal tribes",
+      "count": 1
+    },
+    {
+      "name": "Yamnaya culture",
+      "count": 1
+    },
+    {
+      "name": "Canaan",
+      "count": 1
+    },
+    {
+      "name": "Beaker",
+      "count": 1
+    },
+    {
+      "name": "Únětice",
+      "count": 1
+    },
+    {
+      "name": "Oxus",
+      "count": 1
+    },
+    {
+      "name": "Xia",
+      "count": 1
+    },
+    {
+      "name": "Sintashta",
+      "count": 1
+    },
+    {
+      "name": "Chinchorro culture",
+      "count": 1
+    },
+    {
+      "name": "Mesoamerican hunter-gatherers and maïze farmers",
+      "count": 1
+    },
+    {
+      "name": "Archaic Amerindian hunter-gatherers",
+      "count": 1
+    },
+    {
+      "name": "Andronovo",
+      "count": 1
+    },
+    {
+      "name": "Tibeto-Burmanese",
+      "count": 1
+    },
+    {
+      "name": "Anatolian tribes",
+      "count": 1
+    },
+    {
+      "name": "Catacomb culture",
+      "count": 1
+    },
+    {
+      "name": "Koreans",
+      "count": 1
+    },
+    {
+      "name": "Gandhara grave culture",
+      "count": 1
+    },
+    {
+      "name": "Proto-Scythian culture",
+      "count": 1
+    },
+    {
+      "name": "Chernoles culture",
+      "count": 1
+    },
+    {
+      "name": "Lusatian culture",
+      "count": 1
+    },
+    {
+      "name": "La Tène culture",
+      "count": 1
+    },
+    {
+      "name": "Iron Age megalith cultures",
+      "count": 1
+    },
+    {
+      "name": "Prot-Altaic Proto-Altaic pastoralists",
+      "count": 1
+    },
+    {
+      "name": "Gandhāra",
+      "count": 1
+    },
+    {
+      "name": "Avanti",
+      "count": 1
+    },
+    {
+      "name": "Kuru",
+      "count": 1
+    },
+    {
+      "name": "Kasi",
+      "count": 1
+    },
+    {
+      "name": "Pancala",
+      "count": 1
+    },
+    {
+      "name": "Kosala",
+      "count": 1
+    },
+    {
+      "name": "Vatsa",
+      "count": 1
+    },
+    {
+      "name": "Malla",
+      "count": 1
+    },
+    {
+      "name": "Surasena",
+      "count": 1
+    },
+    {
+      "name": "Zapotec",
+      "count": 1
+    },
+    {
+      "name": "Donghu tribes",
+      "count": 1
+    },
+    {
+      "name": "Germanic tribes",
+      "count": 1
+    },
+    {
+      "name": "Proto-Tibetan cultures",
+      "count": 1
+    },
+    {
+      "name": "Gojoseon",
+      "count": 1
+    },
+    {
+      "name": "Hallstatt culture",
+      "count": 1
+    },
+    {
+      "name": "Celltic Hallsatt culture",
+      "count": 1
+    },
+    {
+      "name": "Proto-Thai cultures",
+      "count": 1
+    },
+    {
+      "name": "Teotihuac�n",
+      "count": 1
+    },
+    {
+      "name": "Monte Alb�n",
+      "count": 1
+    },
+    {
+      "name": "Empire of Alexander",
+      "count": 1
+    },
+    {
+      "name": "Sabines",
+      "count": 1
+    },
+    {
+      "name": "Damot",
+      "count": 1
+    },
+    {
+      "name": "Crete",
+      "count": 1
+    },
+    {
+      "name": "Kingdom of Lysimachus",
+      "count": 1
+    },
+    {
+      "name": "Kingdom of Kassander",
+      "count": 1
+    },
+    {
+      "name": "Bithynia",
+      "count": 1
+    },
+    {
+      "name": "Kingdom of Antigonus",
+      "count": 1
+    },
+    {
+      "name": "Papuan",
+      "count": 1
+    },
+    {
+      "name": "Kingdom of Syphax",
+      "count": 1
+    },
+    {
+      "name": "?",
+      "count": 1
+    },
+    {
+      "name": "Bactria",
+      "count": 1
+    },
+    {
+      "name": "Iron Age chieftainships",
+      "count": 1
+    },
+    {
+      "name": "Carthage",
+      "count": 1
+    },
+    {
+      "name": "Macedon and Hellenic League",
+      "count": 1
+    },
+    {
+      "name": "Dardania",
+      "count": 1
+    },
+    {
+      "name": "Pergamon",
+      "count": 1
+    },
+    {
+      "name": "Norsemen",
+      "count": 1
+    },
+    {
+      "name": "Mon-Khmer",
+      "count": 1
+    },
+    {
+      "name": "Kingdom of Gala",
+      "count": 1
+    },
+    {
+      "name": "Yuezhi",
+      "count": 1
+    },
+    {
+      "name": "Turcik tribes",
+      "count": 1
+    },
+    {
+      "name": "Sarmates",
+      "count": 1
+    },
+    {
+      "name": "Dacians",
+      "count": 1
+    },
+    {
+      "name": "Saces",
+      "count": 1
+    },
+    {
+      "name": "Hövsgöl Nuur",
+      "count": 1
+    },
+    {
+      "name": "Odrysian Kingdom",
+      "count": 1
+    },
+    {
+      "name": "Judea",
+      "count": 1
+    },
+    {
+      "name": "Mascat",
+      "count": 1
+    },
+    {
+      "name": "true",
+      "count": 1
+    },
+    {
+      "name": "Chola",
+      "count": 1
+    },
+    {
+      "name": "Caucasian Alans",
+      "count": 1
+    },
+    {
+      "name": "Alamans",
+      "count": 1
+    },
+    {
+      "name": "Akatziri",
+      "count": 1
+    },
+    {
+      "name": "Hunnic Empire",
+      "count": 1
+    },
+    {
+      "name": "Skirii",
+      "count": 1
+    },
+    {
+      "name": "Gepids",
+      "count": 1
+    },
+    {
+      "name": "Northern Liang",
+      "count": 1
+    },
+    {
+      "name": "Sixteen Kingdoms",
+      "count": 1
+    },
+    {
+      "name": "Geats",
+      "count": 1
+    },
+    {
+      "name": "Rome (Constantinus)",
+      "count": 1
+    },
+    {
+      "name": "Rome (Maximian)",
+      "count": 1
+    },
+    {
+      "name": "Rome (Galerius)",
+      "count": 1
+    },
+    {
+      "name": "Rome (Diocletianus)",
+      "count": 1
+    },
+    {
+      "name": "Han Zhao",
+      "count": 1
+    },
+    {
+      "name": "Shaskanka",
+      "count": 1
+    },
+    {
+      "name": "Monte Albàn",
+      "count": 1
+    },
+    {
+      "name": "Toba Wei",
+      "count": 1
+    },
+    {
+      "name": "Kushan Principalities",
+      "count": 1
+    },
+    {
+      "name": "Vakataka",
+      "count": 1
+    },
+    {
+      "name": "Suebi",
+      "count": 1
+    },
+    {
+      "name": "Basques",
+      "count": 1
+    },
+    {
+      "name": "Anglo-Saxons",
+      "count": 1
+    },
+    {
+      "name": "Turingians",
+      "count": 1
+    },
+    {
+      "name": "Armorica",
+      "count": 1
+    },
+    {
+      "name": "Vandals",
+      "count": 1
+    },
+    {
+      "name": "Kurykans",
+      "count": 1
+    },
+    {
+      "name": "Tiele",
+      "count": 1
+    },
+    {
+      "name": "Kadambas",
+      "count": 1
+    },
+    {
+      "name": "Vishnu-Kundins",
+      "count": 1
+    },
+    {
+      "name": "Jin Empire",
+      "count": 1
+    },
+    {
+      "name": "Lavo",
+      "count": 1
+    },
+    {
+      "name": "Barghawata",
+      "count": 1
+    },
+    {
+      "name": "Maitraka Kingdom",
+      "count": 1
+    },
+    {
+      "name": "Ethiopian Highland Peoples",
+      "count": 1
+    },
+    {
+      "name": "Ethiopian HIghland Peoples",
+      "count": 1
+    },
+    {
+      "name": "West Getaes",
+      "count": 1
+    },
+    {
+      "name": "East Getaes",
+      "count": 1
+    },
+    {
+      "name": "Samoyèdes",
+      "count": 1
+    },
+    {
+      "name": "Kwarezm",
+      "count": 1
+    },
+    {
+      "name": "Moravians",
+      "count": 1
+    },
+    {
+      "name": "Mauri",
+      "count": 1
+    },
+    {
+      "name": "Aures",
+      "count": 1
+    },
+    {
+      "name": "Warsenis",
+      "count": 1
+    },
+    {
+      "name": "Saharan Nomadic Tribes",
+      "count": 1
+    },
+    {
+      "name": "Umayyad Caliphate",
+      "count": 1
+    },
+    {
+      "name": "Kushites",
+      "count": 1
+    },
+    {
+      "name": "Danube Bulgars",
+      "count": 1
+    },
+    {
+      "name": "Severians",
+      "count": 1
+    },
+    {
+      "name": "Lake Vygozero",
+      "count": 1
+    },
+    {
+      "name": "Lake Segozerskoye",
+      "count": 1
+    },
+    {
+      "name": "Kryvichs",
+      "count": 1
+    },
+    {
+      "name": "Polanes",
+      "count": 1
+    },
+    {
+      "name": "Balts",
+      "count": 1
+    },
+    {
+      "name": "Goths",
+      "count": 1
+    },
+    {
+      "name": "Georgian Kingdom",
+      "count": 1
+    },
+    {
+      "name": "Huns",
+      "count": 1
+    },
+    {
+      "name": "Proto-Slavs",
+      "count": 1
+    },
+    {
+      "name": "Sabirs",
+      "count": 1
+    },
+    {
+      "name": "Caucasian Albania",
+      "count": 1
+    },
+    {
+      "name": "Nan-Zhao",
+      "count": 1
+    },
+    {
+      "name": "Kingdom of Kashmir",
+      "count": 1
+    },
+    {
+      "name": "Kingdom of Sind",
+      "count": 1
+    },
+    {
+      "name": "Kingdom of Kapisa",
+      "count": 1
+    },
+    {
+      "name": "Kingdom of Zunbil",
+      "count": 1
+    },
+    {
+      "name": "Rajput Clans and Small States",
+      "count": 1
+    },
+    {
+      "name": "Silia",
+      "count": 1
+    },
+    {
+      "name": "Parhae",
+      "count": 1
+    },
+    {
+      "name": "Pallava state",
+      "count": 1
+    },
+    {
+      "name": "Rus' Khaganate",
+      "count": 1
+    },
+    {
+      "name": "Slavonic tribes",
+      "count": 1
+    },
+    {
+      "name": "Bashkirs",
+      "count": 1
+    },
+    {
+      "name": "Mordvinians",
+      "count": 1
+    },
+    {
+      "name": "Ests",
+      "count": 1
+    },
+    {
+      "name": "Finns",
+      "count": 1
+    },
+    {
+      "name": "Mari",
+      "count": 1
+    },
+    {
+      "name": "Permians",
+      "count": 1
+    },
+    {
+      "name": "Veps",
+      "count": 1
+    },
+    {
+      "name": "Mon States",
+      "count": 1
+    },
+    {
+      "name": "West Francia",
+      "count": 1
+    },
+    {
+      "name": "Pallava",
+      "count": 1
+    },
+    {
+      "name": "Lambakannas",
+      "count": 1
+    },
+    {
+      "name": "Kingdom of Norway",
+      "count": 1
+    },
+    {
+      "name": "Mandes",
+      "count": 1
+    },
+    {
+      "name": "Sami",
+      "count": 1
+    },
+    {
+      "name": "Great Moravia",
+      "count": 1
+    },
+    {
+      "name": "Croatian kingdom",
+      "count": 1
+    },
+    {
+      "name": "Chelmia",
+      "count": 1
+    },
+    {
+      "name": "East Francia",
+      "count": 1
+    },
+    {
+      "name": "Balhae",
+      "count": 1
+    },
+    {
+      "name": "Khitans",
+      "count": 1
+    },
+    {
+      "name": "Oghuz Turks",
+      "count": 1
+    },
+    {
+      "name": "Hindu Shahis",
+      "count": 1
+    },
+    {
+      "name": "Vengi",
+      "count": 1
+    },
+    {
+      "name": "Banas",
+      "count": 1
+    },
+    {
+      "name": "Rashtrakuta",
+      "count": 1
+    },
+    {
+      "name": "Somvamsis",
+      "count": 1
+    },
+    {
+      "name": "Samanid Empire",
+      "count": 1
+    },
+    {
+      "name": "Saffarids",
+      "count": 1
+    },
+    {
+      "name": "Cushites",
+      "count": 1
+    },
+    {
+      "name": "Tuaregs",
+      "count": 1
+    },
+    {
+      "name": "Beja people",
+      "count": 1
+    },
+    {
+      "name": "Bedouins",
+      "count": 1
+    },
+    {
+      "name": "Azandes",
+      "count": 1
+    },
+    {
+      "name": "Polyanians",
+      "count": 1
+    },
+    {
+      "name": "Pechenegs",
+      "count": 1
+    },
+    {
+      "name": "Chalukya Empire",
+      "count": 1
+    },
+    {
+      "name": "Buyid Emirate",
+      "count": 1
+    },
+    {
+      "name": "Caliphate of Córdoba",
+      "count": 1
+    },
+    {
+      "name": "Suomi",
+      "count": 1
+    },
+    {
+      "name": "Kurs",
+      "count": 1
+    },
+    {
+      "name": "Pomerania",
+      "count": 1
+    },
+    {
+      "name": "Kimek-Kipchak khaganate",
+      "count": 1
+    },
+    {
+      "name": "Duchy of Swabia",
+      "count": 1
+    },
+    {
+      "name": "Rus",
+      "count": 1
+    },
+    {
+      "name": "Haripunjaya",
+      "count": 1
+    },
+    {
+      "name": "Kingdom of Pagan",
+      "count": 1
+    },
+    {
+      "name": "Champa City States",
+      "count": 1
+    },
+    {
+      "name": "Harapunchai",
+      "count": 1
+    },
+    {
+      "name": "Khwarazmian dynasty",
+      "count": 1
+    },
+    {
+      "name": "Other Rus Principalities",
+      "count": 1
+    },
+    {
+      "name": "Taiwanese Tribes",
+      "count": 1
+    },
+    {
+      "name": "Principality of Galicia-Volhynia",
+      "count": 1
+    },
+    {
+      "name": "Principality of Kyiv",
+      "count": 1
+    },
+    {
+      "name": "Buyid dynasty",
+      "count": 1
+    },
+    {
+      "name": "Principality of Novgorod",
+      "count": 1
+    },
+    {
+      "name": "Principality of Vladimir-Suzdal",
+      "count": 1
+    },
+    {
+      "name": "Cuman Khanates",
+      "count": 1
+    },
+    {
+      "name": "Goryeo",
+      "count": 1
+    },
+    {
+      "name": "Tungusic Tribes",
+      "count": 1
+    },
+    {
+      "name": "Bagan",
+      "count": 1
+    },
+    {
+      "name": "Berber Tribes",
+      "count": 1
+    },
+    {
+      "name": "Ifat",
+      "count": 1
+    },
+    {
+      "name": "Ibadites",
+      "count": 1
+    },
+    {
+      "name": "Almohad Caliphate",
+      "count": 1
+    },
+    {
+      "name": "Angevin Empire",
+      "count": 1
+    },
+    {
+      "name": "Comté de Toulouse",
+      "count": 1
+    },
+    {
+      "name": "Kara Khitai Khaganate",
+      "count": 1
+    },
+    {
+      "name": "Kingdom of Sukhotai",
+      "count": 1
+    },
+    {
+      "name": "Soomra Emirate",
+      "count": 1
+    },
+    {
+      "name": "Arag�n",
+      "count": 1
+    },
+    {
+      "name": "Almoravid dynasty",
+      "count": 1
+    },
+    {
+      "name": "Principality of Polotsk",
+      "count": 1
+    },
+    {
+      "name": "Oghuz",
+      "count": 1
+    },
+    {
+      "name": "Karakalpaks",
+      "count": 1
+    },
+    {
+      "name": "Karkhanids",
+      "count": 1
+    },
+    {
+      "name": "Mongols",
+      "count": 1
+    },
+    {
+      "name": "Maskat",
+      "count": 1
+    },
+    {
+      "name": "Seljuk Empire",
+      "count": 1
+    },
+    {
+      "name": "Derbent",
+      "count": 1
+    },
+    {
+      "name": "Khundzi",
+      "count": 1
+    },
+    {
+      "name": "Tashir",
+      "count": 1
+    },
+    {
+      "name": "Artsakh",
+      "count": 1
+    },
+    {
+      "name": "Durdzuks",
+      "count": 1
+    },
+    {
+      "name": "Leks",
+      "count": 1
+    },
+    {
+      "name": "Kakheti-Hereti",
+      "count": 1
+    },
+    {
+      "name": "Emirate of Tiflis",
+      "count": 1
+    },
+    {
+      "name": "Goghtn",
+      "count": 1
+    },
+    {
+      "name": "Syunik",
+      "count": 1
+    },
+    {
+      "name": "Cuman-Kipchak confederation",
+      "count": 1
+    },
+    {
+      "name": "Western Chalukyas",
+      "count": 1
+    },
+    {
+      "name": "Paramas",
+      "count": 1
+    },
+    {
+      "name": "Chandellas",
+      "count": 1
+    },
+    {
+      "name": "Klachuris",
+      "count": 1
+    },
+    {
+      "name": "Solankis",
+      "count": 1
+    },
+    {
+      "name": "Lopburi Kingdom",
+      "count": 1
+    },
+    {
+      "name": "Raška",
+      "count": 1
+    },
+    {
+      "name": "Merinides",
+      "count": 1
+    },
+    {
+      "name": "Abdelouadides",
+      "count": 1
+    },
+    {
+      "name": "Touareg",
+      "count": 1
+    },
+    {
+      "name": "Ming Empire",
+      "count": 1
+    },
+    {
+      "name": "Twana/Skokomish",
+      "count": 1
+    },
+    {
+      "name": "Wailaki",
+      "count": 1
+    },
+    {
+      "name": "Kichwa Lamista",
+      "count": 1
+    },
+    {
+      "name": "Quinnipiac",
+      "count": 1
+    },
+    {
+      "name": "Guachichil",
+      "count": 1
+    },
+    {
+      "name": "Nahua (Mexico)",
+      "count": 1
+    },
+    {
+      "name": "Náayerite (Cora)",
+      "count": 1
+    },
+    {
+      "name": "P’urhépecha",
+      "count": 1
+    },
+    {
+      "name": "Kiowa-Comanche-Apache (Oklahoma)",
+      "count": 1
+    },
+    {
+      "name": "Cabiyari/Kawiyarí",
+      "count": 1
+    },
+    {
+      "name": "Achumawi",
+      "count": 1
+    },
+    {
+      "name": "Cayubaba",
+      "count": 1
+    },
+    {
+      "name": "Totonac",
+      "count": 1
+    },
+    {
+      "name": "Miranha",
+      "count": 1
+    },
+    {
+      "name": "Yeba-masã",
+      "count": 1
+    },
+    {
+      "name": "Seneca-Cayuga (Oklahoma)",
+      "count": 1
+    },
+    {
+      "name": "Abipones",
+      "count": 1
+    },
+    {
+      "name": "Tamien Nation",
+      "count": 1
+    },
+    {
+      "name": "Susquehannock",
+      "count": 1
+    },
+    {
+      "name": "Terena",
+      "count": 1
+    },
+    {
+      "name": "Mehinako",
+      "count": 1
+    },
+    {
+      "name": "Chané",
+      "count": 1
+    },
+    {
+      "name": "Quatsino",
+      "count": 1
+    },
+    {
+      "name": "Chit-dee-ni (Chetco)",
+      "count": 1
+    },
+    {
+      "name": "Puruwá",
+      "count": 1
+    },
+    {
+      "name": "Ungazigmit (Chaplino) Yupik",
+      "count": 1
+    },
+    {
+      "name": "Karuk",
+      "count": 1
+    },
+    {
+      "name": "Yanomami",
+      "count": 1
+    },
+    {
+      "name": "Pilagal'ek",
+      "count": 1
+    },
+    {
+      "name": "Tututni",
+      "count": 1
+    },
+    {
+      "name": "Shiwilu",
+      "count": 1
+    },
+    {
+      "name": "Wounaan",
+      "count": 1
+    },
+    {
+      "name": "Gitanyow Lax’yip",
+      "count": 1
+    },
+    {
+      "name": "Onöndowa'ga:' (Seneca)",
+      "count": 1
+    },
+    {
+      "name": "Hupacasath",
+      "count": 1
+    },
+    {
+      "name": "Subtiaba",
+      "count": 1
+    },
+    {
+      "name": "Pamunkey",
+      "count": 1
+    },
+    {
+      "name": "Sissipahaw",
+      "count": 1
+    },
+    {
+      "name": "Pasto",
+      "count": 1
+    },
+    {
+      "name": "Boe",
+      "count": 1
+    },
+    {
+      "name": "Totorames",
+      "count": 1
+    },
+    {
+      "name": "Miami (Oklahoma)",
+      "count": 1
+    },
+    {
+      "name": "Hatteras",
+      "count": 1
+    },
+    {
+      "name": "Dyo'xaiya-o-Ivo'tsa (Okaina)",
+      "count": 1
+    },
+    {
+      "name": "Okwanuchu",
+      "count": 1
+    },
+    {
+      "name": "Hoti",
+      "count": 1
+    },
+    {
+      "name": "Nłeʔkepmx Tmíxʷ (Nlaka'pamux)",
+      "count": 1
+    },
+    {
+      "name": "Quechua",
+      "count": 1
+    },
+    {
+      "name": "Nüwüwü (Chemehuevi)",
+      "count": 1
+    },
+    {
+      "name": "Otavalo",
+      "count": 1
+    },
+    {
+      "name": "Rayados (Borrados)",
+      "count": 1
+    },
+    {
+      "name": "Arrohatec",
+      "count": 1
+    },
+    {
+      "name": "Saraguro",
+      "count": 1
+    },
+    {
+      "name": "Chepenefa",
+      "count": 1
+    },
+    {
+      "name": "Akwê",
+      "count": 1
+    },
+    {
+      "name": "Tsa'chila",
+      "count": 1
+    },
+    {
+      "name": "Popti'",
+      "count": 1
+    },
+    {
+      "name": "Coos, Lower Umpqua, Siuslaw",
+      "count": 1
+    },
+    {
+      "name": "Buglé and Ngäbé",
+      "count": 1
+    },
+    {
+      "name": "Ottawa (Oklahoma)",
+      "count": 1
+    },
+    {
+      "name": "Koyukon",
+      "count": 1
+    },
+    {
+      "name": "Upper Tanana",
+      "count": 1
+    },
+    {
+      "name": "New River Shasta",
+      "count": 1
+    },
+    {
+      "name": "Krenyê",
+      "count": 1
+    },
+    {
+      "name": "Nisqually",
+      "count": 1
+    },
+    {
+      "name": "Karanki",
+      "count": 1
+    },
+    {
+      "name": "Rappahannock",
+      "count": 1
+    },
+    {
+      "name": "Guane",
+      "count": 1
+    },
+    {
+      "name": "x̣àʼisla w̓áwís (Haisla)",
+      "count": 1
+    },
+    {
+      "name": "O'odham Jeweḍ",
+      "count": 1
+    },
+    {
+      "name": "Chinook",
+      "count": 1
+    },
+    {
+      "name": "Santiam",
+      "count": 1
+    },
+    {
+      "name": "Alazapas",
+      "count": 1
+    },
+    {
+      "name": "Hunkpapa",
+      "count": 1
+    },
+    {
+      "name": "Coast Salish",
+      "count": 1
+    },
+    {
+      "name": "Ñuu Savi (Mixtecapan)",
+      "count": 1
+    },
+    {
+      "name": "Nisg̱a'a",
+      "count": 1
+    },
+    {
+      "name": "Chafan",
+      "count": 1
+    },
+    {
+      "name": "Kiikaapoi (Kickapoo)",
+      "count": 1
+    },
+    {
+      "name": "Brothertown",
+      "count": 1
+    },
+    {
+      "name": "Kolla",
+      "count": 1
+    },
+    {
+      "name": "Dâw",
+      "count": 1
+    },
+    {
+      "name": "Micqanaqa’n",
+      "count": 1
+    },
+    {
+      "name": "Nisenan",
+      "count": 1
+    },
+    {
+      "name": "Umoⁿhoⁿ (Omaha)",
+      "count": 1
+    },
+    {
+      "name": "Yahooskin",
+      "count": 1
+    },
+    {
+      "name": "Carcross/Tagish First Nation (Yukon)",
+      "count": 1
+    },
+    {
+      "name": "Selkirk",
+      "count": 1
+    },
+    {
+      "name": "Popũkare",
+      "count": 1
+    },
+    {
+      "name": "K’ómoks",
+      "count": 1
+    },
+    {
+      "name": "Akawaio/Akawayo",
+      "count": 1
+    },
+    {
+      "name": "Ciguayo",
+      "count": 1
+    },
+    {
+      "name": "Nom Ti Pom Wintu",
+      "count": 1
+    },
+    {
+      "name": "Malécu",
+      "count": 1
+    },
+    {
+      "name": "Schitsu’umsh (Coeur d’Alene)",
+      "count": 1
+    },
+    {
+      "name": "Nandtaughtacund",
+      "count": 1
+    },
+    {
+      "name": "Nahua (Guerrero)",
+      "count": 1
+    },
+    {
+      "name": "Syilx tmixʷ (Okanagan)",
+      "count": 1
+    },
+    {
+      "name": "Karapana/Muteamasa",
+      "count": 1
+    },
+    {
+      "name": "Tama Dujo",
+      "count": 1
+    },
+    {
+      "name": "Chaná",
+      "count": 1
+    },
+    {
+      "name": "Winikon bä lojon/Xk’ukwits/Ajlumob/Otulob (Ch'ol)",
+      "count": 1
+    },
+    {
+      "name": "Tohono O'odham",
+      "count": 1
+    },
+    {
+      "name": "Nongatl",
+      "count": 1
+    },
+    {
+      "name": "Krĩcatijê",
+      "count": 1
+    },
+    {
+      "name": "Pacheedaht",
+      "count": 1
+    },
+    {
+      "name": "Shiwiar",
+      "count": 1
+    },
+    {
+      "name": "Meškwahki·aša·hina (Fox)",
+      "count": 1
+    },
+    {
+      "name": "Guaná",
+      "count": 1
+    },
+    {
+      "name": "Uwottüja",
+      "count": 1
+    },
+    {
+      "name": "Yurok",
+      "count": 1
+    },
+    {
+      "name": "Peoria",
+      "count": 1
+    },
+    {
+      "name": "Wašišiw Ɂítdeʔ (Washoe)",
+      "count": 1
+    },
+    {
+      "name": "Pawtucket",
+      "count": 1
+    },
+    {
+      "name": "Cuttatawomen",
+      "count": 1
+    },
+    {
+      "name": "Wintʰu• Po•m (Northern Wintu)",
+      "count": 1
+    },
+    {
+      "name": "Huni Kuin",
+      "count": 1
+    },
+    {
+      "name": "Guamares",
+      "count": 1
+    },
+    {
+      "name": "Numu (Northern Paiute)",
+      "count": 1
+    },
+    {
+      "name": "Ponca (Oklahoma)",
+      "count": 1
+    },
+    {
+      "name": "Kaxarari",
+      "count": 1
+    },
+    {
+      "name": "Karanka",
+      "count": 1
+    },
+    {
+      "name": "Maxakalí",
+      "count": 1
+    },
+    {
+      "name": "Macuxi",
+      "count": 1
+    },
+    {
+      "name": "Popeloutchom (Amah Mutsun)",
+      "count": 1
+    },
+    {
+      "name": "Q'ero",
+      "count": 1
+    },
+    {
+      "name": "Okanagan",
+      "count": 1
+    },
+    {
+      "name": "Opelousas",
+      "count": 1
+    },
+    {
+      "name": "Kaskaskia",
+      "count": 1
+    },
+    {
+      "name": "Yanesha",
+      "count": 1
+    },
+    {
+      "name": "Opiscopank",
+      "count": 1
+    },
+    {
+      "name": "Stillaguamish",
+      "count": 1
+    },
+    {
+      "name": "Lule",
+      "count": 1
+    },
+    {
+      "name": "Chiquitano",
+      "count": 1
+    },
+    {
+      "name": "Washtáge Moⁿzháⁿ (Kaw / Kansa)",
+      "count": 1
+    },
+    {
+      "name": "Pipa Aha Macav (Mojave)",
+      "count": 1
+    },
+    {
+      "name": "Klahoose",
+      "count": 1
+    },
+    {
+      "name": "Jumanos",
+      "count": 1
+    },
+    {
+      "name": "Northern Yuki",
+      "count": 1
+    },
+    {
+      "name": "Skilloot",
+      "count": 1
+    },
+    {
+      "name": "Chorotega",
+      "count": 1
+    },
+    {
+      "name": "Q'eqchi'",
+      "count": 1
+    },
+    {
+      "name": "Kanas",
+      "count": 1
+    },
+    {
+      "name": "Calvas",
+      "count": 1
+    },
+    {
+      "name": "Lhaq’temish (Lummi)",
+      "count": 1
+    },
+    {
+      "name": "Sewee",
+      "count": 1
+    },
+    {
+      "name": "Ha Shuta Enima (Mazateco)",
+      "count": 1
+    },
+    {
+      "name": "Kandozi",
+      "count": 1
+    },
+    {
+      "name": "Ndee/Nnēē: (Western Apache)",
+      "count": 1
+    },
+    {
+      "name": "Wuikinuxv (Oweekeno)",
+      "count": 1
+    },
+    {
+      "name": "Tariana",
+      "count": 1
+    },
+    {
+      "name": "Moregena",
+      "count": 1
+    },
+    {
+      "name": "Oro Win/Oro Towati’",
+      "count": 1
+    },
+    {
+      "name": "Kwanlin Dün",
+      "count": 1
+    },
+    {
+      "name": "Alutiiq (Sugpiaq)",
+      "count": 1
+    },
+    {
+      "name": "Chemapho",
+      "count": 1
+    },
+    {
+      "name": "Mandan, Hidatsa, and Arikara",
+      "count": 1
+    },
+    {
+      "name": "Niitsítpiis-stahkoii ᖹᐟᒧᐧᐨᑯᐧ ᓴᐦᖾᐟ (Blackfoot / Niitsítapi ᖹᐟᒧᐧᒣᑯ)",
+      "count": 1
+    },
+    {
+      "name": "Lənape Haki-nk (Lenni-Lenape)",
+      "count": 1
+    },
+    {
+      "name": "Garrochambas",
+      "count": 1
+    },
+    {
+      "name": "Isle de Jean Charles Biloxi-Chitimacha-Choctaw",
+      "count": 1
+    },
+    {
+      "name": "Chelan",
+      "count": 1
+    },
+    {
+      "name": "Tse’khene",
+      "count": 1
+    },
+    {
+      "name": "Puruborá",
+      "count": 1
+    },
+    {
+      "name": "Snohomish",
+      "count": 1
+    },
+    {
+      "name": "Kl'bal Pom Wintu",
+      "count": 1
+    },
+    {
+      "name": "Resighini Rancheria (Yurok)",
+      "count": 1
+    },
+    {
+      "name": "Yudjá",
+      "count": 1
+    },
+    {
+      "name": "pʌʌsíʌhʌ (Andoque/Paasiaja)",
+      "count": 1
+    },
+    {
+      "name": "Munsee Lenape",
+      "count": 1
+    },
+    {
+      "name": "Féénemɨnaa",
+      "count": 1
+    },
+    {
+      "name": "Puinave",
+      "count": 1
+    },
+    {
+      "name": "Chesapeake",
+      "count": 1
+    },
+    {
+      "name": "Sacapultec",
+      "count": 1
+    },
+    {
+      "name": "Pataxó Hã-Hã-Hãe",
+      "count": 1
+    },
+    {
+      "name": "Ixil",
+      "count": 1
+    },
+    {
+      "name": "Yup’ik/Cup’ik",
+      "count": 1
+    },
+    {
+      "name": "Beaver Lake Cree",
+      "count": 1
+    },
+    {
+      "name": "Kawahib (Jiahui)",
+      "count": 1
+    },
+    {
+      "name": "Tilian",
+      "count": 1
+    },
+    {
+      "name": "Toromona",
+      "count": 1
+    },
+    {
+      "name": "ditidaqiic̓aq disib̓aʔk (Ditidaht)",
+      "count": 1
+    },
+    {
+      "name": "sdukʷalbixʷ (Snoqualmie)",
+      "count": 1
+    },
+    {
+      "name": "Inuit",
+      "count": 1
+    },
+    {
+      "name": "St̓át̓imc Tmicw (St'at'imc)",
+      "count": 1
+    },
+    {
+      "name": "Da’naxda’xw Awaetlatla",
+      "count": 1
+    },
+    {
+      "name": "Rumsen",
+      "count": 1
+    },
+    {
+      "name": "S'Klallam",
+      "count": 1
+    },
+    {
+      "name": "Waymaq",
+      "count": 1
+    },
+    {
+      "name": "Roanoke",
+      "count": 1
+    },
+    {
+      "name": "Batsil Winik' Otik (Tzotzil)",
+      "count": 1
+    },
+    {
+      "name": "kòréβahώ (korebaju/Koreguaje)",
+      "count": 1
+    },
+    {
+      "name": "Chopcca",
+      "count": 1
+    },
+    {
+      "name": "Ngi-iva (Popoloca)",
+      "count": 1
+    },
+    {
+      "name": "Akokisa",
+      "count": 1
+    },
+    {
+      "name": "ChalAt’i’lo t’sikAti (Chalat’)",
+      "count": 1
+    },
+    {
+      "name": "Shasta",
+      "count": 1
+    },
+    {
+      "name": "Chibuleo",
+      "count": 1
+    },
+    {
+      "name": "Waco",
+      "count": 1
+    },
+    {
+      "name": "Yuracaré",
+      "count": 1
+    },
+    {
+      "name": "Sugaree",
+      "count": 1
+    },
+    {
+      "name": "Kwakwaka’wakw",
+      "count": 1
+    },
+    {
+      "name": "Occohannock",
+      "count": 1
+    },
+    {
+      "name": "Eastern Pomo",
+      "count": 1
+    },
+    {
+      "name": "Pequot",
+      "count": 1
+    },
+    {
+      "name": "ᓀᐦᐃᔭᐤ ᐊᐢᑭᕀ Nêhiyaw-Askiy (Plains Cree)",
+      "count": 1
+    },
+    {
+      "name": "snʕickstx tmxʷúlaʔxʷ (Sinixt)",
+      "count": 1
+    },
+    {
+      "name": "San Poil",
+      "count": 1
+    },
+    {
+      "name": "Sura",
+      "count": 1
+    },
+    {
+      "name": "Eno",
+      "count": 1
+    },
+    {
+      "name": "Graton Rancheria",
+      "count": 1
+    },
+    {
+      "name": "Atfalati",
+      "count": 1
+    },
+    {
+      "name": "Wenrohronon",
+      "count": 1
+    },
+    {
+      "name": "Utapinõmakãphõná",
+      "count": 1
+    },
+    {
+      "name": "Sapara",
+      "count": 1
+    },
+    {
+      "name": "K’asho Got’ine",
+      "count": 1
+    },
+    {
+      "name": "Tapachulteco (mixe-zoque)",
+      "count": 1
+    },
+    {
+      "name": "Upper Kuskokwim",
+      "count": 1
+    },
+    {
+      "name": "Kolla-Atacameño",
+      "count": 1
+    },
+    {
+      "name": "Pankararu",
+      "count": 1
+    },
+    {
+      "name": "Guna Yala",
+      "count": 1
+    },
+    {
+      "name": "Tonokoté",
+      "count": 1
+    },
+    {
+      "name": "Natchitoches",
+      "count": 1
+    },
+    {
+      "name": "Yekooche",
+      "count": 1
+    },
+    {
+      "name": "Mountain Métis",
+      "count": 1
+    },
+    {
+      "name": "Wiwa",
+      "count": 1
+    },
+    {
+      "name": "Toquaht",
+      "count": 1
+    },
+    {
+      "name": "Barí",
+      "count": 1
+    },
+    {
+      "name": "Sauk and Meskwaki",
+      "count": 1
+    },
+    {
+      "name": "Apinayé",
+      "count": 1
+    },
+    {
+      "name": "Clatsop",
+      "count": 1
+    },
+    {
+      "name": "Guenoa-Muinanes",
+      "count": 1
+    },
+    {
+      "name": "Qom",
+      "count": 1
+    },
+    {
+      "name": "Gwa’Sala-‘Nakwaxda’xw",
+      "count": 1
+    },
+    {
+      "name": "Lemhi-Shoshone",
+      "count": 1
+    },
+    {
+      "name": "Kinja",
+      "count": 1
+    },
+    {
+      "name": "Tahues",
+      "count": 1
+    },
+    {
+      "name": "Mdewakanton",
+      "count": 1
+    },
+    {
+      "name": "Iñapari",
+      "count": 1
+    },
+    {
+      "name": "Petun",
+      "count": 1
+    },
+    {
+      "name": "Chono",
+      "count": 1
+    },
+    {
+      "name": "Panará",
+      "count": 1
+    },
+    {
+      "name": "Yoeme (Yaqui)",
+      "count": 1
+    },
+    {
+      "name": "Totonaco",
+      "count": 1
+    },
+    {
+      "name": "Ramaytush",
+      "count": 1
+    },
+    {
+      "name": "Kuruaya",
+      "count": 1
+    },
+    {
+      "name": "Piipaash (Maricopa)",
+      "count": 1
+    },
+    {
+      "name": "Arikapú",
+      "count": 1
+    },
+    {
+      "name": "Kawahib (Tenharim)",
+      "count": 1
+    },
+    {
+      "name": "Wixárika (Huichol)",
+      "count": 1
+    },
+    {
+      "name": "Kalina/Kariña",
+      "count": 1
+    },
+    {
+      "name": "Siria-masã (Siriano)",
+      "count": 1
+    },
+    {
+      "name": "Miskito",
+      "count": 1
+    },
+    {
+      "name": "Esse ejja",
+      "count": 1
+    },
+    {
+      "name": "Ndé Kónitsąąíí Gokíyaa (Lipan Apache)",
+      "count": 1
+    },
+    {
+      "name": "Mayaimi",
+      "count": 1
+    },
+    {
+      "name": "Pemón",
+      "count": 1
+    },
+    {
+      "name": "Methow",
+      "count": 1
+    },
+    {
+      "name": "Muina Murui / Murui-Muinanɨ",
+      "count": 1
+    },
+    {
+      "name": "Pissaseck",
+      "count": 1
+    },
+    {
+      "name": "White Mountain Apache",
+      "count": 1
+    },
+    {
+      "name": "Shuar-Wampis",
+      "count": 1
+    },
+    {
+      "name": "Hän",
+      "count": 1
+    },
+    {
+      "name": "Duwamish",
+      "count": 1
+    },
+    {
+      "name": "Kapanawa",
+      "count": 1
+    },
+    {
+      "name": "Pee Dee",
+      "count": 1
+    },
+    {
+      "name": "Hammonassets",
+      "count": 1
+    },
+    {
+      "name": "Quiyoughcohannock",
+      "count": 1
+    },
+    {
+      "name": "𐓏𐒰𐓓𐒰𐓓𐒷  𐒼𐓂𐓊𐒻  𐓆𐒻𐒿𐒷  𐓀𐒰^𐓓𐒰^(Osage)",
+      "count": 1
+    },
+    {
+      "name": "Massa-adchu-es-et (Massachusett)",
+      "count": 1
+    },
+    {
+      "name": "Ahantchuyuk",
+      "count": 1
+    },
+    {
+      "name": "Amorúa",
+      "count": 1
+    },
+    {
+      "name": "Toara",
+      "count": 1
+    },
+    {
+      "name": "Rarámuri (Tarahumara-Guarijio)",
+      "count": 1
+    },
+    {
+      "name": "Gitx̱san Lax̱yip",
+      "count": 1
+    },
+    {
+      "name": "Kacha Edze (Urarina)",
+      "count": 1
+    },
+    {
+      "name": "Katukina",
+      "count": 1
+    },
+    {
+      "name": "Sihapsa",
+      "count": 1
+    },
+    {
+      "name": "Western Mono/Monache",
+      "count": 1
+    },
+    {
+      "name": "Powhatan",
+      "count": 1
+    },
+    {
+      "name": "Nentego (Nanticoke)",
+      "count": 1
+    },
+    {
+      "name": "Kō Hawaiʻi Paeʻāina (Hawaiian Kingdom)",
+      "count": 1
+    },
+    {
+      "name": "Achires",
+      "count": 1
+    },
+    {
+      "name": "Atikum-Umã",
+      "count": 1
+    },
+    {
+      "name": "Puyanawa",
+      "count": 1
+    },
+    {
+      "name": "Tekohá (Ñandeva - Avá Guaraní)",
+      "count": 1
+    },
+    {
+      "name": "Guacata",
+      "count": 1
+    },
+    {
+      "name": "Chitonahua/Murunahua",
+      "count": 1
+    },
+    {
+      "name": "Nivaclé",
+      "count": 1
+    },
+    {
+      "name": "Salish & Kootenai Tribes",
+      "count": 1
+    },
+    {
+      "name": "Enxet",
+      "count": 1
+    },
+    {
+      "name": "Yavapaiv Apache",
+      "count": 1
+    },
+    {
+      "name": "Kawaiisu",
+      "count": 1
+    },
+    {
+      "name": "Gwitch'in Settlement Region",
+      "count": 1
+    },
+    {
+      "name": "Kitsé Cha’tnio (Chatino)",
+      "count": 1
+    },
+    {
+      "name": "Miwkoʔ Waaliʔ",
+      "count": 1
+    },
+    {
+      "name": "Puri",
+      "count": 1
+    },
+    {
+      "name": "Tunxis",
+      "count": 1
+    },
+    {
+      "name": "Ópata (Tegüima-Eudebe-Hoba)",
+      "count": 1
+    },
+    {
+      "name": "Matawai",
+      "count": 1
+    },
+    {
+      "name": "Pericú",
+      "count": 1
+    },
+    {
+      "name": "Jiwere",
+      "count": 1
+    },
+    {
+      "name": "Quechan (Kwatsáan)",
+      "count": 1
+    },
+    {
+      "name": "Xawiƚƚ kwñchawaay (Cocopah)",
+      "count": 1
+    },
+    {
+      "name": "Huancas",
+      "count": 1
+    },
+    {
+      "name": "Snuneymuxw",
+      "count": 1
+    },
+    {
+      "name": "Cowlitz",
+      "count": 1
+    },
+    {
+      "name": "Tübatulabal",
+      "count": 1
+    },
+    {
+      "name": "Nestucca",
+      "count": 1
+    },
+    {
+      "name": "Tupari",
+      "count": 1
+    },
+    {
+      "name": "Tacana",
+      "count": 1
+    },
+    {
+      "name": "Tongva",
+      "count": 1
+    },
+    {
+      "name": "Iowa (Oklahoma)",
+      "count": 1
+    },
+    {
+      "name": "Nahuas",
+      "count": 1
+    },
+    {
+      "name": "Pacamoro",
+      "count": 1
+    },
+    {
+      "name": "Halalt",
+      "count": 1
+    },
+    {
+      "name": "Manteño-Huancavilca",
+      "count": 1
+    },
+    {
+      "name": "Matses (Matis)",
+      "count": 1
+    },
+    {
+      "name": "Nitassinan (Innu)",
+      "count": 1
+    },
+    {
+      "name": "Guarasugwe",
+      "count": 1
+    },
+    {
+      "name": "Yakama",
+      "count": 1
+    },
+    {
+      "name": "Guna of Madugandí",
+      "count": 1
+    },
+    {
+      "name": "Mehin",
+      "count": 1
+    },
+    {
+      "name": "Ambaló",
+      "count": 1
+    },
+    {
+      "name": "ƛaʔuukʷiʔatḥ (Tla-o-qui-aht)",
+      "count": 1
+    },
+    {
+      "name": "Nicarao/Nahoa",
+      "count": 1
+    },
+    {
+      "name": "Samish",
+      "count": 1
+    },
+    {
+      "name": "Kalinago (Island Carib)",
+      "count": 1
+    },
+    {
+      "name": "Ktunaxa ɁamakɁis",
+      "count": 1
+    },
+    {
+      "name": "Achuar",
+      "count": 1
+    },
+    {
+      "name": "El Pom Wintu",
+      "count": 1
+    },
+    {
+      "name": "Semiahmoo",
+      "count": 1
+    },
+    {
+      "name": "Shawanaua",
+      "count": 1
+    },
+    {
+      "name": "Kecoughtan",
+      "count": 1
+    },
+    {
+      "name": "Takelma",
+      "count": 1
+    },
+    {
+      "name": "Pacahuara",
+      "count": 1
+    },
+    {
+      "name": "sq̓əc̓iy̓aɁɬ təməxʷ (Katzie)",
+      "count": 1
+    },
+    {
+      "name": "Yuhaviatam/Maarenga’yam (Serrano)",
+      "count": 1
+    },
+    {
+      "name": "Winik Atel (Tzeltal)",
+      "count": 1
+    },
+    {
+      "name": "Ho-de-no-sau-nee-ga (Haudenosaunee)",
+      "count": 1
+    },
+    {
+      "name": "Shoalwater Bay",
+      "count": 1
+    },
+    {
+      "name": "We Wai Kum",
+      "count": 1
+    },
+    {
+      "name": "Quileute",
+      "count": 1
+    },
+    {
+      "name": "Tr’ondëk Hwëch’in",
+      "count": 1
+    },
+    {
+      "name": "Popoluca (mixe-zoque)",
+      "count": 1
+    },
+    {
+      "name": "Muteamasa (Karapanã)",
+      "count": 1
+    },
+    {
+      "name": "ᏣᎳᎫᏪᏘᏱ Tsalaguwetiyi (Cherokee, East)",
+      "count": 1
+    },
+    {
+      "name": "Purehno",
+      "count": 1
+    },
+    {
+      "name": "Nyvukagmit (Naukan)",
+      "count": 1
+    },
+    {
+      "name": "Wahpekute",
+      "count": 1
+    },
+    {
+      "name": "Tjer-di/Teribe Broram",
+      "count": 1
+    },
+    {
+      "name": "Hopitutskwa",
+      "count": 1
+    },
+    {
+      "name": "Mashco Piro",
+      "count": 1
+    },
+    {
+      "name": "Niúachi",
+      "count": 1
+    },
+    {
+      "name": "In-SHUCK-ch",
+      "count": 1
+    },
+    {
+      "name": "Stoney",
+      "count": 1
+    },
+    {
+      "name": "Walimanai (Baniwa)",
+      "count": 1
+    },
+    {
+      "name": "Narragansett",
+      "count": 1
+    },
+    {
+      "name": "Ineseño",
+      "count": 1
+    },
+    {
+      "name": "ᒋᑦ ᐊᔅᒋᓄᐤ St'aschinuw (Naskapi)",
+      "count": 1
+    },
+    {
+      "name": "Ishir Ybytoso",
+      "count": 1
+    },
+    {
+      "name": "Rama",
+      "count": 1
+    },
+    {
+      "name": "Shiwinna (Zuni)",
+      "count": 1
+    },
+    {
+      "name": "Kauwets'a:ka",
+      "count": 1
+    },
+    {
+      "name": "Poteskeet",
+      "count": 1
+    },
+    {
+      "name": "Me-Wuk (Lake Miwok)",
+      "count": 1
+    },
+    {
+      "name": "Waccamaw (Woccon)",
+      "count": 1
+    },
+    {
+      "name": "Wajuru",
+      "count": 1
+    },
+    {
+      "name": "Sicaog (Saukiog)",
+      "count": 1
+    },
+    {
+      "name": "Betoy",
+      "count": 1
+    },
+    {
+      "name": "Wet'suwet'en Yintikh",
+      "count": 1
+    },
+    {
+      "name": "Me-Wuk (Northern Sierra Miwok)",
+      "count": 1
+    },
+    {
+      "name": "Guaycura",
+      "count": 1
+    },
+    {
+      "name": "Chachi",
+      "count": 1
+    },
+    {
+      "name": "Hach Winik (Lacandon)",
+      "count": 1
+    },
+    {
+      "name": "Chango",
+      "count": 1
+    },
+    {
+      "name": "Koasati (Coushatta)",
+      "count": 1
+    },
+    {
+      "name": "Awaeté",
+      "count": 1
+    },
+    {
+      "name": "Diné Bikéyah",
+      "count": 1
+    },
+    {
+      "name": "Tseshaht",
+      "count": 1
+    },
+    {
+      "name": "Seminole",
+      "count": 1
+    },
+    {
+      "name": "Coquille",
+      "count": 1
+    },
+    {
+      "name": "Westo",
+      "count": 1
+    },
+    {
+      "name": "Yoli (Concho)",
+      "count": 1
+    },
+    {
+      "name": "Sivuqaq (St. Lawrence Island) Yupik",
+      "count": 1
+    },
+    {
+      "name": "Caxas",
+      "count": 1
+    },
+    {
+      "name": "Tojolwinik’otik (Tojolabal)",
+      "count": 1
+    },
+    {
+      "name": "Monacan",
+      "count": 1
+    },
+    {
+      "name": "O’ de püt/Angpøn (Zoque)",
+      "count": 1
+    },
+    {
+      "name": "Colville",
+      "count": 1
+    },
+    {
+      "name": "Tobosos",
+      "count": 1
+    },
+    {
+      "name": "Arabela",
+      "count": 1
+    },
+    {
+      "name": "Emberá Katío/Eyabida",
+      "count": 1
+    },
+    {
+      "name": "Ts'msyen La̱xyuup (Tsimshian)",
+      "count": 1
+    },
+    {
+      "name": "Hi Ui (Pame/Chichimeco Jonaz)",
+      "count": 1
+    },
+    {
+      "name": "Otoe-Missouria (Oklahoma)",
+      "count": 1
+    },
+    {
+      "name": "Wapishana/Wapixana",
+      "count": 1
+    },
+    {
+      "name": "Coharie",
+      "count": 1
+    },
+    {
+      "name": "Inkal Awá",
+      "count": 1
+    },
+    {
+      "name": "Waujá",
+      "count": 1
+    },
+    {
+      "name": "Aruá",
+      "count": 1
+    },
+    {
+      "name": "Tolowa Dee-ni’",
+      "count": 1
+    },
+    {
+      "name": "Oglala",
+      "count": 1
+    },
+    {
+      "name": "Hoopa (Reservation)",
+      "count": 1
+    },
+    {
+      "name": "Tz'utujil",
+      "count": 1
+    },
+    {
+      "name": "Ta'an Kwäch'än",
+      "count": 1
+    },
+    {
+      "name": "Aparai",
+      "count": 1
+    },
+    {
+      "name": "Apalachees",
+      "count": 1
+    },
+    {
+      "name": "Comca’ac (Seri)",
+      "count": 1
+    },
+    {
+      "name": "Tsuu T'ina",
+      "count": 1
+    },
+    {
+      "name": "Michif Piyii (Métis)",
+      "count": 1
+    },
+    {
+      "name": "Holikachuk",
+      "count": 1
+    },
+    {
+      "name": "Emberá/Eperara/Épera",
+      "count": 1
+    },
+    {
+      "name": "Krenak",
+      "count": 1
+    },
+    {
+      "name": "Mattole",
+      "count": 1
+    },
+    {
+      "name": "Chaparra",
+      "count": 1
+    },
+    {
+      "name": "Tawakoni",
+      "count": 1
+    },
+    {
+      "name": "Shita Got’ine",
+      "count": 1
+    },
+    {
+      "name": "A'i Cofán/Kofán",
+      "count": 1
+    },
+    {
+      "name": "Shawandasse Tula (Shawanwaki/Shawnee)",
+      "count": 1
+    },
+    {
+      "name": "Caldwell",
+      "count": 1
+    },
+    {
+      "name": "Chiapaneco",
+      "count": 1
+    },
+    {
+      "name": "Malacatos",
+      "count": 1
+    },
+    {
+      "name": "Atakapa Ishak Chawasha",
+      "count": 1
+    },
+    {
+      "name": "Shoshone-Bannock",
+      "count": 1
+    },
+    {
+      "name": "Tsankupi",
+      "count": 1
+    },
+    {
+      "name": "Ben 'Zaa/Binnizá/Mén Diiste/Bene Xhon (Zapoteco)",
+      "count": 1
+    },
+    {
+      "name": "Cupeño",
+      "count": 1
+    },
+    {
+      "name": "Coca",
+      "count": 1
+    },
+    {
+      "name": "Ayuukjä'äy (Mixe)",
+      "count": 1
+    },
+    {
+      "name": "Kichwa del Río Tigre",
+      "count": 1
+    },
+    {
+      "name": "Aymara",
+      "count": 1
+    },
+    {
+      "name": "Kitsumkalum",
+      "count": 1
+    },
+    {
+      "name": "Yanktonai",
+      "count": 1
+    },
+    {
+      "name": "Pequonnock",
+      "count": 1
+    },
+    {
+      "name": "Confederated Tribes of Warm Springs",
+      "count": 1
+    },
+    {
+      "name": "Hoopa",
+      "count": 1
+    },
+    {
+      "name": "Iskonawa",
+      "count": 1
+    },
+    {
+      "name": "Yawanawá",
+      "count": 1
+    },
+    {
+      "name": "Mexihcah (Triple Alliance)",
+      "count": 1
+    },
+    {
+      "name": "Juhup-Yuju/Yuhupdëh",
+      "count": 1
+    },
+    {
+      "name": "Seminole Tribe of Florida (Big Cypress Reservation)",
+      "count": 1
+    },
+    {
+      "name": "Mopan",
+      "count": 1
+    },
+    {
+      "name": "Plains Miwok",
+      "count": 1
+    },
+    {
+      "name": "Nehalem",
+      "count": 1
+    },
+    {
+      "name": "Lumbee",
+      "count": 1
+    },
+    {
+      "name": "Nomlaki",
+      "count": 1
+    },
+    {
+      "name": "Ka:’yu:’k’t’h’/Che:k’tles7et’h’",
+      "count": 1
+    },
+    {
+      "name": "Enlhet-Enenlhet",
+      "count": 1
+    },
+    {
+      "name": "Ukarãngmã",
+      "count": 1
+    },
+    {
+      "name": "Q'anjob'al",
+      "count": 1
+    },
+    {
+      "name": "Salinan",
+      "count": 1
+    },
+    {
+      "name": "Accomack",
+      "count": 1
+    },
+    {
+      "name": "Dene Tha'",
+      "count": 1
+    },
+    {
+      "name": "Nespelem",
+      "count": 1
+    },
+    {
+      "name": "Ikoots/Kunajts/Ikoojts (Huave)",
+      "count": 1
+    },
+    {
+      "name": "Ikitu",
+      "count": 1
+    },
+    {
+      "name": "Yamassee",
+      "count": 1
+    },
+    {
+      "name": "Apsaalooké (Crow)",
+      "count": 1
+    },
+    {
+      "name": "Nipmuc",
+      "count": 1
+    },
+    {
+      "name": "Hanis Coos",
+      "count": 1
+    },
+    {
+      "name": "S’atsoyaha (Yuchi)",
+      "count": 1
+    },
+    {
+      "name": "Shipibo-Konibo",
+      "count": 1
+    },
+    {
+      "name": "Siletz",
+      "count": 1
+    },
+    {
+      "name": "Yakina",
+      "count": 1
+    },
+    {
+      "name": "Eduria (Taiwano)",
+      "count": 1
+    },
+    {
+      "name": "Anishinabewaki ᐊᓂᔑᓈᐯᐗᑭ",
+      "count": 1
+    },
+    {
+      "name": "Wayana",
+      "count": 1
+    },
+    {
+      "name": "Lipi",
+      "count": 1
+    },
+    {
+      "name": "Sisseton",
+      "count": 1
+    },
+    {
+      "name": "Tupinambá",
+      "count": 1
+    },
+    {
+      "name": "Poqomchi’",
+      "count": 1
+    },
+    {
+      "name": "Mattamuskeet",
+      "count": 1
+    },
+    {
+      "name": "Kaxixó",
+      "count": 1
+    },
+    {
+      "name": "Coast Yuki",
+      "count": 1
+    },
+    {
+      "name": "Pataxó",
+      "count": 1
+    },
+    {
+      "name": "Mohican",
+      "count": 1
+    },
+    {
+      "name": "Stellat'en",
+      "count": 1
+    },
+    {
+      "name": "Ishir Tomárãho",
+      "count": 1
+    },
+    {
+      "name": "Nacotchtank (Anacostan)",
+      "count": 1
+    },
+    {
+      "name": "Kanienʼkehá꞉ka (Mohawk)",
+      "count": 1
+    },
+    {
+      "name": "Yjxa",
+      "count": 1
+    },
+    {
+      "name": "Wahpeton",
+      "count": 1
+    },
+    {
+      "name": "Omaguaca",
+      "count": 1
+    },
+    {
+      "name": "Irritilas/Lagunero",
+      "count": 1
+    },
+    {
+      "name": "K'iche'",
+      "count": 1
+    },
+    {
+      "name": "Woodland Cree",
+      "count": 1
+    },
+    {
+      "name": "Jeaga",
+      "count": 1
+    },
+    {
+      "name": "Skaruhreh/Tuscarora (North Carolina)",
+      "count": 1
+    },
+    {
+      "name": "Brunka",
+      "count": 1
+    },
+    {
+      "name": "Inga",
+      "count": 1
+    },
+    {
+      "name": "Waorani",
+      "count": 1
+    },
+    {
+      "name": "Me̱'pha̱a̱ (Tlapaneco)",
+      "count": 1
+    },
+    {
+      "name": "Patawomeck",
+      "count": 1
+    },
+    {
+      "name": "Henîa-Kamiare",
+      "count": 1
+    },
+    {
+      "name": "Youghtanund",
+      "count": 1
+    },
+    {
+      "name": "Jicarilla Apache",
+      "count": 1
+    },
+    {
+      "name": "sc̓əwaθenaɁɬ təməxʷ (Tsawwassen)",
+      "count": 1
+    },
+    {
+      "name": "Kaqchikel",
+      "count": 1
+    },
+    {
+      "name": "Na-cho Nyak Dun",
+      "count": 1
+    },
+    {
+      "name": "Otoe-Missouri (Oklahoma)",
+      "count": 1
+    },
+    {
+      "name": "Chicora",
+      "count": 1
+    },
+    {
+      "name": "Harakbut",
+      "count": 1
+    },
+    {
+      "name": "Cahita",
+      "count": 1
+    },
+    {
+      "name": "Zenú",
+      "count": 1
+    },
+    {
+      "name": "Warraskoyack",
+      "count": 1
+    },
+    {
+      "name": "Muckleshoot",
+      "count": 1
+    },
+    {
+      "name": "Cascades",
+      "count": 1
+    },
+    {
+      "name": "Pykopcatejê",
+      "count": 1
+    },
+    {
+      "name": "Inupiat",
+      "count": 1
+    },
+    {
+      "name": "Lil'wat",
+      "count": 1
+    },
+    {
+      "name": "Dau Nom Wintu",
+      "count": 1
+    },
+    {
+      "name": "Surui Paiter",
+      "count": 1
+    },
+    {
+      "name": "Confederated Villages of Lisjan",
+      "count": 1
+    },
+    {
+      "name": "Juma (Kawahib)",
+      "count": 1
+    },
+    {
+      "name": "Guasaves/Tamazulas",
+      "count": 1
+    },
+    {
+      "name": "Shanenawa",
+      "count": 1
+    },
+    {
+      "name": "Esketemculeucw (Esk'etemc)",
+      "count": 1
+    },
+    {
+      "name": "Coahuiltecan",
+      "count": 1
+    },
+    {
+      "name": "Matsés (Mayoruna)",
+      "count": 1
+    },
+    {
+      "name": "Caxcan",
+      "count": 1
+    },
+    {
+      "name": "ZioBain (Siona)",
+      "count": 1
+    },
+    {
+      "name": "Diaguita",
+      "count": 1
+    },
+    {
+      "name": "Muscogee (Oklahoma)",
+      "count": 1
+    },
+    {
+      "name": "Massawomeck",
+      "count": 1
+    },
+    {
+      "name": "Coyutecos (Nahua)",
+      "count": 1
+    },
+    {
+      "name": "Korubo",
+      "count": 1
+    },
+    {
+      "name": "Laklanõ",
+      "count": 1
+    },
+    {
+      "name": "Seminole Tribe of Florida (Brighton Reservation)",
+      "count": 1
+    },
+    {
+      "name": "Charrúa",
+      "count": 1
+    },
+    {
+      "name": "Chilula",
+      "count": 1
+    },
+    {
+      "name": "Eastern Shoshone",
+      "count": 1
+    },
+    {
+      "name": "Runixa Ngiigua (Chocho)",
+      "count": 1
+    },
+    {
+      "name": "Nonuya",
+      "count": 1
+    },
+    {
+      "name": "Bïde",
+      "count": 1
+    },
+    {
+      "name": "Atsugewi",
+      "count": 1
+    },
+    {
+      "name": "Cape Fear",
+      "count": 1
+    },
+    {
+      "name": "Chiricahua Apache",
+      "count": 1
+    },
+    {
+      "name": "Pamoari",
+      "count": 1
+    },
+    {
+      "name": "Assiniboine",
+      "count": 1
+    },
+    {
+      "name": "Secwepemcúl'ecw (Secwépemc)",
+      "count": 1
+    },
+    {
+      "name": "Kriol",
+      "count": 1
+    },
+    {
+      "name": "Mexicanero (Nahuas)",
+      "count": 1
+    },
+    {
+      "name": "Andoa",
+      "count": 1
+    },
+    {
+      "name": "Mosetén",
+      "count": 1
+    },
+    {
+      "name": "Queets",
+      "count": 1
+    },
+    {
+      "name": "Uspantec",
+      "count": 1
+    },
+    {
+      "name": "Entiat",
+      "count": 1
+    },
+    {
+      "name": "Nuwhaha",
+      "count": 1
+    },
+    {
+      "name": "Quuiich (Lower Umpqua)",
+      "count": 1
+    },
+    {
+      "name": "E'ñepá",
+      "count": 1
+    },
+    {
+      "name": "Emberá Chamí",
+      "count": 1
+    },
+    {
+      "name": "Attiwonderonk (Neutral)",
+      "count": 1
+    },
+    {
+      "name": "Yoreme (Mayo)",
+      "count": 1
+    },
+    {
+      "name": "Chamicuro",
+      "count": 1
+    },
+    {
+      "name": "Yagán",
+      "count": 1
+    },
+    {
+      "name": "Sharanahua",
+      "count": 1
+    },
+    {
+      "name": "Kiliwa",
+      "count": 1
+    },
+    {
+      "name": "Guarijío/Guarijó",
+      "count": 1
+    },
+    {
+      "name": "Sirionó",
+      "count": 1
+    },
+    {
+      "name": "Wyandotte (Oklahoma)",
+      "count": 1
+    },
+    {
+      "name": "Winaq Qo’ (Mam)",
+      "count": 1
+    },
+    {
+      "name": "Kichwa del Río Pastaza",
+      "count": 1
+    },
+    {
+      "name": "Tamaulipeco tribes",
+      "count": 1
+    },
+    {
+      "name": "Tzjon Non/ Tzo'tyio (Amuzgo)",
+      "count": 1
+    },
+    {
+      "name": "Günün a atük (Günün a küna)",
+      "count": 1
+    },
+    {
+      "name": "Wakuenai/Walimanai (Kuripako)",
+      "count": 1
+    },
+    {
+      "name": "Tepehua",
+      "count": 1
+    },
+    {
+      "name": "Emberá",
+      "count": 1
+    },
+    {
+      "name": "White River-Kluane",
+      "count": 1
+    },
+    {
+      "name": "Siginygmit (Sireniki) Yupik",
+      "count": 1
+    },
+    {
+      "name": "Wabanaki (Dawnland Confederacy)",
+      "count": 1
+    },
+    {
+      "name": "Pacaxes",
+      "count": 1
+    },
+    {
+      "name": "Ucluelet",
+      "count": 1
+    },
+    {
+      "name": "Tekohá (Guarani)",
+      "count": 1
+    },
+    {
+      "name": "Hesquiaht",
+      "count": 1
+    },
+    {
+      "name": "Havasu Baaja (Havasupai)",
+      "count": 1
+    },
+    {
+      "name": "Shawi",
+      "count": 1
+    },
+    {
+      "name": "Nuxalk",
+      "count": 1
+    },
+    {
+      "name": "Matecumbe",
+      "count": 1
+    },
+    {
+      "name": "Killaka Asanajaqi",
+      "count": 1
+    },
+    {
+      "name": "Huu-ay-aht",
+      "count": 1
+    },
+    {
+      "name": "Moraughtacund",
+      "count": 1
+    },
+    {
+      "name": "Kwikwetlem",
+      "count": 1
+    },
+    {
+      "name": "Ikolen",
+      "count": 1
+    },
+    {
+      "name": "Eperara Siapidara",
+      "count": 1
+    },
+    {
+      "name": "Iogys",
+      "count": 1
+    },
+    {
+      "name": "Kakataibo",
+      "count": 1
+    },
+    {
+      "name": "Kathlamet",
+      "count": 1
+    },
+    {
+      "name": "Angaité",
+      "count": 1
+    },
+    {
+      "name": "Natabuela",
+      "count": 1
+    },
+    {
+      "name": "Nadleh Whut'en",
+      "count": 1
+    },
+    {
+      "name": "Waiwai",
+      "count": 1
+    },
+    {
+      "name": "Ashaninka",
+      "count": 1
+    },
+    {
+      "name": "San Carlos Apache",
+      "count": 1
+    },
+    {
+      "name": "Teslin Tlingit Council (BC)",
+      "count": 1
+    },
+    {
+      "name": "Sauk Suiattle",
+      "count": 1
+    },
+    {
+      "name": "Penobscot",
+      "count": 1
+    },
+    {
+      "name": "[Gáuigú (Kiowa)",
+      "count": 1
+    },
+    {
+      "name": "Northeastern Pomo",
+      "count": 1
+    },
+    {
+      "name": "Karkin",
+      "count": 1
+    },
+    {
+      "name": "Ayahuacas",
+      "count": 1
+    },
+    {
+      "name": "Kaingang",
+      "count": 1
+    },
+    {
+      "name": "Kawashkar",
+      "count": 1
+    },
+    {
+      "name": "Passamaquoddy",
+      "count": 1
+    },
+    {
+      "name": "Magüta/Ticuna",
+      "count": 1
+    },
+    {
+      "name": "səl̓ilwətaɁɬ təməxʷ (Tsleil-Waututh)",
+      "count": 1
+    },
+    {
+      "name": "Aucocisco",
+      "count": 1
+    },
+    {
+      "name": "Zoró/Pangyjej",
+      "count": 1
+    },
+    {
+      "name": "Kantaruré",
+      "count": 1
+    },
+    {
+      "name": "Bostos",
+      "count": 1
+    },
+    {
+      "name": "Achagua",
+      "count": 1
+    },
+    {
+      "name": "Lingít Aaní (Tlingit)",
+      "count": 1
+    },
+    {
+      "name": "Mayangna",
+      "count": 1
+    },
+    {
+      "name": "Canela Ramkokamekrá",
+      "count": 1
+    },
+    {
+      "name": "Julimes",
+      "count": 1
+    },
+    {
+      "name": "Chimacum",
+      "count": 1
+    },
+    {
+      "name": "We Wai Kai",
+      "count": 1
+    },
+    {
+      "name": "Awá",
+      "count": 1
+    },
+    {
+      "name": "Xakriabá",
+      "count": 1
+    },
+    {
+      "name": "Nukini",
+      "count": 1
+    },
+    {
+      "name": "Enenlhet-Toba",
+      "count": 1
+    },
+    {
+      "name": "Yoko T’aan (Chontal)",
+      "count": 1
+    },
+    {
+      "name": "Mánekenk/Haush",
+      "count": 1
+    },
+    {
+      "name": "Manahoac",
+      "count": 1
+    },
+    {
+      "name": "Sinkyone",
+      "count": 1
+    },
+    {
+      "name": "Kamëntsá",
+      "count": 1
+    },
+    {
+      "name": "Tastil",
+      "count": 1
+    },
+    {
+      "name": "Odǫhwęja:deˀ (Cayuga)",
+      "count": 1
+    },
+    {
+      "name": "Chapra",
+      "count": 1
+    },
+    {
+      "name": "Fernandeño Tataviam",
+      "count": 1
+    },
+    {
+      "name": "Ocloya",
+      "count": 1
+    },
+    {
+      "name": "Kelly Lake Metis Settlement Society",
+      "count": 1
+    },
+    {
+      "name": "Nunatsiavut",
+      "count": 1
+    },
+    {
+      "name": "Western Nehântick",
+      "count": 1
+    },
+    {
+      "name": "Nansemond",
+      "count": 1
+    },
+    {
+      "name": "Waxhaw",
+      "count": 1
+    },
+    {
+      "name": "Puyallup",
+      "count": 1
+    },
+    {
+      "name": "Nitaskinan (Atikamekw / Nehirowisi Aski)",
+      "count": 1
+    },
+    {
+      "name": "Me-Wuk (Coast Miwok)",
+      "count": 1
+    },
+    {
+      "name": "Moqoit",
+      "count": 1
+    },
+    {
+      "name": "Jamamadi",
+      "count": 1
+    },
+    {
+      "name": "Uru",
+      "count": 1
+    },
+    {
+      "name": "Shíshálh",
+      "count": 1
+    },
+    {
+      "name": "Luckiamute",
+      "count": 1
+    },
+    {
+      "name": "Ijku (Arhuaco)",
+      "count": 1
+    },
+    {
+      "name": "Nanrantsouak",
+      "count": 1
+    },
+    {
+      "name": "Garífuna",
+      "count": 1
+    },
+    {
+      "name": "Kichwa (Amazónico)",
+      "count": 1
+    },
+    {
+      "name": "Kambeba/Omagua",
+      "count": 1
+    },
+    {
+      "name": "Kogui/Kaggabba",
+      "count": 1
+    },
+    {
+      "name": "Kallawaya",
+      "count": 1
+    },
+    {
+      "name": "Tagé Cho Hudän (Little Salmon/Carmacks)",
+      "count": 1
+    },
+    {
+      "name": "Atakapa-Ishak",
+      "count": 1
+    },
+    {
+      "name": "Jococobas",
+      "count": 1
+    },
+    {
+      "name": "Doeg",
+      "count": 1
+    },
+    {
+      "name": "Amahuaca",
+      "count": 1
+    },
+    {
+      "name": "Bodéwadmiakiwen (Potawatomi)",
+      "count": 1
+    },
+    {
+      "name": "Klamath",
+      "count": 1
+    },
+    {
+      "name": "'Amuwu",
+      "count": 1
+    },
+    {
+      "name": "Payómkawichum (Luiseño)",
+      "count": 1
+    },
+    {
+      "name": "Me-Wuk (Bay Miwok)",
+      "count": 1
+    },
+    {
+      "name": "Mvskoke (Muscogee / Creek)",
+      "count": 1
+    },
+    {
+      "name": "Paipai (Akwa'ala)",
+      "count": 1
+    },
+    {
+      "name": "Hia-Ced O'odham",
+      "count": 1
+    },
+    {
+      "name": "Tepehuán",
+      "count": 1
+    },
+    {
+      "name": "Salasaka",
+      "count": 1
+    },
+    {
+      "name": "Mississaugas of the Credit First Nation",
+      "count": 1
+    },
+    {
+      "name": "Jarawara",
+      "count": 1
+    },
+    {
+      "name": "Somi Se'k (Esto’k Gna)",
+      "count": 1
+    },
+    {
+      "name": "Kisêdjê",
+      "count": 1
+    },
+    {
+      "name": "Nawa",
+      "count": 1
+    },
+    {
+      "name": "Jaqaru",
+      "count": 1
+    },
+    {
+      "name": "Gunadule (Kuna-Tule)",
+      "count": 1
+    },
+    {
+      "name": "Warekena",
+      "count": 1
+    },
+    {
+      "name": "Xetá",
+      "count": 1
+    },
+    {
+      "name": "Yaminawá",
+      "count": 1
+    },
+    {
+      "name": "Guanahatabey",
+      "count": 1
+    },
+    {
+      "name": "Dokapuara (Tuyuca)",
+      "count": 1
+    },
+    {
+      "name": "Chontal de Guerrero – Tuxteco",
+      "count": 1
+    },
+    {
+      "name": "Maijuna",
+      "count": 1
+    },
+    {
+      "name": "Shigom",
+      "count": 1
+    },
+    {
+      "name": "Quillacinga",
+      "count": 1
+    },
+    {
+      "name": "Slijuala Xanuc (Chontal)",
+      "count": 1
+    },
+    {
+      "name": "Acho Dene Koe",
+      "count": 1
+    },
+    {
+      "name": "Tocobaga",
+      "count": 1
+    },
+    {
+      "name": "Sanapaná",
+      "count": 1
+    },
+    {
+      "name": "Awajún",
+      "count": 1
+    },
+    {
+      "name": "Kusso",
+      "count": 1
+    },
+    {
+      "name": "Osage (Oklahoma)",
+      "count": 1
+    },
+    {
+      "name": "Wôpanâak (Wampanoag)",
+      "count": 1
+    },
+    {
+      "name": "Abitibiwinni Aki",
+      "count": 1
+    },
+    {
+      "name": "Kulina Pano",
+      "count": 1
+    },
+    {
+      "name": "Ye\"pâ-masa",
+      "count": 1
+    },
+    {
+      "name": "Lower Tohono O’odham (Lower Pima)",
+      "count": 1
+    },
+    {
+      "name": "Sana",
+      "count": 1
+    },
+    {
+      "name": "Charka",
+      "count": 1
+    },
+    {
+      "name": "Mundurukânia (Wuy jugu)",
+      "count": 1
+    },
+    {
+      "name": "Ãwa",
+      "count": 1
+    },
+    {
+      "name": "Siuslaw",
+      "count": 1
+    },
+    {
+      "name": "NunatuKavut",
+      "count": 1
+    },
+    {
+      "name": "Qhara Qhara",
+      "count": 1
+    },
+    {
+      "name": "Kichwa",
+      "count": 1
+    },
+    {
+      "name": "Kojomk'awi (Konkow)",
+      "count": 1
+    },
+    {
+      "name": "Ka'apor",
+      "count": 1
+    },
+    {
+      "name": "Akimel O'odham (Upper Pima)",
+      "count": 1
+    },
+    {
+      "name": "Nimiipuu (Nez Perce)",
+      "count": 1
+    },
+    {
+      "name": "Tonkawa (Oklahoma)",
+      "count": 1
+    },
+    {
+      "name": "Confederated Tribes of Grand Ronde",
+      "count": 1
+    },
+    {
+      "name": "Southeastern Pomo",
+      "count": 1
+    },
+    {
+      "name": "Kañari",
+      "count": 1
+    },
+    {
+      "name": "A'uwe",
+      "count": 1
+    },
+    {
+      "name": "Ohlone",
+      "count": 1
+    },
+    {
+      "name": "Chickahominy",
+      "count": 1
+    },
+    {
+      "name": "Chinantla (Tsa ju jmí’)",
+      "count": 1
+    },
+    {
+      "name": "Zacateco",
+      "count": 1
+    },
+    {
+      "name": "Nahua (Michoacan)",
+      "count": 1
+    },
+    {
+      "name": "Yazne",
+      "count": 1
+    },
+    {
+      "name": "Suquamish",
+      "count": 1
+    },
+    {
+      "name": "Marubo",
+      "count": 1
+    },
+    {
+      "name": "Odawa",
+      "count": 1
+    },
+    {
+      "name": "Nauset",
+      "count": 1
+    },
+    {
+      "name": "Nuwuvi (Southern Paiute)",
+      "count": 1
+    },
+    {
+      "name": "Miluk Coos",
+      "count": 1
+    },
+    {
+      "name": "Cayuse, Umatilla and Walla Walla",
+      "count": 1
+    },
+    {
+      "name": "Copuces",
+      "count": 1
+    },
+    {
+      "name": "Quinault",
+      "count": 1
+    },
+    {
+      "name": "Pakajaqi",
+      "count": 1
+    },
+    {
+      "name": "Southern Pomo",
+      "count": 1
+    },
+    {
+      "name": "Tinigua",
+      "count": 1
+    },
+    {
+      "name": "Obispeño",
+      "count": 1
+    },
+    {
+      "name": "Guató",
+      "count": 1
+    },
+    {
+      "name": "Skagit",
+      "count": 1
+    },
+    {
+      "name": "Pech",
+      "count": 1
+    },
+    {
+      "name": "Tłı̨chǫ Ndè",
+      "count": 1
+    },
+    {
+      "name": "Chahta Yakni (Choctaw)",
+      "count": 1
+    },
+    {
+      "name": "Kurâ",
+      "count": 1
+    },
+    {
+      "name": "Cholulteca",
+      "count": 1
+    },
+    {
+      "name": "Kuyam",
+      "count": 1
+    },
+    {
+      "name": "Wyandot (Anderdon)",
+      "count": 1
+    },
+    {
+      "name": "Kiskiack",
+      "count": 1
+    },
+    {
+      "name": "Podunks",
+      "count": 1
+    },
+    {
+      "name": "Madija",
+      "count": 1
+    },
+    {
+      "name": "Aónikenk (Tehuelche)",
+      "count": 1
+    },
+    {
+      "name": "Eastern Mono/Monache",
+      "count": 1
+    },
+    {
+      "name": "Sataré-Mawé",
+      "count": 1
+    },
+    {
+      "name": "Eastern Nehântick",
+      "count": 1
+    },
+    {
+      "name": "Guahibo/Hiwi",
+      "count": 1
+    },
+    {
+      "name": "Takla",
+      "count": 1
+    },
+    {
+      "name": "Aché",
+      "count": 1
+    },
+    {
+      "name": "Unangam Tanangin (Unangax̂ /Aleut)",
+      "count": 1
+    },
+    {
+      "name": "Ofaié",
+      "count": 1
+    },
+    {
+      "name": "Ts’uubaa-asatx",
+      "count": 1
+    },
+    {
+      "name": "Wappo",
+      "count": 1
+    },
+    {
+      "name": "Sobaipuri",
+      "count": 1
+    },
+    {
+      "name": "Mojeño",
+      "count": 1
+    },
+    {
+      "name": "Mattaponi",
+      "count": 1
+    },
+    {
+      "name": "Piscataway",
+      "count": 1
+    },
+    {
+      "name": "Dehcho Dene",
+      "count": 1
+    },
+    {
+      "name": "Monqui",
+      "count": 1
+    },
+    {
+      "name": "Chankas",
+      "count": 1
+    },
+    {
+      "name": "Nasa",
+      "count": 1
+    },
+    {
+      "name": "Cuitlatec",
+      "count": 1
+    },
+    {
+      "name": "Shmuwich (Barbareño)",
+      "count": 1
+    },
+    {
+      "name": "Asheninka",
+      "count": 1
+    },
+    {
+      "name": "Wanano/Kotiria",
+      "count": 1
+    },
+    {
+      "name": "Miccosukee",
+      "count": 1
+    },
+    {
+      "name": "Kumeyaay",
+      "count": 1
+    },
+    {
+      "name": "Willapa",
+      "count": 1
+    },
+    {
+      "name": "nuučaan̓uuɫɁatḥ nism̓a (Nuu-chah-nulth)",
+      "count": 1
+    },
+    {
+      "name": "Acjachemen (Juaneño)",
+      "count": 1
+    },
+    {
+      "name": "Clatskanie",
+      "count": 1
+    },
+    {
+      "name": "Squaxin",
+      "count": 1
+    },
+    {
+      "name": "Yoncalla",
+      "count": 1
+    },
+    {
+      "name": "Moratok",
+      "count": 1
+    },
+    {
+      "name": "Wiyot",
+      "count": 1
+    },
+    {
+      "name": "Lenca",
+      "count": 1
+    },
+    {
+      "name": "Sahtú Got’ine",
+      "count": 1
+    },
+    {
+      "name": "Umukomasã/Desana",
+      "count": 1
+    },
+    {
+      "name": "Chehalis",
+      "count": 1
+    },
+    {
+      "name": "Appamattuck",
+      "count": 1
+    },
+    {
+      "name": "Vilela",
+      "count": 1
+    },
+    {
+      "name": "U'wa",
+      "count": 1
+    },
+    {
+      "name": "Swinomish",
+      "count": 1
+    },
+    {
+      "name": "Onawmanient",
+      "count": 1
+    },
+    {
+      "name": "Clackamas",
+      "count": 1
+    },
+    {
+      "name": "Cuica",
+      "count": 1
+    },
+    {
+      "name": "Tomabela",
+      "count": 1
+    },
+    {
+      "name": "Parkatejê",
+      "count": 1
+    },
+    {
+      "name": "Menominee",
+      "count": 1
+    },
+    {
+      "name": "Chalon",
+      "count": 1
+    },
+    {
+      "name": "Neusiok",
+      "count": 1
+    },
+    {
+      "name": "Vanyumé",
+      "count": 1
+    },
+    {
+      "name": "Matsigenka",
+      "count": 1
+    },
+    {
+      "name": "Tanacross",
+      "count": 1
+    },
+    {
+      "name": "Cherokee (Oklahoma)",
+      "count": 1
+    },
+    {
+      "name": "Salmon River",
+      "count": 1
+    },
+    {
+      "name": "Cahto",
+      "count": 1
+    },
+    {
+      "name": "Kayambi",
+      "count": 1
+    },
+    {
+      "name": "Croatan",
+      "count": 1
+    },
+    {
+      "name": "Enawenê-nawê",
+      "count": 1
+    },
+    {
+      "name": "Quw'utsun",
+      "count": 1
+    },
+    {
+      "name": "Rikbaktsá",
+      "count": 1
+    },
+    {
+      "name": "Pueblos",
+      "count": 1
+    },
+    {
+      "name": "Nambikwara",
+      "count": 1
+    },
+    {
+      "name": "Wasco and Wishram",
+      "count": 1
+    },
+    {
+      "name": "Kaimbé",
+      "count": 1
+    },
+    {
+      "name": "Pamlico (Pomouik)",
+      "count": 1
+    },
+    {
+      "name": "Tāłtān Konelīne (Tahltan)",
+      "count": 1
+    },
+    {
+      "name": "Canela Apanyekrá",
+      "count": 1
+    },
+    {
+      "name": "Kitasoo/Xai'xais",
+      "count": 1
+    },
+    {
+      "name": "Nükak Makü",
+      "count": 1
+    },
+    {
+      "name": "Tetlit Gwich’in",
+      "count": 1
+    },
+    {
+      "name": "Chelamela",
+      "count": 1
+    },
+    {
+      "name": "Anambé",
+      "count": 1
+    },
+    {
+      "name": "Halíti",
+      "count": 1
+    },
+    {
+      "name": "Xinca",
+      "count": 1
+    },
+    {
+      "name": "Tulalip",
+      "count": 1
+    },
+    {
+      "name": "Waípinõmakã (Bará)",
+      "count": 1
+    },
+    {
+      "name": "Matetamãe/Cinta Larga",
+      "count": 1
+    },
+    {
+      "name": "Cow Creek Umpqua",
+      "count": 1
+    },
+    {
+      "name": "Arara of Volta Grande",
+      "count": 1
+    },
+    {
+      "name": "Tigua",
+      "count": 1
+    },
+    {
+      "name": "Wateree",
+      "count": 1
+    },
+    {
+      "name": "Tillamook",
+      "count": 1
+    },
+    {
+      "name": "Kitanemuk",
+      "count": 1
+    },
+    {
+      "name": "Taos Pueblo",
+      "count": 1
+    },
+    {
+      "name": "Nunavik",
+      "count": 1
+    },
+    {
+      "name": "Sac and Fox (Oklahoma)",
+      "count": 1
+    },
+    {
+      "name": "Sahtu Dene and Metis",
+      "count": 1
+    },
+    {
+      "name": "Sanavirones",
+      "count": 1
+    },
+    {
+      "name": "Apiaká",
+      "count": 1
+    },
+    {
+      "name": "Palouse",
+      "count": 1
+    },
+    {
+      "name": "Tenetehara (Tembé)",
+      "count": 1
+    },
+    {
+      "name": "Kalapalo",
+      "count": 1
+    },
+    {
+      "name": "Tanana",
+      "count": 1
+    },
+    {
+      "name": "ɬaʔamɩn gɩǰɛ (Tla'amin/Sliammon)",
+      "count": 1
+    },
+    {
+      "name": "Confederated Tribes of Siletz Indians",
+      "count": 1
+    },
+    {
+      "name": "Parikwene",
+      "count": 1
+    },
+    {
+      "name": "Pit River",
+      "count": 1
+    },
+    {
+      "name": "Hupd'äh",
+      "count": 1
+    },
+    {
+      "name": "Wari’",
+      "count": 1
+    },
+    {
+      "name": "Skwxwú7mesh-ulh Temíx̱w (Squamish)",
+      "count": 1
+    },
+    {
+      "name": "S’ólh Téméxw (Stó:lō)",
+      "count": 1
+    },
+    {
+      "name": "Timotes",
+      "count": 1
+    },
+    {
+      "name": "Lower Chinook",
+      "count": 1
+    },
+    {
+      "name": "Gitxaała",
+      "count": 1
+    },
+    {
+      "name": "Yaruro/Pumé",
+      "count": 1
+    },
+    {
+      "name": "Movima",
+      "count": 1
+    },
+    {
+      "name": "Inuvialuit",
+      "count": 1
+    },
+    {
+      "name": "Musgamagw Dzawada'enuxw",
+      "count": 1
+    },
+    {
+      "name": "Muwekma",
+      "count": 1
+    },
+    {
+      "name": "Uchucklesaht",
+      "count": 1
+    },
+    {
+      "name": "Dënéndeh",
+      "count": 1
+    },
+    {
+      "name": "Waranka",
+      "count": 1
+    },
+    {
+      "name": "Apyãwa",
+      "count": 1
+    },
+    {
+      "name": "Werowocomoco",
+      "count": 1
+    },
+    {
+      "name": "Kisapincha",
+      "count": 1
+    },
+    {
+      "name": "Mazahua",
+      "count": 1
+    },
+    {
+      "name": "Chochenyo",
+      "count": 1
+    },
+    {
+      "name": "Homalco",
+      "count": 1
+    },
+    {
+      "name": "Kamejeya (Yukuna)",
+      "count": 1
+    },
+    {
+      "name": "Nom Sus Wintu",
+      "count": 1
+    },
+    {
+      "name": "Salish Kootenai (Flathead)",
+      "count": 1
+    },
+    {
+      "name": "Sicangu",
+      "count": 1
+    },
+    {
+      "name": "Mount Tabor Indian Community",
+      "count": 1
+    },
+    {
+      "name": "Calicuas",
+      "count": 1
+    },
+    {
+      "name": "Wahkiakum",
+      "count": 1
+    },
+    {
+      "name": "Tenino",
+      "count": 1
+    },
+    {
+      "name": "Tontotuna (Totoró)",
+      "count": 1
+    },
+    {
+      "name": "Coree",
+      "count": 1
+    },
+    {
+      "name": "K’áálǫ Got’ine",
+      "count": 1
+    },
+    {
+      "name": "Mebêngôkre (Kayapó)",
+      "count": 1
+    },
+    {
+      "name": "Molalla",
+      "count": 1
+    },
+    {
+      "name": "Wichita-Caddo-Delaware (Oklahoma)",
+      "count": 1
+    },
+    {
+      "name": "Sumas",
+      "count": 1
+    },
+    {
+      "name": "Djeoromitxí",
+      "count": 1
+    },
+    {
+      "name": "Maká",
+      "count": 1
+    },
+    {
+      "name": "Lickanantay",
+      "count": 1
+    },
+    {
+      "name": "Kizh",
+      "count": 1
+    },
+    {
+      "name": "Sappony",
+      "count": 1
+    },
+    {
+      "name": "Tapieté/Guaraní-Ñandeva",
+      "count": 1
+    },
+    {
+      "name": "Kashaya",
+      "count": 1
+    },
+    {
+      "name": "Bohanes",
+      "count": 1
+    },
+    {
+      "name": "Peoria (Oklahoma)",
+      "count": 1
+    },
+    {
+      "name": "Myaamia",
+      "count": 1
+    },
+    {
+      "name": "Aikanã",
+      "count": 1
+    },
+    {
+      "name": "Wari",
+      "count": 1
+    },
+    {
+      "name": "Poqomam",
+      "count": 1
+    },
+    {
+      "name": "Dau Pom Wintu",
+      "count": 1
+    },
+    {
+      "name": "No'iria",
+      "count": 1
+    },
+    {
+      "name": "Karijona",
+      "count": 1
+    },
+    {
+      "name": "Eyak",
+      "count": 1
+    },
+    {
+      "name": "Huaylas",
+      "count": 1
+    },
+    {
+      "name": "Onʌyote'a•ka (Oneida)",
+      "count": 1
+    },
+    {
+      "name": "Pentucket",
+      "count": 1
+    },
+    {
+      "name": "Pokanoket",
+      "count": 1
+    },
+    {
+      "name": "Makah",
+      "count": 1
+    },
+    {
+      "name": "Yeopim",
+      "count": 1
+    },
+    {
+      "name": "Selk'nam",
+      "count": 1
+    },
+    {
+      "name": "Cuicuilco",
+      "count": 1
+    },
+    {
+      "name": "Á,LEṈENEȻ ȽTE (W̱SÁNEĆ)",
+      "count": 1
+    },
+    {
+      "name": "Deni",
+      "count": 1
+    },
+    {
+      "name": "Cheraw",
+      "count": 1
+    },
+    {
+      "name": "Kichwa Santarrosino",
+      "count": 1
+    },
+    {
+      "name": "Tsase/Piapoco",
+      "count": 1
+    },
+    {
+      "name": "Steilacoom",
+      "count": 1
+    },
+    {
+      "name": "Baure",
+      "count": 1
+    },
+    {
+      "name": "Paugussett",
+      "count": 1
+    },
+    {
+      "name": "Haida Gwaii",
+      "count": 1
+    },
+    {
+      "name": "Patamona/Ingarikó",
+      "count": 1
+    },
+    {
+      "name": "Cahuilla",
+      "count": 1
+    },
+    {
+      "name": "Chickasaw (Oklahoma)",
+      "count": 1
+    },
+    {
+      "name": "Kitu Kara",
+      "count": 1
+    },
+    {
+      "name": "Achí",
+      "count": 1
+    },
+    {
+      "name": "Goshute",
+      "count": 1
+    },
+    {
+      "name": "Amboca",
+      "count": 1
+    },
+    {
+      "name": "Qayqayt",
+      "count": 1
+    },
+    {
+      "name": "Massacoes",
+      "count": 1
+    },
+    {
+      "name": "Kaiabi",
+      "count": 1
+    },
+    {
+      "name": "Big Stone Cree",
+      "count": 1
+    },
+    {
+      "name": "Gwich'in Nành",
+      "count": 1
+    },
+    {
+      "name": "Vacacocha",
+      "count": 1
+    },
+    {
+      "name": "Seminole (Oklahoma)",
+      "count": 1
+    },
+    {
+      "name": "Winnimem Wintu",
+      "count": 1
+    },
+    {
+      "name": "Kluane",
+      "count": 1
+    },
+    {
+      "name": "Tanimuka",
+      "count": 1
+    },
+    {
+      "name": "Taku River Tlingit",
+      "count": 1
+    },
+    {
+      "name": "Pijao",
+      "count": 1
+    },
+    {
+      "name": "Siekopa’aiInte/Aido-Pãi (Secoya)",
+      "count": 1
+    },
+    {
+      "name": "Kitselas",
+      "count": 1
+    },
+    {
+      "name": "Manoki",
+      "count": 1
+    },
+    {
+      "name": "Mokaná",
+      "count": 1
+    },
+    {
+      "name": "Kuuvuan KaNianiq",
+      "count": 1
+    },
+    {
+      "name": "Ayoreo",
+      "count": 1
+    },
+    {
+      "name": "Wolastoqiyik Wahsipekuk (Maliseet)",
+      "count": 1
+    },
+    {
+      "name": "Kankuamo",
+      "count": 1
+    },
+    {
+      "name": "Makurap",
+      "count": 1
+    },
+    {
+      "name": "Paltas",
+      "count": 1
+    },
+    {
+      "name": "Enlhet",
+      "count": 1
+    },
+    {
+      "name": "Dena'ina Ełnena",
+      "count": 1
+    },
+    {
+      "name": "Añuu",
+      "count": 1
+    },
+    {
+      "name": "Araona",
+      "count": 1
+    },
+    {
+      "name": "Pescado",
+      "count": 1
+    },
+    {
+      "name": "Nʉmʉnʉʉ (Comanche)",
+      "count": 1
+    },
+    {
+      "name": "Mescalero Apache",
+      "count": 1
+    },
+    {
+      "name": "Marinahua",
+      "count": 1
+    },
+    {
+      "name": "Dakeł Keyoh (ᑕᗸᒡ ᗲᘏᑋ)",
+      "count": 1
+    },
+    {
+      "name": "Resígaro",
+      "count": 1
+    },
+    {
+      "name": "Hixkaryana",
+      "count": 1
+    },
+    {
+      "name": "Mississauga",
+      "count": 1
+    },
+    {
+      "name": "Ch'orti'",
+      "count": 1
+    },
+    {
+      "name": "Kichwa del Río Napo",
+      "count": 1
+    },
+    {
+      "name": "Pisamira",
+      "count": 1
+    },
+    {
+      "name": "Xixime",
+      "count": 1
+    },
+    {
+      "name": "Waíkhana",
+      "count": 1
+    },
+    {
+      "name": "Hñähñu (Otomí)",
+      "count": 1
+    },
+    {
+      "name": "KiKiallus",
+      "count": 1
+    },
+    {
+      "name": "Pâri (Pawnee)",
+      "count": 1
+    },
+    {
+      "name": "Yaros",
+      "count": 1
+    },
+    {
+      "name": "Qwû'lh-hwai-pûm (Klickitat)",
+      "count": 1
+    },
+    {
+      "name": "Wappinger",
+      "count": 1
+    },
+    {
+      "name": "Chitimacha",
+      "count": 1
+    },
+    {
+      "name": "Congaree",
+      "count": 1
+    },
+    {
+      "name": "Trio/Wü tarëno",
+      "count": 1
+    },
+    {
+      "name": "Modoc (Oklahoma)",
+      "count": 1
+    },
+    {
+      "name": "Nor Rel Muk Wintu",
+      "count": 1
+    },
+    {
+      "name": "Wangunks",
+      "count": 1
+    },
+    {
+      "name": "Yukpa",
+      "count": 1
+    },
+    {
+      "name": "Jupaú (Kawahib)",
+      "count": 1
+    },
+    {
+      "name": "Ulwas",
+      "count": 1
+    },
+    {
+      "name": "Trumai",
+      "count": 1
+    },
+    {
+      "name": "Nomatsigenga",
+      "count": 1
+    },
+    {
+      "name": "Yamhill",
+      "count": 1
+    },
+    {
+      "name": "Moneton",
+      "count": 1
+    },
+    {
+      "name": "O-ga-xpa Ma-zhoⁿ (O-ga-xpa)",
+      "count": 1
+    },
+    {
+      "name": "Bidai",
+      "count": 1
+    },
+    {
+      "name": "Huasteco/Teenek",
+      "count": 1
+    },
+    {
+      "name": "Northern Pomo",
+      "count": 1
+    },
+    {
+      "name": "Lassik",
+      "count": 1
+    },
+    {
+      "name": "Mountain Maidu",
+      "count": 1
+    },
+    {
+      "name": "Chukchansi",
+      "count": 1
+    },
+    {
+      "name": "Mochó",
+      "count": 1
+    },
+    {
+      "name": "Hoocąk (Ho-Chunk)",
+      "count": 1
+    },
+    {
+      "name": "Eastern Shawnee (Oklahoma)",
+      "count": 1
+    },
+    {
+      "name": "Kaska Dena Kayeh",
+      "count": 1
+    },
+    {
+      "name": "Baré",
+      "count": 1
+    },
+    {
+      "name": "Vuntut Gwitchin",
+      "count": 1
+    },
+    {
+      "name": "Omàmìwininìwag (Algonquin)",
+      "count": 1
+    },
+    {
+      "name": "Pankará",
+      "count": 1
+    },
+    {
+      "name": "Newe (Western Shoshone)",
+      "count": 1
+    },
+    {
+      "name": "Pocomoke",
+      "count": 1
+    },
+    {
+      "name": "Adena",
+      "count": 1
+    },
+    {
+      "name": "Yihamwo (Yagua)",
+      "count": 1
+    },
+    {
+      "name": "Kawahib (Parintintin)",
+      "count": 1
+    },
+    {
+      "name": "Deg Xit'an Ngan' (Deg Xit'an)",
+      "count": 1
+    },
+    {
+      "name": "Chowanoke",
+      "count": 1
+    },
+    {
+      "name": "Winefelly",
+      "count": 1
+    },
+    {
+      "name": "Tŝilhqot’in Nen",
+      "count": 1
+    },
+    {
+      "name": "Kwazá",
+      "count": 1
+    },
+    {
+      "name": "Yine",
+      "count": 1
+    },
+    {
+      "name": "Ecuana",
+      "count": 1
+    },
+    {
+      "name": "Misak",
+      "count": 1
+    },
+    {
+      "name": "Yurutí",
+      "count": 1
+    },
+    {
+      "name": "Tagish",
+      "count": 1
+    },
+    {
+      "name": "Warao",
+      "count": 1
+    },
+    {
+      "name": "Pascua Yaqui",
+      "count": 1
+    },
+    {
+      "name": "Banawá",
+      "count": 1
+    },
+    {
+      "name": "Paspahegh",
+      "count": 1
+    },
+    {
+      "name": "Akaitcho",
+      "count": 1
+    },
+    {
+      "name": "Hualapai",
+      "count": 1
+    },
+    {
+      "name": "Mnicoujou",
+      "count": 1
+    },
+    {
+      "name": "Denendeh (Dënësųłinë́ Nëné)",
+      "count": 1
+    },
+    {
+      "name": "Wicocomico",
+      "count": 1
+    },
+    {
+      "name": "Te’mexw Treaty Association",
+      "count": 1
+    },
+    {
+      "name": "Leco",
+      "count": 1
+    },
+    {
+      "name": "Kadiwéu",
+      "count": 1
+    },
+    {
+      "name": "Skykomish",
+      "count": 1
+    },
+    {
+      "name": "Kashtik",
+      "count": 1
+    },
+    {
+      "name": "Moose Cree",
+      "count": 1
+    },
+    {
+      "name": "Kwantlen",
+      "count": 1
+    },
+    {
+      "name": "Chimariko (territory)",
+      "count": 1
+    },
+    {
+      "name": "Sakurabiat",
+      "count": 1
+    },
+    {
+      "name": "Matagalpa/Cacaopera",
+      "count": 1
+    },
+    {
+      "name": "Stz'uminus",
+      "count": 1
+    },
+    {
+      "name": "Seminole Tribe of Florida (Tampa Reservation)",
+      "count": 1
+    },
+    {
+      "name": "Bora",
+      "count": 1
+    },
+    {
+      "name": "Maya Yucateco",
+      "count": 1
+    },
+    {
+      "name": "Lokono (Arawak)",
+      "count": 1
+    },
+    {
+      "name": "Umurecoómajá (Tatuyo)",
+      "count": 1
+    },
+    {
+      "name": "Sekakawon",
+      "count": 1
+    },
+    {
+      "name": "Wendake-Nionwentsïo",
+      "count": 1
+    },
+    {
+      "name": "Weyanock",
+      "count": 1
+    },
+    {
+      "name": "Awaswas",
+      "count": 1
+    },
+    {
+      "name": "Karajá do Norte",
+      "count": 1
+    },
+    {
+      "name": "Abenaki / Abénaquis",
+      "count": 1
+    },
+    {
+      "name": "Zo’é",
+      "count": 1
+    },
+    {
+      "name": "Nanti",
+      "count": 1
+    },
+    {
+      "name": "Bribri",
+      "count": 1
+    },
+    {
+      "name": "Konomihu",
+      "count": 1
+    },
+    {
+      "name": "Chimú",
+      "count": 1
+    },
+    {
+      "name": "Núu-agha-tʉvʉ-pʉ̱ (Ute)",
+      "count": 1
+    },
+    {
+      "name": "Hohokam",
+      "count": 1
+    },
+    {
+      "name": "Pequawket",
+      "count": 1
+    },
+    {
+      "name": "Tuscarora",
+      "count": 1
+    },
+    {
+      "name": "Lheidli T'enneh",
+      "count": 1
+    },
+    {
+      "name": "Huetar",
+      "count": 1
+    },
+    {
+      "name": "Pocumtuc",
+      "count": 1
+    },
+    {
+      "name": "Kakinte",
+      "count": 1
+    },
+    {
+      "name": "Matlatzinco/matlatzinteca",
+      "count": 1
+    },
+    {
+      "name": "Tuxá",
+      "count": 1
+    },
+    {
+      "name": "Rankülche",
+      "count": 1
+    },
+    {
+      "name": "Tolupan",
+      "count": 1
+    },
+    {
+      "name": "Guarayo",
+      "count": 1
+    },
+    {
+      "name": "Occaneechi",
+      "count": 1
+    },
+    {
+      "name": "Suruwaha",
+      "count": 1
+    },
+    {
+      "name": "Huarpe",
+      "count": 1
+    },
+    {
+      "name": "Nahua ( Morelos, Puebla, Tlaxcala, Veracruz, Hidalgo, San Luis Potosi)",
+      "count": 1
+    },
+    {
+      "name": "Wanapum",
+      "count": 1
+    },
+    {
+      "name": "Yana",
+      "count": 1
+    },
+    {
+      "name": "Seminole Tribe of Florida (Hollywood Reservation)",
+      "count": 1
+    },
+    {
+      "name": "Me-Wuk (Central Sierra Miwok)",
+      "count": 1
+    },
+    {
+      "name": "Central Pomo",
+      "count": 1
+    },
+    {
+      "name": "Wallmapu (Mapuche)",
+      "count": 1
+    },
+    {
+      "name": "Älsé (Alsea)",
+      "count": 1
+    },
+    {
+      "name": "Očhéthi Šakówiŋ",
+      "count": 1
+    },
+    {
+      "name": "Muniche",
+      "count": 1
+    },
+    {
+      "name": "NWT Métis Nation",
+      "count": 1
+    },
+    {
+      "name": "Sturgeon Lake Cree",
+      "count": 1
+    },
+    {
+      "name": "Aseniwuche Winewak (Rocky Mountain)",
+      "count": 1
+    },
+    {
+      "name": "Whilkut",
+      "count": 1
+    },
+    {
+      "name": "Winyah",
+      "count": 1
+    },
+    {
+      "name": "Yurí",
+      "count": 1
+    },
+    {
+      "name": "Tawahka",
+      "count": 1
+    },
+    {
+      "name": "Keyauwee",
+      "count": 1
+    },
+    {
+      "name": "Emberá Dobidá",
+      "count": 1
+    },
+    {
+      "name": "Envuga (Kawahib)",
+      "count": 1
+    },
+    {
+      "name": "Ahé (Kawahib)",
+      "count": 1
+    },
+    {
+      "name": "Chiso",
+      "count": 1
+    },
+    {
+      "name": "Kubéwa/Cubeo",
+      "count": 1
+    },
+    {
+      "name": "Awytyza",
+      "count": 1
+    },
+    {
+      "name": "Chichas",
+      "count": 1
+    },
+    {
+      "name": "Nuxwsa'7aq (Nooksack)",
+      "count": 1
+    },
+    {
+      "name": "Itazipco",
+      "count": 1
+    },
+    {
+      "name": "Yanam (Ninam)",
+      "count": 1
+    },
+    {
+      "name": "Onundagaonoga (Onondaga)",
+      "count": 1
+    },
+    {
+      "name": "Mohegan",
+      "count": 1
+    },
+    {
+      "name": "Moses/Columbia",
+      "count": 1
+    },
+    {
+      "name": "Saura",
+      "count": 1
+    },
+    {
+      "name": "Saluda",
+      "count": 1
+    },
+    {
+      "name": "np̓əšqʷáw̓səxʷ (Wenatchi)",
+      "count": 1
+    },
+    {
+      "name": "šxʷməθkʷəy̓əmaɁɬ təməxʷ (Musqueam)",
+      "count": 1
+    },
+    {
+      "name": "Macorix",
+      "count": 1
+    },
+    {
+      "name": "Poquonook",
+      "count": 1
+    },
+    {
+      "name": "Oohenumpa",
+      "count": 1
+    },
+    {
+      "name": "Eeyou Istchee",
+      "count": 1
+    },
+    {
+      "name": "Tekohá (Paĩ Tavytera/Kaiowá)",
+      "count": 1
+    },
+    {
+      "name": "Kickapoo (Oklahoma)",
+      "count": 1
+    },
+    {
+      "name": "Itonama",
+      "count": 1
+    },
+    {
+      "name": "Muisca",
+      "count": 1
+    },
+    {
+      "name": "Perquimans",
+      "count": 1
+    },
+    {
+      "name": "Heiltsuk",
+      "count": 1
+    },
+    {
+      "name": "I'târap",
+      "count": 1
+    },
+    {
+      "name": "Guanaca",
+      "count": 1
+    },
+    {
+      "name": "Canichana",
+      "count": 1
+    },
+    {
+      "name": "Wisijsa",
+      "count": 1
+    },
+    {
+      "name": "Ikpeng",
+      "count": 1
+    },
+    {
+      "name": "Chikashsha Yaki (Chickasaw)",
+      "count": 1
+    },
+    {
+      "name": "Nadöb",
+      "count": 1
+    },
+    {
+      "name": "Tsimane’",
+      "count": 1
+    },
+    {
+      "name": "Guna of Wargandí",
+      "count": 1
+    },
+    {
+      "name": "Lumnanas",
+      "count": 1
+    },
+    {
+      "name": "Champagne & Aishihik",
+      "count": 1
+    },
+    {
+      "name": "Cheyenne-Arapaho (Oklahoma)",
+      "count": 1
+    },
+    {
+      "name": "Hopewell",
+      "count": 1
+    },
+    {
+      "name": "Inikana/Kukama Kukamiria/Kokama",
+      "count": 1
+    },
+    {
+      "name": "Wayúu",
+      "count": 1
+    },
+    {
+      "name": "So'to (Yekuana)",
+      "count": 1
+    },
+    {
+      "name": "Kamaiurá",
+      "count": 1
+    },
+    {
+      "name": "Meherrin",
+      "count": 1
+    },
+    {
+      "name": "Esselen",
+      "count": 1
+    },
+    {
+      "name": "Ais",
+      "count": 1
+    },
+    {
+      "name": "Seminole Tribe of Florida (Immokalee Reservation)",
+      "count": 1
+    },
+    {
+      "name": "Hul Kuhk’u",
+      "count": 1
+    },
+    {
+      "name": "Konnaack",
+      "count": 1
+    },
+    {
+      "name": "Awaeté (Asurini of the Xingu)",
+      "count": 1
+    },
+    {
+      "name": "Multnomah",
+      "count": 1
+    },
+    {
+      "name": "Hiaitsiihi",
+      "count": 1
+    },
+    {
+      "name": "Barasano/Panenoá",
+      "count": 1
+    },
+    {
+      "name": "Guajajara",
+      "count": 1
+    },
+    {
+      "name": "Shakori",
+      "count": 1
+    },
+    {
+      "name": "Weenhayek/Wichí",
+      "count": 1
+    },
+    {
+      "name": "Carcross/Tagish First Nation (BC)",
+      "count": 1
+    },
+    {
+      "name": "Weenhayek",
+      "count": 1
+    },
+    {
+      "name": "Matlatzinco/Tlahuica/Ocuiltec",
+      "count": 1
+    },
+    {
+      "name": "Hul'qumi'num Treaty Group",
+      "count": 1
+    },
+    {
+      "name": "Mbya",
+      "count": 1
+    },
+    {
+      "name": "Kiriri",
+      "count": 1
+    },
+    {
+      "name": "Tumbalalá",
+      "count": 1
+    },
+    {
+      "name": "Teslin Tlingit Council (Yukon)",
+      "count": 1
+    },
+    {
+      "name": "Potawatomi-Shawnee (Oklahoma)",
+      "count": 1
+    },
+    {
+      "name": "Ket Chonhab’ Kob’a (Chuj)",
+      "count": 1
+    },
+    {
+      "name": "Épera",
+      "count": 1
+    },
+    {
+      "name": "Yamayeka (Yamaye)",
+      "count": 1
+    },
+    {
+      "name": "Choctaw (Oklahoma)",
+      "count": 1
+    },
+    {
+      "name": "Tampachoa (Mansos)",
+      "count": 1
+    },
+    {
+      "name": "Bia Mbyá",
+      "count": 1
+    },
+    {
+      "name": "Tequesta",
+      "count": 1
+    },
+    {
+      "name": "Panzaleo",
+      "count": 1
+    },
+    {
+      "name": "Toba-Lengua",
+      "count": 1
+    },
+    {
+      "name": "Mechoopda",
+      "count": 1
+    },
+    {
+      "name": "Mohawk (Kalapuya)",
+      "count": 1
+    },
+    {
+      "name": "Cheroenhaka (Nottoway)",
+      "count": 1
+    },
+    {
+      "name": "oθaakiiwaki‧hina‧ki (Sauk)",
+      "count": 1
+    },
+    {
+      "name": "Boriken Taino",
+      "count": 1
+    },
+    {
+      "name": "Me-Wuk (Southern Sierra Miwok)",
+      "count": 1
+    },
+    {
+      "name": "Secotan",
+      "count": 1
+    },
+    {
+      "name": "Gitga’at Lax Yuup",
+      "count": 1
+    },
+    {
+      "name": "Gitga’at",
+      "count": 1
+    },
+    {
+      "name": "Arosaguntacook",
+      "count": 1
+    },
+    {
+      "name": "Ahtna Nenn’",
+      "count": 1
+    },
+    {
+      "name": "Janos",
+      "count": 1
+    },
+    {
+      "name": "Ditidaht",
+      "count": 1
+    },
+    {
+      "name": "Gondwana",
+      "count": 1
+    },
+    {
+      "name": "Gujarat",
+      "count": 1
+    },
+    {
+      "name": "Punjab",
+      "count": 1
+    },
+    {
+      "name": "Berar",
+      "count": 1
+    },
+    {
+      "name": "Bosnia",
+      "count": 1
+    },
+    {
+      "name": "Kingdom of Hungary",
+      "count": 1
+    },
+    {
+      "name": "Principality of Wallachia",
+      "count": 1
+    },
+    {
+      "name": "Beylik of Aydin",
+      "count": 1
+    },
+    {
+      "name": "Kalinago",
+      "count": 1
+    },
+    {
+      "name": "Nanzan",
+      "count": 1
+    },
+    {
+      "name": "Chūzan",
+      "count": 1
+    },
+    {
+      "name": "Hokuzan",
+      "count": 1
+    },
+    {
+      "name": "Riazan",
+      "count": 1
+    },
+    {
+      "name": "Blue Horde",
+      "count": 1
+    },
+    {
+      "name": "Timurid Empire",
+      "count": 1
+    },
+    {
+      "name": "Astrakhan Khanate",
+      "count": 1
+    },
+    {
+      "name": "Nenets",
+      "count": 1
+    },
+    {
+      "name": "Komi",
+      "count": 1
+    },
+    {
+      "name": "Samoyedic People",
+      "count": 1
+    },
+    {
+      "name": "Khanty",
+      "count": 1
+    },
+    {
+      "name": "Kazan Khanate",
+      "count": 1
+    },
+    {
+      "name": "Bukara Khanate",
+      "count": 1
+    },
+    {
+      "name": "Bahmani Kingdom",
+      "count": 1
+    },
+    {
+      "name": "Aztec Empire",
+      "count": 1
+    },
+    {
+      "name": "Bella",
+      "count": 1
+    },
+    {
+      "name": "Hopi",
+      "count": 1
+    },
+    {
+      "name": "Navajo",
+      "count": 1
+    },
+    {
+      "name": "Cherookee",
+      "count": 1
+    },
+    {
+      "name": "Coqs",
+      "count": 1
+    },
+    {
+      "name": "Tlinoit",
+      "count": 1
+    },
+    {
+      "name": "Algonquin",
+      "count": 1
+    },
+    {
+      "name": "Huron",
+      "count": 1
+    },
+    {
+      "name": "Novgorod-Seversky",
+      "count": 1
+    },
+    {
+      "name": "Santo Domingo (Spain)",
+      "count": 1
+    },
+    {
+      "name": "Virgin Islands (Danemark)",
+      "count": 1
+    },
+    {
+      "name": "Mosquito Coast",
+      "count": 1
+    },
+    {
+      "name": "Brandenburg",
+      "count": 1
+    },
+    {
+      "name": "Maratha",
+      "count": 1
+    },
+    {
+      "name": "Kali",
+      "count": 1
+    },
+    {
+      "name": "Arma",
+      "count": 1
+    },
+    {
+      "name": "Tekrur",
+      "count": 1
+    },
+    {
+      "name": "Florida (Spain)",
+      "count": 1
+    },
+    {
+      "name": "Louisiana",
+      "count": 1
+    },
+    {
+      "name": "Guyana (Netherlands)",
+      "count": 1
+    },
+    {
+      "name": "Barbados (UK)",
+      "count": 1
+    },
+    {
+      "name": "Saint Kitts and Nevis (UK)",
+      "count": 1
+    },
+    {
+      "name": "Virgin Islands (UK)",
+      "count": 1
+    },
+    {
+      "name": "British American colonies",
+      "count": 1
+    },
+    {
+      "name": "Circars",
+      "count": 1
+    },
+    {
+      "name": "Kanara",
+      "count": 1
+    },
+    {
+      "name": "Nizam's Dominions",
+      "count": 1
+    },
+    {
+      "name": "Helvetic Republic",
+      "count": 1
+    },
+    {
+      "name": "Batavian Republic",
+      "count": 1
+    },
+    {
+      "name": "Swabia",
+      "count": 1
+    },
+    {
+      "name": "Rajputs",
+      "count": 1
+    },
+    {
+      "name": "Bahawalpur",
+      "count": 1
+    },
+    {
+      "name": "Bundelkhand",
+      "count": 1
+    },
+    {
+      "name": "Sikhs",
+      "count": 1
+    },
+    {
+      "name": "Golconda",
+      "count": 1
+    },
+    {
+      "name": "Milano (Austria)",
+      "count": 1
+    },
+    {
+      "name": "3",
+      "count": 1
+    },
+    {
+      "name": "Lahore",
+      "count": 1
+    },
+    {
+      "name": "Mahratta states",
+      "count": 1
+    },
+    {
+      "name": "Mapuche",
+      "count": 1
+    },
+    {
+      "name": "M?ori",
+      "count": 1
+    },
+    {
+      "name": "Sultinate of Zanzibar",
+      "count": 1
+    },
+    {
+      "name": "Palatinate",
+      "count": 1
+    },
+    {
+      "name": "Nassau",
+      "count": 1
+    },
+    {
+      "name": "Wetzlar",
+      "count": 1
+    },
+    {
+      "name": "Electoral Hesse",
+      "count": 1
+    },
+    {
+      "name": "Schleswig",
+      "count": 1
+    },
+    {
+      "name": "Imbangala",
+      "count": 1
+    },
+    {
+      "name": "Fulani Empire",
+      "count": 1
+    },
+    {
+      "name": "Guiana",
+      "count": 1
+    },
+    {
+      "name": "United Provinces of the Río de la Plata",
+      "count": 1
+    },
+    {
+      "name": "United Provinces of La Plata",
+      "count": 1
+    },
+    {
+      "name": "Sikkim (Indian princely state)",
+      "count": 1
+    },
+    {
+      "name": "Mysore (Indian princely state)",
+      "count": 1
+    },
+    {
+      "name": "Nkore",
+      "count": 1
+    },
+    {
+      "name": "Kazembe",
+      "count": 1
+    },
+    {
+      "name": "Fante",
+      "count": 1
+    },
+    {
+      "name": "New South Wales",
+      "count": 1
+    },
+    {
+      "name": "United Kingdom of Netherlands",
+      "count": 1
+    },
+    {
+      "name": "Republic of Kraków",
+      "count": 1
+    },
+    {
+      "name": "San Marino",
+      "count": 1
+    },
+    {
+      "name": "Turan",
+      "count": 1
+    },
+    {
+      "name": "Accra",
+      "count": 1
+    },
+    {
+      "name": "Kong",
+      "count": 1
+    },
+    {
+      "name": "Second Samori Empire",
+      "count": 1
+    },
+    {
+      "name": "First Samori Empire",
+      "count": 1
+    },
+    {
+      "name": "South Russia",
+      "count": 1
+    },
+    {
+      "name": "Ottoman Sultanate",
+      "count": 1
+    },
+    {
+      "name": "German South-West Africa",
+      "count": 1
+    },
+    {
+      "name": "Abyssinia",
+      "count": 1
+    },
+    {
+      "name": "Grand Duchy of Finland",
+      "count": 1
+    },
+    {
+      "name": "Kingdom of Italy",
+      "count": 1
+    },
+    {
+      "name": "Austro-Hungarian Empire",
+      "count": 1
+    },
+    {
+      "name": "Anglo-Egyptian Sudan",
+      "count": 1
+    },
+    {
+      "name": "Anglo-Egyption Sudan",
+      "count": 1
+    },
+    {
+      "name": "Spanish Morocco",
+      "count": 1
+    },
+    {
+      "name": "Togoland",
+      "count": 1
+    },
+    {
+      "name": "Kamerun",
+      "count": 1
+    },
+    {
+      "name": "German E. Africa (Tanganyika)",
+      "count": 1
+    },
+    {
+      "name": "British East Africa",
+      "count": 1
+    },
+    {
+      "name": "Sakhalin (RU)",
+      "count": 1
+    },
+    {
+      "name": "British Protectorate",
+      "count": 1
+    },
+    {
+      "name": "British Empire",
+      "count": 1
+    },
+    {
+      "name": "Danzig",
+      "count": 1
+    },
+    {
+      "name": "Republic of Turkey",
+      "count": 1
+    },
+    {
+      "name": "Dodecanese Islands",
+      "count": 1
+    },
+    {
+      "name": "Southern Rhodesia",
+      "count": 1
+    },
+    {
+      "name": "Algeria (France)",
+      "count": 1
+    },
+    {
+      "name": "Morocco (France)",
+      "count": 1
+    },
+    {
+      "name": "Eritrea (Italy)",
+      "count": 1
+    },
+    {
+      "name": "Ethiopia (Italy)",
+      "count": 1
+    },
+    {
+      "name": "Yemen (UK)",
+      "count": 1
+    },
+    {
+      "name": "Walbis Bay",
+      "count": 1
+    },
+    {
+      "name": "Chinese warlords",
+      "count": 1
+    },
+    {
+      "name": "Congo (France)",
+      "count": 1
+    },
+    {
+      "name": "Oman (British Raj)",
+      "count": 1
+    },
+    {
+      "name": "New Hebrides",
+      "count": 1
+    },
+    {
+      "name": "New Caledonia",
+      "count": 1
+    },
+    {
+      "name": "Guam",
+      "count": 1
+    },
+    {
+      "name": "Gilbert and Ellice Islands",
+      "count": 1
+    },
+    {
+      "name": "Saipan",
+      "count": 1
+    },
+    {
+      "name": "East Germany",
+      "count": 1
+    },
+    {
+      "name": "West Germany",
+      "count": 1
+    },
+    {
+      "name": "Korea (USSR)",
+      "count": 1
+    },
+    {
+      "name": "Japan (USA)",
+      "count": 1
+    },
+    {
+      "name": "Tonkin",
+      "count": 1
+    },
+    {
+      "name": "Nyasaland",
+      "count": 1
+    },
+    {
+      "name": "Southern Cameroon",
+      "count": 1
+    },
+    {
+      "name": "Fezzan (Frech Lybia)",
+      "count": 1
+    },
+    {
+      "name": "Guinea-Bissau (Portugal)",
+      "count": 1
+    },
+    {
+      "name": "Germany (Soviet)",
+      "count": 1
+    },
+    {
+      "name": "Saar Protectorate",
+      "count": 1
+    },
+    {
+      "name": "Germany (UK)",
+      "count": 1
+    },
+    {
+      "name": "Germany (USA)",
+      "count": 1
+    },
+    {
+      "name": "Germany (France)",
+      "count": 1
+    },
+    {
+      "name": "Martinique (France)",
+      "count": 1
+    },
+    {
+      "name": "Cyraneica (UK Lybia)",
+      "count": 1
+    },
+    {
+      "name": "Tripolitana (UK Lybia)",
+      "count": 1
+    },
+    {
+      "name": "Dutch Guinea",
+      "count": 1
+    },
+    {
+      "name": "Korea (USA)",
+      "count": 1
+    }
+  ]
+}

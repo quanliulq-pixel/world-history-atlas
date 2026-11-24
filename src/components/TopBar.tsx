@@ -1,0 +1,298 @@
+import {
+  BookOpen,
+  Compass,
+  Globe,
+  Layers,
+  Map as MapIcon,
+  Moon,
+  Route as RouteIcon,
+  Search,
+  Sun,
+  Trophy,
+  UserRound,
+} from 'lucide-react';
+import { DIMENSION_META } from '../data/eras';
+import type { Dimension, Era, ProjectionMode, ThemeMode } from '../types/history';
+import { formatShortYear, formatYear } from '../utils/timeline';
+
+interface TopBarProps {
+  currentYear: number;
+  currentEra: Era;
+  snapshotYear: number | null;
+  selectedDimensions: Set<Dimension>;
+  showAllEras: boolean;
+  showRoutes: boolean;
+  showFigures: boolean;
+  projection: ProjectionMode;
+  theme: ThemeMode;
+  masteredCount: number;
+  totalEventsCount: number;
+  onToggleDimension: (dim: Dimension | 'all') => void;
+  onToggleShowAllEras: () => void;
+  onToggleRoutes: () => void;
+  onToggleFigures: () => void;
+  onToggleProjection: () => void;
+  onToggleTheme: () => void;
+  onOpenPulse: () => void;
+  onOpenStorylines: () => void;
+  onOpenSearch: () => void;
+}
+
+const DIMENSIONS: Dimension[] = ['politics', 'economy', 'culture', 'tech'];
+
+export function TopBar({
+  currentYear,
+  currentEra,
+  snapshotYear,
+  selectedDimensions,
+  showAllEras,
+  showRoutes,
+  showFigures,
+  projection,
+  theme,
+  masteredCount,
+  totalEventsCount,
+  onToggleDimension,
+  onToggleShowAllEras,
+  onToggleRoutes,
+  onToggleFigures,
+  onToggleProjection,
+  onToggleTheme,
+  onOpenPulse,
+  onOpenStorylines,
+  onOpenSearch,
+}: TopBarProps) {
+  const allDimsActive = selectedDimensions.size === DIMENSIONS.length;
+
+  return (
+    <header
+      className="pointer-events-auto relative z-30 flex flex-col gap-1.5 px-3 py-2 md:px-4 md:py-2.5 border-b backdrop-blur-md"
+      style={{
+        backgroundColor:
+          theme === 'obsidian' ? 'rgba(20, 30, 43, 0.88)' : 'rgba(251, 248, 241, 0.90)',
+        borderColor: 'var(--border-subtle)',
+      }}
+    >
+      {/* Row 1: Brand + Year/Era Display + Action Tools */}
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg font-bold text-sm shadow-sm"
+            style={{ backgroundColor: currentEra.accentColor, color: '#FFFFFF' }}
+          >
+            史
+          </div>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2">
+              <h1 className="truncate text-sm md:text-base font-bold tracking-tight">
+                世界通史时空图谱
+              </h1>
+              <span
+                className="hidden sm:inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium"
+                style={{
+                  backgroundColor: 'var(--bg-muted)',
+                  color: 'var(--text-secondary)',
+                }}
+              >
+                {currentEra.name}
+              </span>
+            </div>
+            <div className="flex items-center gap-2 text-[11px] md:text-xs">
+              <span className="font-semibold" style={{ color: 'var(--accent-primary)' }}>
+                {formatYear(currentYear)}
+              </span>
+              {snapshotYear !== null && (
+                <span style={{ color: 'var(--text-muted)' }}>
+                  · 疆域截面 {formatShortYear(snapshotYear)}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Right Controls */}
+        <div className="flex items-center gap-1 md:gap-1.5 shrink-0">
+          <button
+            type="button"
+            onClick={onOpenStorylines}
+            className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium transition hover:opacity-90 cursor-pointer"
+            style={{
+              backgroundColor: 'var(--accent-primary)',
+              color: '#FFFFFF',
+            }}
+            title="专题导览故事线"
+          >
+            <BookOpen className="h-3.5 w-3.5" />
+            <span>专题导览</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={onOpenPulse}
+            className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium border transition hover:opacity-90 cursor-pointer"
+            style={{
+              backgroundColor: 'var(--bg-surface)',
+              borderColor: 'var(--border-strong)',
+              color: 'var(--text-primary)',
+            }}
+            title="同一时期全球六大区域对比"
+          >
+            <Compass className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">同代横切</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={onOpenSearch}
+            className="inline-flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-medium border transition hover:opacity-90 cursor-pointer"
+            style={{
+              backgroundColor: 'var(--bg-surface)',
+              borderColor: 'var(--border-subtle)',
+              color: 'var(--text-primary)',
+            }}
+            title="搜索与学习进度"
+          >
+            <Search className="h-3.5 w-3.5" />
+            <span className="hidden lg:inline">检索</span>
+            <span
+              className="hidden sm:inline-flex items-center gap-0.5 rounded px-1 py-0.2 text-[10px] font-semibold"
+              style={{ backgroundColor: 'var(--bg-muted)', color: 'var(--text-secondary)' }}
+            >
+              <Trophy className="h-2.5 w-2.5" />
+              {masteredCount}/{totalEventsCount}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={onToggleProjection}
+            className="inline-flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs border transition hover:opacity-90 cursor-pointer"
+            style={{
+              backgroundColor: 'var(--bg-surface)',
+              borderColor: 'var(--border-subtle)',
+              color: 'var(--text-secondary)',
+            }}
+            title={projection === 'globe' ? '切换为平面地图' : '切换为 3D 地球仪'}
+          >
+            {projection === 'globe' ? (
+              <MapIcon className="h-3.5 w-3.5" />
+            ) : (
+              <Globe className="h-3.5 w-3.5" />
+            )}
+            <span className="hidden xl:inline">{projection === 'globe' ? '平面' : '地球'}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={onToggleTheme}
+            className="inline-flex items-center justify-center rounded-lg p-1.5 border transition hover:opacity-90 cursor-pointer"
+            style={{
+              backgroundColor: 'var(--bg-surface)',
+              borderColor: 'var(--border-subtle)',
+              color: 'var(--text-secondary)',
+            }}
+            aria-label="切换羊皮纸或暗夜主题"
+            title={theme === 'obsidian' ? '切换羊皮纸主题' : '切换暗夜主题'}
+          >
+            {theme === 'obsidian' ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
+          </button>
+        </div>
+      </div>
+
+      {/* Row 2: Dimension Filters & Map Layer Toggles (horizontally scrollable on mobile) */}
+      <div className="no-scrollbar flex items-center gap-1.5 overflow-x-auto pb-0.5">
+        <button
+          type="button"
+          onClick={() => onToggleDimension('all')}
+          className="shrink-0 rounded-full px-2.5 py-1 text-[11px] font-medium border transition cursor-pointer"
+          style={{
+            backgroundColor: allDimsActive ? 'var(--text-primary)' : 'var(--bg-surface)',
+            color: allDimsActive ? 'var(--bg-surface)' : 'var(--text-secondary)',
+            borderColor: 'var(--border-subtle)',
+          }}
+        >
+          全部维度
+        </button>
+
+        {DIMENSIONS.map((dim) => {
+          const meta = DIMENSION_META[dim];
+          const active = selectedDimensions.has(dim);
+          const color = theme === 'obsidian' ? meta.darkColor : meta.color;
+          return (
+            <button
+              key={dim}
+              type="button"
+              onClick={() => onToggleDimension(dim)}
+              className="shrink-0 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium border transition cursor-pointer"
+              style={{
+                backgroundColor: active ? meta.bgTint : 'var(--bg-surface)',
+                borderColor: active ? color : 'var(--border-subtle)',
+                color: active ? color : 'var(--text-muted)',
+              }}
+            >
+              <span
+                className="h-2 w-2 rounded-full"
+                style={{ backgroundColor: active ? color : 'var(--text-muted)' }}
+              />
+              <span>{meta.label}</span>
+            </button>
+          );
+        })}
+
+        <div className="mx-1 h-4 w-px shrink-0" style={{ backgroundColor: 'var(--border-subtle)' }} />
+
+        <button
+          type="button"
+          onClick={onToggleRoutes}
+          className="shrink-0 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium border transition cursor-pointer"
+          style={{
+            backgroundColor: showRoutes ? 'rgba(197, 131, 31, 0.14)' : 'var(--bg-surface)',
+            borderColor: showRoutes ? 'var(--accent-gold)' : 'var(--border-subtle)',
+            color: showRoutes ? 'var(--accent-gold)' : 'var(--text-muted)',
+          }}
+        >
+          <RouteIcon className="h-3 w-3" />
+          <span>商路与航线</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={onToggleFigures}
+          className="shrink-0 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium border transition cursor-pointer"
+          style={{
+            backgroundColor: showFigures ? 'rgba(158, 52, 52, 0.12)' : 'var(--bg-surface)',
+            borderColor: showFigures
+              ? theme === 'obsidian'
+                ? '#E06B63'
+                : '#9E3434'
+              : 'var(--border-subtle)',
+            color: showFigures
+              ? theme === 'obsidian'
+                ? '#E06B63'
+                : '#9E3434'
+              : 'var(--text-muted)',
+          }}
+          title="显示或隐藏地图上的著名历史人物印章"
+        >
+          <UserRound className="h-3 w-3" />
+          <span>历史人物</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={onToggleShowAllEras}
+          className="shrink-0 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium border transition cursor-pointer"
+          style={{
+            backgroundColor: showAllEras ? 'rgba(41, 107, 158, 0.14)' : 'var(--bg-surface)',
+            borderColor: showAllEras ? '#296B9E' : 'var(--border-subtle)',
+            color: showAllEras ? '#296B9E' : 'var(--text-muted)',
+          }}
+          title="开启后同时显示全史所有事件标点（非当期大事半透明）"
+        >
+          <Layers className="h-3 w-3" />
+          <span>{showAllEras ? '全史标点: 开' : '仅当期大事'}</span>
+        </button>
+      </div>
+    </header>
+  );
+}

@@ -61,6 +61,7 @@ interface EventCardPanelProps {
   onFocusRoute: (routeId: string) => void;
   onAskAiAboutEvent?: (ev: HistoryEvent) => void;
   onAskAiAboutFigure?: (fig: HistoricalFigure) => void;
+  onAskAiAboutEra?: (era: Era, subPeriod: SubPeriod) => void;
   onCompareTopic?: (subject: string) => void;
   onNarrateEvent?: (ev: HistoryEvent) => void;
   onNarrateFigure?: (fig: HistoricalFigure) => void;
@@ -99,6 +100,7 @@ export function EventCardPanel({
   onFocusRoute,
   onAskAiAboutEvent,
   onAskAiAboutFigure,
+  onAskAiAboutEra,
   onCompareTopic,
   onNarrateEvent,
   onNarrateFigure,
@@ -1003,6 +1005,22 @@ export function EventCardPanel({
           <span style={{ color: 'var(--text-secondary)' }}>{currentEra.overview.culture}</span>
         </div>
       </div>
+
+      {onAskAiAboutEra && (
+        <button
+          type="button"
+          onClick={() => onAskAiAboutEra(currentEra, currentSubPeriod)}
+          className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-semibold transition hover:opacity-90 cursor-pointer"
+          style={{
+            backgroundColor: 'rgba(140, 45, 45, 0.10)',
+            borderColor: 'rgba(140, 45, 45, 0.35)',
+            color: 'var(--accent-primary)',
+          }}
+        >
+          <Sparkles className="h-3.5 w-3.5" />
+          <span>AI 导师精讲本时代（配地图动画）</span>
+        </button>
+      )}
 
       {/* Active historical figures */}
       {activeFigures.length > 0 && (

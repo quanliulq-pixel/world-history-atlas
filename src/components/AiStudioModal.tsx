@@ -427,11 +427,28 @@ export function AiStudioModal({
   const [voiceMenuOpen, setVoiceMenuOpen] = useState(false);
   const [usage, setUsage] = useState<AiUsageSnapshot>(() => getAiUsage());
 
-  // Tab 1: AI Tutor Chat
+  const contextKey = useMemo(() => {
+    if (context.event) return `event:${context.event.title}`;
+    if (context.figure) return `figure:${context.figure.name}`;
+    if (context.country) return `country:${context.country.name}`;
+    return `era:${eraId}`;
+  }, [context.event?.title, context.figure?.name, context.country?.name, eraId]);
+
+  // Tab 1: AI Tutor Chat (scoped per historical context)
   const [bindContext, setBindContext] = useState(true);
-  const [messages, setMessages] = useState<AiChatMessage[]>([]);
+  const [threadsByContext, setThreadsByContext] = useState<Record<string, AiChatMessage[]>>({});
+  const [activeThreadKey, setActiveThreadKey] = useState<string>(contextKey);
+  const threadsRef = useRef(threadsByContext);
+  threadsRef.current = threadsByContext;
+  const activeThreadKeyRef = useRef(activeThreadKey);
+  activeThreadKeyRef.current = activeThreadKey;
+  const openRef = useRef(open);
+  openRef.current = open;
+  const messages = threadsByContext[activeThreadKey] || [];
+
   const [questionInput, setQuestionInput] = useState('');
-  const [chatLoading, setChatLoading] = useState(false);
+  const [loadingThreadKey, setLoadingThreadKey] = useState<string | null>(null);
+  const chatLoading = loadingThreadKey === activeThreadKey;
   const [chatError, setChatError] = useState<string | null>(null);
   const [speakingMsgId, setSpeakingMsgId] = useState<string | null>(null);
   const [loadingSpeechKey, setLoadingSpeechKey] = useState<string | null>(null);
@@ -541,11 +558,25 @@ export function AiStudioModal({
       setSpeakingMsgId(null);
       setCompareSpeaking(false);
       setActiveSpeech(null);
+      setChatError(null);
       return;
     }
+    setActiveThreadKey(contextKey);
+    activeThreadKeyRef.current = contextKey;
+    setChatError(null);
     setUsage(getAiUsage());
     void refreshStatus();
   }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    if (hasActiveStoryboard || speakingMsgId || loadingThreadKey) return;
+    if (activeThreadKey !== contextKey) {
+      setActiveThreadKey(contextKey);
+      activeThreadKeyRef.current = contextKey;
+      setChatError(null);
+    }
+  }, [open, contextKey, hasActiveStoryboard, speakingMsgId, loadingThreadKey, activeThreadKey]);
 
   useEffect(() => {
     if (tab !== 'compare' || !activeSpeech || !compareResult) return;
@@ -602,47 +633,58 @@ export function AiStudioModal({
     }
   };
 
-  const sendQuestion = async (rawQ: string) => {
+  const sendQuestion = async (rawQ: string, explicitThreadKey?: string) => {
     const q = rawQ.trim();
-    if (!q || chatLoading) return;
+    const targetKey = explicitThreadKey || activeThreadKeyRef.current;
+    if (!q || loadingThreadKey === targetKey) return;
+    if (targetKey !== activeThreadKeyRef.current) {
+      setActiveThreadKey(targetKey);
+      activeThreadKeyRef.current = targetKey;
+    }
     setChatError(null);
+    const priorHistory = threadsRef.current[targetKey] || [];
     const userMsg: AiChatMessage = {
       id: `u-${Date.now()}`,
       role: 'user',
       text: q,
       ts: Date.now(),
     };
-    const nextHistory = [...messages, userMsg];
-    setMessages(nextHistory);
+    setThreadsByContext((prev) => ({
+      ...prev,
+      [targetKey]: [...(prev[targetKey] || []), userMsg],
+    }));
     setQuestionInput('');
-    setChatLoading(true);
+    setLoadingThreadKey(targetKey);
     try {
       const effectiveCtx: AiTutorContext = bindContext
         ? context
         : { currentYear: context.currentYear };
       const res = await askAiTutor({
         question: q,
-        history: messages,
+        history: priorHistory,
         context: effectiveCtx,
       });
-      setMessages((prev) => [
+      const assistantMsg: AiChatMessage = {
+        id: `a-${Date.now()}`,
+        role: 'assistant',
+        text: res.reply,
+        ts: Date.now(),
+        storyboard: res.storyboard ?? null,
+      };
+      setThreadsByContext((prev) => ({
         ...prev,
-        {
-          id: `a-${Date.now()}`,
-          role: 'assistant',
-          text: res.reply,
-          ts: Date.now(),
-          storyboard: res.storyboard ?? null,
-        },
-      ]);
-      if (res.storyboard) {
+        [targetKey]: [...(prev[targetKey] || []), assistantMsg],
+      }));
+      if (res.storyboard && openRef.current && activeThreadKeyRef.current === targetKey) {
         onPlayStoryboard?.(res.storyboard);
       }
       setUsage(getAiUsage());
     } catch (err) {
-      handleApiError(err, setChatError);
+      if (activeThreadKeyRef.current === targetKey) {
+        handleApiError(err, setChatError);
+      }
     } finally {
-      setChatLoading(false);
+      setLoadingThreadKey((cur) => (cur === targetKey ? null : cur));
     }
   };
 
@@ -650,11 +692,16 @@ export function AiStudioModal({
   useEffect(() => {
     if (!open || !intent) return;
     setTab(intent.tab);
-    if (intent.tab === 'tutor' && intent.prefillQuestion) {
-      if (intent.autoSend && unlocked && !showGate) {
-        void sendQuestion(intent.prefillQuestion);
-      } else {
-        setQuestionInput(intent.prefillQuestion);
+    if (intent.tab === 'tutor') {
+      setActiveThreadKey(contextKey);
+      activeThreadKeyRef.current = contextKey;
+      setChatError(null);
+      if (intent.prefillQuestion) {
+        if (intent.autoSend && unlocked && !showGate) {
+          void sendQuestion(intent.prefillQuestion, contextKey);
+        } else {
+          setQuestionInput(intent.prefillQuestion);
+        }
       }
     } else if (intent.tab === 'compare') {
       if (intent.compareSubjectA) setSubjectA(intent.compareSubjectA);
@@ -1431,7 +1478,10 @@ export function AiStudioModal({
                   type="button"
                   onClick={() => {
                     stopActiveNarration();
-                    setMessages([]);
+                    setThreadsByContext((prev) => ({
+                      ...prev,
+                      [activeThreadKey]: [],
+                    }));
                   }}
                   className="inline-flex items-center gap-1 shrink-0 hover:opacity-75 cursor-pointer"
                   style={{ color: 'var(--text-muted)' }}

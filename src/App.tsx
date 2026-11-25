@@ -36,6 +36,7 @@ import type {
   ClickedPolityPayload,
   CountryEvolutionIndex,
   Dimension,
+  Era,
   HistoricalFigure,
   HistoryEvent,
   ResolvedCountryEvolution,
@@ -553,7 +554,7 @@ export function App() {
     };
   }, [cinemaMode, timelineZoom, dimensionFilteredEvents, flyToLocation]);
 
-  const stopAiNarrationAndStage = useCallback((clearStage = true) => {
+  const stopAiNarrationAndStage = useCallback((clearStage = true, closeStudio = false) => {
     stopActiveNarration();
     setCardNarratingId(null);
     setCardNarrationLoadingId(null);
@@ -563,11 +564,19 @@ export function App() {
       setStoryboardPlaying(false);
       setActiveStoryboard(null);
     }
+    if (closeStudio) {
+      setAiOpen((wasOpen) => {
+        if (wasOpen) {
+          setDesktopCollapsed(false);
+        }
+        return false;
+      });
+    }
   }, []);
 
   const applyYearChange = useCallback(
     (yr: number) => {
-      stopAiNarrationAndStage(true);
+      stopAiNarrationAndStage(true, true);
       setIsPlaying(false);
       setCinemaMode(false);
       const clamped = Math.max(MIN_YEAR, Math.min(MAX_YEAR, yr));
@@ -589,6 +598,30 @@ export function App() {
     [selectedEventId, selectedFigureId, stopAiNarrationAndStage],
   );
 
+  const handleSelectEra = useCallback(
+    (era: Era) => {
+      const targetYear =
+        era.id === 'era-1'
+          ? -2500
+          : Math.round(era.startYear + (era.endYear - era.startYear) * 0.2);
+      applyYearChange(targetYear);
+      const isGlobalEra =
+        era.id === 'era-5' || era.id === 'era-6' || era.id === 'era-7' || era.id === 'era-8';
+      flyToLocation(
+        isGlobalEra ? [22, 20] : [54, 26],
+        isGlobalEra
+          ? window.innerWidth < 640
+            ? 1.2
+            : 1.55
+          : window.innerWidth < 640
+            ? 1.45
+            : 1.95,
+        { exactZoom: true, pitch: 0, duration: 750 },
+      );
+    },
+    [applyYearChange, flyToLocation],
+  );
+
   const handleStepSnapshot = useCallback(
     (direction: -1 | 1) => {
       const snap = findAdjacentSnapshot(currentYear, snapshots, direction);
@@ -602,7 +635,7 @@ export function App() {
 
   const handleSelectEvent = useCallback(
     (ev: HistoryEvent, fromStoryline = false) => {
-      stopAiNarrationAndStage(true);
+      stopAiNarrationAndStage(true, true);
       setIsPlaying(false);
       setCinemaMode(false);
       setSelectedFigureId(null);
@@ -623,7 +656,7 @@ export function App() {
 
   const handleSelectFigure = useCallback(
     (fig: HistoricalFigure) => {
-      stopAiNarrationAndStage(true);
+      stopAiNarrationAndStage(true, true);
       setIsPlaying(false);
       setCinemaMode(false);
       setSelectedEventId(null);
@@ -646,7 +679,7 @@ export function App() {
       if (!step) return;
       const ev = EVENT_MAP[step.eventId];
       if (!ev) return;
-      stopAiNarrationAndStage(true);
+      stopAiNarrationAndStage(true, true);
       setIsPlaying(false);
       setCinemaMode(false);
       setStoryStepIdx(idx);
@@ -938,7 +971,7 @@ export function App() {
 
   const enterCountryEvolution = useCallback(
     (resolved: ResolvedCountryEvolution, preserveYear = false) => {
-      stopAiNarrationAndStage(true);
+      stopAiNarrationAndStage(true, true);
       setIsPlaying(false);
       setCinemaMode(false);
       setActiveStoryline(null);
@@ -1137,15 +1170,15 @@ export function App() {
           onToggleProjection={toggleProjection}
           onToggleTheme={toggleTheme}
           onOpenPulse={() => {
-            stopAiNarrationAndStage(true);
+            stopAiNarrationAndStage(true, true);
             setPulseOpen(true);
           }}
           onOpenStorylines={() => {
-            stopAiNarrationAndStage(true);
+            stopAiNarrationAndStage(true, true);
             setStoryPickerOpen(true);
           }}
           onOpenSearch={() => {
-            stopAiNarrationAndStage(true);
+            stopAiNarrationAndStage(true, true);
             setSearchOpen(true);
           }}
           onOpenAiStudio={() => openAiWithIntent({ tab: 'tutor' })}
@@ -1328,6 +1361,13 @@ export function App() {
                     autoSend: true,
                   })
                 }
+                onAskAiAboutEra={(era, subPeriod) =>
+                  openAiWithIntent({
+                    tab: 'tutor',
+                    prefillQuestion: `请用通俗的政治经济与地理视角，串讲「${era.name} · ${subPeriod.name}」的核心演进主线`,
+                    autoSend: true,
+                  })
+                }
                 onCompareTopic={(subject) =>
                   openAiWithIntent({
                     tab: 'compare',
@@ -1437,8 +1477,9 @@ export function App() {
           timelineZoom={timelineZoom}
           theme={theme}
           onChangeYear={applyYearChange}
+          onSelectEra={handleSelectEra}
           onTogglePlay={() => {
-            stopAiNarrationAndStage(true);
+            stopAiNarrationAndStage(true, true);
             setCinemaMode(false);
             setIsPlaying((p) => {
               const next = !p;
@@ -1447,7 +1488,7 @@ export function App() {
             });
           }}
           onToggleCinemaMode={() => {
-            stopAiNarrationAndStage(true);
+            stopAiNarrationAndStage(true, true);
             setIsPlaying(false);
             setActiveStoryline(null);
             setStoryAutoPlay(false);

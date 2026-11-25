@@ -26,6 +26,7 @@ interface TimelineDockProps {
   timelineZoom: 'global' | 'era';
   theme: ThemeMode;
   onChangeYear: (year: number) => void;
+  onSelectEra?: (era: Era) => void;
   onTogglePlay: () => void;
   onToggleCinemaMode: () => void;
   onCycleSpeed: () => void;
@@ -48,6 +49,7 @@ export function TimelineDock({
   timelineZoom,
   theme,
   onChangeYear,
+  onSelectEra,
   onTogglePlay,
   onToggleCinemaMode,
   onCycleSpeed,
@@ -574,13 +576,17 @@ export function TimelineDock({
             <button
               key={era.id}
               type="button"
-              onClick={() =>
-                onChangeYear(
-                  era.id === 'era-1'
-                    ? -2500
-                    : Math.round(era.startYear + (era.endYear - era.startYear) * 0.2),
-                )
-              }
+              onClick={() => {
+                if (onSelectEra) {
+                  onSelectEra(era);
+                } else {
+                  onChangeYear(
+                    era.id === 'era-1'
+                      ? -2500
+                      : Math.round(era.startYear + (era.endYear - era.startYear) * 0.2),
+                  );
+                }
+              }}
               className="shrink-0 flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px] transition cursor-pointer"
               style={{
                 backgroundColor: isCurrent ? era.accentColor : 'transparent',

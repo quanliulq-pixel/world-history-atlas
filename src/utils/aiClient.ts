@@ -755,7 +755,7 @@ export async function generateNarration(params: {
   return clip;
 }
 
-export function stopActiveNarration(): void {
+export function stopActiveNarration(notifyListeners = true): void {
   activePlaybackToken += 1;
   if (activeTtsController) {
     try {
@@ -786,11 +786,13 @@ export function stopActiveNarration(): void {
       // Ignore
     }
   }
-  for (const listener of narrationStopListeners) {
-    try {
-      listener();
-    } catch {
-      // Ignore
+  if (notifyListeners) {
+    for (const listener of narrationStopListeners) {
+      try {
+        listener();
+      } catch {
+        // Ignore
+      }
     }
   }
 }
@@ -901,7 +903,7 @@ async function playClipRespectingToken(
 export async function playNarrationClip(
   clip: AiNarrationResult,
 ): Promise<'gemini' | 'browser' | 'silent'> {
-  stopActiveNarration();
+  stopActiveNarration(false);
   return playClipRespectingToken(clip, activePlaybackToken);
 }
 
@@ -911,7 +913,7 @@ export async function playTextPipelined(params: {
   voicePrefs?: AiVoicePrefs;
   onStartAudio?: () => void;
 }): Promise<void> {
-  stopActiveNarration();
+  stopActiveNarration(false);
   const sessionToken = activePlaybackToken;
   const controller = new AbortController();
   activeTtsController = controller;

@@ -1030,7 +1030,7 @@ export function AiStudioModal({
                           <button
                             type="button"
                             onClick={() => {
-                              if (m.storyboard && onPlayStoryboard) {
+                              if (speakingMsgId !== m.id && m.storyboard && onPlayStoryboard) {
                                 onPlayStoryboard(m.storyboard);
                               }
                               void handleSpeakText(m.id, m.text, 'msg');

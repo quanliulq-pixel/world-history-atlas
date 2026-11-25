@@ -12,7 +12,7 @@ const ROOT_DIR = path.resolve(__dirname, '..');
 const OUT_FILE = path.join(ROOT_DIR, 'colab', 'illustration-prompts.json');
 
 const ARCHIVAL_STYLE =
-  'museum archival oil painting blended with classical antique copperplate atlas illumination, warm parchment and gilded ochre lighting, fine brushwork, historically authentic period architecture and attire, rich atmospheric depth';
+  'museum oil painting, antique copperplate atlas illumination, warm parchment gilded ochre light, historically authentic brushwork, no text';
 
 const NEGATIVE_PROMPT =
   'text, letters, typography, calligraphy, caption, labels, watermark, signature, frame border, collage, split screen, modern clothing, neon, 3d render, blurry, deformed hands, extra limbs';
@@ -292,7 +292,7 @@ function buildItems() {
     const regionDesc = REGION_SCENES[fig.region] || REGION_SCENES.global;
     const isStarter = STARTER_FIGURE_IDS.has(fig.id) || items.filter((i) => i.kind === 'figure' && i.tier === 'starter').length < 12 && fig.importance === 3;
     const prompt = stripCjk(
-      `Classical museum oil portrait of historical figure ${fig.enName} (${fig.activeYear}), depicted as a ${roleDesc}, subtle background hinting at ${regionDesc}, dignified warm Rembrandt chiaroscuro lighting, rich textured oil canvas, centered waist-up framing, no text`,
+      `Classical museum oil portrait of ${fig.enName} (${fig.activeYear}), ${roleDesc}, background of ${regionDesc}, warm Rembrandt light, centered waist-up canvas, no text`,
     );
     items.push({
       key: `figure:${fig.id}`,
@@ -322,7 +322,7 @@ function buildItems() {
       tier = 'core';
     }
     const prompt = stripCjk(
-      `Historical tableau around ${ev.year}: ${motif}, ${ARCHIVAL_STYLE}, dramatic golden-hour sky, wide 16:9 museum painting`,
+      `Historical tableau around ${ev.year}: ${motif}, ${ARCHIVAL_STYLE}, dramatic golden-hour sky`,
     );
     items.push({
       key: `event:${ev.id}`,

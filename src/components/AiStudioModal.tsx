@@ -34,14 +34,13 @@ import {
   askAiTutor,
   compareWithAi,
   fetchAiStatus,
-  generateNarration,
   generateQuizWithAi,
   getAiUsage,
   getStoredPasscode,
   getVoicePrefs,
   gradeFeynmanWithAi,
   listCachedComparisons,
-  playNarrationClip,
+  playTextPipelined,
   saveVoicePrefs,
   setStoredPasscode,
   stopActiveNarration,
@@ -184,6 +183,7 @@ export function AiStudioModal({
   const [chatLoading, setChatLoading] = useState(false);
   const [chatError, setChatError] = useState<string | null>(null);
   const [speakingMsgId, setSpeakingMsgId] = useState<string | null>(null);
+  const [loadingSpeechKey, setLoadingSpeechKey] = useState<string | null>(null);
 
   // Tab 2: Comparison
   const [subjectA, setSubjectA] = useState('');
@@ -246,7 +246,7 @@ export function AiStudioModal({
         passcodeRequired: true,
         allowPublic: false,
         textModel: 'gemini-3.8-flash',
-        ttsModel: 'gemini-3.8-flash-tts',
+        ttsModel: 'gemini-3.8-flash-lite-tts',
       });
       if (err instanceof AiClientError) {
         setPasscodeError(err.message);
@@ -428,24 +428,29 @@ export function AiStudioModal({
   const handleSpeakText = async (key: string, text: string, mode: 'msg' | 'compare') => {
     if ((mode === 'msg' && speakingMsgId === key) || (mode === 'compare' && compareSpeaking)) {
       stopActiveNarration();
+      setLoadingSpeechKey(null);
       setSpeakingMsgId(null);
       setCompareSpeaking(false);
       return;
     }
+    setLoadingSpeechKey(key);
     setSpeakingMsgId(mode === 'msg' ? key : null);
     setCompareSpeaking(mode === 'compare');
     try {
-      const cleanScript = text.replace(/[*#`>\[\]]/g, '').replace(/\s+/g, ' ').trim().slice(0, 560);
-      const clip = await generateNarration({
-        cacheKey: `tts:${key}:${cleanScript.slice(0, 32)}`,
-        script: cleanScript,
+      await playTextPipelined({
+        cachePrefix: `tts:${key}`,
+        text,
         voicePrefs,
+        onStartAudio: () => {
+          setLoadingSpeechKey((cur) => (cur === key ? null : cur));
+          setUsage(getAiUsage());
+        },
       });
       setUsage(getAiUsage());
-      await playNarrationClip(clip);
     } catch (err) {
       handleApiError(err, mode === 'msg' ? setChatError : setCompareError);
     } finally {
+      setLoadingSpeechKey((cur) => (cur === key ? null : cur));
       setSpeakingMsgId(null);
       setCompareSpeaking(false);
     }
@@ -1011,7 +1016,12 @@ export function AiStudioModal({
                             className="inline-flex items-center gap-1 rounded-lg px-2 py-0.5 text-[10px] font-medium hover:opacity-80 cursor-pointer"
                             style={{ backgroundColor: 'var(--bg-muted)', color: 'var(--text-secondary)' }}
                           >
-                            {speakingMsgId === m.id ? (
+                            {speakingMsgId === m.id && loadingSpeechKey === m.id ? (
+                              <>
+                                <Loader2 className="h-3 w-3 animate-spin" />
+                                <span>合成语音中...</span>
+                              </>
+                            ) : speakingMsgId === m.id ? (
                               <>
                                 <Square className="h-2.5 w-2.5" />
                                 <span>停止朗读</span>
@@ -1246,7 +1256,12 @@ export function AiStudioModal({
                         borderColor: 'var(--border-subtle)',
                       }}
                     >
-                      {compareSpeaking ? (
+                      {compareSpeaking && loadingSpeechKey === `cmp-${compareResult.title}` ? (
+                        <>
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                          <span>合成语音中...</span>
+                        </>
+                      ) : compareSpeaking ? (
                         <>
                           <Square className="h-2.5 w-2.5" />
                           <span>停止</span>

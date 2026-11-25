@@ -18,8 +18,8 @@ export interface GeminiUsage {
 }
 
 export const DEFAULT_TEXT_MODEL = 'gemini-3.8-flash';
-export const DEFAULT_TTS_MODEL = 'gemini-3.8-flash-tts';
-export const FALLBACK_TTS_MODEL = 'gemini-3.8-flash-lite-tts';
+export const DEFAULT_TTS_MODEL = 'gemini-3.8-flash-lite-tts';
+export const FALLBACK_TTS_MODEL = 'gemini-3.8-flash-tts';
 export const ALLOWED_VOICES = ['Kore', 'Aoede', 'Puck', 'Fenrir', 'Charon'] as const;
 export type AllowedVoice = (typeof ALLOWED_VOICES)[number];
 
@@ -364,9 +364,17 @@ export async function callGeminiTtsWav(
   text: string,
   voiceName: AllowedVoice = 'Kore',
 ): Promise<{ audioBase64Wav: string; mimeType: 'audio/wav'; sampleRate: number }> {
-  const prompt = `请用沉稳、有画面感的历史纪录片普通话旁白朗读以下文字，不要额外加任何解释或前缀：\n\n${text}`;
+  // Gemini TTS speaks the input text verbatim — pass clean prose only (never add instructions).
+  const cleanTranscript = text
+    .replace(/[*#`>_~]/g, '')
+    .replace(/^\s*[-•]\s*/gm, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (!cleanTranscript) {
+    throw new Error('缺少可朗读的正文内容');
+  }
   try {
-    return await requestTtsOnce(apiKey, model, prompt, voiceName);
+    return await requestTtsOnce(apiKey, model, cleanTranscript, voiceName);
   } catch (err) {
     const status = (err as { status?: number }).status;
     const msg = err instanceof Error ? err.message : '';
@@ -374,7 +382,7 @@ export async function callGeminiTtsWav(
       model !== FALLBACK_TTS_MODEL &&
       (status === 404 || /no longer available|not found/i.test(msg));
     if (shouldFallback) {
-      return await requestTtsOnce(apiKey, FALLBACK_TTS_MODEL, prompt, voiceName);
+      return await requestTtsOnce(apiKey, FALLBACK_TTS_MODEL, cleanTranscript, voiceName);
     }
     throw err;
   }

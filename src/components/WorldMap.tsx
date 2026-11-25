@@ -1892,7 +1892,7 @@ export function WorldMap({
         ? { top: 20, bottom: 84, left: 20, right: 20 }
         : { top: 14, bottom: 68, left: 14, right: 14 }
       : aiStageOpenRef.current && isDesktop
-        ? { top: 52, bottom: 136, left: 28, right: 492 }
+        ? { top: 52, bottom: 215, left: 28, right: 492 }
         : isDesktop
           ? { top: 28, bottom: 32, left: 24, right: 430 }
           : { top: 24, bottom: 220, left: 16, right: 16 };

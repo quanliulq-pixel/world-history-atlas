@@ -40,7 +40,7 @@ export function AiStageBar({
 
   return (
     <div
-      className={`pointer-events-auto fixed left-3 right-3 bottom-4 z-30 rounded-2xl border p-3 shadow-2xl backdrop-blur-md transition-all ${
+      className={`pointer-events-auto fixed left-3 right-3 bottom-[88px] sm:bottom-[94px] z-30 rounded-2xl border p-2.5 shadow-2xl backdrop-blur-md transition-all ${
         aiDrawerOpen
           ? 'lg:left-14 lg:right-[488px]'
           : 'lg:left-1/2 lg:-translate-x-1/2 lg:w-[760px] lg:max-w-[90vw]'

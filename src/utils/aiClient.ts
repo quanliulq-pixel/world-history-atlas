@@ -613,6 +613,49 @@ interface CachedAudioClip {
 const audioClipCache = new Map<string, CachedAudioClip>();
 let activeAudioEl: HTMLAudioElement | null = null;
 let activePlaybackToken = 0;
+let cancelPendingWait: (() => void) | null = null;
+
+function cleanSpeechText(rawText: string): string {
+  return rawText
+    .replace(/[*#`>_~]/g, '')
+    .replace(/^\s*[-•]\s*/gm, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+export function splitTextIntoSpeechChunks(
+  rawText: string,
+  firstMax = 78,
+  nextMax = 145,
+): string[] {
+  const cleaned = cleanSpeechText(rawText).slice(0, 720);
+  if (!cleaned) return [];
+
+  const sentences = cleaned
+    .split(/(?<=[。！？；\n])/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  if (sentences.length <= 1) {
+    return [cleaned];
+  }
+
+  const chunks: string[] = [];
+  let buf = '';
+  for (const s of sentences) {
+    const limit = chunks.length === 0 ? firstMax : nextMax;
+    if (!buf) {
+      buf = s;
+    } else if (buf.length + s.length <= limit) {
+      buf += s;
+    } else {
+      chunks.push(buf);
+      buf = s;
+    }
+  }
+  if (buf) chunks.push(buf);
+  return chunks;
+}
 
 function base64WavToBlobUrl(b64: string): string {
   const bin = atob(b64);
@@ -698,6 +741,11 @@ export async function generateNarration(params: {
 
 export function stopActiveNarration(): void {
   activePlaybackToken += 1;
+  if (cancelPendingWait) {
+    const cb = cancelPendingWait;
+    cancelPendingWait = null;
+    cb();
+  }
   if (activeAudioEl) {
     try {
       activeAudioEl.pause();
@@ -738,8 +786,10 @@ export function speakWithBrowserSpeech(text: string): Promise<void> {
       const finish = () => {
         if (settled) return;
         settled = true;
+        if (cancelPendingWait === finish) cancelPendingWait = null;
         resolve();
       };
+      cancelPendingWait = finish;
 
       const maxTimeout = window.setTimeout(finish, Math.max(8000, text.length * 180));
       utter.onend = () => {
@@ -762,34 +812,52 @@ export function speakWithBrowserSpeech(text: string): Promise<void> {
   });
 }
 
-export async function playNarrationClip(
+async function playClipRespectingToken(
   clip: AiNarrationResult,
+  sessionToken: number,
 ): Promise<'gemini' | 'browser' | 'silent'> {
-  stopActiveNarration();
-  const token = activePlaybackToken;
+  if (sessionToken !== activePlaybackToken) return 'silent';
 
   if (clip.audioBlobUrl) {
     try {
       await new Promise<void>((resolve, reject) => {
-        if (token !== activePlaybackToken) {
+        if (sessionToken !== activePlaybackToken) {
           resolve();
           return;
         }
+        let settled = false;
+        const finish = () => {
+          if (settled) return;
+          settled = true;
+          if (cancelPendingWait === finish) cancelPendingWait = null;
+          resolve();
+        };
+        cancelPendingWait = finish;
+
         const audio = new Audio(clip.audioBlobUrl!);
         activeAudioEl = audio;
         audio.onended = () => {
           if (activeAudioEl === audio) activeAudioEl = null;
-          resolve();
+          finish();
         };
         audio.onerror = () => {
           if (activeAudioEl === audio) activeAudioEl = null;
+          if (settled) return;
+          settled = true;
+          if (cancelPendingWait === finish) cancelPendingWait = null;
           reject(new Error('Audio element playback failed'));
         };
-        audio.play().catch(reject);
+        audio.play().catch((err) => {
+          if (activeAudioEl === audio) activeAudioEl = null;
+          if (settled) return;
+          settled = true;
+          if (cancelPendingWait === finish) cancelPendingWait = null;
+          reject(err);
+        });
       });
-      return 'gemini';
+      return sessionToken === activePlaybackToken ? 'gemini' : 'silent';
     } catch {
-      if (token !== activePlaybackToken) return 'silent';
+      if (sessionToken !== activePlaybackToken) return 'silent';
       await speakWithBrowserSpeech(clip.script);
       return 'browser';
     }
@@ -797,4 +865,60 @@ export async function playNarrationClip(
 
   await speakWithBrowserSpeech(clip.script);
   return 'browser';
+}
+
+export async function playNarrationClip(
+  clip: AiNarrationResult,
+): Promise<'gemini' | 'browser' | 'silent'> {
+  stopActiveNarration();
+  return playClipRespectingToken(clip, activePlaybackToken);
+}
+
+export async function playTextPipelined(params: {
+  cachePrefix: string;
+  text: string;
+  voicePrefs?: AiVoicePrefs;
+  onStartAudio?: () => void;
+}): Promise<void> {
+  stopActiveNarration();
+  const sessionToken = activePlaybackToken;
+  const prefs = params.voicePrefs || getVoicePrefs();
+  const cleanText = cleanSpeechText(params.text).slice(0, 720);
+  if (!cleanText) {
+    params.onStartAudio?.();
+    return;
+  }
+
+  if (prefs.engine === 'browser') {
+    params.onStartAudio?.();
+    await speakWithBrowserSpeech(cleanText);
+    return;
+  }
+
+  const chunks = splitTextIntoSpeechChunks(cleanText);
+  if (chunks.length === 0) {
+    params.onStartAudio?.();
+    return;
+  }
+
+  const fetchChunk = (index: number) =>
+    generateNarration({
+      cacheKey: `${params.cachePrefix}:c${index}:${chunks[index].slice(0, 24)}`,
+      script: chunks[index],
+      voicePrefs: prefs,
+    });
+
+  let nextPromise: Promise<AiNarrationResult> | null = fetchChunk(0);
+  for (let i = 0; i < chunks.length; i++) {
+    if (sessionToken !== activePlaybackToken || !nextPromise) break;
+    const clip = await nextPromise;
+    if (sessionToken !== activePlaybackToken) break;
+
+    nextPromise = i + 1 < chunks.length ? fetchChunk(i + 1) : null;
+    if (i === 0) {
+      params.onStartAudio?.();
+    }
+    const mode = await playClipRespectingToken(clip, sessionToken);
+    if (mode === 'silent' || sessionToken !== activePlaybackToken) break;
+  }
 }

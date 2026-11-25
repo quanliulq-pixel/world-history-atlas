@@ -81,11 +81,43 @@ export interface AiTutorContext {
   } | null;
 }
 
+export interface AiStoryboardFlow {
+  from: [number, number];
+  to: [number, number];
+  label: string;
+  color: string;
+  kind: 'trade' | 'diffusion' | 'military' | 'voyage' | 'influence';
+  bidirectional?: boolean;
+}
+
+export interface AiStoryboardSpot {
+  coords: [number, number];
+  label: string;
+  sublabel?: string;
+  color: string;
+}
+
+export interface AiStoryboardStep {
+  title: string;
+  caption: string;
+  year: number;
+  center: [number, number];
+  zoom: number;
+  spots: AiStoryboardSpot[];
+  flows: AiStoryboardFlow[];
+}
+
+export interface AiStoryboard {
+  title: string;
+  steps: AiStoryboardStep[];
+}
+
 export interface AiChatMessage {
   id: string;
   role: 'user' | 'assistant';
   text: string;
   ts: number;
+  storyboard?: AiStoryboard | null;
 }
 
 export interface AiComparisonResult {
@@ -334,12 +366,14 @@ export function listCachedComparisons(): Array<{
   angle: string;
   ts: number;
   data: AiComparisonResult;
+  storyboard?: AiStoryboard | null;
 }> {
   const list = readCacheList<{
     subjectA: string;
     subjectB: string;
     angle: string;
     result: AiComparisonResult;
+    storyboard?: AiStoryboard | null;
   }>(COMPARE_CACHE_KEY);
   return list.map((item) => ({
     key: item.key,
@@ -348,6 +382,7 @@ export function listCachedComparisons(): Array<{
     angle: item.data.angle,
     ts: item.ts,
     data: item.data.result,
+    storyboard: item.data.storyboard ?? null,
   }));
 }
 
@@ -442,44 +477,48 @@ export async function askAiTutor(params: {
   question: string;
   history: AiChatMessage[];
   context: AiTutorContext;
-}): Promise<{ reply: string; usage?: AiUsageMeta }> {
-  return apiJson<{ reply: string; usage?: AiUsageMeta }>('/api/ai/tutor', {
-    method: 'POST',
-    body: {
-      mode: 'chat',
-      question: params.question,
-      history: params.history.slice(-10).map((m) => ({ role: m.role, text: m.text })),
-      context: params.context,
+}): Promise<{ reply: string; storyboard?: AiStoryboard | null; usage?: AiUsageMeta }> {
+  return apiJson<{ reply: string; storyboard?: AiStoryboard | null; usage?: AiUsageMeta }>(
+    '/api/ai/tutor',
+    {
+      method: 'POST',
+      body: {
+        mode: 'chat',
+        question: params.question,
+        history: params.history.slice(-10).map((m) => ({ role: m.role, text: m.text })),
+        context: params.context,
+      },
     },
-  });
+  );
 }
 
 export async function compareWithAi(params: {
   subjectA: string;
   subjectB: string;
   angle?: string;
-}): Promise<{ comparison: AiComparisonResult; cached: boolean }> {
+}): Promise<{ comparison: AiComparisonResult; storyboard?: AiStoryboard | null; cached: boolean }> {
   const a = params.subjectA.trim();
   const b = params.subjectB.trim();
   const angle = (params.angle || '').trim();
   const cacheKey = `${a.toLowerCase()}::${b.toLowerCase()}::${angle.toLowerCase()}`;
   const hit = listCachedComparisons().find((c) => c.key === cacheKey);
-  if (hit) {
-    return { comparison: hit.data, cached: true };
+  if (hit && hit.storyboard) {
+    return { comparison: hit.data, storyboard: hit.storyboard, cached: true };
   }
 
-  const res = await apiJson<{ comparison: AiComparisonResult; usage?: AiUsageMeta }>(
-    '/api/ai/tutor',
-    {
-      method: 'POST',
-      body: {
-        mode: 'compare',
-        subjectA: a,
-        subjectB: b,
-        angle: angle || undefined,
-      },
+  const res = await apiJson<{
+    comparison: AiComparisonResult;
+    storyboard?: AiStoryboard | null;
+    usage?: AiUsageMeta;
+  }>('/api/ai/tutor', {
+    method: 'POST',
+    body: {
+      mode: 'compare',
+      subjectA: a,
+      subjectB: b,
+      angle: angle || undefined,
     },
-  );
+  });
 
   writeCacheEntry(COMPARE_CACHE_KEY, 30, {
     key: cacheKey,
@@ -490,10 +529,11 @@ export async function compareWithAi(params: {
       subjectB: b,
       angle,
       result: res.comparison,
+      storyboard: res.storyboard ?? null,
     },
   });
 
-  return { comparison: res.comparison, cached: false };
+  return { comparison: res.comparison, storyboard: res.storyboard ?? null, cached: false };
 }
 
 export async function generatePolityCardWithAi(params: {

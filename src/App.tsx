@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { AiStageBar } from './components/AiStageBar';
 import { AiStudioModal, type AiStudioIntent } from './components/AiStudioModal';
 import { ChronicleTicker } from './components/ChronicleTicker';
 import {
@@ -48,6 +49,7 @@ import {
   playNarrationClip,
   speakWithBrowserSpeech,
   stopActiveNarration,
+  type AiStoryboard,
   type AiTutorContext,
 } from './utils/aiClient';
 import {
@@ -138,6 +140,9 @@ export function App() {
   const [cardNarratingId, setCardNarratingId] = useState<string | null>(null);
   const [cardNarrationLoadingId, setCardNarrationLoadingId] = useState<string | null>(null);
   const [cardNarrationSubtitle, setCardNarrationSubtitle] = useState<string | null>(null);
+  const [activeStoryboard, setActiveStoryboard] = useState<AiStoryboard | null>(null);
+  const [storyboardStepIdx, setStoryboardStepIdx] = useState(0);
+  const [storyboardPlaying, setStoryboardPlaying] = useState(false);
 
   const [activeStoryline, setActiveStoryline] = useState<Storyline | null>(null);
   const [storyStepIdx, setStoryStepIdx] = useState(0);
@@ -744,6 +749,41 @@ export function App() {
     setAiOpen(true);
   }, []);
 
+  const handlePlayStoryboard = useCallback((sb: AiStoryboard) => {
+    setIsPlaying(false);
+    setCinemaMode(false);
+    setActiveStoryline(null);
+    setStoryAutoPlay(false);
+    setTickerVisible(false);
+    setActiveStoryboard(sb);
+    setStoryboardStepIdx(0);
+    setStoryboardPlaying(true);
+  }, []);
+
+  // Sync map year & camera flight whenever the active AI storyboard scene changes
+  useEffect(() => {
+    if (!activeStoryboard || activeCountry) return;
+    const step = activeStoryboard.steps[storyboardStepIdx];
+    if (!step) return;
+    setCurrentYear(step.year);
+    flyToLocation(step.center, step.zoom, { exactZoom: true, pitch: 18, duration: 1050 });
+  }, [activeStoryboard, storyboardStepIdx, activeCountry, flyToLocation]);
+
+  // Auto-advance AI storyboard scenes cleanly
+  useEffect(() => {
+    if (!activeStoryboard || !storyboardPlaying || activeCountry) return;
+    const timer = window.setInterval(() => {
+      setStoryboardStepIdx((prev) => {
+        if (prev + 1 >= activeStoryboard.steps.length) {
+          setStoryboardPlaying(false);
+          return prev;
+        }
+        return prev + 1;
+      });
+    }, 5200);
+    return () => window.clearInterval(timer);
+  }, [activeStoryboard, storyboardPlaying, activeCountry]);
+
   const handleStopCardNarration = useCallback(() => {
     stopActiveNarration();
     setCardNarratingId(null);
@@ -1085,6 +1125,8 @@ export function App() {
             showLandmarks={showLandmarks}
             countryFocus={countryFocus}
             isCountryMode={Boolean(activeCountry)}
+            aiScene={!activeCountry ? (activeStoryboard?.steps[storyboardStepIdx] ?? null) : null}
+            aiStageOpen={aiOpen}
             flyTarget={flyTarget}
             onSelectEvent={(ev) => handleSelectEvent(ev)}
             onSelectFigure={(fig) => handleSelectFigure(fig)}
@@ -1239,7 +1281,49 @@ export function App() {
                 narrationLoadingId={cardNarrationLoadingId}
                 narrationSubtitle={cardNarrationSubtitle}
                 onStopNarration={handleStopCardNarration}
+                suppressDesktop={aiOpen}
               />
+
+              {activeStoryboard && (
+                <AiStageBar
+                  storyboard={activeStoryboard}
+                  stepIndex={storyboardStepIdx}
+                  isPlaying={storyboardPlaying}
+                  theme={theme}
+                  aiDrawerOpen={aiOpen}
+                  onSelectStep={(idx) => {
+                    setStoryboardPlaying(false);
+                    setStoryboardStepIdx(idx);
+                  }}
+                  onPrev={() => {
+                    setStoryboardPlaying(false);
+                    setStoryboardStepIdx((i) => Math.max(0, i - 1));
+                  }}
+                  onNext={() => {
+                    setStoryboardPlaying(false);
+                    setStoryboardStepIdx((i) =>
+                      Math.min(activeStoryboard.steps.length - 1, i + 1),
+                    );
+                  }}
+                  onTogglePlay={() => {
+                    if (storyboardStepIdx >= activeStoryboard.steps.length - 1 && !storyboardPlaying) {
+                      setStoryboardStepIdx(0);
+                      setStoryboardPlaying(true);
+                    } else {
+                      setStoryboardPlaying((p) => !p);
+                    }
+                  }}
+                  onReplay={() => {
+                    setStoryboardStepIdx(0);
+                    setStoryboardPlaying(true);
+                  }}
+                  onClose={() => {
+                    setStoryboardPlaying(false);
+                    setActiveStoryboard(null);
+                  }}
+                  onOpenAiDrawer={() => setAiOpen(true)}
+                />
+              )}
             </>
           )}
         </div>
@@ -1362,6 +1446,8 @@ export function App() {
         masteredIds={masteredSet}
         eraId={currentEra.id}
         intent={aiIntent}
+        hasActiveStoryboard={Boolean(activeStoryboard)}
+        onPlayStoryboard={handlePlayStoryboard}
         onUnlockChange={setAiUnlocked}
         onClose={() => setAiOpen(false)}
       />

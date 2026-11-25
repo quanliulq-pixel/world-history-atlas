@@ -68,6 +68,7 @@ interface EventCardPanelProps {
   narrationLoadingId?: string | null;
   narrationSubtitle?: string | null;
   onStopNarration?: () => void;
+  suppressDesktop?: boolean;
 }
 
 const ROUTE_MAP = Object.fromEntries(HISTORICAL_ROUTES.map((r) => [r.id, r]));
@@ -105,6 +106,7 @@ export function EventCardPanel({
   narrationLoadingId,
   narrationSubtitle,
   onStopNarration,
+  suppressDesktop = false,
 }: EventCardPanelProps) {
   const [noteOpen, setNoteOpen] = useState(false);
 
@@ -1101,7 +1103,9 @@ export function EventCardPanel({
   return (
     <>
       {/* Desktop Right Drawer */}
-      <aside className="pointer-events-none hidden lg:flex absolute right-3 top-3 bottom-3 z-20 flex-col items-end">
+      <aside
+        className={`pointer-events-none ${suppressDesktop ? 'hidden' : 'hidden lg:flex'} absolute right-3 top-3 bottom-3 z-20 flex-col items-end`}
+      >
         {desktopCollapsed && !selectedEvent && !selectedFigure ? (
           <button
             type="button"

@@ -4,6 +4,7 @@ import {
   BrainCircuit,
   CheckCircle2,
   Coins,
+  Film,
   GitCompareArrows,
   KeyRound,
   Landmark,
@@ -51,6 +52,7 @@ import {
   type AiQuizPayload,
   type AiQuizSourceItem,
   type AiStatus,
+  type AiStoryboard,
   type AiTutorContext,
   type AiUsageSnapshot,
   type AiVoiceEngine,
@@ -78,6 +80,8 @@ interface AiStudioModalProps {
   masteredIds: Set<string>;
   eraId: string;
   intent: AiStudioIntent | null;
+  hasActiveStoryboard?: boolean;
+  onPlayStoryboard?: (storyboard: AiStoryboard) => void;
   onUnlockChange?: (unlocked: boolean) => void;
   onClose: () => void;
 }
@@ -155,6 +159,8 @@ export function AiStudioModal({
   masteredIds,
   eraId,
   intent,
+  hasActiveStoryboard = false,
+  onPlayStoryboard,
   onUnlockChange,
   onClose,
 }: AiStudioModalProps) {
@@ -184,6 +190,7 @@ export function AiStudioModal({
   const [subjectB, setSubjectB] = useState('');
   const [compareAngle, setCompareAngle] = useState('');
   const [compareResult, setCompareResult] = useState<AiComparisonResult | null>(null);
+  const [compareStoryboard, setCompareStoryboard] = useState<AiStoryboard | null>(null);
   const [compareLoading, setCompareLoading] = useState(false);
   const [compareError, setCompareError] = useState<string | null>(null);
   const [compareCached, setCompareCached] = useState(false);
@@ -329,8 +336,12 @@ export function AiStudioModal({
           role: 'assistant',
           text: res.reply,
           ts: Date.now(),
+          storyboard: res.storyboard ?? null,
         },
       ]);
+      if (res.storyboard) {
+        onPlayStoryboard?.(res.storyboard);
+      }
       setUsage(getAiUsage());
     } catch (err) {
       handleApiError(err, setChatError);
@@ -401,7 +412,11 @@ export function AiStudioModal({
     try {
       const res = await compareWithAi({ subjectA: a, subjectB: b, angle });
       setCompareResult(res.comparison);
+      setCompareStoryboard(res.storyboard ?? null);
       setCompareCached(res.cached);
+      if (res.storyboard) {
+        onPlayStoryboard?.(res.storyboard);
+      }
       setUsage(getAiUsage());
     } catch (err) {
       handleApiError(err, setCompareError);
@@ -555,7 +570,7 @@ export function AiStudioModal({
   const recentCompares = listCachedComparisons().slice(0, 4);
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end bg-black/45 backdrop-blur-xs">
+    <div className="fixed inset-0 lg:inset-y-0 lg:left-auto lg:right-0 lg:w-[470px] lg:max-w-[46vw] z-50 lg:z-40 flex justify-end bg-black/45 lg:bg-transparent backdrop-blur-xs lg:backdrop-blur-none">
       <div
         className="flex h-full w-full sm:w-[470px] max-w-full flex-col border-l shadow-2xl"
         style={{
@@ -601,6 +616,22 @@ export function AiStudioModal({
           </div>
 
           <div className="flex items-center gap-1.5 shrink-0 relative">
+            {hasActiveStoryboard && (
+              <button
+                type="button"
+                onClick={onClose}
+                className="lg:hidden inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-[10px] font-semibold cursor-pointer"
+                style={{
+                  backgroundColor: 'rgba(180, 116, 23, 0.14)',
+                  borderColor: '#B47417',
+                  color: theme === 'obsidian' ? '#E5A94C' : '#9B5E0B',
+                }}
+              >
+                <Film className="h-3 w-3" />
+                <span>看地图动画</span>
+              </button>
+            )}
+
             <button
               type="button"
               onClick={() => setVoiceMenuOpen((v) => !v)}
@@ -951,10 +982,32 @@ export function AiStudioModal({
                     ) : (
                       <>
                         <FormattedMarkdown text={m.text} />
-                        <div className="mt-2 pt-1.5 border-t flex items-center justify-end" style={{ borderColor: 'var(--border-subtle)' }}>
+                        <div
+                          className="mt-2 pt-1.5 border-t flex flex-wrap items-center justify-end gap-1.5"
+                          style={{ borderColor: 'var(--border-subtle)' }}
+                        >
+                          {m.storyboard && onPlayStoryboard && (
+                            <button
+                              type="button"
+                              onClick={() => onPlayStoryboard(m.storyboard!)}
+                              className="inline-flex items-center gap-1 rounded-lg px-2 py-0.5 text-[10px] font-semibold hover:opacity-85 cursor-pointer"
+                              style={{
+                                backgroundColor: 'rgba(180, 116, 23, 0.14)',
+                                color: theme === 'obsidian' ? '#E5A94C' : '#9B5E0B',
+                              }}
+                            >
+                              <Film className="h-3 w-3" />
+                              <span>播放地图动画 ({m.storyboard.steps.length} 幕)</span>
+                            </button>
+                          )}
                           <button
                             type="button"
-                            onClick={() => void handleSpeakText(m.id, m.text, 'msg')}
+                            onClick={() => {
+                              if (m.storyboard && onPlayStoryboard) {
+                                onPlayStoryboard(m.storyboard);
+                              }
+                              void handleSpeakText(m.id, m.text, 'msg');
+                            }}
                             className="inline-flex items-center gap-1 rounded-lg px-2 py-0.5 text-[10px] font-medium hover:opacity-80 cursor-pointer"
                             style={{ backgroundColor: 'var(--bg-muted)', color: 'var(--text-secondary)' }}
                           >
@@ -1162,33 +1215,50 @@ export function AiStudioModal({
                       </span>
                     )}
                   </div>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      void handleSpeakText(
-                        `cmp-${compareResult.title}`,
-                        `${compareResult.title}。${compareResult.thesis} 政治维度：${compareResult.dimensions.politics} 经济维度：${compareResult.dimensions.economy} 当代启发：${compareResult.modernEcho}`,
-                        'compare',
-                      )
-                    }
-                    className="inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-[10px] font-semibold shrink-0 cursor-pointer"
-                    style={{
-                      backgroundColor: 'var(--bg-surface)',
-                      borderColor: 'var(--border-subtle)',
-                    }}
-                  >
-                    {compareSpeaking ? (
-                      <>
-                        <Square className="h-2.5 w-2.5" />
-                        <span>停止</span>
-                      </>
-                    ) : (
-                      <>
-                        <Volume2 className="h-3 w-3" />
-                        <span>听对比总结</span>
-                      </>
+                  <div className="flex flex-wrap items-center gap-1.5 shrink-0">
+                    {compareStoryboard && onPlayStoryboard && (
+                      <button
+                        type="button"
+                        onClick={() => onPlayStoryboard(compareStoryboard)}
+                        className="inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-[10px] font-semibold cursor-pointer"
+                        style={{
+                          backgroundColor: 'rgba(180, 116, 23, 0.14)',
+                          borderColor: '#B47417',
+                          color: theme === 'obsidian' ? '#E5A94C' : '#9B5E0B',
+                        }}
+                      >
+                        <Film className="h-3 w-3" />
+                        <span>重播地图对比动画</span>
+                      </button>
                     )}
-                  </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        void handleSpeakText(
+                          `cmp-${compareResult.title}`,
+                          `${compareResult.title}。${compareResult.thesis} 政治维度：${compareResult.dimensions.politics} 经济维度：${compareResult.dimensions.economy} 当代启发：${compareResult.modernEcho}`,
+                          'compare',
+                        )
+                      }
+                      className="inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-[10px] font-semibold shrink-0 cursor-pointer"
+                      style={{
+                        backgroundColor: 'var(--bg-surface)',
+                        borderColor: 'var(--border-subtle)',
+                      }}
+                    >
+                      {compareSpeaking ? (
+                        <>
+                          <Square className="h-2.5 w-2.5" />
+                          <span>停止</span>
+                        </>
+                      ) : (
+                        <>
+                          <Volume2 className="h-3 w-3" />
+                          <span>听对比总结</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
 
                 <div
@@ -1274,7 +1344,11 @@ export function AiStudioModal({
                       setSubjectB(c.subjectB);
                       setCompareAngle(c.angle);
                       setCompareResult(c.data);
+                      setCompareStoryboard(c.storyboard ?? null);
                       setCompareCached(true);
+                      if (c.storyboard) {
+                        onPlayStoryboard?.(c.storyboard);
+                      }
                     }}
                     className="w-full text-left rounded-lg border px-2.5 py-1.5 text-xs hover:opacity-85 cursor-pointer"
                     style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--border-subtle)' }}

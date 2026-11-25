@@ -580,3 +580,22 @@ export function buildCompareSpeechPlan(
     sceneAnchorBlockIds,
   };
 }
+
+export function buildDocumentarySpeechChunks(
+  beats: Array<{ title: string; narration: string }>,
+): SpeechChunk[] {
+  const chunks: SpeechChunk[] = [];
+  for (let idx = 0; idx < beats.length; idx++) {
+    const speechText = cleanSpeechText(beats[idx].narration);
+    if (!speechText) continue;
+    chunks.push({
+      chunkIndex: chunks.length,
+      blockId: `beat-${idx}`,
+      sentenceIndices: [idx],
+      sentenceWeights: [Math.max(1, speechText.length)],
+      speechText,
+      sceneIndex: idx,
+    });
+  }
+  return chunks;
+}

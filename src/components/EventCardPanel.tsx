@@ -31,6 +31,7 @@ import { EVENT_MAP } from '../data/events';
 import { findFigureByName, getContemporaryFigures } from '../data/figures';
 import { HISTORICAL_ROUTES } from '../data/routes';
 import type { Era, HistoricalFigure, HistoryEvent, SubPeriod, ThemeMode } from '../types/history';
+import type { AiDocumentaryBeat } from '../utils/aiClient';
 import { formatYear } from '../utils/timeline';
 
 type SheetState = 'peek' | 'half' | 'full';
@@ -68,6 +69,9 @@ interface EventCardPanelProps {
   narratingItemId?: string | null;
   narrationLoadingId?: string | null;
   narrationSubtitle?: string | null;
+  narrationBeats?: AiDocumentaryBeat[] | null;
+  activeBeatIndex?: number;
+  onSelectNarrationBeat?: (idx: number) => void;
   onStopNarration?: () => void;
   suppressDesktop?: boolean;
 }
@@ -107,10 +111,97 @@ export function EventCardPanel({
   narratingItemId,
   narrationLoadingId,
   narrationSubtitle,
+  narrationBeats = null,
+  activeBeatIndex = 0,
+  onSelectNarrationBeat,
   onStopNarration,
   suppressDesktop = false,
 }: EventCardPanelProps) {
   const [noteOpen, setNoteOpen] = useState(false);
+
+  const renderNarrationBox = (itemId: string) => {
+    if (narratingItemId !== itemId) return null;
+    if (!narrationSubtitle && (!narrationBeats || narrationBeats.length === 0)) return null;
+    const isDark = theme === 'obsidian';
+
+    return (
+      <div
+        className="rounded-lg border px-2.5 py-2 text-[11px] leading-relaxed space-y-1.5"
+        style={{
+          backgroundColor: 'var(--bg-elevated)',
+          borderColor: 'var(--border-subtle)',
+          color: 'var(--text-secondary)',
+        }}
+      >
+        {narrationBeats && narrationBeats.length > 0 ? (
+          <>
+            <div className="flex flex-wrap items-center gap-1">
+              <span
+                className="inline-flex items-center gap-1 text-[10px] font-bold mr-1"
+                style={{ color: 'var(--accent-primary)' }}
+              >
+                <span className="inline-flex items-end gap-[2px] h-2.5" aria-hidden="true">
+                  <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar" />
+                  <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar atlas-eq-bar-2" />
+                  <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar atlas-eq-bar-3" />
+                </span>
+                <span>同步解说</span>
+              </span>
+              {narrationBeats.map((b, idx) => {
+                const isAct = idx === activeBeatIndex;
+                return (
+                  <button
+                    key={`${b.title}-${idx}`}
+                    type="button"
+                    onClick={() => onSelectNarrationBeat?.(idx)}
+                    className="inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[9.5px] font-semibold border transition cursor-pointer"
+                    style={{
+                      backgroundColor: isAct ? 'var(--accent-primary)' : 'var(--bg-surface)',
+                      borderColor: isAct ? 'var(--accent-primary)' : 'var(--border-subtle)',
+                      color: isAct ? '#FFFFFF' : 'var(--text-muted)',
+                    }}
+                  >
+                    <span>第{idx + 1}幕</span>
+                    <span>{b.title}</span>
+                  </button>
+                );
+              })}
+            </div>
+            <div>
+              {narrationBeats.map((b, idx) => {
+                const isAct = idx === activeBeatIndex;
+                return (
+                  <span
+                    key={`card-beat-${idx}`}
+                    className={
+                      isAct
+                        ? 'rounded-sm px-0.5 py-[1px] font-medium transition-colors'
+                        : 'opacity-65 transition-opacity'
+                    }
+                    style={
+                      isAct
+                        ? {
+                            backgroundColor: isDark
+                              ? 'rgba(224, 166, 75, 0.26)'
+                              : 'rgba(180, 116, 23, 0.22)',
+                            color: 'var(--text-primary)',
+                          }
+                        : undefined
+                    }
+                  >
+                    {b.narration}
+                    {idx < narrationBeats.length - 1 ? ' ' : ''}
+                  </span>
+                );
+              })}
+            </div>
+          </>
+        ) : (
+          <div>{narrationSubtitle}</div>
+        )}
+      </div>
+    );
+  };
 
   const cycleSheet = () => {
     if (sheetState === 'peek') onChangeSheetState('half');
@@ -338,18 +429,7 @@ export function EventCardPanel({
               )}
             </div>
 
-            {narratingItemId === ev.id && narrationSubtitle && (
-              <div
-                className="rounded-lg border px-2.5 py-2 text-[11px] leading-relaxed"
-                style={{
-                  backgroundColor: 'var(--bg-elevated)',
-                  borderColor: 'var(--border-subtle)',
-                  color: 'var(--text-secondary)',
-                }}
-              >
-                {narrationSubtitle}
-              </div>
-            )}
+            {renderNarrationBox(ev.id)}
           </div>
         )}
 
@@ -769,18 +849,7 @@ export function EventCardPanel({
               )}
             </div>
 
-            {narratingItemId === fig.id && narrationSubtitle && (
-              <div
-                className="rounded-lg border px-2.5 py-2 text-[11px] leading-relaxed"
-                style={{
-                  backgroundColor: 'var(--bg-elevated)',
-                  borderColor: 'var(--border-subtle)',
-                  color: 'var(--text-secondary)',
-                }}
-              >
-                {narrationSubtitle}
-              </div>
-            )}
+            {renderNarrationBox(fig.id)}
           </div>
         )}
 

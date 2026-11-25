@@ -196,13 +196,69 @@ body,
   animation-delay: 0.34s;
 }
 
+@keyframes atlasSpotPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.55);
+  }
+  65% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.atlas-spot-enter {
+  animation: atlasSpotPop 380ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes atlasFlowBadgeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(4px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.atlas-flow-badge-enter {
+  animation: atlasFlowBadgeIn 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes atlasArrivalBurst {
+  0% {
+    opacity: 0.95;
+    transform: translate(-50%, -50%) scale(0.35);
+  }
+  70% {
+    opacity: 0.4;
+    transform: translate(-50%, -50%) scale(2.8);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(3.4);
+  }
+}
+
+.atlas-arrival-ring {
+  animation: atlasArrivalBurst 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .atlas-beacon,
   .atlas-shockwave,
   .atlas-shockwave-delayed,
   .atlas-card-enter,
   .atlas-ticker-enter,
-  .atlas-eq-bar {
+  .atlas-eq-bar,
+  .atlas-spot-enter,
+  .atlas-flow-badge-enter,
+  .atlas-arrival-ring {
     animation: none !important;
   }
 }

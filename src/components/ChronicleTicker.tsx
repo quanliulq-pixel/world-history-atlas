@@ -1,6 +1,7 @@
 import { Film, Loader2, Pause, Sparkles, Volume2, VolumeX, X } from 'lucide-react';
 import { DIMENSION_META, REGION_META } from '../data/eras';
 import type { Era, HistoryEvent, SubPeriod, ThemeMode } from '../types/history';
+import type { AiDocumentaryBeat } from '../utils/aiClient';
 import { formatYear } from '../utils/timeline';
 
 interface ChronicleTickerProps {
@@ -15,6 +16,8 @@ interface ChronicleTickerProps {
   cinemaVoiceEnabled?: boolean;
   narrationStatus?: 'idle' | 'loading' | 'playing' | 'browser';
   narrationSubtitle?: string | null;
+  narrationBeats?: AiDocumentaryBeat[] | null;
+  activeBeatIndex?: number;
   onToggleCinemaVoice?: () => void;
   onSelectEvent: (ev: HistoryEvent) => void;
   onStopPlayback: () => void;
@@ -33,6 +36,8 @@ export function ChronicleTicker({
   cinemaVoiceEnabled = true,
   narrationStatus = 'idle',
   narrationSubtitle = null,
+  narrationBeats = null,
+  activeBeatIndex = 0,
   onToggleCinemaVoice,
   onSelectEvent,
   onStopPlayback,
@@ -161,23 +166,87 @@ export function ChronicleTicker({
         </p>
       )}
 
-      {cinemaMode && cinemaVoiceEnabled && narrationSubtitle && (
+      {cinemaMode && cinemaVoiceEnabled && ((narrationBeats && narrationBeats.length > 0) || narrationSubtitle) && (
         <div
-          className="mt-1.5 rounded-lg border px-2.5 py-1.5 text-[11px] leading-relaxed"
+          className="mt-2 rounded-xl border px-2.5 py-2 text-[11px] leading-relaxed space-y-1.5"
           style={{
             backgroundColor: 'var(--bg-elevated)',
             borderColor: 'var(--border-subtle)',
             color: 'var(--text-secondary)',
           }}
         >
-          <span className="font-semibold" style={{ color: accent }}>
-            {narrationStatus === 'loading'
-              ? '🎙 正在合成解说：'
-              : narrationStatus === 'browser'
-                ? '🎙 旁白（浏览器语音）：'
-                : '🎙 AI 纪录片旁白：'}
-          </span>
-          {narrationSubtitle}
+          {narrationBeats && narrationBeats.length > 0 ? (
+            <>
+              <div className="flex flex-wrap items-center gap-1">
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold mr-1" style={{ color: accent }}>
+                  <span className="inline-flex items-end gap-[2px] h-2.5" aria-hidden="true">
+                    <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar" />
+                    <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar atlas-eq-bar-2" />
+                    <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar atlas-eq-bar-3" />
+                  </span>
+                  <span>纪录片分镜演播</span>
+                </span>
+                {narrationBeats.map((b, idx) => {
+                  const isAct = idx === activeBeatIndex;
+                  return (
+                    <span
+                      key={`${b.title}-${idx}`}
+                      className="inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[9.5px] font-semibold border transition-colors"
+                      style={{
+                        backgroundColor: isAct ? accent : 'var(--bg-surface)',
+                        borderColor: isAct ? accent : 'var(--border-subtle)',
+                        color: isAct ? '#FFFFFF' : 'var(--text-muted)',
+                      }}
+                    >
+                      <span>{idx + 1}.</span>
+                      <span>{b.title}</span>
+                    </span>
+                  );
+                })}
+              </div>
+
+              <div className="leading-relaxed">
+                {narrationBeats.map((b, idx) => {
+                  const isAct = idx === activeBeatIndex;
+                  return (
+                    <span
+                      key={`n-${idx}`}
+                      className={
+                        isAct
+                          ? 'rounded-sm px-0.5 py-[1px] font-medium transition-colors'
+                          : 'opacity-60 transition-opacity'
+                      }
+                      style={
+                        isAct
+                          ? {
+                              backgroundColor:
+                                theme === 'obsidian'
+                                  ? 'rgba(224, 166, 75, 0.24)'
+                                  : 'rgba(180, 116, 23, 0.18)',
+                              color: 'var(--text-primary)',
+                            }
+                          : undefined
+                      }
+                    >
+                      {b.narration}
+                      {idx < narrationBeats.length - 1 ? ' ' : ''}
+                    </span>
+                  );
+                })}
+              </div>
+            </>
+          ) : (
+            <div>
+              <span className="font-semibold" style={{ color: accent }}>
+                {narrationStatus === 'loading'
+                  ? '🎙 正在合成解说：'
+                  : narrationStatus === 'browser'
+                    ? '🎙 旁白（浏览器语音）：'
+                    : '🎙 AI 纪录片旁白：'}
+              </span>
+              {narrationSubtitle}
+            </div>
+          )}
         </div>
       )}
     </div>

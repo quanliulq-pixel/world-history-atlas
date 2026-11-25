@@ -196,3 +196,77 @@ export function slicePolylineByFraction(
   }
   return sliced.length >= 2 ? sliced : [coords[0], coords[0]];
 }
+
+/**
+ * Generates a closed [lng, lat] geodesic circle polygon ring centered at `center` with radius in km.
+ */
+export function buildGeodesicCirclePolygon(
+  center: [number, number],
+  radiusKm: number,
+  segments = 48,
+): [number, number][] {
+  const [lng0, lat0] = center;
+  const latRad = (lat0 * Math.PI) / 180;
+  const latDelta = radiusKm / 111.32;
+  const lngDelta = radiusKm / (111.32 * Math.max(0.25, Math.cos(latRad)));
+  const ring: [number, number][] = [];
+  for (let i = 0; i <= segments; i++) {
+    const theta = (i / segments) * Math.PI * 2;
+    const lat = Math.max(-82, Math.min(82, lat0 + Math.sin(theta) * latDelta));
+    const lng = lng0 + Math.cos(theta) * lngDelta;
+    ring.push([lng, lat]);
+  }
+  return ring;
+}
+
+/**
+ * Extracts a sub-segment of a polyline between `startFrac` and `endFrac` in [0, 1] for comet tail trails.
+ */
+export function slicePolylineWindow(
+  coords: [number, number][],
+  cumLengths: number[],
+  startFrac: number,
+  endFrac: number,
+): [number, number][] {
+  if (coords.length < 2 || cumLengths.length !== coords.length) return [];
+  const total = cumLengths[cumLengths.length - 1];
+  if (total <= 1e-9) return [];
+
+  const a = Math.max(0, Math.min(1, startFrac));
+  const b = Math.max(0, Math.min(1, endFrac));
+  if (b <= a + 0.002) return [];
+
+  const dStart = a * total;
+  const dEnd = b * total;
+  const out: [number, number][] = [samplePolylineAt(coords, cumLengths, a)];
+  for (let i = 1; i < coords.length - 1; i++) {
+    if (cumLengths[i] > dStart && cumLengths[i] < dEnd) {
+      out.push(coords[i]);
+    }
+  }
+  out.push(samplePolylineAt(coords, cumLengths, b));
+  return out;
+}
+
+/**
+ * Computes Web Mercator conformal tangent clockwise bearing in degrees (0 = North, 90 = East).
+ */
+export function computePolylineBearingAt(
+  coords: [number, number][],
+  cumLengths: number[],
+  fraction: number,
+  reversed = false,
+): number {
+  if (coords.length < 2) return 0;
+  const f = Math.max(0.02, Math.min(0.98, fraction));
+  const a = samplePolylineAt(coords, cumLengths, Math.max(0, f - 0.025));
+  const b = samplePolylineAt(coords, cumLengths, Math.min(1, f + 0.025));
+  const p1 = reversed ? b : a;
+  const p2 = reversed ? a : b;
+  const midLatRad = (((p1[1] + p2[1]) / 2) * Math.PI) / 180;
+  const cosLat = Math.max(0.2, Math.cos(midLatRad));
+  const screenDx = p2[0] - p1[0];
+  const screenDy = -(p2[1] - p1[1]) / cosLat;
+  if (Math.abs(screenDx) < 1e-6 && Math.abs(screenDy) < 1e-6) return 0;
+  return (Math.atan2(screenDx, -screenDy) * 180) / Math.PI;
+}

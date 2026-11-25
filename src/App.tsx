@@ -45,15 +45,18 @@ import type {
 } from './types/history';
 import {
   AiClientError,
-  generateNarration,
+  generateDocumentaryPlan,
   getStoredPasscode,
-  playNarrationClip,
+  playSpeechChunks,
   speakWithBrowserSpeech,
   stopActiveNarration,
   subscribeNarrationStop,
+  type AiDocumentaryBeat,
   type AiStoryboard,
+  type AiStoryboardStep,
   type AiTutorContext,
 } from './utils/aiClient';
+import { buildDocumentarySpeechChunks } from './utils/speechSync';
 import {
   loadManifest,
   loadPhysicalAtlas,
@@ -122,6 +125,7 @@ export function App() {
     zoom: number;
     exactZoom?: boolean;
     pitch?: number;
+    bearing?: number;
     duration?: number;
     nonce: number;
   } | null>(null);
@@ -139,9 +143,15 @@ export function App() {
     'idle' | 'loading' | 'playing' | 'browser'
   >('idle');
   const [cinemaSubtitle, setCinemaSubtitle] = useState<string | null>(null);
+  const [cinemaBeats, setCinemaBeats] = useState<AiDocumentaryBeat[] | null>(null);
+  const [cinemaActiveBeatIdx, setCinemaActiveBeatIdx] = useState(0);
+  const [cinemaScene, setCinemaScene] = useState<AiStoryboardStep | null>(null);
   const [cardNarratingId, setCardNarratingId] = useState<string | null>(null);
   const [cardNarrationLoadingId, setCardNarrationLoadingId] = useState<string | null>(null);
   const [cardNarrationSubtitle, setCardNarrationSubtitle] = useState<string | null>(null);
+  const [cardNarrationBeats, setCardNarrationBeats] = useState<AiDocumentaryBeat[] | null>(null);
+  const [cardActiveBeatIdx, setCardActiveBeatIdx] = useState(0);
+  const cardNarrationRunIdRef = useRef(0);
   const [activeStoryboard, setActiveStoryboard] = useState<AiStoryboard | null>(null);
   const [storyboardStepIdx, setStoryboardStepIdx] = useState(0);
   const [storyboardPlaying, setStoryboardPlaying] = useState(false);
@@ -372,13 +382,14 @@ export function App() {
     (
       center: [number, number],
       zoom = 3.2,
-      opts?: { pitch?: number; duration?: number; exactZoom?: boolean },
+      opts?: { pitch?: number; bearing?: number; duration?: number; exactZoom?: boolean },
     ) => {
       setFlyTarget({
         center,
         zoom,
         exactZoom: opts?.exactZoom,
         pitch: opts?.pitch ?? 0,
+        bearing: opts?.bearing ?? 0,
         duration: opts?.duration ?? 850,
         nonce: Date.now() + Math.random(),
       });
@@ -386,11 +397,13 @@ export function App() {
     [],
   );
 
-  // Cinema Documentary Mode: smooth year progression + tilted camera flight + shockwave + ticker + optional AI narration
+  // Cinema Documentary Mode: smooth year progression + tilted camera flight + 3-beat documentary choreography
   useEffect(() => {
     if (!cinemaMode) {
       setCinemaNarrationStatus('idle');
       setCinemaSubtitle(null);
+      setCinemaBeats(null);
+      setCinemaScene(null);
       return;
     }
     let cancelled = false;
@@ -455,6 +468,9 @@ export function App() {
         const evSub = getSubPeriodForYear(ev.year);
 
         stopActiveNarration();
+        setCinemaScene(null);
+        setCinemaBeats(null);
+        setCinemaActiveBeatIdx(0);
         setSelectedFigureId(null);
         setSelectedEventId(ev.id);
         setFocusRouteId(ev.routeIds?.[0] || null);
@@ -467,42 +483,35 @@ export function App() {
 
         flyToLocation(ev.coords, ev.importance === 3 ? 3.25 : 3.55, {
           pitch: 18,
+          bearing: 0,
           duration: travelMs,
         });
 
-        // Pre-fetch narration in parallel with camera flight when AI voice is enabled
-        const narrationPromise = cinemaVoiceEnabledRef.current
+        // Pre-fetch 3-beat documentary plan in parallel with camera flight when AI voice is enabled
+        const docPromise = cinemaVoiceEnabledRef.current
           ? (async () => {
               setCinemaNarrationStatus('loading');
-              setCinemaSubtitle(`${ev.title} — 正在撰写并合成纪录片旁白...`);
+              setCinemaSubtitle(`${ev.title} — 正在撰写纪录片脚本并编排地图动画...`);
               try {
-                return await generateNarration({
+                return await generateDocumentaryPlan({
                   cacheKey: `ev:${ev.id}`,
                   title: ev.title,
+                  year: ev.year,
                   yearDisplay: ev.dateDisplay,
+                  coords: ev.coords,
                   eraName: evEra.name,
                   subPeriodName: evSub.name,
                   regionLabel: REGION_META[ev.region].label,
                   summary: ev.card.summary,
+                  geography: ev.card.geography,
                   politics: ev.card.politics,
                   economy: ev.card.economy,
                   culture: ev.card.culture,
                   consequence: ev.card.consequence,
                 });
-              } catch (err) {
-                if (err instanceof AiClientError) {
-                  return {
-                    script: `${ev.dateDisplay}，${ev.title}。${ev.card.summary}`,
-                    audioBlobUrl: null,
-                    ttsFallback: true,
-                    usedBrowserFallback: true,
-                  };
-                }
+              } catch {
                 return {
-                  script: `${ev.dateDisplay}，${ev.title}。${ev.card.summary}`,
-                  audioBlobUrl: null,
-                  ttsFallback: true,
-                  usedBrowserFallback: true,
+                  fallbackText: `${ev.dateDisplay}，${ev.title}。${ev.card.summary}`,
                 };
               }
             })()
@@ -511,19 +520,55 @@ export function App() {
         await animateYearTo(currentYearRef.current, ev.year, travelMs);
         if (cancelled) break;
 
-        if (cinemaVoiceEnabledRef.current && narrationPromise) {
-          const clip = await narrationPromise;
+        if (cinemaVoiceEnabledRef.current && docPromise) {
+          const result = await docPromise;
           if (cancelled) break;
-          setCinemaSubtitle(clip.script);
-          if (clip.audioBlobUrl) {
-            setCinemaNarrationStatus('playing');
-            await playNarrationClip(clip);
-          } else {
+          if ('fallbackText' in result) {
+            setCinemaBeats(null);
+            setCinemaSubtitle(result.fallbackText);
             setCinemaNarrationStatus('browser');
-            await speakWithBrowserSpeech(clip.script);
+            await speakWithBrowserSpeech(result.fallbackText);
+          } else {
+            const plan = result;
+            setCinemaBeats(plan.beats);
+            setCinemaActiveBeatIdx(0);
+            setCinemaSubtitle(plan.script);
+            const docChunks = buildDocumentarySpeechChunks(plan.beats);
+            try {
+              await playSpeechChunks({
+                cachePrefix: `doc:ev:${ev.id}`,
+                chunks: docChunks,
+                onStartAudio: () => {
+                  if (!cancelled) setCinemaNarrationStatus('playing');
+                },
+                onChunkStart: (chunk) => {
+                  if (cancelled) return;
+                  const beatIdx = chunk.sceneIndex ?? 0;
+                  setCinemaActiveBeatIdx(beatIdx);
+                  const step = plan.storyboard.steps[beatIdx];
+                  if (step) {
+                    setCinemaScene(step);
+                    setCurrentYear(step.year);
+                    flyToLocation(step.center, step.zoom, {
+                      exactZoom: true,
+                      pitch: step.pitch ?? 24,
+                      bearing: step.bearing ?? 0,
+                      duration: 1050,
+                    });
+                  }
+                },
+              });
+            } catch {
+              if (!cancelled) {
+                setCinemaNarrationStatus('browser');
+                await speakWithBrowserSpeech(plan.script);
+              }
+            }
           }
           if (cancelled) break;
-          await sleep(750);
+          setCinemaScene(null);
+          setCinemaBeats(null);
+          await sleep(650);
         } else {
           setCinemaNarrationStatus('idle');
           setCinemaSubtitle(null);
@@ -536,11 +581,13 @@ export function App() {
         stopActiveNarration();
         setCinemaNarrationStatus('idle');
         setCinemaSubtitle(null);
+        setCinemaBeats(null);
+        setCinemaScene(null);
         setCinemaMode(false);
         setRecentTriggerEventId(null);
         const lastEv = milestones[milestones.length - 1];
         if (lastEv) {
-          flyToLocation(lastEv.coords, 2.8, { pitch: 0, duration: 750 });
+          flyToLocation(lastEv.coords, 2.8, { pitch: 0, bearing: 0, duration: 750 });
         }
       }
     })();
@@ -551,14 +598,20 @@ export function App() {
       window.clearTimeout(timerId);
       stopActiveNarration();
       setCinemaNarrationStatus('idle');
+      setCinemaScene(null);
+      setCinemaBeats(null);
     };
   }, [cinemaMode, timelineZoom, dimensionFilteredEvents, flyToLocation]);
 
   const stopAiNarrationAndStage = useCallback((clearStage = true, closeStudio = false) => {
+    cardNarrationRunIdRef.current += 1;
     stopActiveNarration();
     setCardNarratingId(null);
     setCardNarrationLoadingId(null);
     setCardNarrationSubtitle(null);
+    setCardNarrationBeats(null);
+    setCinemaBeats(null);
+    setCinemaScene(null);
     setStoryboardVoiceSynced(false);
     if (clearStage) {
       setStoryboardPlaying(false);
@@ -842,7 +895,12 @@ export function App() {
     const step = activeStoryboard.steps[storyboardStepIdx];
     if (!step) return;
     setCurrentYear(step.year);
-    flyToLocation(step.center, step.zoom, { exactZoom: true, pitch: 18, duration: 1050 });
+    flyToLocation(step.center, step.zoom, {
+      exactZoom: true,
+      pitch: step.pitch ?? 20,
+      bearing: step.bearing ?? 0,
+      duration: 1050,
+    });
   }, [activeStoryboard, storyboardStepIdx, activeCountry, flyToLocation]);
 
   // Auto-advance AI storyboard scenes cleanly
@@ -861,104 +919,168 @@ export function App() {
   }, [activeStoryboard, storyboardPlaying, activeCountry]);
 
   const handleStopCardNarration = useCallback(() => {
+    cardNarrationRunIdRef.current += 1;
     stopActiveNarration();
     setCardNarratingId(null);
     setCardNarrationLoadingId(null);
     setCardNarrationSubtitle(null);
+    setCardNarrationBeats(null);
+    setStoryboardVoiceSynced(false);
   }, []);
 
-  const handleNarrateEvent = useCallback(async (ev: HistoryEvent) => {
-    setCinemaMode(false);
-    stopActiveNarration();
-    setCardNarrationLoadingId(ev.id);
-    setCardNarratingId(ev.id);
-    setCardNarrationSubtitle('正在撰写并合成 AI 历史语音旁白...');
-    try {
+  const runCardDocumentaryNarration = useCallback(
+    async (params: {
+      itemId: string;
+      cacheKey: string;
+      title: string;
+      year: number;
+      yearDisplay: string;
+      coords: [number, number];
+      eraName?: string;
+      subPeriodName?: string;
+      regionLabel?: string;
+      summary: string;
+      geography?: string;
+      politics?: string;
+      economy?: string;
+      culture?: string;
+      consequence?: string;
+      loadingMessage: string;
+      fallbackText: string;
+    }) => {
+      const runId = ++cardNarrationRunIdRef.current;
+      setCinemaMode(false);
+      stopActiveNarration();
+      setCardNarrationLoadingId(params.itemId);
+      setCardNarratingId(params.itemId);
+      setCardNarrationBeats(null);
+      setCardActiveBeatIdx(0);
+      setCardNarrationSubtitle(params.loadingMessage);
+      try {
+        const plan = await generateDocumentaryPlan({
+          cacheKey: params.cacheKey,
+          title: params.title,
+          year: params.year,
+          yearDisplay: params.yearDisplay,
+          coords: params.coords,
+          eraName: params.eraName,
+          subPeriodName: params.subPeriodName,
+          regionLabel: params.regionLabel,
+          summary: params.summary,
+          geography: params.geography,
+          politics: params.politics,
+          economy: params.economy,
+          culture: params.culture,
+          consequence: params.consequence,
+        });
+        if (cardNarrationRunIdRef.current !== runId) return;
+        setCardNarrationBeats(plan.beats);
+        setCardActiveBeatIdx(0);
+        setCardNarrationSubtitle(plan.script);
+        setActiveStoryboard(plan.storyboard);
+        setStoryboardStepIdx(0);
+        setStoryboardPlaying(false);
+        setStoryboardVoiceSynced(true);
+
+        const chunks = buildDocumentarySpeechChunks(plan.beats);
+        await playSpeechChunks({
+          cachePrefix: `doc:${params.cacheKey}`,
+          chunks,
+          onStartAudio: () => {
+            if (cardNarrationRunIdRef.current === runId) {
+              setCardNarrationLoadingId(null);
+            }
+          },
+          onChunkStart: (chunk) => {
+            if (cardNarrationRunIdRef.current !== runId) return;
+            const beatIdx = chunk.sceneIndex ?? 0;
+            setCardActiveBeatIdx(beatIdx);
+            setStoryboardStepIdx(beatIdx);
+          },
+        });
+      } catch (err) {
+        if (cardNarrationRunIdRef.current !== runId) return;
+        setCardNarrationLoadingId(null);
+        if (err instanceof AiClientError && err.code === 'aborted') {
+          return;
+        }
+        if (
+          err instanceof AiClientError &&
+          (err.code === 'passcode_invalid' ||
+            err.code === 'passcode_unconfigured' ||
+            err.code === 'not_configured')
+        ) {
+          setCardNarratingId(null);
+          setCardNarrationSubtitle(null);
+          setCardNarrationBeats(null);
+          setStoryboardVoiceSynced(false);
+          setAiUnlocked(false);
+          openAiWithIntent({ tab: 'tutor' });
+          return;
+        }
+        setCardNarrationSubtitle(params.fallbackText);
+        await speakWithBrowserSpeech(params.fallbackText);
+      } finally {
+        if (cardNarrationRunIdRef.current === runId) {
+          setCardNarrationLoadingId(null);
+          setCardNarratingId(null);
+          setStoryboardVoiceSynced(false);
+        }
+      }
+    },
+    [openAiWithIntent],
+  );
+
+  const handleNarrateEvent = useCallback(
+    async (ev: HistoryEvent) => {
       const evEra = getEraForYear(ev.year);
       const evSub = getSubPeriodForYear(ev.year);
-      const clip = await generateNarration({
+      await runCardDocumentaryNarration({
+        itemId: ev.id,
         cacheKey: `ev:${ev.id}`,
         title: ev.title,
+        year: ev.year,
         yearDisplay: ev.dateDisplay,
+        coords: ev.coords,
         eraName: evEra.name,
         subPeriodName: evSub.name,
         regionLabel: REGION_META[ev.region].label,
         summary: ev.card.summary,
+        geography: ev.card.geography,
         politics: ev.card.politics,
         economy: ev.card.economy,
         culture: ev.card.culture,
         consequence: ev.card.consequence,
+        loadingMessage: '正在撰写纪录片分镜与 AI 历史旁白...',
+        fallbackText: `${ev.dateDisplay}，${ev.title}。${ev.card.summary}`,
       });
-      setCardNarrationLoadingId(null);
-      setCardNarrationSubtitle(clip.script);
-      await playNarrationClip(clip);
-    } catch (err) {
-      setCardNarrationLoadingId(null);
-      if (err instanceof AiClientError && err.code === 'aborted') {
-        return;
-      }
-      if (
-        err instanceof AiClientError &&
-        (err.code === 'passcode_invalid' ||
-          err.code === 'passcode_unconfigured' ||
-          err.code === 'not_configured')
-      ) {
-        setCardNarratingId(null);
-        setCardNarrationSubtitle(null);
-        setAiUnlocked(false);
-        openAiWithIntent({ tab: 'tutor' });
-        return;
-      }
-      const fallback = `${ev.dateDisplay}，${ev.title}。${ev.card.summary}`;
-      setCardNarrationSubtitle(fallback);
-      await speakWithBrowserSpeech(fallback);
-    }
-  }, [openAiWithIntent]);
+    },
+    [runCardDocumentaryNarration],
+  );
 
-  const handleNarrateFigure = useCallback(async (fig: HistoricalFigure) => {
-    setCinemaMode(false);
-    stopActiveNarration();
-    setCardNarrationLoadingId(fig.id);
-    setCardNarratingId(fig.id);
-    setCardNarrationSubtitle('正在撰写并合成人物语音简介...');
-    try {
+  const handleNarrateFigure = useCallback(
+    async (fig: HistoricalFigure) => {
       const figEra = getEraForYear(fig.activeYear);
-      const clip = await generateNarration({
+      await runCardDocumentaryNarration({
+        itemId: fig.id,
         cacheKey: `fig:${fig.id}`,
         title: `${fig.name}（${fig.title}）`,
+        year: fig.activeYear,
         yearDisplay: fig.lifespanDisplay,
+        coords: fig.coords,
         eraName: figEra.name,
         regionLabel: REGION_META[fig.region].label,
         summary: fig.card.oneLiner,
+        geography: fig.card.eraContext,
         politics: fig.card.eraContext,
         economy: fig.card.coreContributions,
         consequence: fig.card.historicalImpact,
+        loadingMessage: '正在撰写人物纪录片分镜与语音简介...',
+        fallbackText: `${fig.name}，${fig.title}。${fig.card.oneLiner}`,
       });
-      setCardNarrationLoadingId(null);
-      setCardNarrationSubtitle(clip.script);
-      await playNarrationClip(clip);
-    } catch (err) {
-      setCardNarrationLoadingId(null);
-      if (err instanceof AiClientError && err.code === 'aborted') {
-        return;
-      }
-      if (
-        err instanceof AiClientError &&
-        (err.code === 'passcode_invalid' ||
-          err.code === 'passcode_unconfigured' ||
-          err.code === 'not_configured')
-      ) {
-        setCardNarratingId(null);
-        setCardNarrationSubtitle(null);
-        setAiUnlocked(false);
-        openAiWithIntent({ tab: 'tutor' });
-        return;
-      }
-      const fallback = `${fig.name}，${fig.title}。${fig.card.oneLiner}`;
-      setCardNarrationSubtitle(fallback);
-      await speakWithBrowserSpeech(fallback);
-    }
-  }, [openAiWithIntent]);
+    },
+    [runCardDocumentaryNarration],
+  );
 
   const countryFocus = useMemo<CountryFocusSpec | null>(() => {
     if (!activeCountry) return null;
@@ -1217,8 +1339,9 @@ export function App() {
             showLandmarks={showLandmarks}
             countryFocus={countryFocus}
             isCountryMode={Boolean(activeCountry)}
-            aiScene={!activeCountry ? (activeStoryboard?.steps[storyboardStepIdx] ?? null) : null}
+            aiScene={!activeCountry ? (cinemaScene ?? activeStoryboard?.steps[storyboardStepIdx] ?? null) : null}
             aiStageOpen={aiOpen}
+            cinemaTickerVisible={!activeCountry && !activeStoryline && tickerVisible && cinemaMode}
             flyTarget={flyTarget}
             onSelectEvent={(ev) => handleSelectEvent(ev)}
             onSelectFigure={(fig) => handleSelectFigure(fig)}
@@ -1257,12 +1380,16 @@ export function App() {
                 cinemaVoiceEnabled={cinemaVoiceEnabled}
                 narrationStatus={cinemaNarrationStatus}
                 narrationSubtitle={cinemaSubtitle}
+                narrationBeats={cinemaBeats}
+                activeBeatIndex={cinemaActiveBeatIdx}
                 onToggleCinemaVoice={() => {
                   setCinemaVoiceEnabled((prev) => {
                     const next = !prev;
                     if (!next) {
                       stopActiveNarration();
                       setCinemaNarrationStatus('idle');
+                      setCinemaBeats(null);
+                      setCinemaScene(null);
                     }
                     return next;
                   });
@@ -1272,6 +1399,8 @@ export function App() {
                   setIsPlaying(false);
                   setCinemaMode(false);
                   setRecentTriggerEventId(null);
+                  setCinemaBeats(null);
+                  setCinemaScene(null);
                   stopActiveNarration();
                 }}
                 onDismiss={() => setTickerVisible(false)}
@@ -1379,11 +1508,18 @@ export function App() {
                 narratingItemId={cardNarratingId}
                 narrationLoadingId={cardNarrationLoadingId}
                 narrationSubtitle={cardNarrationSubtitle}
+                narrationBeats={cardNarrationBeats}
+                activeBeatIndex={cardActiveBeatIdx}
+                onSelectNarrationBeat={(idx) => {
+                  setStoryboardPlaying(false);
+                  setStoryboardStepIdx(idx);
+                  setCardActiveBeatIdx(idx);
+                }}
                 onStopNarration={handleStopCardNarration}
                 suppressDesktop={aiOpen}
               />
 
-              {activeStoryboard && (
+              {!cinemaMode && activeStoryboard && (
                 <AiStageBar
                   storyboard={activeStoryboard}
                   stepIndex={storyboardStepIdx}

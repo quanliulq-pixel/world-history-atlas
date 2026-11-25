@@ -84,6 +84,23 @@ export interface AiTutorContext {
   } | null;
 }
 
+export type AiStoryboardSpotIcon =
+  | 'city'
+  | 'landmark'
+  | 'port'
+  | 'trade'
+  | 'military'
+  | 'culture'
+  | 'climate'
+  | 'ruler';
+
+export interface AiStoryboardZone {
+  center: [number, number];
+  radiusKm: number;
+  label?: string;
+  color: string;
+}
+
 export interface AiStoryboardFlow {
   from: [number, number];
   to: [number, number];
@@ -98,6 +115,7 @@ export interface AiStoryboardSpot {
   label: string;
   sublabel?: string;
   color: string;
+  icon?: AiStoryboardSpotIcon;
 }
 
 export interface AiStoryboardStep {
@@ -107,6 +125,9 @@ export interface AiStoryboardStep {
   year: number;
   center: [number, number];
   zoom: number;
+  bearing?: number;
+  pitch?: number;
+  zones?: AiStoryboardZone[];
   spots: AiStoryboardSpot[];
   flows: AiStoryboardFlow[];
 }
@@ -114,6 +135,17 @@ export interface AiStoryboardStep {
 export interface AiStoryboard {
   title: string;
   steps: AiStoryboardStep[];
+}
+
+export interface AiDocumentaryBeat {
+  title: string;
+  narration: string;
+}
+
+export interface AiDocumentaryPlan {
+  script: string;
+  beats: AiDocumentaryBeat[];
+  storyboard: AiStoryboard;
 }
 
 export interface AiChatMessage {
@@ -682,6 +714,78 @@ function base64WavToBlobUrl(b64: string): string {
   }
   const blob = new Blob([bytes], { type: 'audio/wav' });
   return URL.createObjectURL(blob);
+}
+
+const DOC_PLAN_CACHE_KEY = 'world-history-atlas:ai-doc-plans:v1';
+const docPlanMemoryCache = new Map<string, AiDocumentaryPlan>();
+
+export async function generateDocumentaryPlan(params: {
+  cacheKey: string;
+  title: string;
+  year: number;
+  yearDisplay?: string;
+  coords: [number, number];
+  eraName?: string;
+  subPeriodName?: string;
+  regionLabel?: string;
+  summary: string;
+  geography?: string;
+  politics?: string;
+  economy?: string;
+  culture?: string;
+  consequence?: string;
+  signal?: AbortSignal;
+}): Promise<AiDocumentaryPlan> {
+  const memHit = docPlanMemoryCache.get(params.cacheKey);
+  if (memHit) return memHit;
+
+  const stored = readCacheList<AiDocumentaryPlan>(DOC_PLAN_CACHE_KEY).find(
+    (entry) => entry.key === params.cacheKey,
+  );
+  if (stored?.data?.beats?.length && stored.data?.storyboard?.steps?.length) {
+    docPlanMemoryCache.set(params.cacheKey, stored.data);
+    return stored.data;
+  }
+
+  const res = await apiJson<{
+    script: string;
+    beats: AiDocumentaryBeat[];
+    storyboard: AiStoryboard;
+    usage?: AiUsageMeta;
+  }>('/api/ai/narrate', {
+    method: 'POST',
+    signal: params.signal,
+    body: {
+      withStoryboard: true,
+      title: params.title,
+      year: params.year,
+      yearDisplay: params.yearDisplay,
+      coords: params.coords,
+      eraName: params.eraName,
+      subPeriodName: params.subPeriodName,
+      regionLabel: params.regionLabel,
+      summary: params.summary,
+      geography: params.geography,
+      politics: params.politics,
+      economy: params.economy,
+      culture: params.culture,
+      consequence: params.consequence,
+    },
+  });
+
+  const plan: AiDocumentaryPlan = {
+    script: res.script,
+    beats: Array.isArray(res.beats) ? res.beats : [],
+    storyboard: res.storyboard,
+  };
+  docPlanMemoryCache.set(params.cacheKey, plan);
+  writeCacheEntry(DOC_PLAN_CACHE_KEY, 40, {
+    key: params.cacheKey,
+    label: params.title,
+    ts: Date.now(),
+    data: plan,
+  });
+  return plan;
 }
 
 export async function generateNarration(params: {

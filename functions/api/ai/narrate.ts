@@ -5,24 +5,35 @@ import {
   checkRateLimit,
   DEFAULT_TEXT_MODEL,
   DEFAULT_TTS_MODEL,
+  extractJson,
   jsonResponse,
   parseJsonBody,
   sanitizeVoiceName,
   type GeminiUsage,
   type PagesCtx,
 } from '../../_shared/gemini';
+import {
+  DOCUMENTARY_NARRATION_SCHEMA,
+  sanitizeCoords,
+  sanitizeDocumentaryPlan,
+  type DocumentaryPlan,
+} from '../../_shared/storyboard';
 
 interface NarrateRequestBody {
   mode?: 'script-and-audio' | 'audio-only';
+  withStoryboard?: boolean;
   script?: string;
   voiceName?: string;
   preferBrowserTts?: boolean;
   title?: string;
+  year?: number;
   yearDisplay?: string;
+  coords?: [number, number];
   eraName?: string;
   subPeriodName?: string;
   regionLabel?: string;
   summary?: string;
+  geography?: string;
   politics?: string;
   economy?: string;
   culture?: string;
@@ -49,6 +60,120 @@ export const onRequestPost = async (context: PagesCtx): Promise<Response> => {
   let script = (body.script || '').trim().slice(0, 600);
 
   try {
+    if (!script && body.withStoryboard) {
+      const title = (body.title || '').trim().slice(0, 120);
+      const summary = (body.summary || '').trim().slice(0, 400);
+      if (!title || !summary) {
+        return jsonResponse({ error: '缺少解说标题或摘要内容' }, 400);
+      }
+
+      const fallbackCoords = sanitizeCoords(body.coords) || [35, 25];
+      const fallbackYear = Number.isFinite(Number(body.year))
+        ? Math.max(-3000, Math.min(2025, Math.round(Number(body.year))))
+        : 1492;
+
+      const systemInstruction = [
+        '你是 BBC / Vox 风格的历史纪录片导演与撰稿人，负责为《世界通史时空图谱》制作“旁白与左侧动态地图同步分镜”（恰好 3 幕 beats）。',
+        '严格遵守以下创作与空间同步原则：',
+        '1. `beats` 必须恰好为 3 幕（第 1 幕：核心地理舞台与制度/起源；第 2 幕：关键商贸、传播、军事或技术流向动态；第 3 幕：历史转折、衰退/变迁或深远辐射后果）。',
+        '2. 每幕 `narration`（36-58 字纯中文纪录片口播散文，禁止 Markdown 星号、括号注释或舞台提示）写完后，立刻为其配置精准贴合该句字面内容的 `center`、`zoom`、`bearing`（-24 到 24 度轻微运镜偏航）、`pitch`（16 到 32 度三维俯仰）、`zones`、`spots`、`flows`：',
+        '   - **禁止画面空洞或与旁白无关**：旁白提到哪条河流、海域、都城、关隘、矿山或航线，地图的 `spots`、`zones` 和 `flows` 就必须用真实 `[经度, 纬度]` 标出对应位置与流向箭头！',
+        '   - 第 1 幕优先拉近核心区域（`zoom 3.3-4.6`），配 1 个地理/文明影响光圈 `zones`（`radiusKm: 180-950`）、2 个带 `icon`（`city|landmark|port|trade|military|culture|climate|ruler`）的关键 `spots`，以及 1 条内部联动流向 `flows`。',
+        '   - 第 2 幕配合跨区往来、远征或传播，配置 1-2 条明确有起止方向和简短中文 `label`（8字以内）的 `flows`（`kind: trade|diffusion|military|voyage|influence`，仅互惠贸易用 `bidirectional: true`）。',
+        '   - 第 3 幕体现结构转变、气候/危机或制度遗产辐射，可用对比色彩（如 `#E11D48` 危机/迁徙、`#10B981` 生态/经济、`#8B5CF6` 文化扩散、`#D97706` 帝国枢纽）的 `zones` 与扩散 `flows`。',
+        '3. 3 幕年份 `year` 可小幅推进或聚焦核心年份（如起源年 → 鼎盛/高潮年 → 衰落/深远影响年）。',
+      ].join('\n');
+
+      const prompt = [
+        `条目：《${title}》`,
+        body.yearDisplay ? `年代：${body.yearDisplay}` : `公元年份：${fallbackYear}`,
+        `主坐标：[${fallbackCoords[0]}, ${fallbackCoords[1]}]`,
+        body.eraName ? `时代：${body.eraName}${body.subPeriodName ? ` · ${body.subPeriodName}` : ''}` : '',
+        body.regionLabel ? `区域：${body.regionLabel}` : '',
+        `核心摘要：${summary}`,
+        body.geography ? `地缘与自然条件：${body.geography.slice(0, 220)}` : '',
+        body.politics ? `政治与制度：${body.politics.slice(0, 180)}` : '',
+        body.economy ? `经济与贸易：${body.economy.slice(0, 180)}` : '',
+        body.culture ? `文化与思想：${body.culture.slice(0, 160)}` : '',
+        body.consequence ? `历史后果：${body.consequence.slice(0, 180)}` : '',
+      ]
+        .filter(Boolean)
+        .join('\n');
+
+      const textRes = await callGeminiText(auth.apiKey, textModel, {
+        systemInstruction,
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        temperature: 0.6,
+        maxOutputTokens: 2600,
+        responseMimeType: 'application/json',
+        responseSchema: DOCUMENTARY_NARRATION_SCHEMA,
+      });
+
+      usage.promptTokens += textRes.usage.promptTokens;
+      usage.outputTokens += textRes.usage.outputTokens;
+
+      let plan: DocumentaryPlan | null = null;
+      try {
+        const parsed = extractJson<unknown>(textRes.text);
+        plan = sanitizeDocumentaryPlan(parsed, title, fallbackYear, fallbackCoords);
+      } catch {
+        plan = null;
+      }
+
+      if (!plan) {
+        const fallbackNarration = `${body.yearDisplay ? `${body.yearDisplay}，` : ''}${title}。${summary}`.slice(
+          0,
+          120,
+        );
+        plan = {
+          script: fallbackNarration,
+          beats: [{ title, narration: fallbackNarration }],
+          storyboard: {
+            title,
+            steps: [
+              {
+                title,
+                caption: fallbackNarration,
+                matchSnippet: fallbackNarration.slice(0, 18),
+                year: fallbackYear,
+                center: fallbackCoords,
+                zoom: 3.4,
+                bearing: 0,
+                pitch: 20,
+                zones: [
+                  {
+                    center: fallbackCoords,
+                    radiusKm: 420,
+                    label: body.regionLabel || title.slice(0, 10),
+                    color: '#D97706',
+                  },
+                ],
+                spots: [
+                  {
+                    coords: fallbackCoords,
+                    label: title.slice(0, 14),
+                    color: '#D97706',
+                    icon: 'landmark',
+                  },
+                ],
+                flows: [],
+              },
+            ],
+          },
+        };
+      }
+
+      return jsonResponse({
+        script: plan.script,
+        beats: plan.beats,
+        storyboard: plan.storyboard,
+        audioBase64Wav: null,
+        mimeType: null,
+        ttsFallback: false,
+        usage,
+      });
+    }
+
     if (!script) {
       const title = (body.title || '').trim().slice(0, 120);
       const summary = (body.summary || '').trim().slice(0, 400);

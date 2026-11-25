@@ -13,14 +13,17 @@ import type {
   ProjectionMode,
   ThemeMode,
 } from '../types/history';
-import type { AiStoryboardStep } from '../utils/aiClient';
+import type { AiStoryboardFlow, AiStoryboardSpotIcon, AiStoryboardStep } from '../utils/aiClient';
 import {
   buildCausalArc,
+  buildGeodesicCirclePolygon,
   buildGraticuleGeoJSON,
   buildSmoothRouteLine,
+  computePolylineBearingAt,
   computePolylineLengths,
   samplePolylineAt,
   slicePolylineByFraction,
+  slicePolylineWindow,
 } from '../utils/geo';
 import type { DecodedSnapshot, PhysicalAtlasData } from '../utils/snapshotLoader';
 
@@ -65,11 +68,13 @@ interface WorldMapProps {
   isCountryMode?: boolean;
   aiScene?: AiStoryboardStep | null;
   aiStageOpen?: boolean;
+  cinemaTickerVisible?: boolean;
   flyTarget: {
     center: [number, number];
     zoom: number;
     exactZoom?: boolean;
     pitch?: number;
+    bearing?: number;
     duration?: number;
     nonce: number;
   } | null;
@@ -82,6 +87,38 @@ interface WorldMapProps {
 const EMPTY_FC: GeoJSON.FeatureCollection = { type: 'FeatureCollection', features: [] };
 const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
 const NONE_FILTER: maplibregl.FilterSpecification = ['==', ['get', 'zhName'], '__none__'];
+
+const FLOW_KIND_TAG: Record<AiStoryboardFlow['kind'], string> = {
+  trade: '商',
+  voyage: '航',
+  military: '军',
+  diffusion: '传',
+  influence: '脉',
+};
+
+function createSpotIconSvg(icon?: AiStoryboardSpotIcon): string {
+  const pathMap: Record<AiStoryboardSpotIcon, string> = {
+    city: '<path d="M3 10h8M4 10V5l2-1.5L8 5v5M8 7h2v3" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round" fill="none"/>',
+    landmark:
+      '<path d="M2.5 10h9M3.5 10V6M6 10V6M8.5 10V6M10.5 10V6M2.5 6l4-3.2L10.5 6z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>',
+    port: '<path d="M6 2.5v6.5M4 4.5h4M3 8a3.2 3.2 0 0 0 6 0" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" fill="none"/>',
+    trade:
+      '<path d="M2.5 5h6.5L7.3 3.3M9.5 7H3l1.7 1.7" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round" fill="none"/>',
+    military:
+      '<path d="M3 9L9.5 2.5M7.5 2.5h2v2M4 6.5l1.5 1.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>',
+    culture:
+      '<path d="M2.5 3.5h3c.8 0 1.5.7 1.5 1.5v5c-.5-.5-1.1-.8-1.8-.8H2.5V3.5zm9 0h-3c-.8 0-1.5.7-1.5 1.5v5c.5-.5 1.1-.8 1.8-.8h2.7V3.5z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" fill="none"/>',
+    climate:
+      '<path d="M2.5 5.2c1.2-.9 2.3-.9 3.5 0s2.3.9 3.5 0M2.5 8.2c1.2-.9 2.3-.9 3.5 0s2.3.9 3.5 0" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" fill="none"/>',
+    ruler:
+      '<path d="M2.5 8.5L3.3 4l2.2 1.8L6 3l.5 2.8L8.7 4l.8 4.5z" stroke="currentColor" stroke-width="1.25" stroke-linejoin="round" fill="none"/>',
+  };
+  const body =
+    icon && pathMap[icon]
+      ? pathMap[icon]
+      : '<circle cx="6" cy="6" r="2.2" fill="currentColor"/>';
+  return `<svg viewBox="0 0 12 12" width="11" height="11" style="display:block;color:#FFFFFF;">${body}</svg>`;
+}
 
 function buildCountryFocusFilter(
   focus: CountryFocusSpec | null | undefined,
@@ -167,6 +204,7 @@ export function WorldMap({
   isCountryMode = false,
   aiScene = null,
   aiStageOpen = false,
+  cinemaTickerVisible = false,
   flyTarget,
   onSelectEvent,
   onSelectFigure,
@@ -181,10 +219,16 @@ export function WorldMap({
   const figureMarkersRef = useRef<
     Map<string, { marker: maplibregl.Marker; el: HTMLButtonElement; coords: [number, number] }>
   >(new Map());
+  const aiZoneMarkersRef = useRef<
+    Map<string, { marker: maplibregl.Marker; el: HTMLElement; coords: [number, number] }>
+  >(new Map());
   const aiSpotMarkersRef = useRef<
     Map<string, { marker: maplibregl.Marker; el: HTMLElement; coords: [number, number] }>
   >(new Map());
   const aiFlowMarkersRef = useRef<
+    Map<string, { marker: maplibregl.Marker; el: HTMLElement; coords: [number, number] }>
+  >(new Map());
+  const aiFlowArrowMarkersRef = useRef<
     Map<string, { marker: maplibregl.Marker; el: HTMLElement; coords: [number, number] }>
   >(new Map());
   const [mapReady, setMapReady] = useState(false);
@@ -222,6 +266,8 @@ export function WorldMap({
   showLandmarksRef.current = showLandmarks;
   const aiStageOpenRef = useRef(aiStageOpen);
   aiStageOpenRef.current = aiStageOpen;
+  const cinemaTickerVisibleRef = useRef(cinemaTickerVisible);
+  cinemaTickerVisibleRef.current = cinemaTickerVisible;
   const pointerOverMarkerRef = useRef(false);
 
   const syncGlobeMarkerVisibility = useCallback((map: maplibregl.Map) => {
@@ -236,8 +282,10 @@ export function WorldMap({
     for (const markerMap of [
       markersRef.current,
       figureMarkersRef.current,
+      aiZoneMarkersRef.current,
       aiSpotMarkersRef.current,
       aiFlowMarkersRef.current,
+      aiFlowArrowMarkersRef.current,
     ]) {
       for (const entry of markerMap.values()) {
         if (!isGlobe) {
@@ -505,7 +553,9 @@ export function WorldMap({
         'causal-arcs': { type: 'geojson', data: EMPTY_FC },
         'causal-particles': { type: 'geojson', data: EMPTY_FC },
         'causal-points': { type: 'geojson', data: EMPTY_FC },
+        'ai-zones': { type: 'geojson', data: EMPTY_FC },
         'ai-flows': { type: 'geojson', data: EMPTY_FC },
+        'ai-flow-comets': { type: 'geojson', data: EMPTY_FC },
         'ai-flow-particles': { type: 'geojson', data: EMPTY_FC },
       },
       layers: [
@@ -889,15 +939,36 @@ export function WorldMap({
           },
         },
         {
+          id: 'ai-zones-fill',
+          type: 'fill',
+          source: 'ai-zones',
+          paint: {
+            'fill-color': ['get', 'color'],
+            'fill-opacity': ['get', 'opacity'],
+          },
+        },
+        {
+          id: 'ai-zones-outline',
+          type: 'line',
+          source: 'ai-zones',
+          layout: { 'line-join': 'round', 'line-cap': 'round' },
+          paint: {
+            'line-color': ['get', 'color'],
+            'line-width': 2,
+            'line-dasharray': [3, 2],
+            'line-opacity': 0.78,
+          },
+        },
+        {
           id: 'ai-flows-glow',
           type: 'line',
           source: 'ai-flows',
           layout: { 'line-cap': 'round', 'line-join': 'round' },
           paint: {
             'line-color': ['get', 'color'],
-            'line-width': 10,
-            'line-opacity': 0.28,
-            'line-blur': 3,
+            'line-width': 11,
+            'line-opacity': 0.24,
+            'line-blur': 3.5,
           },
         },
         {
@@ -907,9 +978,31 @@ export function WorldMap({
           layout: { 'line-cap': 'round', 'line-join': 'round' },
           paint: {
             'line-color': ['get', 'color'],
-            'line-width': 3.4,
-            'line-dasharray': [2.4, 1.2],
-            'line-opacity': 0.96,
+            'line-width': ['match', ['get', 'kind'], 'military', 4.2, 'voyage', 3.4, 3.6],
+            'line-opacity': 0.94,
+          },
+        },
+        {
+          id: 'ai-flow-comets-glow',
+          type: 'line',
+          source: 'ai-flow-comets',
+          layout: { 'line-cap': 'round', 'line-join': 'round' },
+          paint: {
+            'line-color': ['get', 'color'],
+            'line-width': 9,
+            'line-blur': 3.5,
+            'line-opacity': 0.52,
+          },
+        },
+        {
+          id: 'ai-flow-comets-core',
+          type: 'line',
+          source: 'ai-flow-comets',
+          layout: { 'line-cap': 'round', 'line-join': 'round' },
+          paint: {
+            'line-color': '#FFFDF5',
+            'line-width': 3.2,
+            'line-opacity': 0.94,
           },
         },
         {
@@ -1260,6 +1353,10 @@ export function WorldMap({
         marker.remove();
       }
       figureMarkersRef.current.clear();
+      for (const { marker } of aiZoneMarkersRef.current.values()) {
+        marker.remove();
+      }
+      aiZoneMarkersRef.current.clear();
       for (const { marker } of aiSpotMarkersRef.current.values()) {
         marker.remove();
       }
@@ -1268,6 +1365,10 @@ export function WorldMap({
         marker.remove();
       }
       aiFlowMarkersRef.current.clear();
+      for (const { marker } of aiFlowArrowMarkersRef.current.values()) {
+        marker.remove();
+      }
+      aiFlowArrowMarkersRef.current.clear();
       map.remove();
       mapRef.current = null;
       setMapReady(false);
@@ -1684,60 +1785,124 @@ export function WorldMap({
     return () => window.cancelAnimationFrame(rafId);
   }, [routesRenderMeta, causalGeoJSON, isPlaying, mapReady]);
 
-  // Animate active AI storyboard scene (progressive glowing arcs + flowing particles + pulse beacons + midpoint labels)
+  // Animate active AI storyboard scene (zones + staggered SVG hotspots + progressive arcs + rotating 3D arrowheads + comets + arrival rings)
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady) return;
 
+    const arrivalMarkers: maplibregl.Marker[] = [];
+
     const clearMarkers = () => {
+      for (const { marker } of aiZoneMarkersRef.current.values()) marker.remove();
+      aiZoneMarkersRef.current.clear();
       for (const { marker } of aiSpotMarkersRef.current.values()) marker.remove();
       aiSpotMarkersRef.current.clear();
       for (const { marker } of aiFlowMarkersRef.current.values()) marker.remove();
       aiFlowMarkersRef.current.clear();
+      for (const { marker } of aiFlowArrowMarkersRef.current.values()) marker.remove();
+      aiFlowArrowMarkersRef.current.clear();
+      for (const m of arrivalMarkers) m.remove();
+      arrivalMarkers.length = 0;
     };
 
+    const zonesSrc = map.getSource('ai-zones') as maplibregl.GeoJSONSource | undefined;
     const flowsSrc = map.getSource('ai-flows') as maplibregl.GeoJSONSource | undefined;
+    const cometsSrc = map.getSource('ai-flow-comets') as maplibregl.GeoJSONSource | undefined;
     const particlesSrc = map.getSource('ai-flow-particles') as maplibregl.GeoJSONSource | undefined;
+
+    try {
+      map.setPaintProperty(
+        'historical-routes-line',
+        'line-opacity',
+        aiScene ? 0.32 : (['case', ['==', ['get', 'focused'], 1], 0.96, 0.78] as maplibregl.ExpressionSpecification),
+      );
+      map.setPaintProperty(
+        'historical-routes-glow',
+        'line-opacity',
+        aiScene ? 0.08 : (['case', ['==', ['get', 'focused'], 1], 0.38, 0.18] as maplibregl.ExpressionSpecification),
+      );
+    } catch {
+      // Ignore transient style swaps
+    }
 
     clearMarkers();
     if (!aiScene) {
+      zonesSrc?.setData(EMPTY_FC);
       flowsSrc?.setData(EMPTY_FC);
+      cometsSrc?.setData(EMPTY_FC);
       particlesSrc?.setData(EMPTY_FC);
       return;
     }
 
     const isDark = theme === 'obsidian';
+    const zones = aiScene.zones || [];
 
-    // Build safe DOM pulse beacons for storyboard hotspots
+    // 1. Place northern-rim zone labels cleanly above geodesic influence circles
+    zones.forEach((zone, idx) => {
+      if (!zone.label) return;
+      const latOffset = (zone.radiusKm / 111.32) * 0.78;
+      const labelCoords: [number, number] = [zone.center[0], Math.min(80, zone.center[1] + latOffset)];
+      const wrap = document.createElement('div');
+      wrap.className = 'pointer-events-none select-none';
+      const badge = document.createElement('div');
+      badge.className =
+        'atlas-flow-badge-enter rounded-full px-2 py-0.5 text-[10px] font-bold shadow-md whitespace-nowrap';
+      badge.style.animationDelay = `${idx * 160}ms`;
+      badge.style.backgroundColor = isDark ? 'rgba(18, 28, 40, 0.90)' : 'rgba(251, 248, 241, 0.92)';
+      badge.style.color = zone.color;
+      badge.style.border = `1px dashed ${zone.color}`;
+      badge.textContent = zone.label;
+      wrap.appendChild(badge);
+      const marker = new maplibregl.Marker({ element: wrap, anchor: 'center' })
+        .setLngLat(labelCoords)
+        .addTo(map);
+      aiZoneMarkersRef.current.set(`zone-${idx}`, { marker, el: wrap, coords: labelCoords });
+    });
+
+    // 2. Build staggered icon hotspots with anti-overlap label alternating
     aiScene.spots.forEach((spot, idx) => {
+      const placeAbove = aiScene.spots.some(
+        (prev, pIdx) =>
+          pIdx < idx &&
+          Math.hypot(spot.coords[0] - prev.coords[0], spot.coords[1] - prev.coords[1]) < 4.5,
+      );
+
       const wrap = document.createElement('div');
       wrap.className = 'pointer-events-none relative flex items-center justify-center select-none';
-      wrap.style.width = '36px';
-      wrap.style.height = '36px';
+      wrap.style.width = '40px';
+      wrap.style.height = '40px';
+
+      const anim = document.createElement('div');
+      anim.className = 'atlas-spot-enter relative flex items-center justify-center';
+      anim.style.width = '40px';
+      anim.style.height = '40px';
+      anim.style.animationDelay = `${idx * 150}ms`;
 
       const sw1 = document.createElement('span');
       sw1.className = 'atlas-shockwave absolute left-1/2 top-1/2 rounded-full';
-      sw1.style.width = '28px';
-      sw1.style.height = '28px';
+      sw1.style.width = '30px';
+      sw1.style.height = '30px';
       sw1.style.border = `2.2px solid ${spot.color}`;
       sw1.style.background = `${spot.color}28`;
 
       const sw2 = document.createElement('span');
       sw2.className = 'atlas-shockwave-delayed absolute left-1/2 top-1/2 rounded-full';
-      sw2.style.width = '28px';
-      sw2.style.height = '28px';
+      sw2.style.width = '30px';
+      sw2.style.height = '30px';
       sw2.style.border = `1.8px solid ${spot.color}`;
 
       const dot = document.createElement('span');
-      dot.className = 'relative block rounded-full shadow-lg';
-      dot.style.width = '14px';
-      dot.style.height = '14px';
+      dot.className = 'relative flex items-center justify-center rounded-full shadow-lg';
+      dot.style.width = '22px';
+      dot.style.height = '22px';
       dot.style.backgroundColor = spot.color;
-      dot.style.border = '2.5px solid #FFFFFF';
+      dot.style.border = '2px solid #FFFFFF';
+      dot.innerHTML = createSpotIconSvg(spot.icon);
 
       const pill = document.createElement('div');
-      pill.className =
-        'absolute left-1/2 top-full mt-1 -translate-x-1/2 whitespace-nowrap rounded-lg px-2 py-0.5 text-[11px] font-bold shadow-md';
+      pill.className = `absolute left-1/2 ${
+        placeAbove ? 'bottom-full mb-1' : 'top-full mt-1'
+      } -translate-x-1/2 whitespace-nowrap rounded-lg px-2 py-0.5 text-[11px] font-bold shadow-md`;
       pill.style.backgroundColor = isDark ? 'rgba(18, 28, 40, 0.94)' : 'rgba(251, 248, 241, 0.95)';
       pill.style.color = isDark ? '#EEF2F7' : '#1F1A14';
       pill.style.border = `1.5px solid ${spot.color}`;
@@ -1756,37 +1921,83 @@ export function WorldMap({
         pill.appendChild(sub);
       }
 
-      wrap.append(sw1, sw2, dot, pill);
+      anim.append(sw1, sw2, dot, pill);
+      wrap.appendChild(anim);
       const marker = new maplibregl.Marker({ element: wrap, anchor: 'center' })
         .setLngLat(spot.coords)
         .addTo(map);
       aiSpotMarkersRef.current.set(`spot-${idx}`, { marker, el: wrap, coords: spot.coords });
     });
 
-    // Build safe DOM midpoint route labels for animated flows
+    // 3. Build kind-tagged flow badges + 3D map-aligned rotating directional arrowheads
+    const flowBadgeEls = new Map<string, HTMLDivElement>();
+    const flowArrows = new Map<
+      string,
+      { fwd: maplibregl.Marker; rev?: maplibregl.Marker }
+    >();
+
+    const createArrowMarker = (color: string, startCoords: [number, number]) => {
+      const el = document.createElement('div');
+      el.className = 'pointer-events-none select-none';
+      el.style.width = '15px';
+      el.style.height = '15px';
+      el.innerHTML = `<svg viewBox="0 0 14 14" width="15" height="15" style="display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.48));"><path d="M7 1.2 L12.5 12.2 L7 9.4 L1.5 12.2 Z" fill="${color}" stroke="#FFFFFF" stroke-width="1.35" stroke-linejoin="round"/></svg>`;
+      return new maplibregl.Marker({
+        element: el,
+        anchor: 'center',
+        rotationAlignment: 'map',
+        pitchAlignment: 'map',
+      })
+        .setLngLat(startCoords)
+        .addTo(map);
+    };
+
     aiFlowsMeta.forEach((meta) => {
+      const fwdCoords = samplePolylineAt(meta.coords, meta.cum, 0.88);
+      const fwdBearing = computePolylineBearingAt(meta.coords, meta.cum, 0.88, false);
+      const fwdMarker = createArrowMarker(meta.flow.color, fwdCoords).setRotation(fwdBearing);
+      aiFlowArrowMarkersRef.current.set(`${meta.id}-fwd`, {
+        marker: fwdMarker,
+        el: fwdMarker.getElement(),
+        coords: fwdCoords,
+      });
+
+      let revMarker: maplibregl.Marker | undefined;
+      if (meta.flow.bidirectional) {
+        const revCoords = samplePolylineAt(meta.coords, meta.cum, 0.12);
+        const revBearing = computePolylineBearingAt(meta.coords, meta.cum, 0.12, true);
+        revMarker = createArrowMarker(meta.flow.color, revCoords).setRotation(revBearing);
+        aiFlowArrowMarkersRef.current.set(`${meta.id}-rev`, {
+          marker: revMarker,
+          el: revMarker.getElement(),
+          coords: revCoords,
+        });
+      }
+      flowArrows.set(meta.id, { fwd: fwdMarker, rev: revMarker });
+
       if (!meta.flow.label) return;
       const badge = document.createElement('div');
       badge.className =
-        'pointer-events-none inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-bold shadow-md';
+        'pointer-events-none inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-bold shadow-md transition-opacity duration-200';
       badge.style.backgroundColor = isDark ? 'rgba(18, 28, 40, 0.92)' : 'rgba(255, 252, 245, 0.94)';
       badge.style.color = isDark ? '#F1F5F9' : '#1F1A14';
       badge.style.border = `1.2px solid ${meta.flow.color}`;
 
-      const dot = document.createElement('span');
-      dot.className = 'inline-block rounded-full shrink-0';
-      dot.style.width = '6px';
-      dot.style.height = '6px';
-      dot.style.backgroundColor = meta.flow.color;
+      const tag = document.createElement('span');
+      tag.className =
+        'inline-flex h-3.5 w-3.5 items-center justify-center rounded-full text-[8.5px] font-bold text-white shrink-0';
+      tag.style.backgroundColor = meta.flow.color;
+      tag.textContent = FLOW_KIND_TAG[meta.flow.kind] || '脉';
 
       const txt = document.createElement('span');
       txt.textContent = meta.flow.label;
 
-      badge.append(dot, txt);
+      badge.append(tag, txt);
       const marker = new maplibregl.Marker({ element: badge, anchor: 'center' })
         .setLngLat(meta.midpoint)
         .addTo(map);
       aiFlowMarkersRef.current.set(meta.id, { marker, el: badge, coords: meta.midpoint });
+      flowBadgeEls.set(meta.id, badge);
     });
 
     syncGlobeMarkerVisibility(map);
@@ -1795,61 +2006,174 @@ export function WorldMap({
       typeof window !== 'undefined' &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    if (aiFlowsMeta.length === 0) {
-      flowsSrc?.setData(EMPTY_FC);
-      particlesSrc?.setData(EMPTY_FC);
-      return () => {
-        clearMarkers();
-      };
-    }
-
     if (reducedMotion) {
+      zonesSrc?.setData({
+        type: 'FeatureCollection',
+        features: zones.map((z) => ({
+          type: 'Feature',
+          properties: { color: z.color, opacity: isDark ? 0.22 : 0.17 },
+          geometry: { type: 'Polygon', coordinates: [buildGeodesicCirclePolygon(z.center, z.radiusKm, 48)] },
+        })),
+      });
       flowsSrc?.setData({
         type: 'FeatureCollection',
         features: aiFlowsMeta.map((m) => ({
           type: 'Feature',
-          properties: { color: m.flow.color },
+          properties: { color: m.flow.color, kind: m.flow.kind },
           geometry: { type: 'LineString', coordinates: m.coords },
         })),
       });
+      cometsSrc?.setData(EMPTY_FC);
       particlesSrc?.setData(EMPTY_FC);
       return () => {
         clearMarkers();
+        zonesSrc?.setData(EMPTY_FC);
         flowsSrc?.setData(EMPTY_FC);
+        cometsSrc?.setData(EMPTY_FC);
       };
+    }
+
+    // Initially hide flow badges until their arc reaches halfway across
+    for (const badge of flowBadgeEls.values()) {
+      badge.style.opacity = '0';
     }
 
     let rafId = 0;
     let lastDraw = 0;
     const startMs = performance.now();
-    const revealDuration = 950;
+    const zoneDuration = 720;
+    const revealDuration = 1000;
+    const arrivedFlows = new Set<string>();
+    const revealedBadges = new Set<string>();
 
-    const tickAiFlows = (now: number) => {
+    const spawnArrivalBurst = (coords: [number, number], color: string) => {
+      if (!mapRef.current) return;
+      const el = document.createElement('div');
+      el.className = 'pointer-events-none relative select-none';
+      el.style.width = '38px';
+      el.style.height = '38px';
+      const ring = document.createElement('span');
+      ring.className = 'atlas-arrival-ring absolute left-1/2 top-1/2 rounded-full';
+      ring.style.width = '28px';
+      ring.style.height = '28px';
+      ring.style.border = `2.5px solid ${color}`;
+      ring.style.background = `${color}22`;
+      el.appendChild(ring);
+      const m = new maplibregl.Marker({ element: el, anchor: 'center' })
+        .setLngLat(coords)
+        .addTo(mapRef.current);
+      arrivalMarkers.push(m);
+    };
+
+    const tickAiScene = (now: number) => {
       if (!mapRef.current) return;
       if (document.hidden || now - lastDraw < 33) {
-        rafId = window.requestAnimationFrame(tickAiFlows);
+        rafId = window.requestAnimationFrame(tickAiScene);
         return;
       }
       lastDraw = now;
+      const elapsed = now - startMs;
 
-      const rawReveal = Math.max(0.06, Math.min(1, (now - startMs) / revealDuration));
-      const revealFrac = 1 - Math.pow(1 - rawReveal, 3);
+      // Update geodesic influence zones
+      if (zones.length > 0 && zonesSrc) {
+        const zRaw = clamp01(elapsed / zoneDuration);
+        const zEase = 1 - Math.pow(1 - zRaw, 3);
+        const breathe = zRaw >= 1 ? 1 + 0.03 * Math.sin(now * 0.003) : 1;
+        const radiusScale = (0.28 + 0.72 * zEase) * breathe;
+        zonesSrc.setData({
+          type: 'FeatureCollection',
+          features: zones.map((z) => ({
+            type: 'Feature',
+            properties: {
+              color: z.color,
+              opacity: (isDark ? 0.22 : 0.17) * (0.45 + 0.55 * zEase),
+            },
+            geometry: {
+              type: 'Polygon',
+              coordinates: [buildGeodesicCirclePolygon(z.center, z.radiusKm * radiusScale, 48)],
+            },
+          })),
+        });
+      }
+
+      if (aiFlowsMeta.length === 0) {
+        if (elapsed < zoneDuration + 180 || zones.length > 0) {
+          rafId = window.requestAnimationFrame(tickAiScene);
+        }
+        return;
+      }
 
       const flowFeatures: GeoJSON.Feature[] = [];
+      const cometFeatures: GeoJSON.Feature[] = [];
       const particleFeatures: GeoJSON.Feature<GeoJSON.Point>[] = [];
       const phase = ((now * 0.00038) % 1 + 1) % 1;
 
-      for (const m of aiFlowsMeta) {
+      aiFlowsMeta.forEach((m, idx) => {
+        const flowDelay = idx * 240;
+        const rawReveal = clamp01((elapsed - flowDelay) / revealDuration);
+        const revealFrac = rawReveal <= 0 ? 0.02 : Math.max(0.02, 1 - Math.pow(1 - rawReveal, 3));
+
         const revealed =
           revealFrac >= 0.999 ? m.coords : slicePolylineByFraction(m.coords, m.cum, revealFrac);
         flowFeatures.push({
           type: 'Feature',
-          properties: { color: m.flow.color },
+          properties: { color: m.flow.color, kind: m.flow.kind },
           geometry: { type: 'LineString', coordinates: revealed },
         });
 
-        for (let i = 0; i < 4; i++) {
-          const f = ((phase + i * 0.25) % 1) * revealFrac;
+        // Move rotating directional arrowheads cleanly along the arc tip -> seated final anchor
+        const arrowPair = flowArrows.get(m.id);
+        if (arrowPair) {
+          const arrowFrac = revealFrac < 0.98 ? revealFrac : 0.88;
+          const arrowPos = samplePolylineAt(m.coords, m.cum, arrowFrac);
+          const arrowBearing = computePolylineBearingAt(m.coords, m.cum, arrowFrac, false);
+          arrowPair.fwd.setLngLat(arrowPos).setRotation(arrowBearing);
+          arrowPair.fwd.getElement().style.opacity = rawReveal > 0.02 ? '1' : '0';
+
+          if (arrowPair.rev) {
+            arrowPair.rev.getElement().style.opacity = revealFrac > 0.35 ? '1' : '0';
+          }
+        }
+
+        // Reveal midpoint badge at 45% arc draw-in
+        if (revealFrac >= 0.45 && !revealedBadges.has(m.id)) {
+          revealedBadges.add(m.id);
+          const badge = flowBadgeEls.get(m.id);
+          if (badge) {
+            badge.style.opacity = '1';
+            badge.classList.add('atlas-flow-badge-enter');
+          }
+        }
+
+        // Trigger destination arrival shockwave ring once when flow lands
+        if (revealFrac >= 0.96 && !arrivedFlows.has(m.id)) {
+          arrivedFlows.add(m.id);
+          const dest = m.coords[m.coords.length - 1];
+          if (dest) {
+            spawnArrivalBurst(dest, m.flow.color);
+          }
+        }
+
+        // Flowing luminous comet tails & particles along revealed segments
+        if (revealFrac > 0.16) {
+          for (let cIdx = 0; cIdx < 2; cIdx++) {
+            const head = ((phase + cIdx * 0.5) % 1) * revealFrac;
+            const tail = Math.max(0, head - 0.16 * revealFrac);
+            if (head > tail + 0.01) {
+              const cometSeg = slicePolylineWindow(m.coords, m.cum, tail, head);
+              if (cometSeg.length >= 2) {
+                cometFeatures.push({
+                  type: 'Feature',
+                  properties: { color: m.flow.color },
+                  geometry: { type: 'LineString', coordinates: cometSeg },
+                });
+              }
+            }
+          }
+        }
+
+        for (let i = 0; i < 3; i++) {
+          const f = ((phase + i * 0.333) % 1) * revealFrac;
           const pt = samplePolylineAt(m.coords, m.cum, f);
           particleFeatures.push({
             type: 'Feature',
@@ -1865,41 +2189,48 @@ export function WorldMap({
             });
           }
         }
-      }
+      });
 
       flowsSrc?.setData({ type: 'FeatureCollection', features: flowFeatures });
+      cometsSrc?.setData({ type: 'FeatureCollection', features: cometFeatures });
       particlesSrc?.setData({ type: 'FeatureCollection', features: particleFeatures });
-      rafId = window.requestAnimationFrame(tickAiFlows);
+      rafId = window.requestAnimationFrame(tickAiScene);
     };
 
-    rafId = window.requestAnimationFrame(tickAiFlows);
+    rafId = window.requestAnimationFrame(tickAiScene);
     return () => {
       window.cancelAnimationFrame(rafId);
       clearMarkers();
+      zonesSrc?.setData(EMPTY_FC);
       flowsSrc?.setData(EMPTY_FC);
+      cometsSrc?.setData(EMPTY_FC);
       particlesSrc?.setData(EMPTY_FC);
     };
   }, [aiScene, aiFlowsMeta, theme, mapReady, syncGlobeMarkerVisibility]);
 
-  // Handle smooth camera easing when selecting an event, switching countries, or stepping storyline
+  // Handle smooth camera easing when selecting an event, switching countries, or stepping documentary scenes
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady || !flyTarget) return;
     const isDesktop = window.innerWidth >= 1024;
     const targetPitch = projectionRef.current === 'globe' ? 0 : (flyTarget.pitch ?? 0);
+    const targetBearing = projectionRef.current === 'globe' ? 0 : (flyTarget.bearing ?? 0);
     const padding = isCountryModeRef.current
       ? isDesktop
         ? { top: 20, bottom: 84, left: 20, right: 20 }
         : { top: 14, bottom: 68, left: 14, right: 14 }
       : aiStageOpenRef.current && isDesktop
         ? { top: 52, bottom: 215, left: 28, right: 492 }
-        : isDesktop
-          ? { top: 28, bottom: 32, left: 24, right: 430 }
-          : { top: 24, bottom: 220, left: 16, right: 16 };
+        : cinemaTickerVisibleRef.current && isDesktop
+          ? { top: 176, bottom: 48, left: 28, right: 432 }
+          : isDesktop
+            ? { top: 28, bottom: 32, left: 24, right: 430 }
+            : { top: 24, bottom: 220, left: 16, right: 16 };
     map.easeTo({
       center: flyTarget.center,
       zoom: flyTarget.exactZoom ? flyTarget.zoom : Math.max(map.getZoom(), flyTarget.zoom),
       pitch: targetPitch,
+      bearing: targetBearing,
       duration: flyTarget.duration ?? 850,
       padding,
     });
@@ -1965,7 +2296,7 @@ export function WorldMap({
 
       entry.coords = event.coords;
       const btn = entry.el;
-      btn.style.opacity = String(isSelected || isTriggered ? 1 : opacity);
+      btn.style.opacity = String(isSelected || isTriggered ? 1 : opacity * (aiScene ? 0.42 : 1));
       btn.style.zIndex = isSelected || isTriggered ? '35' : active ? (event.importance === 3 ? '20' : '12') : '5';
 
       const sizePx = isSelected || isTriggered ? 18 : event.importance === 3 ? 14 : 11;
@@ -2007,6 +2338,7 @@ export function WorldMap({
     masteredIds,
     bookmarkedIds,
     theme,
+    aiScene,
     mapReady,
     syncGlobeMarkerVisibility,
   ]);
@@ -2075,7 +2407,7 @@ export function WorldMap({
       entry.marker.setOffset(overlapsEvent ? [16, -14] : [0, 0]);
 
       const btn = entry.el;
-      btn.style.opacity = String(isSelected ? 1 : opacity);
+      btn.style.opacity = String(isSelected ? 1 : opacity * (aiScene ? 0.42 : 1));
       btn.style.zIndex = isSelected ? '36' : active ? (figure.importance === 3 ? '21' : '14') : '6';
 
       const sizePx = isSelected ? 26 : figure.importance === 3 ? 21 : 18;
@@ -2110,7 +2442,7 @@ export function WorldMap({
       `;
     }
     syncGlobeMarkerVisibility(map);
-  }, [figures, events, selectedFigure, masteredIds, bookmarkedIds, theme, mapReady, syncGlobeMarkerVisibility]);
+  }, [figures, events, selectedFigure, masteredIds, bookmarkedIds, theme, aiScene, mapReady, syncGlobeMarkerVisibility]);
 
   return (
     <div className="relative z-0 isolate h-full w-full select-none">

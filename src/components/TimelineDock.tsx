@@ -547,7 +547,7 @@ export function TimelineDock({
               <span
                 className="px-1 text-[10px] font-medium tabular-nums"
                 style={{ color: 'var(--text-muted)' }}
-                title="49 期疆域截面步进"
+                title="50 期疆域截面步进"
               >
                 截面 {formatShortYear(activeSnapshotYear)}
               </span>

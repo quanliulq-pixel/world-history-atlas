@@ -9,6 +9,7 @@ import {
   Mountain,
   Route as RouteIcon,
   Search,
+  Sparkles,
   Sun,
   Trophy,
   UserRound,
@@ -43,6 +44,8 @@ interface TopBarProps {
   onOpenPulse: () => void;
   onOpenStorylines: () => void;
   onOpenSearch: () => void;
+  onOpenAiStudio: () => void;
+  aiUnlocked: boolean;
 }
 
 const DIMENSIONS: Dimension[] = ['politics', 'economy', 'culture', 'tech'];
@@ -73,6 +76,8 @@ export function TopBar({
   onOpenPulse,
   onOpenStorylines,
   onOpenSearch,
+  onOpenAiStudio,
+  aiUnlocked,
 }: TopBarProps) {
   const allDimsActive = selectedDimensions.size === DIMENSIONS.length;
 
@@ -126,6 +131,21 @@ export function TopBar({
 
         {/* Right Controls */}
         <div className="flex items-center gap-1 md:gap-1.5 shrink-0">
+          <button
+            type="button"
+            onClick={onOpenAiStudio}
+            className="inline-flex items-center gap-1 rounded-lg border px-2 py-1.5 text-xs font-semibold transition hover:opacity-90 cursor-pointer"
+            style={{
+              backgroundColor: aiUnlocked ? 'rgba(180, 116, 23, 0.14)' : 'var(--bg-surface)',
+              borderColor: aiUnlocked ? '#B47417' : 'var(--border-strong)',
+              color: theme === 'obsidian' ? '#E5A94C' : '#9B5E0B',
+            }}
+            title="打开 Gemini AI 史学导师、跨代对比与因果自测"
+          >
+            <Sparkles className="h-3.5 w-3.5" />
+            <span className="hidden md:inline">AI 导师</span>
+          </button>
+
           <button
             type="button"
             onClick={onOpenStorylines}

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { AiStudioModal, type AiStudioIntent } from './components/AiStudioModal';
 import { ChronicleTicker } from './components/ChronicleTicker';
 import {
   CountryEvolutionHeader,
@@ -25,7 +26,7 @@ import {
   resolveCuratedCountry,
   resolveModernCountry,
 } from './data/countries';
-import { MAX_YEAR, MIN_YEAR } from './data/eras';
+import { MAX_YEAR, MIN_YEAR, REGION_META } from './data/eras';
 import { ALL_EVENTS, EVENT_MAP } from './data/events';
 import { ALL_FIGURES, FIGURE_MAP } from './data/figures';
 import { HISTORICAL_ROUTES } from './data/routes';
@@ -40,6 +41,15 @@ import type {
   SnapshotMeta,
   Storyline,
 } from './types/history';
+import {
+  AiClientError,
+  generateNarration,
+  getStoredPasscode,
+  playNarrationClip,
+  speakWithBrowserSpeech,
+  stopActiveNarration,
+  type AiTutorContext,
+} from './utils/aiClient';
 import {
   loadManifest,
   loadPhysicalAtlas,
@@ -115,6 +125,19 @@ export function App() {
   const [pulseOpen, setPulseOpen] = useState(false);
   const [storyPickerOpen, setStoryPickerOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+
+  // Gemini AI Studio & Voice Narration state
+  const [aiOpen, setAiOpen] = useState(false);
+  const [aiIntent, setAiIntent] = useState<AiStudioIntent | null>(null);
+  const [aiUnlocked, setAiUnlocked] = useState(() => Boolean(getStoredPasscode()));
+  const [cinemaVoiceEnabled, setCinemaVoiceEnabled] = useState(true);
+  const [cinemaNarrationStatus, setCinemaNarrationStatus] = useState<
+    'idle' | 'loading' | 'playing' | 'browser'
+  >('idle');
+  const [cinemaSubtitle, setCinemaSubtitle] = useState<string | null>(null);
+  const [cardNarratingId, setCardNarratingId] = useState<string | null>(null);
+  const [cardNarrationLoadingId, setCardNarrationLoadingId] = useState<string | null>(null);
+  const [cardNarrationSubtitle, setCardNarrationSubtitle] = useState<string | null>(null);
 
   const [activeStoryline, setActiveStoryline] = useState<Storyline | null>(null);
   const [storyStepIdx, setStoryStepIdx] = useState(0);
@@ -195,6 +218,8 @@ export function App() {
   currentEraRef.current = currentEra;
   const playSpeedRef = useRef(playSpeed);
   playSpeedRef.current = playSpeed;
+  const cinemaVoiceEnabledRef = useRef(cinemaVoiceEnabled);
+  cinemaVoiceEnabledRef.current = cinemaVoiceEnabled;
 
   // Auto-clear event shockwave halo outside Cinema Mode holds
   useEffect(() => {
@@ -347,9 +372,13 @@ export function App() {
     [],
   );
 
-  // Cinema Documentary Mode: smooth year progression + tilted camera flight + shockwave + ticker
+  // Cinema Documentary Mode: smooth year progression + tilted camera flight + shockwave + ticker + optional AI narration
   useEffect(() => {
-    if (!cinemaMode) return;
+    if (!cinemaMode) {
+      setCinemaNarrationStatus('idle');
+      setCinemaSubtitle(null);
+      return;
+    }
     let cancelled = false;
     let rafId = 0;
     let timerId = 0;
@@ -408,7 +437,10 @@ export function App() {
         const ev = milestones[i];
         const speed = Math.max(0.5, playSpeedRef.current);
         const travelMs = Math.round(1150 / Math.min(2, speed));
+        const evEra = getEraForYear(ev.year);
+        const evSub = getSubPeriodForYear(ev.year);
 
+        stopActiveNarration();
         setSelectedFigureId(null);
         setSelectedEventId(ev.id);
         setFocusRouteId(ev.routeIds?.[0] || null);
@@ -424,14 +456,72 @@ export function App() {
           duration: travelMs,
         });
 
+        // Pre-fetch narration in parallel with camera flight when AI voice is enabled
+        const narrationPromise = cinemaVoiceEnabledRef.current
+          ? (async () => {
+              setCinemaNarrationStatus('loading');
+              setCinemaSubtitle(`${ev.title} — 正在撰写并合成纪录片旁白...`);
+              try {
+                return await generateNarration({
+                  cacheKey: `ev:${ev.id}`,
+                  title: ev.title,
+                  yearDisplay: ev.dateDisplay,
+                  eraName: evEra.name,
+                  subPeriodName: evSub.name,
+                  regionLabel: REGION_META[ev.region].label,
+                  summary: ev.card.summary,
+                  politics: ev.card.politics,
+                  economy: ev.card.economy,
+                  culture: ev.card.culture,
+                  consequence: ev.card.consequence,
+                });
+              } catch (err) {
+                if (err instanceof AiClientError) {
+                  return {
+                    script: `${ev.dateDisplay}，${ev.title}。${ev.card.summary}`,
+                    audioBlobUrl: null,
+                    ttsFallback: true,
+                    usedBrowserFallback: true,
+                  };
+                }
+                return {
+                  script: `${ev.dateDisplay}，${ev.title}。${ev.card.summary}`,
+                  audioBlobUrl: null,
+                  ttsFallback: true,
+                  usedBrowserFallback: true,
+                };
+              }
+            })()
+          : null;
+
         await animateYearTo(currentYearRef.current, ev.year, travelMs);
         if (cancelled) break;
 
-        const holdMs = Math.max(1400, Math.round(3500 / speed));
-        await sleep(holdMs);
+        if (cinemaVoiceEnabledRef.current && narrationPromise) {
+          const clip = await narrationPromise;
+          if (cancelled) break;
+          setCinemaSubtitle(clip.script);
+          if (clip.audioBlobUrl) {
+            setCinemaNarrationStatus('playing');
+            await playNarrationClip(clip);
+          } else {
+            setCinemaNarrationStatus('browser');
+            await speakWithBrowserSpeech(clip.script);
+          }
+          if (cancelled) break;
+          await sleep(750);
+        } else {
+          setCinemaNarrationStatus('idle');
+          setCinemaSubtitle(null);
+          const holdMs = Math.max(1400, Math.round(3500 / speed));
+          await sleep(holdMs);
+        }
       }
 
       if (!cancelled) {
+        stopActiveNarration();
+        setCinemaNarrationStatus('idle');
+        setCinemaSubtitle(null);
         setCinemaMode(false);
         setRecentTriggerEventId(null);
         const lastEv = milestones[milestones.length - 1];
@@ -445,6 +535,8 @@ export function App() {
       cancelled = true;
       cancelAnimationFrame(rafId);
       window.clearTimeout(timerId);
+      stopActiveNarration();
+      setCinemaNarrationStatus('idle');
     };
   }, [cinemaMode, timelineZoom, dimensionFilteredEvents, flyToLocation]);
 
@@ -607,6 +699,145 @@ export function App() {
 
   const tickerEvent = tickerEventId ? EVENT_MAP[tickerEventId] || null : null;
 
+  const aiContext = useMemo<AiTutorContext>(() => {
+    return {
+      currentYear,
+      eraName: currentEra.name,
+      subPeriodName: currentSubPeriod.name,
+      event: selectedEvent
+        ? {
+            title: selectedEvent.title,
+            dateDisplay: selectedEvent.dateDisplay,
+            locationName: selectedEvent.locationName,
+            summary: selectedEvent.card.summary,
+            politics: selectedEvent.card.politics,
+            economy: selectedEvent.card.economy,
+            culture: selectedEvent.card.culture,
+            consequence: selectedEvent.card.consequence,
+          }
+        : null,
+      figure: selectedFigure
+        ? {
+            name: selectedFigure.name,
+            title: selectedFigure.title,
+            lifespanDisplay: selectedFigure.lifespanDisplay,
+            oneLiner: selectedFigure.card.oneLiner,
+            coreContributions: selectedFigure.card.coreContributions,
+            historicalImpact: selectedFigure.card.historicalImpact,
+          }
+        : null,
+      country: activeCountry
+        ? {
+            name: activeCountry.name,
+            tagline: activeCountry.tagline,
+            geography: activeCountry.overview.geography,
+            politics: activeCountry.overview.politics,
+            economy: activeCountry.overview.economy,
+            culture: activeCountry.overview.culture,
+          }
+        : null,
+    };
+  }, [currentYear, currentEra, currentSubPeriod, selectedEvent, selectedFigure, activeCountry]);
+
+  const openAiWithIntent = useCallback((partial: Omit<AiStudioIntent, 'nonce'>) => {
+    setAiIntent({ ...partial, nonce: Date.now() + Math.random() });
+    setAiOpen(true);
+  }, []);
+
+  const handleStopCardNarration = useCallback(() => {
+    stopActiveNarration();
+    setCardNarratingId(null);
+    setCardNarrationLoadingId(null);
+    setCardNarrationSubtitle(null);
+  }, []);
+
+  const handleNarrateEvent = useCallback(async (ev: HistoryEvent) => {
+    setCinemaMode(false);
+    stopActiveNarration();
+    setCardNarrationLoadingId(ev.id);
+    setCardNarratingId(ev.id);
+    setCardNarrationSubtitle('正在撰写并合成 AI 历史语音旁白...');
+    try {
+      const evEra = getEraForYear(ev.year);
+      const evSub = getSubPeriodForYear(ev.year);
+      const clip = await generateNarration({
+        cacheKey: `ev:${ev.id}`,
+        title: ev.title,
+        yearDisplay: ev.dateDisplay,
+        eraName: evEra.name,
+        subPeriodName: evSub.name,
+        regionLabel: REGION_META[ev.region].label,
+        summary: ev.card.summary,
+        politics: ev.card.politics,
+        economy: ev.card.economy,
+        culture: ev.card.culture,
+        consequence: ev.card.consequence,
+      });
+      setCardNarrationLoadingId(null);
+      setCardNarrationSubtitle(clip.script);
+      await playNarrationClip(clip);
+    } catch (err) {
+      setCardNarrationLoadingId(null);
+      if (
+        err instanceof AiClientError &&
+        (err.code === 'passcode_invalid' ||
+          err.code === 'passcode_unconfigured' ||
+          err.code === 'not_configured')
+      ) {
+        setCardNarratingId(null);
+        setCardNarrationSubtitle(null);
+        setAiUnlocked(false);
+        openAiWithIntent({ tab: 'tutor' });
+        return;
+      }
+      const fallback = `${ev.dateDisplay}，${ev.title}。${ev.card.summary}`;
+      setCardNarrationSubtitle(fallback);
+      await speakWithBrowserSpeech(fallback);
+    }
+  }, [openAiWithIntent]);
+
+  const handleNarrateFigure = useCallback(async (fig: HistoricalFigure) => {
+    setCinemaMode(false);
+    stopActiveNarration();
+    setCardNarrationLoadingId(fig.id);
+    setCardNarratingId(fig.id);
+    setCardNarrationSubtitle('正在撰写并合成人物语音简介...');
+    try {
+      const figEra = getEraForYear(fig.activeYear);
+      const clip = await generateNarration({
+        cacheKey: `fig:${fig.id}`,
+        title: `${fig.name}（${fig.title}）`,
+        yearDisplay: fig.lifespanDisplay,
+        eraName: figEra.name,
+        regionLabel: REGION_META[fig.region].label,
+        summary: fig.card.oneLiner,
+        politics: fig.card.eraContext,
+        economy: fig.card.coreContributions,
+        consequence: fig.card.historicalImpact,
+      });
+      setCardNarrationLoadingId(null);
+      setCardNarrationSubtitle(clip.script);
+      await playNarrationClip(clip);
+    } catch (err) {
+      setCardNarrationLoadingId(null);
+      if (
+        err instanceof AiClientError &&
+        (err.code === 'passcode_invalid' ||
+          err.code === 'passcode_unconfigured' ||
+          err.code === 'not_configured')
+      ) {
+        setCardNarratingId(null);
+        setCardNarrationSubtitle(null);
+        setAiUnlocked(false);
+        openAiWithIntent({ tab: 'tutor' });
+        return;
+      }
+      const fallback = `${fig.name}，${fig.title}。${fig.card.oneLiner}`;
+      setCardNarrationSubtitle(fallback);
+      await speakWithBrowserSpeech(fallback);
+    }
+  }, [openAiWithIntent]);
+
   const countryFocus = useMemo<CountryFocusSpec | null>(() => {
     if (!activeCountry) return null;
     return {
@@ -756,13 +987,23 @@ export function App() {
 
   // Escape key returns to World Map when in Country Mode and no modal is open
   useEffect(() => {
+    if (aiOpen) {
+      const handleAiEsc = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          stopActiveNarration();
+          setAiOpen(false);
+        }
+      };
+      window.addEventListener('keydown', handleAiEsc);
+      return () => window.removeEventListener('keydown', handleAiEsc);
+    }
     if (!activeCountry || pulseOpen || storyPickerOpen || searchOpen) return;
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') handleExitCountryMode();
     };
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
-  }, [activeCountry, pulseOpen, storyPickerOpen, searchOpen, handleExitCountryMode]);
+  }, [aiOpen, activeCountry, pulseOpen, storyPickerOpen, searchOpen, handleExitCountryMode]);
 
   return (
     <div className="relative flex h-full w-full flex-col overflow-hidden">
@@ -779,6 +1020,7 @@ export function App() {
           onToggleFullReading={() => setCountryFullReading((v) => !v)}
           onToggleProjection={toggleProjection}
           onToggleTheme={toggleTheme}
+          onOpenAiStudio={() => openAiWithIntent({ tab: 'tutor' })}
         />
       ) : (
         <TopBar
@@ -807,6 +1049,8 @@ export function App() {
           onOpenPulse={() => setPulseOpen(true)}
           onOpenStorylines={() => setStoryPickerOpen(true)}
           onOpenSearch={() => setSearchOpen(true)}
+          onOpenAiStudio={() => openAiWithIntent({ tab: 'tutor' })}
+          aiUnlocked={aiUnlocked}
         />
       )}
 
@@ -876,11 +1120,25 @@ export function App() {
                 currentSubPeriod={currentSubPeriod}
                 event={tickerEvent || selectedEvent}
                 theme={theme}
+                cinemaVoiceEnabled={cinemaVoiceEnabled}
+                narrationStatus={cinemaNarrationStatus}
+                narrationSubtitle={cinemaSubtitle}
+                onToggleCinemaVoice={() => {
+                  setCinemaVoiceEnabled((prev) => {
+                    const next = !prev;
+                    if (!next) {
+                      stopActiveNarration();
+                      setCinemaNarrationStatus('idle');
+                    }
+                    return next;
+                  });
+                }}
                 onSelectEvent={(ev) => handleSelectEvent(ev)}
                 onStopPlayback={() => {
                   setIsPlaying(false);
                   setCinemaMode(false);
                   setRecentTriggerEventId(null);
+                  stopActiveNarration();
                 }}
                 onDismiss={() => setTickerVisible(false)}
               />
@@ -955,6 +1213,32 @@ export function App() {
                   setShowRoutes(true);
                   setFocusRouteId((cur) => (cur === routeId ? null : routeId));
                 }}
+                onAskAiAboutEvent={(ev) =>
+                  openAiWithIntent({
+                    tab: 'tutor',
+                    prefillQuestion: `请用通俗的政治经济视角深挖「${ev.title}」的深层因果与历史后果`,
+                    autoSend: true,
+                  })
+                }
+                onAskAiAboutFigure={(fig) =>
+                  openAiWithIntent({
+                    tab: 'tutor',
+                    prefillQuestion: `请分析${fig.name}在当时的历史制度与时代约束下，是如何做出关键抉择的？`,
+                    autoSend: true,
+                  })
+                }
+                onCompareTopic={(subject) =>
+                  openAiWithIntent({
+                    tab: 'compare',
+                    compareSubjectA: subject,
+                  })
+                }
+                onNarrateEvent={(ev) => void handleNarrateEvent(ev)}
+                onNarrateFigure={(fig) => void handleNarrateFigure(fig)}
+                narratingItemId={cardNarratingId}
+                narrationLoadingId={cardNarrationLoadingId}
+                narrationSubtitle={cardNarrationSubtitle}
+                onStopNarration={handleStopCardNarration}
               />
             </>
           )}
@@ -973,6 +1257,20 @@ export function App() {
             onSelectModernCountry={handleSelectModernCountry}
             onSelectEventInWorld={handleJumpFromCountryToEvent}
             onSelectFigureInWorld={handleJumpFromCountryToFigure}
+            onAskAiAboutCountry={(c) =>
+              openAiWithIntent({
+                tab: 'tutor',
+                prefillQuestion: `请用“地理基因 → 政治制度 → 财税经济”的主线讲透「${c.name}」的演变规律`,
+                autoSend: true,
+              })
+            }
+            onCompareCountry={(c) =>
+              openAiWithIntent({
+                tab: 'compare',
+                compareSubjectA: c.name,
+              })
+            }
+            onRequireAiUnlock={() => openAiWithIntent({ tab: 'tutor' })}
           />
         )}
       </main>
@@ -1055,6 +1353,17 @@ export function App() {
         onSelectFigure={(fig) => handleSelectFigure(fig)}
         onExportJson={exportJson}
         onImportJson={importJson}
+      />
+
+      <AiStudioModal
+        open={aiOpen}
+        theme={theme}
+        context={aiContext}
+        masteredIds={masteredSet}
+        eraId={currentEra.id}
+        intent={aiIntent}
+        onUnlockChange={setAiUnlocked}
+        onClose={() => setAiOpen(false)}
       />
     </div>
   );

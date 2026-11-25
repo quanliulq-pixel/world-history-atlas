@@ -6,9 +6,11 @@ import {
   Compass,
   Crown,
   ExternalLink,
+  GitCompareArrows,
   Globe2,
   Landmark,
   Layers,
+  Loader2,
   MapPin,
   Maximize2,
   Minimize2,
@@ -17,6 +19,7 @@ import {
   Pause,
   Play,
   Quote,
+  RefreshCw,
   ScrollText,
   Search,
   Sparkles,
@@ -35,6 +38,12 @@ import type {
   ResolvedCountryEvolution,
   ThemeMode,
 } from '../types/history';
+import {
+  AiClientError,
+  generatePolityCardWithAi,
+  getCachedPolityCard,
+  type AiPolityCard,
+} from '../utils/aiClient';
 import { formatShortYear, formatYear } from '../utils/timeline';
 
 type EvolutionTab = 'chronicle' | 'events' | 'figures' | 'ledger';
@@ -60,6 +69,7 @@ interface CountryEvolutionHeaderProps {
   onToggleFullReading: () => void;
   onToggleProjection: () => void;
   onToggleTheme: () => void;
+  onOpenAiStudio?: () => void;
 }
 
 export function CountryEvolutionHeader({
@@ -74,6 +84,7 @@ export function CountryEvolutionHeader({
   onToggleFullReading,
   onToggleProjection,
   onToggleTheme,
+  onOpenAiStudio,
 }: CountryEvolutionHeaderProps) {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -180,6 +191,23 @@ export function CountryEvolutionHeader({
       </div>
 
       <div className="flex items-center gap-1.5 shrink-0">
+        {onOpenAiStudio && (
+          <button
+            type="button"
+            onClick={onOpenAiStudio}
+            className="inline-flex h-8 items-center gap-1 rounded-lg border px-2 text-xs font-semibold transition hover:opacity-85 cursor-pointer"
+            style={{
+              backgroundColor: 'rgba(180, 116, 23, 0.14)',
+              borderColor: 'rgba(180, 116, 23, 0.45)',
+              color: theme === 'obsidian' ? '#E5A94C' : '#9B5E0B',
+            }}
+            title="打开 AI 史学导师、跨代对比与因果自测"
+          >
+            <Sparkles className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">AI 导师</span>
+          </button>
+        )}
+
         <div ref={pickerRef} className="relative">
           <button
             type="button"
@@ -597,6 +625,9 @@ interface CountryEvolutionPanelProps {
   onSelectModernCountry: (modernKey: string) => void;
   onSelectEventInWorld: (ev: HistoryEvent) => void;
   onSelectFigureInWorld: (fig: HistoricalFigure) => void;
+  onAskAiAboutCountry?: (country: ResolvedCountryEvolution) => void;
+  onCompareCountry?: (country: ResolvedCountryEvolution) => void;
+  onRequireAiUnlock?: () => void;
 }
 
 export function CountryEvolutionPanel({
@@ -608,14 +639,66 @@ export function CountryEvolutionPanel({
   onSelectModernCountry,
   onSelectEventInWorld,
   onSelectFigureInWorld,
+  onAskAiAboutCountry,
+  onCompareCountry,
+  onRequireAiUnlock,
 }: CountryEvolutionPanelProps) {
   const [tab, setTab] = useState<EvolutionTab>('chronicle');
   const [expandedEventId, setExpandedEventId] = useState<string | null>(null);
+  const polityCacheKey = `${country.id}::${country.enName}::${country.clickedPolity?.snapshotYear ?? currentYear}`;
+  const [aiDossier, setAiDossier] = useState<AiPolityCard | null>(() =>
+    getCachedPolityCard(polityCacheKey),
+  );
+  const [aiDossierLoading, setAiDossierLoading] = useState(false);
+  const [aiDossierError, setAiDossierError] = useState<string | null>(null);
+  const [aiDossierCached, setAiDossierCached] = useState(false);
 
   useEffect(() => {
     setTab('chronicle');
     setExpandedEventId(null);
-  }, [country.id]);
+    const cached = getCachedPolityCard(polityCacheKey);
+    setAiDossier(cached);
+    setAiDossierCached(Boolean(cached));
+    setAiDossierError(null);
+  }, [country.id, polityCacheKey]);
+
+  const handleGenerateDossier = async (forceRefresh = false) => {
+    if (aiDossierLoading) return;
+    setAiDossierLoading(true);
+    setAiDossierError(null);
+    try {
+      const ledgerSummary = country.snapshotLedger
+        .slice(0, 8)
+        .map((r) => `${formatShortYear(r.year)}:${r.zhName}`)
+        .join(' -> ');
+      const res = await generatePolityCardWithAi({
+        cacheKey: polityCacheKey,
+        zhName: country.name,
+        enName: country.enName,
+        snapshotYear: country.clickedPolity?.snapshotYear ?? currentYear,
+        region: REGION_META[country.region].label,
+        modernCountryName: country.localAlternative?.zhName,
+        ledgerSummary,
+        forceRefresh,
+      });
+      setAiDossier(res.card);
+      setAiDossierCached(res.cached);
+    } catch (err) {
+      if (
+        err instanceof AiClientError &&
+        (err.code === 'passcode_invalid' ||
+          err.code === 'passcode_unconfigured' ||
+          err.code === 'not_configured')
+      ) {
+        setAiDossierError(`${err.message}（可点右上角「AI 导师」输入口令解锁）`);
+        onRequireAiUnlock?.();
+      } else {
+        setAiDossierError(err instanceof Error ? err.message : '生成失败，请稍后重试');
+      }
+    } finally {
+      setAiDossierLoading(false);
+    }
+  };
 
   const activeStageIdx = useMemo(
     () => findMatchingStageIndex(country.stages, currentYear),
@@ -718,14 +801,167 @@ export function CountryEvolutionPanel({
                   }}
                 >
                   <Sparkles className="h-3 w-3" />
-                  {country.isCurated ? '精编国别通史档案' : '全史 49 期切片重构档案'}
+                  {country.isCurated ? '精编国别通史档案' : '全史 50 期切片重构档案'}
                 </span>
                 <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>
                   {REGION_META[country.region].label}
                 </span>
               </div>
               <p className="text-sm font-medium leading-relaxed">{country.tagline}</p>
+
+              {/* AI Actions & Instant Polity Dossier */}
+              <div className="mt-3 pt-2.5 border-t flex flex-wrap items-center gap-1.5" style={{ borderColor: 'var(--border-subtle)' }}>
+                <button
+                  type="button"
+                  disabled={aiDossierLoading}
+                  onClick={() => void handleGenerateDossier(Boolean(aiDossier))}
+                  className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition hover:opacity-90 disabled:opacity-55 cursor-pointer"
+                  style={{
+                    backgroundColor: !country.isCurated && !aiDossier ? country.accentColor : 'rgba(180, 116, 23, 0.14)',
+                    color:
+                      !country.isCurated && !aiDossier
+                        ? '#FFFFFF'
+                        : theme === 'obsidian'
+                          ? '#E5A94C'
+                          : '#9B5E0B',
+                    border: `1px solid ${!country.isCurated && !aiDossier ? country.accentColor : 'rgba(180, 116, 23, 0.4)'}`,
+                  }}
+                >
+                  {aiDossierLoading ? (
+                    <>
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                      <span>Gemini 编撰深度档案中...</span>
+                    </>
+                  ) : aiDossier ? (
+                    <>
+                      <RefreshCw className="h-3 w-3" />
+                      <span>重新生成 AI 档案</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="h-3 w-3" />
+                      <span>
+                        {country.isCurated
+                          ? '生成 AI 深度扩展档案'
+                          : `用 Gemini 即时生成「${country.name}」深度档案`}
+                      </span>
+                    </>
+                  )}
+                </button>
+
+                {onAskAiAboutCountry && (
+                  <button
+                    type="button"
+                    onClick={() => onAskAiAboutCountry(country)}
+                    className="inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-[11px] font-medium hover:opacity-85 cursor-pointer"
+                    style={{
+                      backgroundColor: 'var(--bg-surface)',
+                      borderColor: 'var(--border-subtle)',
+                      color: 'var(--text-primary)',
+                    }}
+                  >
+                    <Sparkles className="h-3 w-3" style={{ color: '#B47417' }} />
+                    <span>问 AI 导师</span>
+                  </button>
+                )}
+
+                {onCompareCountry && (
+                  <button
+                    type="button"
+                    onClick={() => onCompareCountry(country)}
+                    className="inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-[11px] font-medium hover:opacity-85 cursor-pointer"
+                    style={{
+                      backgroundColor: 'var(--bg-surface)',
+                      borderColor: 'var(--border-subtle)',
+                      color: 'var(--text-secondary)',
+                    }}
+                  >
+                    <GitCompareArrows className="h-3 w-3" />
+                    <span>跨国对比</span>
+                  </button>
+                )}
+              </div>
+
+              {aiDossierError && (
+                <p className="mt-2 text-[11px]" style={{ color: '#B83B3B' }}>
+                  {aiDossierError}
+                </p>
+              )}
             </div>
+
+            {aiDossier && (
+              <div
+                className="rounded-xl border p-3.5 space-y-2.5"
+                style={{
+                  backgroundColor: 'var(--bg-elevated)',
+                  borderColor: 'rgba(180, 116, 23, 0.45)',
+                }}
+              >
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5 text-xs font-bold" style={{ color: '#B47417' }}>
+                    <Sparkles className="h-3.5 w-3.5" />
+                    <span>Gemini AI 精编政权档案</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-[10px]" style={{ color: 'var(--text-muted)' }}>
+                    <span>{aiDossier.peakPeriod}</span>
+                    {aiDossier.capital && <span>· 都城：{aiDossier.capital}</span>}
+                    {aiDossierCached && <span style={{ color: '#059669' }}>· 已缓存</span>}
+                  </div>
+                </div>
+
+                <div
+                  className="rounded-lg p-2.5 text-xs font-medium leading-relaxed"
+                  style={{
+                    backgroundColor: 'var(--bg-muted)',
+                    borderLeft: '3px solid #B47417',
+                  }}
+                >
+                  {aiDossier.tagline}
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                  <div className="rounded-lg border p-2.5" style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--border-subtle)' }}>
+                    <div className="font-bold text-[11px]" style={{ color: '#8C6D46' }}>地缘格局</div>
+                    <p className="mt-1 leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{aiDossier.geography}</p>
+                  </div>
+                  <div className="rounded-lg border p-2.5" style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--border-subtle)' }}>
+                    <div className="font-bold text-[11px]" style={{ color: DIMENSION_META.politics.color }}>政制架构</div>
+                    <p className="mt-1 leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{aiDossier.politics}</p>
+                  </div>
+                  <div className="rounded-lg border p-2.5" style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--border-subtle)' }}>
+                    <div className="font-bold text-[11px]" style={{ color: DIMENSION_META.economy.color }}>经济财税</div>
+                    <p className="mt-1 leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{aiDossier.economy}</p>
+                  </div>
+                  <div className="rounded-lg border p-2.5" style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--border-subtle)' }}>
+                    <div className="font-bold text-[11px]" style={{ color: DIMENSION_META.culture.color }}>文明遗产</div>
+                    <p className="mt-1 leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{aiDossier.culture}</p>
+                  </div>
+                </div>
+
+                <div className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                  <strong style={{ color: 'var(--text-primary)' }}>兴衰关键：</strong>
+                  {aiDossier.riseAndFall}
+                </div>
+                <div className="text-[11px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                  <strong style={{ color: 'var(--text-primary)' }}>冷知识切面：</strong>
+                  {aiDossier.funFact}
+                </div>
+                {aiDossier.keyFigures.length > 0 && (
+                  <div className="flex flex-wrap items-center gap-1.5 text-[11px]">
+                    <span style={{ color: 'var(--text-muted)' }}>代表人物：</span>
+                    {aiDossier.keyFigures.map((kf) => (
+                      <span
+                        key={kf}
+                        className="rounded-md px-2 py-0.5 font-medium"
+                        style={{ backgroundColor: 'var(--bg-muted)', color: 'var(--text-primary)' }}
+                      >
+                        {kf}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* 2x2 Four-Dimension National Overview */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -1101,7 +1337,7 @@ export function CountryEvolutionPanel({
         {tab === 'ledger' && (
           <div className="space-y-2">
             <div className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>
-              基于 49 期历史地图几何切片自动提取，展示本国地理中心在不同历史年份的政权隶属与疆域规模对比（点击任一行可跳转地图至对应截面）：
+              基于 50 期历史地图几何切片自动提取，展示本国地理中心在不同历史年份的政权隶属与疆域规模对比（点击任一行可跳转地图至对应截面）：
             </div>
 
             {country.snapshotLedger.map((row) => {

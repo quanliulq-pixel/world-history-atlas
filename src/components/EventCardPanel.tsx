@@ -8,7 +8,9 @@ import {
   ChevronUp,
   Coins,
   ExternalLink,
+  GitCompareArrows,
   Landmark,
+  Loader2,
   MapPin,
   Mountain,
   NotebookPen,
@@ -17,7 +19,9 @@ import {
   Scale,
   ScrollText,
   Sparkles,
+  Square,
   UserRound,
+  Volume2,
   X,
   Zap,
 } from 'lucide-react';
@@ -55,6 +59,15 @@ interface EventCardPanelProps {
   onToggleBookmark: (id: string) => void;
   onUpdateNote: (id: string, text: string) => void;
   onFocusRoute: (routeId: string) => void;
+  onAskAiAboutEvent?: (ev: HistoryEvent) => void;
+  onAskAiAboutFigure?: (fig: HistoricalFigure) => void;
+  onCompareTopic?: (subject: string) => void;
+  onNarrateEvent?: (ev: HistoryEvent) => void;
+  onNarrateFigure?: (fig: HistoricalFigure) => void;
+  narratingItemId?: string | null;
+  narrationLoadingId?: string | null;
+  narrationSubtitle?: string | null;
+  onStopNarration?: () => void;
 }
 
 const ROUTE_MAP = Object.fromEntries(HISTORICAL_ROUTES.map((r) => [r.id, r]));
@@ -83,6 +96,15 @@ export function EventCardPanel({
   onToggleBookmark,
   onUpdateNote,
   onFocusRoute,
+  onAskAiAboutEvent,
+  onAskAiAboutFigure,
+  onCompareTopic,
+  onNarrateEvent,
+  onNarrateFigure,
+  narratingItemId,
+  narrationLoadingId,
+  narrationSubtitle,
+  onStopNarration,
 }: EventCardPanelProps) {
   const [noteOpen, setNoteOpen] = useState(false);
 
@@ -241,6 +263,91 @@ export function EventCardPanel({
         >
           {ev.card.summary}
         </div>
+
+        {/* AI Learning Strip */}
+        {(onAskAiAboutEvent || onCompareTopic || onNarrateEvent) && (
+          <div className="space-y-1.5">
+            <div className="flex flex-wrap items-center gap-1.5">
+              {onAskAiAboutEvent && (
+                <button
+                  type="button"
+                  onClick={() => onAskAiAboutEvent(ev)}
+                  className="inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-[11px] font-semibold transition hover:opacity-85 cursor-pointer"
+                  style={{
+                    backgroundColor: 'rgba(180, 116, 23, 0.12)',
+                    borderColor: 'rgba(180, 116, 23, 0.35)',
+                    color: theme === 'obsidian' ? '#E5A94C' : '#9B5E0B',
+                  }}
+                >
+                  <Sparkles className="h-3 w-3" />
+                  <span>问 AI 导师</span>
+                </button>
+              )}
+              {onCompareTopic && (
+                <button
+                  type="button"
+                  onClick={() => onCompareTopic(ev.title)}
+                  className="inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-[11px] font-medium transition hover:opacity-85 cursor-pointer"
+                  style={{
+                    backgroundColor: 'var(--bg-surface)',
+                    borderColor: 'var(--border-subtle)',
+                    color: 'var(--text-secondary)',
+                  }}
+                >
+                  <GitCompareArrows className="h-3 w-3" />
+                  <span>跨代对比</span>
+                </button>
+              )}
+              {onNarrateEvent && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    narratingItemId === ev.id ? onStopNarration?.() : onNarrateEvent(ev)
+                  }
+                  disabled={narrationLoadingId === ev.id}
+                  className="inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-[11px] font-medium transition hover:opacity-85 disabled:opacity-60 cursor-pointer"
+                  style={{
+                    backgroundColor:
+                      narratingItemId === ev.id ? 'var(--accent-primary)' : 'var(--bg-surface)',
+                    borderColor:
+                      narratingItemId === ev.id ? 'var(--accent-primary)' : 'var(--border-subtle)',
+                    color: narratingItemId === ev.id ? '#FFFFFF' : 'var(--text-secondary)',
+                  }}
+                >
+                  {narrationLoadingId === ev.id ? (
+                    <>
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                      <span>生成旁白中...</span>
+                    </>
+                  ) : narratingItemId === ev.id ? (
+                    <>
+                      <Square className="h-2.5 w-2.5" />
+                      <span>停止播报</span>
+                    </>
+                  ) : (
+                    <>
+                      <Volume2 className="h-3 w-3" />
+                      <span>AI 语音解说</span>
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
+
+            {narratingItemId === ev.id && narrationSubtitle && (
+              <div
+                className="rounded-lg border px-2.5 py-2 text-[11px] leading-relaxed"
+                style={{
+                  backgroundColor: 'var(--bg-elevated)',
+                  borderColor: 'var(--border-subtle)',
+                  color: 'var(--text-secondary)',
+                }}
+              >
+                {narrationSubtitle}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Structured Lenses */}
         <div className="grid grid-cols-1 gap-2.5">
@@ -585,6 +692,91 @@ export function EventCardPanel({
           >
             <Quote className="mt-0.5 h-3.5 w-3.5 shrink-0" style={{ color: roleColor }} />
             <span>{fig.card.famousQuote}</span>
+          </div>
+        )}
+
+        {/* AI Learning Strip */}
+        {(onAskAiAboutFigure || onCompareTopic || onNarrateFigure) && (
+          <div className="space-y-1.5">
+            <div className="flex flex-wrap items-center gap-1.5">
+              {onAskAiAboutFigure && (
+                <button
+                  type="button"
+                  onClick={() => onAskAiAboutFigure(fig)}
+                  className="inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-[11px] font-semibold transition hover:opacity-85 cursor-pointer"
+                  style={{
+                    backgroundColor: 'rgba(180, 116, 23, 0.12)',
+                    borderColor: 'rgba(180, 116, 23, 0.35)',
+                    color: theme === 'obsidian' ? '#E5A94C' : '#9B5E0B',
+                  }}
+                >
+                  <Sparkles className="h-3 w-3" />
+                  <span>问 AI 导师</span>
+                </button>
+              )}
+              {onCompareTopic && (
+                <button
+                  type="button"
+                  onClick={() => onCompareTopic(fig.name)}
+                  className="inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-[11px] font-medium transition hover:opacity-85 cursor-pointer"
+                  style={{
+                    backgroundColor: 'var(--bg-surface)',
+                    borderColor: 'var(--border-subtle)',
+                    color: 'var(--text-secondary)',
+                  }}
+                >
+                  <GitCompareArrows className="h-3 w-3" />
+                  <span>人物对比</span>
+                </button>
+              )}
+              {onNarrateFigure && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    narratingItemId === fig.id ? onStopNarration?.() : onNarrateFigure(fig)
+                  }
+                  disabled={narrationLoadingId === fig.id}
+                  className="inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-[11px] font-medium transition hover:opacity-85 disabled:opacity-60 cursor-pointer"
+                  style={{
+                    backgroundColor:
+                      narratingItemId === fig.id ? 'var(--accent-primary)' : 'var(--bg-surface)',
+                    borderColor:
+                      narratingItemId === fig.id ? 'var(--accent-primary)' : 'var(--border-subtle)',
+                    color: narratingItemId === fig.id ? '#FFFFFF' : 'var(--text-secondary)',
+                  }}
+                >
+                  {narrationLoadingId === fig.id ? (
+                    <>
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                      <span>生成旁白中...</span>
+                    </>
+                  ) : narratingItemId === fig.id ? (
+                    <>
+                      <Square className="h-2.5 w-2.5" />
+                      <span>停止播报</span>
+                    </>
+                  ) : (
+                    <>
+                      <Volume2 className="h-3 w-3" />
+                      <span>AI 语音介绍</span>
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
+
+            {narratingItemId === fig.id && narrationSubtitle && (
+              <div
+                className="rounded-lg border px-2.5 py-2 text-[11px] leading-relaxed"
+                style={{
+                  backgroundColor: 'var(--bg-elevated)',
+                  borderColor: 'var(--border-subtle)',
+                  color: 'var(--text-secondary)',
+                }}
+              >
+                {narrationSubtitle}
+              </div>
+            )}
           </div>
         )}
 

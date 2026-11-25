@@ -1,4 +1,4 @@
-import { Film, Pause, Sparkles, X } from 'lucide-react';
+import { Film, Loader2, Pause, Sparkles, Volume2, VolumeX, X } from 'lucide-react';
 import { DIMENSION_META, REGION_META } from '../data/eras';
 import type { Era, HistoryEvent, SubPeriod, ThemeMode } from '../types/history';
 import { formatYear } from '../utils/timeline';
@@ -12,6 +12,10 @@ interface ChronicleTickerProps {
   currentSubPeriod: SubPeriod;
   event: HistoryEvent | null;
   theme: ThemeMode;
+  cinemaVoiceEnabled?: boolean;
+  narrationStatus?: 'idle' | 'loading' | 'playing' | 'browser';
+  narrationSubtitle?: string | null;
+  onToggleCinemaVoice?: () => void;
   onSelectEvent: (ev: HistoryEvent) => void;
   onStopPlayback: () => void;
   onDismiss: () => void;
@@ -26,6 +30,10 @@ export function ChronicleTicker({
   currentSubPeriod,
   event,
   theme,
+  cinemaVoiceEnabled = true,
+  narrationStatus = 'idle',
+  narrationSubtitle = null,
+  onToggleCinemaVoice,
   onSelectEvent,
   onStopPlayback,
   onDismiss,
@@ -75,6 +83,29 @@ export function ChronicleTicker({
         </div>
 
         <div className="flex items-center gap-1 shrink-0">
+          {cinemaMode && onToggleCinemaVoice && (
+            <button
+              type="button"
+              onClick={onToggleCinemaVoice}
+              className="inline-flex items-center gap-1 rounded-lg border px-2 py-0.5 text-[10px] font-semibold hover:opacity-80 cursor-pointer"
+              style={{
+                backgroundColor: cinemaVoiceEnabled ? 'rgba(180, 116, 23, 0.16)' : 'var(--bg-surface)',
+                borderColor: cinemaVoiceEnabled ? '#B47417' : 'var(--border-subtle)',
+                color: cinemaVoiceEnabled ? (theme === 'obsidian' ? '#E5A94C' : '#9B5E0B') : 'var(--text-muted)',
+              }}
+              title="开启或关闭电影模式 AI 语音旁白"
+            >
+              {narrationStatus === 'loading' ? (
+                <Loader2 className="h-3 w-3 animate-spin" />
+              ) : cinemaVoiceEnabled ? (
+                <Volume2 className="h-3 w-3" />
+              ) : (
+                <VolumeX className="h-3 w-3" />
+              )}
+              <span>{cinemaVoiceEnabled ? 'AI 旁白' : '静音'}</span>
+            </button>
+          )}
+
           {activeMode && (
             <button
               type="button"
@@ -128,6 +159,26 @@ export function ChronicleTicker({
         <p className="mt-1.5 line-clamp-1 text-[11px]" style={{ color: 'var(--text-secondary)' }}>
           {currentSubPeriod.themeSummary}
         </p>
+      )}
+
+      {cinemaMode && cinemaVoiceEnabled && narrationSubtitle && (
+        <div
+          className="mt-1.5 rounded-lg border px-2.5 py-1.5 text-[11px] leading-relaxed"
+          style={{
+            backgroundColor: 'var(--bg-elevated)',
+            borderColor: 'var(--border-subtle)',
+            color: 'var(--text-secondary)',
+          }}
+        >
+          <span className="font-semibold" style={{ color: accent }}>
+            {narrationStatus === 'loading'
+              ? '🎙 正在合成解说：'
+              : narrationStatus === 'browser'
+                ? '🎙 旁白（浏览器语音）：'
+                : '🎙 AI 纪录片旁白：'}
+          </span>
+          {narrationSubtitle}
+        </div>
       )}
     </div>
   );

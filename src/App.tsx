@@ -545,8 +545,20 @@ export function App() {
     };
   }, [cinemaMode, timelineZoom, dimensionFilteredEvents, flyToLocation]);
 
+  const stopAiNarrationAndStage = useCallback((clearStage = true) => {
+    stopActiveNarration();
+    setCardNarratingId(null);
+    setCardNarrationLoadingId(null);
+    setCardNarrationSubtitle(null);
+    if (clearStage) {
+      setStoryboardPlaying(false);
+      setActiveStoryboard(null);
+    }
+  }, []);
+
   const applyYearChange = useCallback(
     (yr: number) => {
+      stopAiNarrationAndStage(true);
       setIsPlaying(false);
       setCinemaMode(false);
       const clamped = Math.max(MIN_YEAR, Math.min(MAX_YEAR, yr));
@@ -565,7 +577,7 @@ export function App() {
         }
       }
     },
-    [selectedEventId, selectedFigureId],
+    [selectedEventId, selectedFigureId, stopAiNarrationAndStage],
   );
 
   const handleStepSnapshot = useCallback(
@@ -581,6 +593,7 @@ export function App() {
 
   const handleSelectEvent = useCallback(
     (ev: HistoryEvent, fromStoryline = false) => {
+      stopAiNarrationAndStage(true);
       setIsPlaying(false);
       setCinemaMode(false);
       setSelectedFigureId(null);
@@ -596,11 +609,12 @@ export function App() {
       }
       flyToLocation(ev.coords, ev.importance === 3 ? 3.2 : 3.6);
     },
-    [flyToLocation],
+    [flyToLocation, stopAiNarrationAndStage],
   );
 
   const handleSelectFigure = useCallback(
     (fig: HistoricalFigure) => {
+      stopAiNarrationAndStage(true);
       setIsPlaying(false);
       setCinemaMode(false);
       setSelectedEventId(null);
@@ -614,7 +628,7 @@ export function App() {
       }
       flyToLocation(fig.coords, fig.importance === 3 ? 3.2 : 3.5);
     },
-    [flyToLocation],
+    [flyToLocation, stopAiNarrationAndStage],
   );
 
   const applyStoryStep = useCallback(
@@ -623,6 +637,7 @@ export function App() {
       if (!step) return;
       const ev = EVENT_MAP[step.eventId];
       if (!ev) return;
+      stopAiNarrationAndStage(true);
       setIsPlaying(false);
       setCinemaMode(false);
       setStoryStepIdx(idx);
@@ -633,7 +648,7 @@ export function App() {
       setRecentTriggerEventId(ev.id);
       flyToLocation(step.center || ev.coords, step.zoom || 3.4);
     },
-    [flyToLocation],
+    [flyToLocation, stopAiNarrationAndStage],
   );
 
   // Storyline auto-advance timer
@@ -818,6 +833,9 @@ export function App() {
       await playNarrationClip(clip);
     } catch (err) {
       setCardNarrationLoadingId(null);
+      if (err instanceof AiClientError && err.code === 'aborted') {
+        return;
+      }
       if (
         err instanceof AiClientError &&
         (err.code === 'passcode_invalid' ||
@@ -860,6 +878,9 @@ export function App() {
       await playNarrationClip(clip);
     } catch (err) {
       setCardNarrationLoadingId(null);
+      if (err instanceof AiClientError && err.code === 'aborted') {
+        return;
+      }
       if (
         err instanceof AiClientError &&
         (err.code === 'passcode_invalid' ||
@@ -889,6 +910,7 @@ export function App() {
 
   const enterCountryEvolution = useCallback(
     (resolved: ResolvedCountryEvolution, preserveYear = false) => {
+      stopAiNarrationAndStage(true);
       setIsPlaying(false);
       setCinemaMode(false);
       setActiveStoryline(null);
@@ -913,7 +935,7 @@ export function App() {
         flyToLocation(resolved.coords, resolved.zoom, { exactZoom: true, duration: 750 });
       });
     },
-    [flyToLocation],
+    [flyToLocation, stopAiNarrationAndStage],
   );
 
   const handleSelectPolity = useCallback(
@@ -1086,9 +1108,18 @@ export function App() {
           onToggleLandmarks={() => setShowLandmarks((v) => !v)}
           onToggleProjection={toggleProjection}
           onToggleTheme={toggleTheme}
-          onOpenPulse={() => setPulseOpen(true)}
-          onOpenStorylines={() => setStoryPickerOpen(true)}
-          onOpenSearch={() => setSearchOpen(true)}
+          onOpenPulse={() => {
+            stopAiNarrationAndStage(true);
+            setPulseOpen(true);
+          }}
+          onOpenStorylines={() => {
+            stopAiNarrationAndStage(true);
+            setStoryPickerOpen(true);
+          }}
+          onOpenSearch={() => {
+            stopAiNarrationAndStage(true);
+            setSearchOpen(true);
+          }}
           onOpenAiStudio={() => openAiWithIntent({ tab: 'tutor' })}
           aiUnlocked={aiUnlocked}
         />
@@ -1318,8 +1349,7 @@ export function App() {
                     setStoryboardPlaying(true);
                   }}
                   onClose={() => {
-                    setStoryboardPlaying(false);
-                    setActiveStoryboard(null);
+                    stopAiNarrationAndStage(true);
                   }}
                   onOpenAiDrawer={() => setAiOpen(true)}
                 />
@@ -1374,6 +1404,7 @@ export function App() {
           theme={theme}
           onChangeYear={applyYearChange}
           onTogglePlay={() => {
+            stopAiNarrationAndStage(true);
             setCinemaMode(false);
             setIsPlaying((p) => {
               const next = !p;
@@ -1382,6 +1413,7 @@ export function App() {
             });
           }}
           onToggleCinemaMode={() => {
+            stopAiNarrationAndStage(true);
             setIsPlaying(false);
             setActiveStoryline(null);
             setStoryAutoPlay(false);

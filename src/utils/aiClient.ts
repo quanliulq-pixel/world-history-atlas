@@ -7,6 +7,7 @@ export type AiErrorCode =
   | 'not_configured'
   | 'rate_limited'
   | 'network'
+  | 'aborted'
   | 'unknown';
 
 export class AiClientError extends Error {
@@ -390,7 +391,7 @@ export function listCachedComparisons(): Array<{
 
 async function apiJson<T>(
   path: string,
-  opts: { method?: 'GET' | 'POST'; body?: unknown; passcode?: string } = {},
+  opts: { method?: 'GET' | 'POST'; body?: unknown; passcode?: string; signal?: AbortSignal } = {},
 ): Promise<T> {
   const headers: Record<string, string> = {};
   if (opts.body !== undefined) {
@@ -407,8 +408,12 @@ async function apiJson<T>(
       method: opts.method || (opts.body !== undefined ? 'POST' : 'GET'),
       headers,
       body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined,
+      signal: opts.signal,
     });
-  } catch {
+  } catch (err) {
+    if ((err instanceof DOMException && err.name === 'AbortError') || opts.signal?.aborted) {
+      throw new AiClientError('已停止朗读', 'aborted', 0);
+    }
     throw new AiClientError('网络请求失败，请检查网络连接后重试', 'network', 0);
   }
 
@@ -614,6 +619,15 @@ const audioClipCache = new Map<string, CachedAudioClip>();
 let activeAudioEl: HTMLAudioElement | null = null;
 let activePlaybackToken = 0;
 let cancelPendingWait: (() => void) | null = null;
+let activeTtsController: AbortController | null = null;
+const narrationStopListeners = new Set<() => void>();
+
+export function subscribeNarrationStop(listener: () => void): () => void {
+  narrationStopListeners.add(listener);
+  return () => {
+    narrationStopListeners.delete(listener);
+  };
+}
 
 function cleanSpeechText(rawText: string): string {
   return rawText
@@ -681,6 +695,7 @@ export async function generateNarration(params: {
   culture?: string;
   consequence?: string;
   voicePrefs?: AiVoicePrefs;
+  signal?: AbortSignal;
 }): Promise<AiNarrationResult> {
   const prefs = params.voicePrefs || getVoicePrefs();
   const fullKey = `${params.cacheKey}::${prefs.engine}::${prefs.voiceName}`;
@@ -702,6 +717,7 @@ export async function generateNarration(params: {
     usage?: AiUsageMeta;
   }>('/api/ai/narrate', {
     method: 'POST',
+    signal: params.signal,
     body: {
       script: params.script,
       voiceName: prefs.voiceName,
@@ -741,6 +757,14 @@ export async function generateNarration(params: {
 
 export function stopActiveNarration(): void {
   activePlaybackToken += 1;
+  if (activeTtsController) {
+    try {
+      activeTtsController.abort();
+    } catch {
+      // Ignore
+    }
+    activeTtsController = null;
+  }
   if (cancelPendingWait) {
     const cb = cancelPendingWait;
     cancelPendingWait = null;
@@ -758,6 +782,13 @@ export function stopActiveNarration(): void {
   if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
     try {
       window.speechSynthesis.cancel();
+    } catch {
+      // Ignore
+    }
+  }
+  for (const listener of narrationStopListeners) {
+    try {
+      listener();
     } catch {
       // Ignore
     }
@@ -882,6 +913,8 @@ export async function playTextPipelined(params: {
 }): Promise<void> {
   stopActiveNarration();
   const sessionToken = activePlaybackToken;
+  const controller = new AbortController();
+  activeTtsController = controller;
   const prefs = params.voicePrefs || getVoicePrefs();
   const cleanText = cleanSpeechText(params.text).slice(0, 720);
   if (!cleanText) {
@@ -906,19 +939,31 @@ export async function playTextPipelined(params: {
       cacheKey: `${params.cachePrefix}:c${index}:${chunks[index].slice(0, 24)}`,
       script: chunks[index],
       voicePrefs: prefs,
+      signal: controller.signal,
     });
 
-  let nextPromise: Promise<AiNarrationResult> | null = fetchChunk(0);
-  for (let i = 0; i < chunks.length; i++) {
-    if (sessionToken !== activePlaybackToken || !nextPromise) break;
-    const clip = await nextPromise;
-    if (sessionToken !== activePlaybackToken) break;
+  try {
+    let nextPromise: Promise<AiNarrationResult> | null = fetchChunk(0);
+    for (let i = 0; i < chunks.length; i++) {
+      if (sessionToken !== activePlaybackToken || !nextPromise) break;
+      const clip = await nextPromise;
+      if (sessionToken !== activePlaybackToken) break;
 
-    nextPromise = i + 1 < chunks.length ? fetchChunk(i + 1) : null;
-    if (i === 0) {
-      params.onStartAudio?.();
+      nextPromise = i + 1 < chunks.length ? fetchChunk(i + 1) : null;
+      if (i === 0) {
+        params.onStartAudio?.();
+      }
+      const mode = await playClipRespectingToken(clip, sessionToken);
+      if (mode === 'silent' || sessionToken !== activePlaybackToken) break;
     }
-    const mode = await playClipRespectingToken(clip, sessionToken);
-    if (mode === 'silent' || sessionToken !== activePlaybackToken) break;
+  } catch (err) {
+    if (err instanceof AiClientError && err.code === 'aborted') {
+      return;
+    }
+    throw err;
+  } finally {
+    if (activeTtsController === controller) {
+      activeTtsController = null;
+    }
   }
 }

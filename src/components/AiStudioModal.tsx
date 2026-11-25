@@ -44,6 +44,7 @@ import {
   saveVoicePrefs,
   setStoredPasscode,
   stopActiveNarration,
+  subscribeNarrationStop,
   verifyAiPasscode,
   type AiChatMessage,
   type AiComparisonResult,
@@ -258,13 +259,29 @@ export function AiStudioModal({
   };
 
   useEffect(() => {
-    if (!open) return;
+    return subscribeNarrationStop(() => {
+      setLoadingSpeechKey(null);
+      setSpeakingMsgId(null);
+      setCompareSpeaking(false);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!open) {
+      setLoadingSpeechKey(null);
+      setSpeakingMsgId(null);
+      setCompareSpeaking(false);
+      return;
+    }
     setUsage(getAiUsage());
     void refreshStatus();
   }, [open]);
 
   const handleApiError = (err: unknown, setLocalErr: (msg: string | null) => void) => {
     if (err instanceof AiClientError) {
+      if (err.code === 'aborted') {
+        return;
+      }
       if (
         err.code === 'passcode_invalid' ||
         err.code === 'passcode_unconfigured' ||
@@ -879,7 +896,12 @@ export function AiStudioModal({
               <button
                 key={t.id}
                 type="button"
-                onClick={() => setTab(t.id)}
+                onClick={() => {
+                  if (t.id !== tab) {
+                    stopActiveNarration();
+                  }
+                  setTab(t.id);
+                }}
                 className="flex items-center justify-center gap-1.5 rounded-xl py-2 text-xs font-semibold transition cursor-pointer"
                 style={{
                   backgroundColor: active ? 'var(--accent-primary)' : 'transparent',

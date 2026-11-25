@@ -476,18 +476,24 @@ export function buildMarkdownSpeechPlan(
       prevScene = blk.sentences[blk.sentences.length - 1]?.sceneIndex ?? primary;
     }
 
-    // Build anchor map so every step (where represented) links cleanly to its primary block
+    // Build anchor map choosing the best-scoring block for each storyboard scene
     for (let s = 0; s < steps.length; s++) {
-      const exactPrimary = spokenBlocks.find((b) => b.primarySceneIndex === s);
-      if (exactPrimary) {
-        sceneAnchorBlockIds[s] = exactPrimary.blockId;
-      } else {
-        const sentenceOwner = spokenBlocks.find((b) =>
-          b.sentences.some((sent) => sent.sceneIndex === s),
-        );
-        if (sentenceOwner) {
-          sceneAnchorBlockIds[s] = sentenceOwner.blockId;
+      const candidates = spokenBlocks.filter(
+        (b) => b.primarySceneIndex === s || b.sentences.some((sent) => sent.sceneIndex === s),
+      );
+      if (candidates.length > 0) {
+        let bestBlock = candidates[0];
+        let bestScore = -1;
+        for (const cand of candidates) {
+          const sc =
+            scoreTextAgainstStep(cand.plainText, steps[s]) +
+            (cand.primarySceneIndex === s ? 5 : 0);
+          if (sc > bestScore) {
+            bestScore = sc;
+            bestBlock = cand;
+          }
         }
+        sceneAnchorBlockIds[s] = bestBlock.blockId;
       }
     }
   }

@@ -52,6 +52,7 @@ import {
   stopActiveNarration,
   subscribeNarrationStop,
   type AiDocumentaryBeat,
+  type AiDocumentaryPlan,
   type AiStoryboard,
   type AiStoryboardStep,
   type AiTutorContext,
@@ -152,6 +153,11 @@ export function App() {
   const [cardNarrationBeats, setCardNarrationBeats] = useState<AiDocumentaryBeat[] | null>(null);
   const [cardActiveBeatIdx, setCardActiveBeatIdx] = useState(0);
   const cardNarrationRunIdRef = useRef(0);
+  const cardDocContextRef = useRef<{
+    itemId: string;
+    cacheKey: string;
+    plan: AiDocumentaryPlan;
+  } | null>(null);
   const [activeStoryboard, setActiveStoryboard] = useState<AiStoryboard | null>(null);
   const [storyboardStepIdx, setStoryboardStepIdx] = useState(0);
   const [storyboardPlaying, setStoryboardPlaying] = useState(false);
@@ -605,6 +611,7 @@ export function App() {
 
   const stopAiNarrationAndStage = useCallback((clearStage = true, closeStudio = false) => {
     cardNarrationRunIdRef.current += 1;
+    cardDocContextRef.current = null;
     stopActiveNarration();
     setCardNarratingId(null);
     setCardNarrationLoadingId(null);
@@ -920,6 +927,7 @@ export function App() {
 
   const handleStopCardNarration = useCallback(() => {
     cardNarrationRunIdRef.current += 1;
+    cardDocContextRef.current = null;
     stopActiveNarration();
     setCardNarratingId(null);
     setCardNarrationLoadingId(null);
@@ -974,6 +982,11 @@ export function App() {
           consequence: params.consequence,
         });
         if (cardNarrationRunIdRef.current !== runId) return;
+        cardDocContextRef.current = {
+          itemId: params.itemId,
+          cacheKey: params.cacheKey,
+          plan,
+        };
         setCardNarrationBeats(plan.beats);
         setCardActiveBeatIdx(0);
         setCardNarrationSubtitle(plan.script);
@@ -1030,6 +1043,61 @@ export function App() {
     },
     [openAiWithIntent],
   );
+
+  const handleSelectCardNarrationBeat = useCallback(async (beatIdx: number) => {
+    const ctx = cardDocContextRef.current;
+    if (!ctx) {
+      setStoryboardPlaying(false);
+      setStoryboardStepIdx(beatIdx);
+      setCardActiveBeatIdx(beatIdx);
+      return;
+    }
+
+    const runId = ++cardNarrationRunIdRef.current;
+    const chunks = buildDocumentarySpeechChunks(ctx.plan.beats).slice(beatIdx);
+    if (chunks.length === 0) return;
+
+    setCinemaMode(false);
+    stopActiveNarration();
+    setCardNarratingId(ctx.itemId);
+    setCardNarrationLoadingId(ctx.itemId);
+    setCardNarrationBeats(ctx.plan.beats);
+    setCardActiveBeatIdx(beatIdx);
+    setCardNarrationSubtitle(ctx.plan.script);
+    setActiveStoryboard(ctx.plan.storyboard);
+    setStoryboardStepIdx(beatIdx);
+    setStoryboardPlaying(false);
+    setStoryboardVoiceSynced(true);
+
+    try {
+      await playSpeechChunks({
+        cachePrefix: `doc:${ctx.cacheKey}`,
+        chunks,
+        onStartAudio: () => {
+          if (cardNarrationRunIdRef.current === runId) {
+            setCardNarrationLoadingId(null);
+          }
+        },
+        onChunkStart: (chunk) => {
+          if (cardNarrationRunIdRef.current !== runId) return;
+          const bIdx = chunk.sceneIndex ?? beatIdx;
+          setCardActiveBeatIdx(bIdx);
+          setStoryboardStepIdx(bIdx);
+        },
+      });
+    } catch (err) {
+      if (cardNarrationRunIdRef.current !== runId) return;
+      if (err instanceof AiClientError && err.code === 'aborted') {
+        return;
+      }
+    } finally {
+      if (cardNarrationRunIdRef.current === runId) {
+        setCardNarrationLoadingId(null);
+        setCardNarratingId(null);
+        setStoryboardVoiceSynced(false);
+      }
+    }
+  }, []);
 
   const handleNarrateEvent = useCallback(
     async (ev: HistoryEvent) => {
@@ -1511,9 +1579,7 @@ export function App() {
                 narrationBeats={cardNarrationBeats}
                 activeBeatIndex={cardActiveBeatIdx}
                 onSelectNarrationBeat={(idx) => {
-                  setStoryboardPlaying(false);
-                  setStoryboardStepIdx(idx);
-                  setCardActiveBeatIdx(idx);
+                  void handleSelectCardNarrationBeat(idx);
                 }}
                 onStopNarration={handleStopCardNarration}
                 suppressDesktop={aiOpen}

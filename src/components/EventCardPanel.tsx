@@ -173,10 +173,17 @@ export function EventCardPanel({
                 return (
                   <span
                     key={`card-beat-${idx}`}
+                    onClick={() => {
+                      if (typeof window !== 'undefined' && window.getSelection()?.toString().trim()) {
+                        return;
+                      }
+                      onSelectNarrationBeat?.(idx);
+                    }}
+                    title="点击从此幕开始朗读"
                     className={
                       isAct
-                        ? 'rounded-sm px-0.5 py-[1px] font-medium transition-colors'
-                        : 'opacity-65 transition-opacity'
+                        ? 'rounded-sm px-0.5 py-[1px] font-medium transition-colors cursor-pointer'
+                        : 'opacity-65 transition-opacity hover:opacity-100 hover:underline cursor-pointer'
                     }
                     style={
                       isAct

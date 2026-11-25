@@ -1113,7 +1113,7 @@ export async function playSpeechChunks(params: {
 
     const fetchChunk = (index: number) =>
       generateNarration({
-        cacheKey: `${params.cachePrefix}:c${index}:${chunks[index].speechText.slice(0, 24)}`,
+        cacheKey: `${params.cachePrefix}:c${chunks[index].chunkIndex}:${chunks[index].speechText.slice(0, 24)}`,
         script: chunks[index].speechText,
         voicePrefs: prefs,
         signal: controller.signal,

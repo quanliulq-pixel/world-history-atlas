@@ -163,6 +163,10 @@ function SentenceList({
   );
 }
 
+function hasTextSelection(): boolean {
+  return Boolean(typeof window !== 'undefined' && window.getSelection()?.toString().trim());
+}
+
 interface FormattedMarkdownProps {
   text: string;
   storyboard?: AiStoryboard | null;
@@ -173,6 +177,8 @@ interface FormattedMarkdownProps {
   speechLoading?: boolean;
   theme: ThemeMode;
   onJumpToScene?: (stepIdx: number) => void;
+  onSpeakFromBlock?: (blockId: string) => void;
+  onStopSpeech?: () => void;
 }
 
 function FormattedMarkdown({
@@ -185,6 +191,8 @@ function FormattedMarkdown({
   speechLoading = false,
   theme,
   onJumpToScene,
+  onSpeakFromBlock,
+  onStopSpeech,
 }: FormattedMarkdownProps) {
   const plan = useMemo(() => buildMarkdownSpeechPlan(text, storyboard), [text, storyboard]);
   const blockRefs = useRef<Record<string, HTMLDivElement | null>>({});
@@ -217,6 +225,7 @@ function FormattedMarkdown({
         }
 
         const isSpokenBlock = speechBlockId === block.blockId;
+        const canClickSpeak = !isSpokenBlock && Boolean(onSpeakFromBlock) && block.sentences.length > 0;
         const activeSentence =
           isSpokenBlock && speechSentenceIdx !== null
             ? block.sentences.find((s) => s.sentenceIdx === speechSentenceIdx)
@@ -281,11 +290,20 @@ function FormattedMarkdown({
             ref={(el) => {
               blockRefs.current[block.blockId] = el;
             }}
-            className={
+            onClick={() => {
+              if (!canClickSpeak || hasTextSelection()) return;
+              onSpeakFromBlock?.(block.blockId);
+            }}
+            title={canClickSpeak ? '点击从此段开始朗读并同步左侧地图' : undefined}
+            className={`group/block relative transition-all duration-200 ${
               showTopPill
-                ? 'rounded-xl px-2.5 py-1.5 -mx-1.5 transition-all duration-200'
-                : 'rounded-lg transition-colors duration-200'
-            }
+                ? 'rounded-xl px-2.5 py-1.5 -mx-1.5'
+                : canClickSpeak
+                  ? `rounded-xl px-2 py-1 -mx-2 cursor-pointer ${
+                      isDark ? 'hover:bg-white/[0.05]' : 'hover:bg-black/[0.035]'
+                    }`
+                  : 'rounded-lg'
+            }`}
             style={
               isSpokenBlock
                 ? {
@@ -325,7 +343,10 @@ function FormattedMarkdown({
                 {activeStep && effectiveSceneIdx !== undefined && (
                   <button
                     type="button"
-                    onClick={() => onJumpToScene?.(effectiveSceneIdx)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onJumpToScene?.(effectiveSceneIdx);
+                    }}
                     className="inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[9.5px] font-semibold cursor-pointer hover:opacity-85"
                     style={{
                       backgroundColor: isDark
@@ -340,11 +361,30 @@ function FormattedMarkdown({
                     </span>
                   </button>
                 )}
+                {onStopSpeech && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onStopSpeech();
+                    }}
+                    className="ml-auto inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[9.5px] font-semibold hover:opacity-85 cursor-pointer"
+                    style={{
+                      backgroundColor: 'var(--bg-surface)',
+                      borderColor: 'var(--border-subtle)',
+                      color: 'var(--text-secondary)',
+                    }}
+                    title="停止朗读"
+                  >
+                    <Square className="h-2 w-2" />
+                    <span>停止</span>
+                  </button>
+                )}
               </div>
             )}
 
             {isMapSyncedBlock && activeStep && effectiveSceneIdx !== undefined && (
-              <div className="mb-1 flex items-center gap-1 text-[10px]">
+              <div className="mb-1 flex items-center justify-between gap-1 text-[10px]">
                 <span
                   className="inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 font-semibold"
                   style={{
@@ -359,36 +399,61 @@ function FormattedMarkdown({
                     地图正演播 · 第 {effectiveSceneIdx + 1} 幕 · {activeStep.title}
                   </span>
                 </span>
+                {canClickSpeak && (
+                  <span
+                    className="opacity-0 group-hover/block:opacity-100 transition-opacity inline-flex items-center gap-1 text-[9.5px] font-medium"
+                    style={{ color: 'var(--accent-primary)' }}
+                  >
+                    <Volume2 className="h-2.5 w-2.5" />
+                    <span>从此处朗读</span>
+                  </span>
+                )}
               </div>
             )}
 
             {bodyEl}
 
-            {!showTopPill && anchorScenes.length > 0 && storyboard && onJumpToScene && (
-              <div className="mt-1 flex flex-wrap items-center gap-1">
-                {anchorScenes.map((scIdx) => {
-                  const st = storyboard.steps[scIdx];
-                  if (!st) return null;
-                  return (
-                    <button
-                      key={scIdx}
-                      type="button"
-                      onClick={() => onJumpToScene(scIdx)}
-                      className="inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[9.5px] font-medium hover:opacity-85 cursor-pointer"
-                      style={{
-                        backgroundColor: 'var(--bg-surface)',
-                        borderColor: 'var(--border-subtle)',
-                        color: isDark ? '#E5A94C' : '#9B5E0B',
-                      }}
-                      title="点击将左侧地图切换到这一幕"
-                    >
-                      <Film className="h-2.5 w-2.5" />
-                      <span>
-                        第 {scIdx + 1} 幕 · {st.title}
-                      </span>
-                    </button>
-                  );
-                })}
+            {!showTopPill && ((anchorScenes.length > 0 && storyboard && onJumpToScene) || canClickSpeak) && (
+              <div className="mt-1 flex flex-wrap items-center justify-between gap-1">
+                <div className="flex flex-wrap items-center gap-1">
+                  {storyboard &&
+                    onJumpToScene &&
+                    anchorScenes.map((scIdx) => {
+                      const st = storyboard.steps[scIdx];
+                      if (!st) return null;
+                      return (
+                        <button
+                          key={scIdx}
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onJumpToScene(scIdx);
+                          }}
+                          className="inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[9.5px] font-medium hover:opacity-85 cursor-pointer"
+                          style={{
+                            backgroundColor: 'var(--bg-surface)',
+                            borderColor: 'var(--border-subtle)',
+                            color: isDark ? '#E5A94C' : '#9B5E0B',
+                          }}
+                          title="点击将左侧地图切换到这一幕"
+                        >
+                          <Film className="h-2.5 w-2.5" />
+                          <span>
+                            第 {scIdx + 1} 幕 · {st.title}
+                          </span>
+                        </button>
+                      );
+                    })}
+                </div>
+                {canClickSpeak && (
+                  <span
+                    className="opacity-0 group-hover/block:opacity-100 transition-opacity inline-flex items-center gap-1 text-[9.5px] font-medium"
+                    style={{ color: 'var(--accent-primary)' }}
+                  >
+                    <Volume2 className="h-2.5 w-2.5" />
+                    <span>从此处朗读</span>
+                  </span>
+                )}
               </div>
             )}
           </div>
@@ -850,43 +915,49 @@ export function AiStudioModal({
     }
   };
 
-  const handleSpeakMessage = async (m: AiChatMessage) => {
-    if (speakingMsgId === m.id) {
-      speechRunIdRef.current += 1;
-      stopActiveNarration();
-      setLoadingSpeechKey(null);
-      setSpeakingMsgId(null);
-      setCompareSpeaking(false);
-      setActiveSpeech(null);
-      onVoiceSyncEnd?.();
+  const stopCurrentSpeech = () => {
+    speechRunIdRef.current += 1;
+    stopActiveNarration();
+    setLoadingSpeechKey(null);
+    setSpeakingMsgId(null);
+    setCompareSpeaking(false);
+    setActiveSpeech(null);
+    onVoiceSyncEnd?.();
+  };
+
+  const handleSpeakMessage = async (m: AiChatMessage, startBlockId?: string) => {
+    if (!startBlockId && speakingMsgId === m.id) {
+      stopCurrentSpeech();
       return;
     }
     const plan = buildMarkdownSpeechPlan(m.text, m.storyboard);
+    const startIdx = startBlockId
+      ? plan.chunks.findIndex((c) => c.blockId === startBlockId)
+      : -1;
+    const chunks = startIdx >= 0 ? plan.chunks.slice(startIdx) : plan.chunks;
     await runChunkedSpeech({
       sourceKey: m.id,
       mode: 'msg',
-      chunks: plan.chunks,
+      chunks,
       storyboard: m.storyboard,
     });
   };
 
-  const handleSpeakCompare = async () => {
+  const handleSpeakCompare = async (startBlockId?: CompareBlockId) => {
     if (!compareResult || !comparePlan) return;
     const sourceKey = `cmp-${compareResult.title}`;
-    if (compareSpeaking) {
-      speechRunIdRef.current += 1;
-      stopActiveNarration();
-      setLoadingSpeechKey(null);
-      setSpeakingMsgId(null);
-      setCompareSpeaking(false);
-      setActiveSpeech(null);
-      onVoiceSyncEnd?.();
+    if (!startBlockId && compareSpeaking) {
+      stopCurrentSpeech();
       return;
     }
+    const startIdx = startBlockId
+      ? comparePlan.chunks.findIndex((c) => c.blockId === startBlockId)
+      : -1;
+    const chunks = startIdx >= 0 ? comparePlan.chunks.slice(startIdx) : comparePlan.chunks;
     await runChunkedSpeech({
       sourceKey,
       mode: 'compare',
-      chunks: comparePlan.chunks,
+      chunks,
       storyboard: compareStoryboard,
     });
   };
@@ -1046,7 +1117,6 @@ export function AiStudioModal({
 
   const renderCompareSyncBadge = (blockId: CompareBlockId) => {
     const st = getCompareBlockState(blockId);
-    if (!st.isSpoken && !st.isMapSynced && !(st.isAnchor && st.step)) return null;
 
     if (st.isSpoken) {
       return (
@@ -1070,7 +1140,10 @@ export function AiStudioModal({
           {st.step && st.mappedScene !== undefined && compareStoryboard && (
             <button
               type="button"
-              onClick={() => onSyncStoryboardStep?.(compareStoryboard, st.mappedScene!, false)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onSyncStoryboardStep?.(compareStoryboard, st.mappedScene!, false);
+              }}
               className="inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[9.5px] font-semibold cursor-pointer hover:opacity-85"
               style={{
                 backgroundColor: isDark ? 'rgba(224, 166, 75, 0.20)' : 'rgba(180, 116, 23, 0.16)',
@@ -1083,13 +1156,30 @@ export function AiStudioModal({
               </span>
             </button>
           )}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              stopCurrentSpeech();
+            }}
+            className="ml-auto inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[9.5px] font-semibold hover:opacity-85 cursor-pointer"
+            style={{
+              backgroundColor: 'var(--bg-surface)',
+              borderColor: 'var(--border-subtle)',
+              color: 'var(--text-secondary)',
+            }}
+            title="停止朗读"
+          >
+            <Square className="h-2 w-2" />
+            <span>停止</span>
+          </button>
         </div>
       );
     }
 
     if (st.isMapSynced && st.step && st.mappedScene !== undefined) {
       return (
-        <div className="mb-1 flex items-center gap-1 text-[10px]">
+        <div className="mb-1 flex items-center justify-between gap-1 text-[10px]">
           <span
             className="inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 font-semibold"
             style={{
@@ -1102,31 +1192,50 @@ export function AiStudioModal({
               地图正演播 · 第 {st.mappedScene + 1} 幕 · {st.step.title}
             </span>
           </span>
+          <span
+            className="opacity-0 group-hover/cmp:opacity-100 transition-opacity inline-flex items-center gap-1 text-[9.5px] font-medium"
+            style={{ color: 'var(--accent-primary)' }}
+          >
+            <Volume2 className="h-2.5 w-2.5" />
+            <span>从此处朗读</span>
+          </span>
         </div>
       );
     }
 
-    if (st.isAnchor && st.step && st.mappedScene !== undefined && compareStoryboard) {
-      return (
-        <button
-          type="button"
-          onClick={() => onSyncStoryboardStep?.(compareStoryboard, st.mappedScene!, false)}
-          className="mb-1 inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[9.5px] font-medium hover:opacity-85 cursor-pointer"
-          style={{
-            backgroundColor: 'var(--bg-surface)',
-            borderColor: 'var(--border-subtle)',
-            color: isDark ? '#E5A94C' : '#9B5E0B',
-          }}
+    return (
+      <div className="mb-1 flex items-center justify-between gap-1 text-[10px]">
+        {st.isAnchor && st.step && st.mappedScene !== undefined && compareStoryboard ? (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onSyncStoryboardStep?.(compareStoryboard, st.mappedScene!, false);
+            }}
+            className="inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[9.5px] font-medium hover:opacity-85 cursor-pointer"
+            style={{
+              backgroundColor: 'var(--bg-surface)',
+              borderColor: 'var(--border-subtle)',
+              color: isDark ? '#E5A94C' : '#9B5E0B',
+            }}
+          >
+            <Film className="h-2.5 w-2.5" />
+            <span>
+              第 {st.mappedScene + 1} 幕 · {st.step.title}
+            </span>
+          </button>
+        ) : (
+          <span />
+        )}
+        <span
+          className="opacity-0 group-hover/cmp:opacity-100 transition-opacity inline-flex items-center gap-1 text-[9.5px] font-medium"
+          style={{ color: 'var(--accent-primary)' }}
         >
-          <Film className="h-2.5 w-2.5" />
-          <span>
-            第 {st.mappedScene + 1} 幕 · {st.step.title}
-          </span>
-        </button>
-      );
-    }
-
-    return null;
+          <Volume2 className="h-2.5 w-2.5" />
+          <span>从此处朗读</span>
+        </span>
+      </div>
+    );
   };
 
   return (
@@ -1566,6 +1675,8 @@ export function AiStudioModal({
                               onSyncStoryboardStep(m.storyboard, stepIdx, false);
                             }
                           }}
+                          onSpeakFromBlock={(blockId) => void handleSpeakMessage(m, blockId)}
+                          onStopSpeech={stopCurrentSpeech}
                         />
                         <div
                           className="mt-2 pt-1.5 border-t flex flex-wrap items-center justify-end gap-1.5"
@@ -1854,7 +1965,14 @@ export function AiStudioModal({
                       ref={(el) => {
                         compareBlockRefs.current['cmp-thesis'] = el;
                       }}
-                      className="rounded-lg p-2.5 text-xs font-medium leading-relaxed transition-all duration-200"
+                      onClick={() => {
+                        if (st.isSpoken || hasTextSelection()) return;
+                        void handleSpeakCompare('cmp-thesis');
+                      }}
+                      title={st.isSpoken ? undefined : '点击从此段开始朗读并同步左侧地图'}
+                      className={`group/cmp rounded-lg p-2.5 text-xs font-medium leading-relaxed transition-all duration-200 ${
+                        st.isSpoken ? '' : 'cursor-pointer hover:opacity-95'
+                      }`}
                       style={{
                         backgroundColor: st.isSpoken
                           ? isDark
@@ -1925,7 +2043,16 @@ export function AiStudioModal({
                         ref={(el) => {
                           compareBlockRefs.current[d.blockId] = el;
                         }}
-                        className="rounded-lg border p-2.5 transition-all duration-200"
+                        onClick={() => {
+                          if (st.isSpoken || hasTextSelection()) return;
+                          void handleSpeakCompare(d.blockId);
+                        }}
+                        title={st.isSpoken ? undefined : '点击从此段开始朗读并同步左侧地图'}
+                        className={`group/cmp rounded-lg border p-2.5 transition-all duration-200 ${
+                          st.isSpoken
+                            ? ''
+                            : `cursor-pointer ${isDark ? 'hover:bg-white/[0.04]' : 'hover:bg-black/[0.025]'}`
+                        }`}
                         style={{
                           backgroundColor: st.isSpoken
                             ? isDark
@@ -2002,7 +2129,16 @@ export function AiStudioModal({
                       ref={(el) => {
                         compareBlockRefs.current['cmp-modern'] = el;
                       }}
-                      className="rounded-lg px-2 py-1.5 text-[11px] leading-relaxed transition-all duration-200"
+                      onClick={() => {
+                        if (st.isSpoken || hasTextSelection()) return;
+                        void handleSpeakCompare('cmp-modern');
+                      }}
+                      title={st.isSpoken ? undefined : '点击从此段开始朗读并同步左侧地图'}
+                      className={`group/cmp rounded-lg px-2 py-1.5 text-[11px] leading-relaxed transition-all duration-200 ${
+                        st.isSpoken
+                          ? ''
+                          : `cursor-pointer ${isDark ? 'hover:bg-white/[0.04]' : 'hover:bg-black/[0.03]'}`
+                      }`}
                       style={{
                         color: 'var(--text-secondary)',
                         backgroundColor: st.isSpoken

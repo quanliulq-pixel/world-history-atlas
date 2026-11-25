@@ -45,6 +45,7 @@ import {
   type AiPolityCard,
 } from '../utils/aiClient';
 import { formatShortYear, formatYear } from '../utils/timeline';
+import { MuseumBanner } from './MuseumArtwork';
 
 type EvolutionTab = 'chronicle' | 'events' | 'figures' | 'ledger';
 
@@ -784,6 +785,15 @@ export function CountryEvolutionPanel({
       <div className="atlas-scroll flex-1 overflow-y-auto p-3.5 md:p-5 space-y-4">
         {tab === 'chronicle' && (
           <div className="space-y-4">
+            <MuseumBanner
+              kind="country"
+              id={country.id}
+              alt={country.name}
+              caption={`${country.name} · ${country.enName}`}
+              accentColor={country.accentColor}
+              theme={theme}
+            />
+
             {/* Intro Header */}
             <div
               className="rounded-xl border p-3.5"

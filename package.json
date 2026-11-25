@@ -10,7 +10,10 @@
     "postinstall": "node scripts/copy-worker.mjs",
     "data:build": "node scripts/build-map-data.mjs",
     "data:country-index": "npx tsx scripts/build-country-index.mjs",
-    "data:validate": "npx tsx scripts/validate-content.mjs"
+    "data:validate": "npx tsx scripts/validate-content.mjs",
+    "media:prompts": "npx tsx scripts/export-illustration-prompts.mjs",
+    "media:scripts": "npx tsx scripts/export-narration-scripts.mjs",
+    "media:import": "node scripts/import-media-pack.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.511.0",

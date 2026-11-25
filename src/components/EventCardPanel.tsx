@@ -33,6 +33,7 @@ import { HISTORICAL_ROUTES } from '../data/routes';
 import type { Era, HistoricalFigure, HistoryEvent, SubPeriod, ThemeMode } from '../types/history';
 import type { AiDocumentaryBeat } from '../utils/aiClient';
 import { formatYear } from '../utils/timeline';
+import { MuseumBanner, MuseumPortrait } from './MuseumArtwork';
 
 type SheetState = 'peek' | 'half' | 'full';
 
@@ -353,6 +354,16 @@ export function EventCardPanel({
             {renderStatusActions(ev.id)}
           </div>
         </div>
+
+        {/* Progressive Museum Event Artwork */}
+        <MuseumBanner
+          kind="event"
+          id={ev.id}
+          alt={ev.title}
+          caption={`${ev.dateDisplay} · ${ev.locationName}`}
+          accentColor={dimColor}
+          theme={theme}
+        />
 
         {/* Summary Callout */}
         <div
@@ -728,12 +739,13 @@ export function EventCardPanel({
           </div>
 
           <div className="mt-2 flex items-center gap-2.5">
-            <span
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-sm font-bold text-white shadow-sm"
-              style={{ backgroundColor: roleColor }}
-            >
-              {fig.monogram}
-            </span>
+            <MuseumPortrait
+              id={fig.id}
+              name={fig.name}
+              monogram={fig.monogram}
+              roleColor={roleColor}
+              theme={theme}
+            />
             <div className="min-w-0">
               <div className="flex flex-wrap items-baseline gap-2">
                 <h2 className="text-base md:text-lg font-bold leading-snug">{fig.name}</h2>
@@ -1035,6 +1047,16 @@ export function EventCardPanel({
           当期 {activeEvents.length} 件大事
         </span>
       </div>
+
+      {/* Progressive Museum Era Artwork */}
+      <MuseumBanner
+        kind="era"
+        id={currentEra.id}
+        alt={currentEra.name}
+        caption={`${formatYear(currentEra.startYear)} — ${formatYear(currentEra.endYear)}`}
+        accentColor={currentEra.accentColor}
+        theme={theme}
+      />
 
       {/* Active sub-period context */}
       <div

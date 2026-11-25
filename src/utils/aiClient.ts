@@ -719,6 +719,20 @@ function base64WavToBlobUrl(b64: string): string {
 const DOC_PLAN_CACHE_KEY = 'world-history-atlas:ai-doc-plans:v1';
 const docPlanMemoryCache = new Map<string, AiDocumentaryPlan>();
 
+export function getCachedDocumentaryPlan(cacheKey: string): AiDocumentaryPlan | null {
+  const memHit = docPlanMemoryCache.get(cacheKey);
+  if (memHit) return memHit;
+
+  const stored = readCacheList<AiDocumentaryPlan>(DOC_PLAN_CACHE_KEY).find(
+    (entry) => entry.key === cacheKey,
+  );
+  if (stored?.data?.beats?.length && stored.data?.storyboard?.steps?.length) {
+    docPlanMemoryCache.set(cacheKey, stored.data);
+    return stored.data;
+  }
+  return null;
+}
+
 export async function generateDocumentaryPlan(params: {
   cacheKey: string;
   title: string;
@@ -1025,6 +1039,40 @@ async function playClipRespectingToken(
 
   await speakWithBrowserSpeech(clip.script, sessionToken, onProgress);
   return 'browser';
+}
+
+export async function playStaticAudioBeats(params: {
+  beats: Array<{ audioUrl: string; narration: string }>;
+  startIndex?: number;
+  onStartAudio?: () => void;
+  onBeatStart?: (beatIndex: number) => void;
+}): Promise<void> {
+  stopActiveNarration(false);
+  const sessionToken = activePlaybackToken;
+  const start = Math.max(0, Math.min(params.beats.length - 1, params.startIndex ?? 0));
+
+  if (params.beats.length === 0) {
+    params.onStartAudio?.();
+    return;
+  }
+
+  for (let i = start; i < params.beats.length; i++) {
+    if (sessionToken !== activePlaybackToken) break;
+    const beat = params.beats[i];
+    params.onBeatStart?.(i);
+    if (i === start) {
+      params.onStartAudio?.();
+    }
+    const mode = await playClipRespectingToken(
+      {
+        script: beat.narration,
+        audioBlobUrl: beat.audioUrl,
+        ttsFallback: false,
+      },
+      sessionToken,
+    );
+    if (mode === 'silent' || sessionToken !== activePlaybackToken) break;
+  }
 }
 
 export async function playNarrationClip(

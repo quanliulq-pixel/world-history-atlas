@@ -46,8 +46,11 @@ import type {
 import {
   AiClientError,
   generateDocumentaryPlan,
+  getCachedDocumentaryPlan,
   getStoredPasscode,
+  getVoicePrefs,
   playSpeechChunks,
+  playStaticAudioBeats,
   speakWithBrowserSpeech,
   stopActiveNarration,
   subscribeNarrationStop,
@@ -57,6 +60,7 @@ import {
   type AiStoryboardStep,
   type AiTutorContext,
 } from './utils/aiClient';
+import { getPreGeneratedAudio, resolveAudioFileUrl } from './utils/mediaAssets';
 import { buildDocumentarySpeechChunks } from './utils/speechSync';
 import {
   loadManifest,
@@ -81,6 +85,38 @@ import {
 
 const ALL_DIMENSIONS: Dimension[] = ['politics', 'economy', 'culture', 'tech'];
 const PLAY_SPEEDS = [0.5, 1, 2, 4];
+
+function buildLocalFocusStoryboard(
+  title: string,
+  year: number,
+  coords: [number, number],
+  beats: Array<{ title: string; narration: string }>,
+): AiStoryboard {
+  const safeBeats = beats.length > 0 ? beats : [{ title: '历史焦点', narration: title }];
+  return {
+    title,
+    steps: safeBeats.map((beat, idx) => ({
+      title: beat.title,
+      caption: beat.narration,
+      matchSnippet: beat.narration.slice(0, 24),
+      year,
+      center: coords,
+      zoom: idx === 0 ? 3.1 : idx === 1 ? 4.2 : 3.5,
+      pitch: idx === 1 ? 24 : 16,
+      bearing: idx === 2 ? 12 : idx === 1 ? -8 : 0,
+      spots: [
+        {
+          coords,
+          label: idx === 0 ? title : beat.title,
+          sublabel: title,
+          color: idx === 1 ? '#8C2D2D' : '#B47417',
+          icon: idx === 1 ? 'landmark' : 'city',
+        },
+      ],
+      flows: [],
+    })),
+  };
+}
 
 export function App() {
   const {
@@ -157,6 +193,7 @@ export function App() {
     itemId: string;
     cacheKey: string;
     plan: AiDocumentaryPlan;
+    staticAudioUrls?: string[];
   } | null>(null);
   const [activeStoryboard, setActiveStoryboard] = useState<AiStoryboard | null>(null);
   const [storyboardStepIdx, setStoryboardStepIdx] = useState(0);
@@ -496,10 +533,30 @@ export function App() {
         // Pre-fetch 3-beat documentary plan in parallel with camera flight when AI voice is enabled
         const docPromise = cinemaVoiceEnabledRef.current
           ? (async () => {
+              const staticEntry =
+                getVoicePrefs().engine !== 'browser'
+                  ? await getPreGeneratedAudio(`ev:${ev.id}`)
+                  : null;
+              if (staticEntry?.beats?.length) {
+                const cachedPlan = getCachedDocumentaryPlan(`ev:${ev.id}`);
+                const beats = staticEntry.beats.map((b) => ({
+                  title: b.title,
+                  narration: b.narration,
+                }));
+                const plan: AiDocumentaryPlan = cachedPlan ?? {
+                  script: staticEntry.script,
+                  beats,
+                  storyboard: buildLocalFocusStoryboard(ev.title, ev.year, ev.coords, beats),
+                };
+                return {
+                  plan,
+                  staticAudioUrls: staticEntry.beats.map((b) => resolveAudioFileUrl(b.file)),
+                };
+              }
               setCinemaNarrationStatus('loading');
               setCinemaSubtitle(`${ev.title} — 正在撰写纪录片脚本并编排地图动画...`);
               try {
-                return await generateDocumentaryPlan({
+                const plan = await generateDocumentaryPlan({
                   cacheKey: `ev:${ev.id}`,
                   title: ev.title,
                   year: ev.year,
@@ -515,6 +572,7 @@ export function App() {
                   culture: ev.card.culture,
                   consequence: ev.card.consequence,
                 });
+                return { plan, staticAudioUrls: undefined };
               } catch {
                 return {
                   fallbackText: `${ev.dateDisplay}，${ev.title}。${ev.card.summary}`,
@@ -529,41 +587,69 @@ export function App() {
         if (cinemaVoiceEnabledRef.current && docPromise) {
           const result = await docPromise;
           if (cancelled) break;
-          if ('fallbackText' in result) {
+          if ('fallbackText' in result && result.fallbackText) {
+            const fallbackText = result.fallbackText;
             setCinemaBeats(null);
-            setCinemaSubtitle(result.fallbackText);
+            setCinemaSubtitle(fallbackText);
             setCinemaNarrationStatus('browser');
-            await speakWithBrowserSpeech(result.fallbackText);
-          } else {
-            const plan = result;
+            await speakWithBrowserSpeech(fallbackText);
+          } else if ('plan' in result && result.plan) {
+            const { plan, staticAudioUrls } = result;
             setCinemaBeats(plan.beats);
             setCinemaActiveBeatIdx(0);
             setCinemaSubtitle(plan.script);
-            const docChunks = buildDocumentarySpeechChunks(plan.beats);
             try {
-              await playSpeechChunks({
-                cachePrefix: `doc:ev:${ev.id}`,
-                chunks: docChunks,
-                onStartAudio: () => {
-                  if (!cancelled) setCinemaNarrationStatus('playing');
-                },
-                onChunkStart: (chunk) => {
-                  if (cancelled) return;
-                  const beatIdx = chunk.sceneIndex ?? 0;
-                  setCinemaActiveBeatIdx(beatIdx);
-                  const step = plan.storyboard.steps[beatIdx];
-                  if (step) {
-                    setCinemaScene(step);
-                    setCurrentYear(step.year);
-                    flyToLocation(step.center, step.zoom, {
-                      exactZoom: true,
-                      pitch: step.pitch ?? 24,
-                      bearing: step.bearing ?? 0,
-                      duration: 1050,
-                    });
-                  }
-                },
-              });
+              if (staticAudioUrls && staticAudioUrls.length === plan.beats.length) {
+                await playStaticAudioBeats({
+                  beats: plan.beats.map((b, idx) => ({
+                    audioUrl: staticAudioUrls[idx],
+                    narration: b.narration,
+                  })),
+                  onStartAudio: () => {
+                    if (!cancelled) setCinemaNarrationStatus('playing');
+                  },
+                  onBeatStart: (beatIdx) => {
+                    if (cancelled) return;
+                    setCinemaActiveBeatIdx(beatIdx);
+                    const step = plan.storyboard.steps[beatIdx];
+                    if (step) {
+                      setCinemaScene(step);
+                      setCurrentYear(step.year);
+                      flyToLocation(step.center, step.zoom, {
+                        exactZoom: true,
+                        pitch: step.pitch ?? 24,
+                        bearing: step.bearing ?? 0,
+                        duration: 1050,
+                      });
+                    }
+                  },
+                });
+              } else {
+                const docChunks = buildDocumentarySpeechChunks(plan.beats);
+                await playSpeechChunks({
+                  cachePrefix: `doc:ev:${ev.id}`,
+                  chunks: docChunks,
+                  onStartAudio: () => {
+                    if (!cancelled) setCinemaNarrationStatus('playing');
+                  },
+                  onChunkStart: (chunk) => {
+                    if (cancelled) return;
+                    const beatIdx = chunk.sceneIndex ?? 0;
+                    setCinemaActiveBeatIdx(beatIdx);
+                    const step = plan.storyboard.steps[beatIdx];
+                    if (step) {
+                      setCinemaScene(step);
+                      setCurrentYear(step.year);
+                      flyToLocation(step.center, step.zoom, {
+                        exactZoom: true,
+                        pitch: step.pitch ?? 24,
+                        bearing: step.bearing ?? 0,
+                        duration: 1050,
+                      });
+                    }
+                  },
+                });
+              }
             } catch {
               if (!cancelled) {
                 setCinemaNarrationStatus('browser');
@@ -965,6 +1051,57 @@ export function App() {
       setCardActiveBeatIdx(0);
       setCardNarrationSubtitle(params.loadingMessage);
       try {
+        const staticEntry =
+          getVoicePrefs().engine !== 'browser'
+            ? await getPreGeneratedAudio(params.cacheKey)
+            : null;
+        if (cardNarrationRunIdRef.current !== runId) return;
+
+        if (staticEntry?.beats?.length) {
+          const cachedPlan = getCachedDocumentaryPlan(params.cacheKey);
+          const beats = staticEntry.beats.map((b) => ({
+            title: b.title,
+            narration: b.narration,
+          }));
+          const plan: AiDocumentaryPlan = cachedPlan ?? {
+            script: staticEntry.script,
+            beats,
+            storyboard: buildLocalFocusStoryboard(params.title, params.year, params.coords, beats),
+          };
+          const staticAudioUrls = staticEntry.beats.map((b) => resolveAudioFileUrl(b.file));
+          cardDocContextRef.current = {
+            itemId: params.itemId,
+            cacheKey: params.cacheKey,
+            plan,
+            staticAudioUrls,
+          };
+          setCardNarrationBeats(plan.beats);
+          setCardActiveBeatIdx(0);
+          setCardNarrationSubtitle(plan.script);
+          setActiveStoryboard(plan.storyboard);
+          setStoryboardStepIdx(0);
+          setStoryboardPlaying(false);
+          setStoryboardVoiceSynced(true);
+
+          await playStaticAudioBeats({
+            beats: plan.beats.map((b, idx) => ({
+              audioUrl: staticAudioUrls[idx],
+              narration: b.narration,
+            })),
+            onStartAudio: () => {
+              if (cardNarrationRunIdRef.current === runId) {
+                setCardNarrationLoadingId(null);
+              }
+            },
+            onBeatStart: (beatIdx) => {
+              if (cardNarrationRunIdRef.current !== runId) return;
+              setCardActiveBeatIdx(beatIdx);
+              setStoryboardStepIdx(beatIdx);
+            },
+          });
+          return;
+        }
+
         const plan = await generateDocumentaryPlan({
           cacheKey: params.cacheKey,
           title: params.title,
@@ -1070,6 +1207,27 @@ export function App() {
     setStoryboardVoiceSynced(true);
 
     try {
+      if (ctx.staticAudioUrls && ctx.staticAudioUrls.length === ctx.plan.beats.length) {
+        await playStaticAudioBeats({
+          beats: ctx.plan.beats.map((b, idx) => ({
+            audioUrl: ctx.staticAudioUrls![idx],
+            narration: b.narration,
+          })),
+          startIndex: beatIdx,
+          onStartAudio: () => {
+            if (cardNarrationRunIdRef.current === runId) {
+              setCardNarrationLoadingId(null);
+            }
+          },
+          onBeatStart: (bIdx) => {
+            if (cardNarrationRunIdRef.current !== runId) return;
+            setCardActiveBeatIdx(bIdx);
+            setStoryboardStepIdx(bIdx);
+          },
+        });
+        return;
+      }
+
       await playSpeechChunks({
         cachePrefix: `doc:${ctx.cacheKey}`,
         chunks,

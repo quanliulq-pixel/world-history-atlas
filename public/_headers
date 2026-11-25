@@ -6,3 +6,9 @@
 
 /maplibre-gl-worker.js
   Cache-Control: public, max-age=86400
+
+/media/*/manifest.json
+  Cache-Control: public, max-age=60, must-revalidate
+
+/media/*
+  Cache-Control: public, max-age=86400

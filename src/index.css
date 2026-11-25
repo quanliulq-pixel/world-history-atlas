@@ -171,12 +171,38 @@ body,
   animation: atlasTickerEnter 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+@keyframes atlasEqBar {
+  0%,
+  100% {
+    transform: scaleY(0.35);
+    opacity: 0.72;
+  }
+  50% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+.atlas-eq-bar {
+  transform-origin: bottom center;
+  animation: atlasEqBar 0.78s ease-in-out infinite;
+}
+
+.atlas-eq-bar-2 {
+  animation-delay: 0.18s;
+}
+
+.atlas-eq-bar-3 {
+  animation-delay: 0.34s;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .atlas-beacon,
   .atlas-shockwave,
   .atlas-shockwave-delayed,
   .atlas-card-enter,
-  .atlas-ticker-enter {
+  .atlas-ticker-enter,
+  .atlas-eq-bar {
     animation: none !important;
   }
 }

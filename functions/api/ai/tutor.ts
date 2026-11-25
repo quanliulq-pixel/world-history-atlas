@@ -70,6 +70,7 @@ interface AiStoryboardSpot {
 interface AiStoryboardStep {
   title: string;
   caption: string;
+  matchSnippet?: string;
   year: number;
   center: [number, number];
   zoom: number;
@@ -190,6 +191,10 @@ function sanitizeStoryboard(raw: unknown): AiStoryboard | null {
     steps.push({
       title,
       caption: caption || title,
+      matchSnippet:
+        typeof s.matchSnippet === 'string' && s.matchSnippet.trim()
+          ? s.matchSnippet.trim().slice(0, 36)
+          : undefined,
       year,
       center,
       zoom,
@@ -254,6 +259,7 @@ const STORYBOARD_SCHEMA = {
         properties: {
           title: { type: 'STRING' },
           caption: { type: 'STRING' },
+          matchSnippet: { type: 'STRING' },
           year: { type: 'INTEGER' },
           center: { type: 'ARRAY', items: { type: 'NUMBER' } },
           zoom: { type: 'NUMBER' },
@@ -286,7 +292,7 @@ const STORYBOARD_SCHEMA = {
             },
           },
         },
-        required: ['title', 'caption', 'year', 'center', 'zoom', 'spots', 'flows'],
+        required: ['title', 'caption', 'matchSnippet', 'year', 'center', 'zoom', 'spots', 'flows'],
       },
     },
   },
@@ -349,7 +355,7 @@ export const onRequestPost = async (context: PagesCtx): Promise<Response> => {
       }
 
       const systemInstruction =
-        '你是《世界通史时空图谱》的比较史学教授。请以中文输出精炼、深刻、结构化的双主体历史比较分析，同时编制一组 3 幕动态地图对比演播脚本（storyboard），严格遵守给定 JSON Schema。';
+        '你是《世界通史时空图谱》的比较史学教授。请以中文输出精炼、深刻、结构化的双主体历史比较分析，同时编制一组 4 幕动态地图对比演播脚本（storyboard），严格遵守给定 JSON Schema。';
 
       const prompt = [
         `请对以下两个历史对象进行跨时空结构化比较：`,
@@ -363,7 +369,7 @@ export const onRequestPost = async (context: PagesCtx): Promise<Response> => {
         `- commonalities: 2-3条深层结构性共性`,
         `- divergences: 2-3条造成后续分流的根本差异`,
         `- modernEcho: 1-2句当代回响或现实制度/经济启发`,
-        `- storyboard: 生成 3 幕地图动画分镜：第 1 幕镜头定位对照组 A 核心地域（含 1-3 个热点 spots 与相关流向 flows）；第 2 幕镜头飞往对照组 B 核心地域；第 3 幕拉远视角（zoom 1.4-2.2）同时框住两地并用双向发光弧线（bidirectional: true）连接两者表现异同或跨文明呼应。坐标必须为真实 [经度, 纬度]，颜色使用鲜明 6 位 Hex（如 #D97706 / #10B981 / #3B82F6 / #E11D48 / #8B5CF6）。`,
+        `- storyboard: 生成 4 幕地图动画分镜，严格按照朗读与对比结构顺序对应：第 1 幕聚焦对照组 A 核心地域与“地缘条件对比”；第 2 幕镜头飞往对照组 B 核心地域，配合“政制与权力对比”；第 3 幕聚焦两地“经济与财税对比”或关键商路/货币流向；第 4 幕拉远视角（zoom 1.4-2.2）用双向发光弧线（bidirectional: true）连接两地呈现“文化与观念对比 / 当代回响”。每幕务必填写 matchSnippet（原样摘录对应字段正文中的 6-16 个连续汉字，不含标点和星号）以便语音朗读时精确同步。坐标必须为真实 [经度, 纬度]，颜色使用鲜明 6 位 Hex（如 #D97706 / #10B981 / #3B82F6 / #E11D48 / #8B5CF6）。`,
       ]
         .filter(Boolean)
         .join('\n');
@@ -408,10 +414,11 @@ export const onRequestPost = async (context: PagesCtx): Promise<Response> => {
       '1. `reply`（给用户阅读的文字解答，260-480 字中文）：',
       '   - 先给出一句直击本质的结论，再用清晰的要点分条剖析（政治博弈/财税经济/地理约束/文化观念等）。',
       '   - 善用跨文明横向类比与通俗比喻，可使用 **加粗** 与分点符号，但禁止输出 HTML 标签。',
-      '2. `storyboard`（配合讲解在左侧地图实时播放的 3-4 幕动态地图分镜，务必精准贴合 `reply` 内容）：',
+      '2. `storyboard`（配合讲解在左侧地图实时播放的 3-4 幕动态地图分镜，务必与 `reply` 严格保持一致）：',
       '   - `title`: 简短演播标题（16字以内）。',
-      '   - `steps`（3-4 幕，按时间/因果顺次推进）：',
+      '   - `steps`（3-4 幕，必须严格按照 `reply` 正文段落与分条要点的出现顺序依次编排，禁止打乱顺序）：',
       '     - `title`: 每幕短标题（10字以内）；`caption`: 1句话旁白字幕（35-65字），与地图当前动画呼应；',
+      '     - `matchSnippet`: 必须原样摘录 `reply` 中与本幕对应的那一段/那一条里的 6-18 个连续汉字（不含 `*` 等 Markdown 符号），用于前端朗读正文时实时锁定本幕动画；',
       '     - `year`: 该幕对应的历史公元年份（公元前用负数，如 -221、1492、1570）；地图会自动渐变到该年帝国疆域；',
       '     - `center`: [经度, 纬度] 真实地理坐标，决定镜头聚焦中心；`zoom`: 1.4-4.8 合适视野（跨洲传播用 1.5-2.3，区域事件用 2.8-4.5）；',
       '     - `spots`（1-4 个关键地点脉冲锚点）：真实 `[lng, lat]`、`label`（8字以内）、可选 `sublabel`（12字以内）、6位Hex `color`；',

@@ -49,6 +49,7 @@ import {
   playNarrationClip,
   speakWithBrowserSpeech,
   stopActiveNarration,
+  subscribeNarrationStop,
   type AiStoryboard,
   type AiTutorContext,
 } from './utils/aiClient';
@@ -143,6 +144,13 @@ export function App() {
   const [activeStoryboard, setActiveStoryboard] = useState<AiStoryboard | null>(null);
   const [storyboardStepIdx, setStoryboardStepIdx] = useState(0);
   const [storyboardPlaying, setStoryboardPlaying] = useState(false);
+  const [storyboardVoiceSynced, setStoryboardVoiceSynced] = useState(false);
+
+  useEffect(() => {
+    return subscribeNarrationStop(() => {
+      setStoryboardVoiceSynced(false);
+    });
+  }, []);
 
   const [activeStoryline, setActiveStoryline] = useState<Storyline | null>(null);
   const [storyStepIdx, setStoryStepIdx] = useState(0);
@@ -550,6 +558,7 @@ export function App() {
     setCardNarratingId(null);
     setCardNarrationLoadingId(null);
     setCardNarrationSubtitle(null);
+    setStoryboardVoiceSynced(false);
     if (clearStage) {
       setStoryboardPlaying(false);
       setActiveStoryboard(null);
@@ -772,8 +781,27 @@ export function App() {
     setTickerVisible(false);
     setActiveStoryboard(sb);
     setStoryboardStepIdx(0);
+    setStoryboardVoiceSynced(false);
     setStoryboardPlaying(true);
   }, []);
+
+  const handleSyncStoryboardStep = useCallback(
+    (sb: AiStoryboard, stepIdx: number, voiceSynced: boolean) => {
+      setIsPlaying(false);
+      setCinemaMode(false);
+      setActiveStoryline(null);
+      setStoryAutoPlay(false);
+      setTickerVisible(false);
+      setActiveStoryboard((cur) => (cur === sb ? cur : sb));
+      const clamped = Math.max(0, Math.min(sb.steps.length - 1, stepIdx));
+      setStoryboardStepIdx(clamped);
+      if (voiceSynced) {
+        setStoryboardPlaying(false);
+      }
+      setStoryboardVoiceSynced(voiceSynced);
+    },
+    [],
+  );
 
   // Sync map year & camera flight whenever the active AI storyboard scene changes
   useEffect(() => {
@@ -1320,23 +1348,28 @@ export function App() {
                   storyboard={activeStoryboard}
                   stepIndex={storyboardStepIdx}
                   isPlaying={storyboardPlaying}
+                  voiceSynced={storyboardVoiceSynced}
                   theme={theme}
                   aiDrawerOpen={aiOpen}
                   onSelectStep={(idx) => {
+                    setStoryboardVoiceSynced(false);
                     setStoryboardPlaying(false);
                     setStoryboardStepIdx(idx);
                   }}
                   onPrev={() => {
+                    setStoryboardVoiceSynced(false);
                     setStoryboardPlaying(false);
                     setStoryboardStepIdx((i) => Math.max(0, i - 1));
                   }}
                   onNext={() => {
+                    setStoryboardVoiceSynced(false);
                     setStoryboardPlaying(false);
                     setStoryboardStepIdx((i) =>
                       Math.min(activeStoryboard.steps.length - 1, i + 1),
                     );
                   }}
                   onTogglePlay={() => {
+                    setStoryboardVoiceSynced(false);
                     if (storyboardStepIdx >= activeStoryboard.steps.length - 1 && !storyboardPlaying) {
                       setStoryboardStepIdx(0);
                       setStoryboardPlaying(true);
@@ -1345,6 +1378,7 @@ export function App() {
                     }
                   }}
                   onReplay={() => {
+                    setStoryboardVoiceSynced(false);
                     setStoryboardStepIdx(0);
                     setStoryboardPlaying(true);
                   }}
@@ -1479,7 +1513,11 @@ export function App() {
         eraId={currentEra.id}
         intent={aiIntent}
         hasActiveStoryboard={Boolean(activeStoryboard)}
+        activeStoryboard={activeStoryboard}
+        activeStoryboardStepIdx={storyboardStepIdx}
         onPlayStoryboard={handlePlayStoryboard}
+        onSyncStoryboardStep={handleSyncStoryboardStep}
+        onVoiceSyncEnd={() => setStoryboardVoiceSynced(false)}
         onUnlockChange={setAiUnlocked}
         onClose={() => setAiOpen(false)}
       />

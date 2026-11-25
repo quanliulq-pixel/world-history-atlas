@@ -7,6 +7,7 @@ interface AiStageBarProps {
   storyboard: AiStoryboard;
   stepIndex: number;
   isPlaying: boolean;
+  voiceSynced?: boolean;
   theme: ThemeMode;
   aiDrawerOpen: boolean;
   onSelectStep: (idx: number) => void;
@@ -22,6 +23,7 @@ export function AiStageBar({
   storyboard,
   stepIndex,
   isPlaying,
+  voiceSynced = false,
   theme,
   aiDrawerOpen,
   onSelectStep,
@@ -63,6 +65,24 @@ export function AiStageBar({
               AI 动态演播 · {stepIndex + 1}/{steps.length}
             </span>
           </span>
+
+          {voiceSynced && (
+            <span
+              className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold shrink-0 border"
+              style={{
+                backgroundColor: isDark ? 'rgba(224, 166, 75, 0.16)' : 'rgba(180, 116, 23, 0.14)',
+                borderColor: isDark ? 'rgba(224, 166, 75, 0.45)' : 'rgba(180, 116, 23, 0.42)',
+                color: isDark ? '#F3C16E' : '#9B5E0B',
+              }}
+            >
+              <span className="inline-flex items-end gap-[2px] h-2.5" aria-hidden="true">
+                <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar" />
+                <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar atlas-eq-bar-2" />
+                <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar atlas-eq-bar-3" />
+              </span>
+              <span>语音同步中</span>
+            </span>
+          )}
 
           <span className="truncate text-xs font-bold">{storyboard.title}</span>
 

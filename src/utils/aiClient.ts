@@ -1,3 +1,5 @@
+import type { SpeechChunk } from './speechSync';
+
 export type AiVoiceName = 'Kore' | 'Aoede' | 'Puck' | 'Fenrir' | 'Charon';
 export type AiVoiceEngine = 'gemini' | 'browser';
 
@@ -101,6 +103,7 @@ export interface AiStoryboardSpot {
 export interface AiStoryboardStep {
   title: string;
   caption: string;
+  matchSnippet?: string;
   year: number;
   center: [number, number];
   zoom: number;
@@ -797,13 +800,17 @@ export function stopActiveNarration(notifyListeners = true): void {
   }
 }
 
-export function speakWithBrowserSpeech(text: string): Promise<void> {
+export function speakWithBrowserSpeech(
+  text: string,
+  existingToken?: number,
+  onProgress?: (ratio: number) => void,
+): Promise<void> {
   return new Promise((resolve) => {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
       globalThis.setTimeout(resolve, Math.min(4500, Math.max(1800, text.length * 45)));
       return;
     }
-    const token = ++activePlaybackToken;
+    const token = existingToken !== undefined ? existingToken : ++activePlaybackToken;
     try {
       window.speechSynthesis.cancel();
       const utter = new SpeechSynthesisUtterance(text);
@@ -819,12 +826,19 @@ export function speakWithBrowserSpeech(text: string): Promise<void> {
       const finish = () => {
         if (settled) return;
         settled = true;
+        utter.onboundary = null;
         if (cancelPendingWait === finish) cancelPendingWait = null;
         resolve();
       };
       cancelPendingWait = finish;
 
       const maxTimeout = window.setTimeout(finish, Math.max(8000, text.length * 180));
+      utter.onboundary = (ev) => {
+        if (settled || token !== activePlaybackToken) return;
+        if (typeof ev.charIndex === 'number' && text.length > 0) {
+          onProgress?.(Math.max(0, Math.min(1, ev.charIndex / text.length)));
+        }
+      };
       utter.onend = () => {
         window.clearTimeout(maxTimeout);
         finish();
@@ -848,6 +862,7 @@ export function speakWithBrowserSpeech(text: string): Promise<void> {
 async function playClipRespectingToken(
   clip: AiNarrationResult,
   sessionToken: number,
+  onProgress?: (ratio: number) => void,
 ): Promise<'gemini' | 'browser' | 'silent'> {
   if (sessionToken !== activePlaybackToken) return 'silent';
 
@@ -859,21 +874,28 @@ async function playClipRespectingToken(
           return;
         }
         let settled = false;
+        const audio = new Audio(clip.audioBlobUrl!);
         const finish = () => {
           if (settled) return;
           settled = true;
+          audio.ontimeupdate = null;
           if (cancelPendingWait === finish) cancelPendingWait = null;
           resolve();
         };
         cancelPendingWait = finish;
 
-        const audio = new Audio(clip.audioBlobUrl!);
         activeAudioEl = audio;
+        audio.ontimeupdate = () => {
+          if (audio.duration > 0 && Number.isFinite(audio.duration)) {
+            onProgress?.(Math.max(0, Math.min(1, audio.currentTime / audio.duration)));
+          }
+        };
         audio.onended = () => {
           if (activeAudioEl === audio) activeAudioEl = null;
           finish();
         };
         audio.onerror = () => {
+          audio.ontimeupdate = null;
           if (activeAudioEl === audio) activeAudioEl = null;
           if (settled) return;
           settled = true;
@@ -881,6 +903,7 @@ async function playClipRespectingToken(
           reject(new Error('Audio element playback failed'));
         };
         audio.play().catch((err) => {
+          audio.ontimeupdate = null;
           if (activeAudioEl === audio) activeAudioEl = null;
           if (settled) return;
           settled = true;
@@ -891,12 +914,12 @@ async function playClipRespectingToken(
       return sessionToken === activePlaybackToken ? 'gemini' : 'silent';
     } catch {
       if (sessionToken !== activePlaybackToken) return 'silent';
-      await speakWithBrowserSpeech(clip.script);
+      await speakWithBrowserSpeech(clip.script, sessionToken, onProgress);
       return 'browser';
     }
   }
 
-  await speakWithBrowserSpeech(clip.script);
+  await speakWithBrowserSpeech(clip.script, sessionToken, onProgress);
   return 'browser';
 }
 
@@ -905,6 +928,125 @@ export async function playNarrationClip(
 ): Promise<'gemini' | 'browser' | 'silent'> {
   stopActiveNarration(false);
   return playClipRespectingToken(clip, activePlaybackToken);
+}
+
+function createSentenceProgressTracker(
+  chunk: SpeechChunk,
+  onSentenceChange?: (blockId: string, sentenceIdx: number, chunk: SpeechChunk) => void,
+): (ratio: number) => void {
+  const { sentenceIndices, sentenceWeights, blockId } = chunk;
+  const totalWeight = sentenceWeights.reduce((sum, w) => sum + Math.max(1, w), 0);
+  const thresholds: number[] = [];
+  let acc = 0;
+  for (let i = 0; i < sentenceWeights.length; i++) {
+    acc += Math.max(1, sentenceWeights[i]);
+    thresholds.push(totalWeight > 0 ? acc / totalWeight : 1);
+  }
+  let lastEmittedIdx = sentenceIndices[0] ?? -1;
+
+  return (ratio: number) => {
+    if (!onSentenceChange || sentenceIndices.length <= 1) return;
+    const clamped = Math.max(0, Math.min(0.9999, ratio));
+    let targetPos = 0;
+    for (let i = 0; i < thresholds.length; i++) {
+      if (clamped < thresholds[i]) {
+        targetPos = i;
+        break;
+      }
+      targetPos = i;
+    }
+    const targetSentenceIdx = sentenceIndices[targetPos];
+    if (targetSentenceIdx !== undefined && targetSentenceIdx !== lastEmittedIdx) {
+      lastEmittedIdx = targetSentenceIdx;
+      onSentenceChange(blockId, targetSentenceIdx, chunk);
+    }
+  };
+}
+
+export async function playSpeechChunks(params: {
+  cachePrefix: string;
+  chunks: SpeechChunk[];
+  voicePrefs?: AiVoicePrefs;
+  onStartAudio?: () => void;
+  onChunkStart?: (chunk: SpeechChunk, index: number, total: number) => void;
+  onSentenceChange?: (blockId: string, sentenceIdx: number, chunk: SpeechChunk) => void;
+}): Promise<void> {
+  stopActiveNarration(false);
+  const sessionToken = activePlaybackToken;
+  const controller = new AbortController();
+  activeTtsController = controller;
+  const prefs = params.voicePrefs || getVoicePrefs();
+  const chunks = params.chunks.filter((c) => c.speechText.trim().length > 0);
+
+  if (chunks.length === 0) {
+    params.onStartAudio?.();
+    if (activeTtsController === controller) {
+      activeTtsController = null;
+    }
+    return;
+  }
+
+  try {
+    if (prefs.engine === 'browser') {
+      for (let i = 0; i < chunks.length; i++) {
+        if (sessionToken !== activePlaybackToken) break;
+        const chunk = chunks[i];
+        params.onChunkStart?.(chunk, i, chunks.length);
+        if (chunk.sentenceIndices.length > 0) {
+          params.onSentenceChange?.(chunk.blockId, chunk.sentenceIndices[0], chunk);
+        }
+        if (i === 0) {
+          params.onStartAudio?.();
+        }
+        await speakWithBrowserSpeech(
+          chunk.speechText,
+          sessionToken,
+          createSentenceProgressTracker(chunk, params.onSentenceChange),
+        );
+      }
+      return;
+    }
+
+    const fetchChunk = (index: number) =>
+      generateNarration({
+        cacheKey: `${params.cachePrefix}:c${index}:${chunks[index].speechText.slice(0, 24)}`,
+        script: chunks[index].speechText,
+        voicePrefs: prefs,
+        signal: controller.signal,
+      });
+
+    let nextPromise: Promise<AiNarrationResult> | null = fetchChunk(0);
+    for (let i = 0; i < chunks.length; i++) {
+      if (sessionToken !== activePlaybackToken || !nextPromise) break;
+      const clip = await nextPromise;
+      if (sessionToken !== activePlaybackToken) break;
+
+      const chunk = chunks[i];
+      nextPromise = i + 1 < chunks.length ? fetchChunk(i + 1) : null;
+      params.onChunkStart?.(chunk, i, chunks.length);
+      if (chunk.sentenceIndices.length > 0) {
+        params.onSentenceChange?.(chunk.blockId, chunk.sentenceIndices[0], chunk);
+      }
+      if (i === 0) {
+        params.onStartAudio?.();
+      }
+      const mode = await playClipRespectingToken(
+        clip,
+        sessionToken,
+        createSentenceProgressTracker(chunk, params.onSentenceChange),
+      );
+      if (mode === 'silent' || sessionToken !== activePlaybackToken) break;
+    }
+  } catch (err) {
+    if (err instanceof AiClientError && err.code === 'aborted') {
+      return;
+    }
+    throw err;
+  } finally {
+    if (activeTtsController === controller) {
+      activeTtsController = null;
+    }
+  }
 }
 
 export async function playTextPipelined(params: {
@@ -926,7 +1068,7 @@ export async function playTextPipelined(params: {
 
   if (prefs.engine === 'browser') {
     params.onStartAudio?.();
-    await speakWithBrowserSpeech(cleanText);
+    await speakWithBrowserSpeech(cleanText, sessionToken);
     return;
   }
 

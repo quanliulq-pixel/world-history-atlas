@@ -23,7 +23,7 @@ import {
   X,
   XCircle,
 } from 'lucide-react';
-import { Fragment, useEffect, useMemo, useState } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { COUNTRY_PROFILES } from '../data/countries';
 import { ALL_EVENTS } from '../data/events';
 import { ALL_FIGURES } from '../data/figures';
@@ -40,7 +40,7 @@ import {
   getVoicePrefs,
   gradeFeynmanWithAi,
   listCachedComparisons,
-  playTextPipelined,
+  playSpeechChunks,
   saveVoicePrefs,
   setStoredPasscode,
   stopActiveNarration,
@@ -59,6 +59,12 @@ import {
   type AiVoiceName,
   type AiVoicePrefs,
 } from '../utils/aiClient';
+import {
+  buildCompareSpeechPlan,
+  buildMarkdownSpeechPlan,
+  type CompareBlockId,
+  type SentenceSpan,
+} from '../utils/speechSync';
 import { formatYear } from '../utils/timeline';
 
 export type AiStudioTab = 'tutor' | 'compare' | 'quiz';
@@ -81,7 +87,11 @@ interface AiStudioModalProps {
   eraId: string;
   intent: AiStudioIntent | null;
   hasActiveStoryboard?: boolean;
+  activeStoryboard?: AiStoryboard | null;
+  activeStoryboardStepIdx?: number;
   onPlayStoryboard?: (storyboard: AiStoryboard) => void;
+  onSyncStoryboardStep?: (storyboard: AiStoryboard, stepIndex: number, voiceSynced: boolean) => void;
+  onVoiceSyncEnd?: () => void;
   onUnlockChange?: (unlocked: boolean) => void;
   onClose: () => void;
 }
@@ -94,59 +104,295 @@ const COMPARE_PRESETS = [
   { a: '英国工业革命', b: '清朝康乾盛世农耕顶峰', angle: '大分流背后的能源、市场与制度约束' },
 ];
 
-function renderInlineBold(text: string): React.ReactNode[] {
-  const parts = text.split(/(\*\*[^*]+\*\*)/g);
-  return parts.map((part, i) => {
-    if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
-      return (
-        <strong key={i} className="font-bold">
-          {part.slice(2, -2)}
-        </strong>
-      );
-    }
-    return <Fragment key={i}>{part}</Fragment>;
-  });
+function EqualizerBars({ className = '' }: { className?: string }) {
+  return (
+    <span className={`inline-flex items-end gap-[2px] h-2.5 ${className}`} aria-hidden="true">
+      <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar" />
+      <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar atlas-eq-bar-2" />
+      <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar atlas-eq-bar-3" />
+    </span>
+  );
 }
 
-function FormattedMarkdown({ text }: { text: string }) {
-  const lines = text.split(/\r?\n/);
+function renderInlineRuns(runs: SentenceSpan['runs']): React.ReactNode[] {
+  return runs.map((r, i) =>
+    r.bold ? (
+      <strong key={i} className="font-bold">
+        {r.text}
+      </strong>
+    ) : (
+      <Fragment key={i}>{r.text}</Fragment>
+    ),
+  );
+}
+
+function SentenceList({
+  sentences,
+  activeSentenceIdx,
+  theme,
+}: {
+  sentences: SentenceSpan[];
+  activeSentenceIdx: number | null;
+  theme: ThemeMode;
+}) {
+  const isDark = theme === 'obsidian';
+  return (
+    <>
+      {sentences.map((s) => {
+        const isActive = activeSentenceIdx !== null && s.sentenceIdx === activeSentenceIdx;
+        if (isActive) {
+          return (
+            <mark
+              key={s.sentenceIdx}
+              className="rounded-sm px-0.5 py-[1px] transition-colors duration-150"
+              style={{
+                backgroundColor: isDark ? 'rgba(224, 166, 75, 0.28)' : 'rgba(180, 116, 23, 0.24)',
+                color: 'inherit',
+                boxShadow: isDark
+                  ? 'inset 0 -1.5px 0 rgba(243, 193, 110, 0.7)'
+                  : 'inset 0 -1.5px 0 rgba(140, 45, 45, 0.55)',
+              }}
+            >
+              {renderInlineRuns(s.runs)}
+            </mark>
+          );
+        }
+        return <Fragment key={s.sentenceIdx}>{renderInlineRuns(s.runs)}</Fragment>;
+      })}
+    </>
+  );
+}
+
+interface FormattedMarkdownProps {
+  text: string;
+  storyboard?: AiStoryboard | null;
+  isActiveStoryboard?: boolean;
+  activeStoryboardStepIdx?: number;
+  speechBlockId?: string | null;
+  speechSentenceIdx?: number | null;
+  speechLoading?: boolean;
+  theme: ThemeMode;
+  onJumpToScene?: (stepIdx: number) => void;
+}
+
+function FormattedMarkdown({
+  text,
+  storyboard,
+  isActiveStoryboard = false,
+  activeStoryboardStepIdx = 0,
+  speechBlockId = null,
+  speechSentenceIdx = null,
+  speechLoading = false,
+  theme,
+  onJumpToScene,
+}: FormattedMarkdownProps) {
+  const plan = useMemo(() => buildMarkdownSpeechPlan(text, storyboard), [text, storyboard]);
+  const blockRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  useEffect(() => {
+    if (!speechBlockId) return;
+    const el = blockRefs.current[speechBlockId];
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, [speechBlockId]);
+
+  const isDark = theme === 'obsidian';
+  const anchorScenesByBlock = useMemo(() => {
+    const map = new Map<string, number[]>();
+    for (const [scStr, bId] of Object.entries(plan.sceneAnchorBlockIds)) {
+      const sc = Number(scStr);
+      const list = map.get(bId) || [];
+      list.push(sc);
+      map.set(bId, list);
+    }
+    return map;
+  }, [plan.sceneAnchorBlockIds]);
+
   return (
     <div className="space-y-1.5 text-xs leading-relaxed">
-      {lines.map((raw, idx) => {
-        const line = raw.trim();
-        if (!line) return <div key={idx} className="h-1" />;
-        if (line.startsWith('### ')) {
-          return (
-            <div key={idx} className="font-bold text-[12px] pt-1">
-              {renderInlineBold(line.slice(4))}
+      {plan.blocks.map((block) => {
+        if (block.kind === 'spacer') {
+          return <div key={block.blockId} className="h-1" />;
+        }
+
+        const isSpokenBlock = speechBlockId === block.blockId;
+        const activeSentence =
+          isSpokenBlock && speechSentenceIdx !== null
+            ? block.sentences.find((s) => s.sentenceIdx === speechSentenceIdx)
+            : undefined;
+        const effectiveSceneIdx =
+          activeSentence?.sceneIndex ?? block.primarySceneIndex;
+        const activeStep =
+          effectiveSceneIdx !== undefined && storyboard?.steps[effectiveSceneIdx]
+            ? storyboard.steps[effectiveSceneIdx]
+            : null;
+
+        const isMapSyncedBlock =
+          !speechBlockId &&
+          isActiveStoryboard &&
+          block.primarySceneIndex !== undefined &&
+          block.primarySceneIndex === activeStoryboardStepIdx;
+
+        const anchorScenes = anchorScenesByBlock.get(block.blockId) || [];
+
+        const contentNode = (
+          <SentenceList
+            sentences={block.sentences}
+            activeSentenceIdx={isSpokenBlock ? speechSentenceIdx : null}
+            theme={theme}
+          />
+        );
+
+        let bodyEl: React.ReactNode;
+        if (block.kind === 'h3') {
+          bodyEl = <div className="font-bold text-[12px] pt-0.5">{contentNode}</div>;
+        } else if (block.kind === 'h2') {
+          bodyEl = <div className="font-bold text-[13px] pt-0.5">{contentNode}</div>;
+        } else if (block.kind === 'bullet') {
+          bodyEl = (
+            <div className="flex items-start gap-1.5 pl-0.5">
+              <span
+                className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full"
+                style={{
+                  backgroundColor: isSpokenBlock ? 'var(--accent-primary)' : 'currentColor',
+                  opacity: isSpokenBlock ? 1 : 0.55,
+                }}
+              />
+              <span>{contentNode}</span>
             </div>
           );
-        }
-        if (line.startsWith('## ')) {
-          return (
-            <div key={idx} className="font-bold text-[13px] pt-1">
-              {renderInlineBold(line.slice(3))}
+        } else if (block.kind === 'numbered') {
+          bodyEl = (
+            <div className="flex items-start gap-1.5 pl-0.5">
+              <span className="font-semibold shrink-0">{block.listPrefix}</span>
+              <span>{contentNode}</span>
             </div>
           );
+        } else {
+          bodyEl = <p>{contentNode}</p>;
         }
-        if (/^[-*•]\s+/.test(line)) {
-          return (
-            <div key={idx} className="flex items-start gap-1.5 pl-1">
-              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-current opacity-55" />
-              <span>{renderInlineBold(line.replace(/^[-*•]\s+/, ''))}</span>
-            </div>
-          );
-        }
-        if (/^\d+\.\s+/.test(line)) {
-          const m = line.match(/^(\d+\.)\s+(.*)$/);
-          return (
-            <div key={idx} className="flex items-start gap-1.5 pl-0.5">
-              <span className="font-semibold shrink-0">{m?.[1]}</span>
-              <span>{renderInlineBold(m?.[2] || line)}</span>
-            </div>
-          );
-        }
-        return <p key={idx}>{renderInlineBold(line)}</p>;
+
+        const showTopPill = isSpokenBlock || isMapSyncedBlock;
+
+        return (
+          <div
+            key={block.blockId}
+            ref={(el) => {
+              blockRefs.current[block.blockId] = el;
+            }}
+            className={
+              showTopPill
+                ? 'rounded-xl px-2.5 py-1.5 -mx-1.5 transition-all duration-200'
+                : 'rounded-lg transition-colors duration-200'
+            }
+            style={
+              isSpokenBlock
+                ? {
+                    backgroundColor: isDark
+                      ? 'rgba(224, 99, 90, 0.14)'
+                      : 'rgba(140, 45, 45, 0.08)',
+                    borderLeft: '3px solid var(--accent-primary)',
+                  }
+                : isMapSyncedBlock
+                  ? {
+                      backgroundColor: isDark
+                        ? 'rgba(224, 166, 75, 0.10)'
+                        : 'rgba(180, 116, 23, 0.08)',
+                      borderLeft: '2.5px solid var(--accent-gold)',
+                    }
+                  : undefined
+            }
+          >
+            {isSpokenBlock && (
+              <div className="mb-1 flex flex-wrap items-center gap-1.5 text-[10px]">
+                <span
+                  className="inline-flex items-center gap-1 font-bold"
+                  style={{ color: 'var(--accent-primary)' }}
+                >
+                  {speechLoading ? (
+                    <>
+                      <Loader2 className="h-2.5 w-2.5 animate-spin" />
+                      <span>准备朗读...</span>
+                    </>
+                  ) : (
+                    <>
+                      <EqualizerBars />
+                      <span>正在朗读</span>
+                    </>
+                  )}
+                </span>
+                {activeStep && effectiveSceneIdx !== undefined && (
+                  <button
+                    type="button"
+                    onClick={() => onJumpToScene?.(effectiveSceneIdx)}
+                    className="inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[9.5px] font-semibold cursor-pointer hover:opacity-85"
+                    style={{
+                      backgroundColor: isDark
+                        ? 'rgba(224, 166, 75, 0.20)'
+                        : 'rgba(180, 116, 23, 0.16)',
+                      color: isDark ? '#F3C16E' : '#8A5208',
+                    }}
+                  >
+                    <Film className="h-2.5 w-2.5" />
+                    <span>
+                      地图同步 · 第 {effectiveSceneIdx + 1} 幕 · {activeStep.title}
+                    </span>
+                  </button>
+                )}
+              </div>
+            )}
+
+            {isMapSyncedBlock && activeStep && effectiveSceneIdx !== undefined && (
+              <div className="mb-1 flex items-center gap-1 text-[10px]">
+                <span
+                  className="inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 font-semibold"
+                  style={{
+                    backgroundColor: isDark
+                      ? 'rgba(224, 166, 75, 0.20)'
+                      : 'rgba(180, 116, 23, 0.16)',
+                    color: isDark ? '#F3C16E' : '#8A5208',
+                  }}
+                >
+                  <Film className="h-2.5 w-2.5" />
+                  <span>
+                    地图正演播 · 第 {effectiveSceneIdx + 1} 幕 · {activeStep.title}
+                  </span>
+                </span>
+              </div>
+            )}
+
+            {bodyEl}
+
+            {!showTopPill && anchorScenes.length > 0 && storyboard && onJumpToScene && (
+              <div className="mt-1 flex flex-wrap items-center gap-1">
+                {anchorScenes.map((scIdx) => {
+                  const st = storyboard.steps[scIdx];
+                  if (!st) return null;
+                  return (
+                    <button
+                      key={scIdx}
+                      type="button"
+                      onClick={() => onJumpToScene(scIdx)}
+                      className="inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[9.5px] font-medium hover:opacity-85 cursor-pointer"
+                      style={{
+                        backgroundColor: 'var(--bg-surface)',
+                        borderColor: 'var(--border-subtle)',
+                        color: isDark ? '#E5A94C' : '#9B5E0B',
+                      }}
+                      title="点击将左侧地图切换到这一幕"
+                    >
+                      <Film className="h-2.5 w-2.5" />
+                      <span>
+                        第 {scIdx + 1} 幕 · {st.title}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        );
       })}
     </div>
   );
@@ -160,7 +406,11 @@ export function AiStudioModal({
   eraId,
   intent,
   hasActiveStoryboard = false,
+  activeStoryboard = null,
+  activeStoryboardStepIdx = 0,
   onPlayStoryboard,
+  onSyncStoryboardStep,
+  onVoiceSyncEnd,
   onUnlockChange,
   onClose,
 }: AiStudioModalProps) {
@@ -196,6 +446,22 @@ export function AiStudioModal({
   const [compareError, setCompareError] = useState<string | null>(null);
   const [compareCached, setCompareCached] = useState(false);
   const [compareSpeaking, setCompareSpeaking] = useState(false);
+
+  // Live speech-text & map synchronization state
+  const speechRunIdRef = useRef(0);
+  const compareBlockRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const [activeSpeech, setActiveSpeech] = useState<{
+    sourceKey: string;
+    blockId: string;
+    sentenceIdx: number | null;
+    sceneIndex?: number;
+    loading: boolean;
+  } | null>(null);
+
+  const comparePlan = useMemo(
+    () => (compareResult ? buildCompareSpeechPlan(compareResult, compareStoryboard) : null),
+    [compareResult, compareStoryboard],
+  );
 
   // Tab 3: Quiz
   const [quizScope, setQuizScope] = useState<'context' | 'era' | 'mastered'>('era');
@@ -260,22 +526,35 @@ export function AiStudioModal({
 
   useEffect(() => {
     return subscribeNarrationStop(() => {
+      speechRunIdRef.current += 1;
       setLoadingSpeechKey(null);
       setSpeakingMsgId(null);
       setCompareSpeaking(false);
+      setActiveSpeech(null);
     });
   }, []);
 
   useEffect(() => {
     if (!open) {
+      speechRunIdRef.current += 1;
       setLoadingSpeechKey(null);
       setSpeakingMsgId(null);
       setCompareSpeaking(false);
+      setActiveSpeech(null);
       return;
     }
     setUsage(getAiUsage());
     void refreshStatus();
   }, [open]);
+
+  useEffect(() => {
+    if (tab !== 'compare' || !activeSpeech || !compareResult) return;
+    if (activeSpeech.sourceKey !== `cmp-${compareResult.title}`) return;
+    const el = compareBlockRefs.current[activeSpeech.blockId];
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, [tab, activeSpeech?.blockId, activeSpeech?.sourceKey, compareResult]);
 
   const handleApiError = (err: unknown, setLocalErr: (msg: string | null) => void) => {
     if (err instanceof AiClientError) {
@@ -442,35 +721,127 @@ export function AiStudioModal({
     }
   };
 
-  const handleSpeakText = async (key: string, text: string, mode: 'msg' | 'compare') => {
-    if ((mode === 'msg' && speakingMsgId === key) || (mode === 'compare' && compareSpeaking)) {
+  const runChunkedSpeech = async (params: {
+    sourceKey: string;
+    mode: 'msg' | 'compare';
+    chunks: ReturnType<typeof buildMarkdownSpeechPlan>['chunks'];
+    storyboard?: AiStoryboard | null;
+  }) => {
+    const { sourceKey, mode, chunks, storyboard } = params;
+    if (chunks.length === 0) return;
+
+    const runId = ++speechRunIdRef.current;
+    const firstChunk = chunks[0];
+
+    setLoadingSpeechKey(sourceKey);
+    setSpeakingMsgId(mode === 'msg' ? sourceKey : null);
+    setCompareSpeaking(mode === 'compare');
+    setActiveSpeech({
+      sourceKey,
+      blockId: firstChunk.blockId,
+      sentenceIdx: firstChunk.sentenceIndices[0] ?? null,
+      sceneIndex: firstChunk.sceneIndex,
+      loading: true,
+    });
+
+    if (storyboard && onSyncStoryboardStep) {
+      onSyncStoryboardStep(storyboard, firstChunk.sceneIndex ?? 0, true);
+    }
+
+    try {
+      await playSpeechChunks({
+        cachePrefix: `tts:${sourceKey}`,
+        chunks,
+        voicePrefs,
+        onStartAudio: () => {
+          if (speechRunIdRef.current !== runId) return;
+          setLoadingSpeechKey((cur) => (cur === sourceKey ? null : cur));
+          setActiveSpeech((cur) =>
+            cur && cur.sourceKey === sourceKey ? { ...cur, loading: false } : cur,
+          );
+          setUsage(getAiUsage());
+        },
+        onChunkStart: (chunk, index) => {
+          if (speechRunIdRef.current !== runId) return;
+          setActiveSpeech((cur) => ({
+            sourceKey,
+            blockId: chunk.blockId,
+            sentenceIdx: chunk.sentenceIndices[0] ?? null,
+            sceneIndex: chunk.sceneIndex,
+            loading: index === 0 ? (cur?.sourceKey === sourceKey ? cur.loading : false) : false,
+          }));
+          if (storyboard && onSyncStoryboardStep && chunk.sceneIndex !== undefined) {
+            onSyncStoryboardStep(storyboard, chunk.sceneIndex, true);
+          }
+        },
+        onSentenceChange: (blockId, sentenceIdx, chunk) => {
+          if (speechRunIdRef.current !== runId) return;
+          setActiveSpeech((cur) => ({
+            sourceKey,
+            blockId,
+            sentenceIdx,
+            sceneIndex: chunk.sceneIndex,
+            loading: cur?.sourceKey === sourceKey ? cur.loading : false,
+          }));
+        },
+      });
+      if (speechRunIdRef.current === runId) {
+        setUsage(getAiUsage());
+      }
+    } catch (err) {
+      if (speechRunIdRef.current === runId) {
+        handleApiError(err, mode === 'msg' ? setChatError : setCompareError);
+      }
+    } finally {
+      if (speechRunIdRef.current === runId) {
+        setLoadingSpeechKey((cur) => (cur === sourceKey ? null : cur));
+        setSpeakingMsgId(null);
+        setCompareSpeaking(false);
+        setActiveSpeech(null);
+        onVoiceSyncEnd?.();
+      }
+    }
+  };
+
+  const handleSpeakMessage = async (m: AiChatMessage) => {
+    if (speakingMsgId === m.id) {
+      speechRunIdRef.current += 1;
       stopActiveNarration();
       setLoadingSpeechKey(null);
       setSpeakingMsgId(null);
       setCompareSpeaking(false);
+      setActiveSpeech(null);
+      onVoiceSyncEnd?.();
       return;
     }
-    setLoadingSpeechKey(key);
-    setSpeakingMsgId(mode === 'msg' ? key : null);
-    setCompareSpeaking(mode === 'compare');
-    try {
-      await playTextPipelined({
-        cachePrefix: `tts:${key}`,
-        text,
-        voicePrefs,
-        onStartAudio: () => {
-          setLoadingSpeechKey((cur) => (cur === key ? null : cur));
-          setUsage(getAiUsage());
-        },
-      });
-      setUsage(getAiUsage());
-    } catch (err) {
-      handleApiError(err, mode === 'msg' ? setChatError : setCompareError);
-    } finally {
-      setLoadingSpeechKey((cur) => (cur === key ? null : cur));
+    const plan = buildMarkdownSpeechPlan(m.text, m.storyboard);
+    await runChunkedSpeech({
+      sourceKey: m.id,
+      mode: 'msg',
+      chunks: plan.chunks,
+      storyboard: m.storyboard,
+    });
+  };
+
+  const handleSpeakCompare = async () => {
+    if (!compareResult || !comparePlan) return;
+    const sourceKey = `cmp-${compareResult.title}`;
+    if (compareSpeaking) {
+      speechRunIdRef.current += 1;
+      stopActiveNarration();
+      setLoadingSpeechKey(null);
       setSpeakingMsgId(null);
       setCompareSpeaking(false);
+      setActiveSpeech(null);
+      onVoiceSyncEnd?.();
+      return;
     }
+    await runChunkedSpeech({
+      sourceKey,
+      mode: 'compare',
+      chunks: comparePlan.chunks,
+      storyboard: compareStoryboard,
+    });
   };
 
   const buildQuizSourceItems = (): { label: string; items: AiQuizSourceItem[] } => {
@@ -588,8 +959,128 @@ export function AiStudioModal({
 
   if (!open) return null;
 
-  const panelBg = theme === 'obsidian' ? '#141E2B' : '#FBF8F1';
+  const isDark = theme === 'obsidian';
+  const panelBg = isDark ? '#141E2B' : '#FBF8F1';
   const recentCompares = listCachedComparisons().slice(0, 4);
+
+  const compareSourceKey = compareResult ? `cmp-${compareResult.title}` : '';
+  const isCompareSpeechActive =
+    Boolean(compareSourceKey) && compareSpeaking && activeSpeech?.sourceKey === compareSourceKey;
+  const isCompareStoryboardActive = Boolean(
+    compareStoryboard && activeStoryboard === compareStoryboard,
+  );
+
+  const getCompareBlockState = (blockId: CompareBlockId) => {
+    const isSpoken = isCompareSpeechActive && activeSpeech?.blockId === blockId;
+    const mappedScene = isSpoken
+      ? (activeSpeech?.sceneIndex ?? comparePlan?.blockScenes[blockId])
+      : comparePlan?.blockScenes[blockId];
+    const isMapSynced =
+      !isCompareSpeechActive &&
+      isCompareStoryboardActive &&
+      mappedScene !== undefined &&
+      mappedScene === activeStoryboardStepIdx;
+    const step =
+      mappedScene !== undefined && compareStoryboard?.steps[mappedScene]
+        ? compareStoryboard.steps[mappedScene]
+        : null;
+    const isAnchor =
+      mappedScene !== undefined && comparePlan?.sceneAnchorBlockIds[mappedScene] === blockId;
+    return {
+      isSpoken,
+      isMapSynced,
+      mappedScene,
+      step,
+      isAnchor,
+      sentenceIdx: isSpoken ? (activeSpeech?.sentenceIdx ?? null) : null,
+      loading: isSpoken ? Boolean(activeSpeech?.loading) : false,
+    };
+  };
+
+  const renderCompareSyncBadge = (blockId: CompareBlockId) => {
+    const st = getCompareBlockState(blockId);
+    if (!st.isSpoken && !st.isMapSynced && !(st.isAnchor && st.step)) return null;
+
+    if (st.isSpoken) {
+      return (
+        <div className="mb-1 flex flex-wrap items-center gap-1.5 text-[10px]">
+          <span
+            className="inline-flex items-center gap-1 font-bold"
+            style={{ color: 'var(--accent-primary)' }}
+          >
+            {st.loading ? (
+              <>
+                <Loader2 className="h-2.5 w-2.5 animate-spin" />
+                <span>准备朗读...</span>
+              </>
+            ) : (
+              <>
+                <EqualizerBars />
+                <span>正在朗读</span>
+              </>
+            )}
+          </span>
+          {st.step && st.mappedScene !== undefined && compareStoryboard && (
+            <button
+              type="button"
+              onClick={() => onSyncStoryboardStep?.(compareStoryboard, st.mappedScene!, false)}
+              className="inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[9.5px] font-semibold cursor-pointer hover:opacity-85"
+              style={{
+                backgroundColor: isDark ? 'rgba(224, 166, 75, 0.20)' : 'rgba(180, 116, 23, 0.16)',
+                color: isDark ? '#F3C16E' : '#8A5208',
+              }}
+            >
+              <Film className="h-2.5 w-2.5" />
+              <span>
+                地图同步 · 第 {st.mappedScene + 1} 幕 · {st.step.title}
+              </span>
+            </button>
+          )}
+        </div>
+      );
+    }
+
+    if (st.isMapSynced && st.step && st.mappedScene !== undefined) {
+      return (
+        <div className="mb-1 flex items-center gap-1 text-[10px]">
+          <span
+            className="inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 font-semibold"
+            style={{
+              backgroundColor: isDark ? 'rgba(224, 166, 75, 0.20)' : 'rgba(180, 116, 23, 0.16)',
+              color: isDark ? '#F3C16E' : '#8A5208',
+            }}
+          >
+            <Film className="h-2.5 w-2.5" />
+            <span>
+              地图正演播 · 第 {st.mappedScene + 1} 幕 · {st.step.title}
+            </span>
+          </span>
+        </div>
+      );
+    }
+
+    if (st.isAnchor && st.step && st.mappedScene !== undefined && compareStoryboard) {
+      return (
+        <button
+          type="button"
+          onClick={() => onSyncStoryboardStep?.(compareStoryboard, st.mappedScene!, false)}
+          className="mb-1 inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[9.5px] font-medium hover:opacity-85 cursor-pointer"
+          style={{
+            backgroundColor: 'var(--bg-surface)',
+            borderColor: 'var(--border-subtle)',
+            color: isDark ? '#E5A94C' : '#9B5E0B',
+          }}
+        >
+          <Film className="h-2.5 w-2.5" />
+          <span>
+            第 {st.mappedScene + 1} 幕 · {st.step.title}
+          </span>
+        </button>
+      );
+    }
+
+    return null;
+  };
 
   return (
     <div className="fixed inset-0 lg:inset-y-0 lg:left-auto lg:right-0 lg:w-[470px] lg:max-w-[46vw] z-50 lg:z-40 flex justify-end bg-black/45 lg:bg-transparent backdrop-blur-xs lg:backdrop-blur-none">
@@ -989,7 +1480,10 @@ export function AiStudioModal({
                 </div>
               )}
 
-              {messages.map((m) => (
+              {messages.map((m) => {
+                const isMsgSpeaking = speakingMsgId === m.id && activeSpeech?.sourceKey === m.id;
+                const isMsgStoryboardActive = Boolean(m.storyboard && activeStoryboard === m.storyboard);
+                return (
                 <div
                   key={m.id}
                   className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'}`}
@@ -1008,7 +1502,21 @@ export function AiStudioModal({
                       <p className="text-xs leading-relaxed whitespace-pre-wrap">{m.text}</p>
                     ) : (
                       <>
-                        <FormattedMarkdown text={m.text} />
+                        <FormattedMarkdown
+                          text={m.text}
+                          storyboard={m.storyboard}
+                          isActiveStoryboard={isMsgStoryboardActive}
+                          activeStoryboardStepIdx={activeStoryboardStepIdx}
+                          speechBlockId={isMsgSpeaking ? activeSpeech?.blockId ?? null : null}
+                          speechSentenceIdx={isMsgSpeaking ? activeSpeech?.sentenceIdx ?? null : null}
+                          speechLoading={isMsgSpeaking ? Boolean(activeSpeech?.loading) : false}
+                          theme={theme}
+                          onJumpToScene={(stepIdx) => {
+                            if (m.storyboard && onSyncStoryboardStep) {
+                              onSyncStoryboardStep(m.storyboard, stepIdx, false);
+                            }
+                          }}
+                        />
                         <div
                           className="mt-2 pt-1.5 border-t flex flex-wrap items-center justify-end gap-1.5"
                           style={{ borderColor: 'var(--border-subtle)' }}
@@ -1020,7 +1528,7 @@ export function AiStudioModal({
                               className="inline-flex items-center gap-1 rounded-lg px-2 py-0.5 text-[10px] font-semibold hover:opacity-85 cursor-pointer"
                               style={{
                                 backgroundColor: 'rgba(180, 116, 23, 0.14)',
-                                color: theme === 'obsidian' ? '#E5A94C' : '#9B5E0B',
+                                color: isDark ? '#E5A94C' : '#9B5E0B',
                               }}
                             >
                               <Film className="h-3 w-3" />
@@ -1029,12 +1537,7 @@ export function AiStudioModal({
                           )}
                           <button
                             type="button"
-                            onClick={() => {
-                              if (speakingMsgId !== m.id && m.storyboard && onPlayStoryboard) {
-                                onPlayStoryboard(m.storyboard);
-                              }
-                              void handleSpeakText(m.id, m.text, 'msg');
-                            }}
+                            onClick={() => void handleSpeakMessage(m)}
                             className="inline-flex items-center gap-1 rounded-lg px-2 py-0.5 text-[10px] font-medium hover:opacity-80 cursor-pointer"
                             style={{ backgroundColor: 'var(--bg-muted)', color: 'var(--text-secondary)' }}
                           >
@@ -1060,7 +1563,8 @@ export function AiStudioModal({
                     )}
                   </div>
                 </div>
-              ))}
+                );
+              })}
 
               {chatLoading && (
                 <div className="flex items-center gap-2 text-xs px-2" style={{ color: 'var(--text-muted)' }}>
@@ -1265,13 +1769,7 @@ export function AiStudioModal({
                     )}
                     <button
                       type="button"
-                      onClick={() =>
-                        void handleSpeakText(
-                          `cmp-${compareResult.title}`,
-                          `${compareResult.title}。${compareResult.thesis} 政治维度：${compareResult.dimensions.politics} 经济维度：${compareResult.dimensions.economy} 当代启发：${compareResult.modernEcho}`,
-                          'compare',
-                        )
-                      }
+                      onClick={() => void handleSpeakCompare()}
                       className="inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-[10px] font-semibold shrink-0 cursor-pointer"
                       style={{
                         backgroundColor: 'var(--bg-surface)',
@@ -1298,37 +1796,123 @@ export function AiStudioModal({
                   </div>
                 </div>
 
-                <div
-                  className="rounded-lg p-2.5 text-xs font-medium leading-relaxed"
-                  style={{
-                    backgroundColor: 'var(--bg-muted)',
-                    borderLeft: '3px solid var(--accent-primary)',
-                  }}
-                >
-                  {compareResult.thesis}
-                </div>
+                {(() => {
+                  const st = getCompareBlockState('cmp-thesis');
+                  const spans = comparePlan?.blocks['cmp-thesis'];
+                  return (
+                    <div
+                      ref={(el) => {
+                        compareBlockRefs.current['cmp-thesis'] = el;
+                      }}
+                      className="rounded-lg p-2.5 text-xs font-medium leading-relaxed transition-all duration-200"
+                      style={{
+                        backgroundColor: st.isSpoken
+                          ? isDark
+                            ? 'rgba(224, 99, 90, 0.16)'
+                            : 'rgba(140, 45, 45, 0.10)'
+                          : st.isMapSynced
+                            ? isDark
+                              ? 'rgba(224, 166, 75, 0.12)'
+                              : 'rgba(180, 116, 23, 0.10)'
+                            : 'var(--bg-muted)',
+                        borderLeft: st.isMapSynced
+                          ? '3px solid var(--accent-gold)'
+                          : '3px solid var(--accent-primary)',
+                      }}
+                    >
+                      {renderCompareSyncBadge('cmp-thesis')}
+                      {spans ? (
+                        <SentenceList
+                          sentences={spans}
+                          activeSentenceIdx={st.sentenceIdx}
+                          theme={theme}
+                        />
+                      ) : (
+                        compareResult.thesis
+                      )}
+                    </div>
+                  );
+                })()}
 
                 <div className="grid grid-cols-1 gap-2 text-xs">
-                  {[
-                    { icon: <Mountain className="h-3.5 w-3.5" />, label: '地缘条件对比', color: '#8A673B', text: compareResult.dimensions.geopolitics },
-                    { icon: <Landmark className="h-3.5 w-3.5" />, label: '政制与权力对比', color: '#B83B3B', text: compareResult.dimensions.politics },
-                    { icon: <Coins className="h-3.5 w-3.5" />, label: '经济与财税对比', color: '#B47417', text: compareResult.dimensions.economy },
-                    { icon: <ScrollText className="h-3.5 w-3.5" />, label: '文化与观念对比', color: '#734B9B', text: compareResult.dimensions.culture },
-                  ].map((d) => (
-                    <div
-                      key={d.label}
-                      className="rounded-lg border p-2.5"
-                      style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--border-subtle)' }}
-                    >
-                      <div className="flex items-center gap-1.5 text-[11px] font-bold" style={{ color: d.color }}>
-                        {d.icon}
-                        <span>{d.label}</span>
+                  {(
+                    [
+                      {
+                        blockId: 'cmp-geopolitics' as CompareBlockId,
+                        icon: <Mountain className="h-3.5 w-3.5" />,
+                        label: '地缘条件对比',
+                        color: '#8A673B',
+                        text: compareResult.dimensions.geopolitics,
+                      },
+                      {
+                        blockId: 'cmp-politics' as CompareBlockId,
+                        icon: <Landmark className="h-3.5 w-3.5" />,
+                        label: '政制与权力对比',
+                        color: '#B83B3B',
+                        text: compareResult.dimensions.politics,
+                      },
+                      {
+                        blockId: 'cmp-economy' as CompareBlockId,
+                        icon: <Coins className="h-3.5 w-3.5" />,
+                        label: '经济与财税对比',
+                        color: '#B47417',
+                        text: compareResult.dimensions.economy,
+                      },
+                      {
+                        blockId: 'cmp-culture' as CompareBlockId,
+                        icon: <ScrollText className="h-3.5 w-3.5" />,
+                        label: '文化与观念对比',
+                        color: '#734B9B',
+                        text: compareResult.dimensions.culture,
+                      },
+                    ] as const
+                  ).map((d) => {
+                    const st = getCompareBlockState(d.blockId);
+                    const spans = comparePlan?.blocks[d.blockId];
+                    return (
+                      <div
+                        key={d.label}
+                        ref={(el) => {
+                          compareBlockRefs.current[d.blockId] = el;
+                        }}
+                        className="rounded-lg border p-2.5 transition-all duration-200"
+                        style={{
+                          backgroundColor: st.isSpoken
+                            ? isDark
+                              ? 'rgba(224, 99, 90, 0.14)'
+                              : 'rgba(140, 45, 45, 0.08)'
+                            : st.isMapSynced
+                              ? isDark
+                                ? 'rgba(224, 166, 75, 0.10)'
+                                : 'rgba(180, 116, 23, 0.08)'
+                              : 'var(--bg-surface)',
+                          borderColor: st.isSpoken
+                            ? 'var(--accent-primary)'
+                            : st.isMapSynced
+                              ? 'var(--accent-gold)'
+                              : 'var(--border-subtle)',
+                          borderLeftWidth: st.isSpoken || st.isMapSynced ? '3px' : '1px',
+                        }}
+                      >
+                        {renderCompareSyncBadge(d.blockId)}
+                        <div className="flex items-center gap-1.5 text-[11px] font-bold" style={{ color: d.color }}>
+                          {d.icon}
+                          <span>{d.label}</span>
+                        </div>
+                        <p className="mt-1 leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                          {spans ? (
+                            <SentenceList
+                              sentences={spans}
+                              activeSentenceIdx={st.sentenceIdx}
+                              theme={theme}
+                            />
+                          ) : (
+                            d.text
+                          )}
+                        </p>
                       </div>
-                      <p className="mt-1 leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-                        {d.text}
-                      </p>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
@@ -1360,10 +1944,47 @@ export function AiStudioModal({
                   </div>
                 </div>
 
-                <div className="text-[11px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-                  <strong style={{ color: 'var(--text-primary)' }}>当代回响：</strong>
-                  {compareResult.modernEcho}
-                </div>
+                {(() => {
+                  const st = getCompareBlockState('cmp-modern');
+                  const spans = comparePlan?.blocks['cmp-modern'];
+                  return (
+                    <div
+                      ref={(el) => {
+                        compareBlockRefs.current['cmp-modern'] = el;
+                      }}
+                      className="rounded-lg px-2 py-1.5 text-[11px] leading-relaxed transition-all duration-200"
+                      style={{
+                        color: 'var(--text-secondary)',
+                        backgroundColor: st.isSpoken
+                          ? isDark
+                            ? 'rgba(224, 99, 90, 0.14)'
+                            : 'rgba(140, 45, 45, 0.08)'
+                          : st.isMapSynced
+                            ? isDark
+                              ? 'rgba(224, 166, 75, 0.10)'
+                              : 'rgba(180, 116, 23, 0.08)'
+                            : 'transparent',
+                        borderLeft: st.isSpoken
+                          ? '3px solid var(--accent-primary)'
+                          : st.isMapSynced
+                            ? '2.5px solid var(--accent-gold)'
+                            : undefined,
+                      }}
+                    >
+                      {renderCompareSyncBadge('cmp-modern')}
+                      <strong style={{ color: 'var(--text-primary)' }}>当代回响：</strong>
+                      {spans ? (
+                        <SentenceList
+                          sentences={spans}
+                          activeSentenceIdx={st.sentenceIdx}
+                          theme={theme}
+                        />
+                      ) : (
+                        compareResult.modernEcho
+                      )}
+                    </div>
+                  );
+                })()}
               </div>
             )}
 

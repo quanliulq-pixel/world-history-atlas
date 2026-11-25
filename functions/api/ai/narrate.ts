@@ -77,7 +77,7 @@ export const onRequestPost = async (context: PagesCtx): Promise<Response> => {
         systemInstruction,
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         temperature: 0.6,
-        maxOutputTokens: 450,
+        maxOutputTokens: 1000,
       });
 
       script = textRes.text.replace(/[*#`>\[\]]/g, '').replace(/\s+/g, ' ').trim();

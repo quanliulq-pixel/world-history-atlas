@@ -111,7 +111,7 @@ export const onRequestPost = async (context: PagesCtx): Promise<Response> => {
       systemInstruction,
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
       temperature: 0.55,
-      maxOutputTokens: 1600,
+      maxOutputTokens: 2400,
       responseMimeType: 'application/json',
       responseSchema: POLITY_CARD_SCHEMA,
     });

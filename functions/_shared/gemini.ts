@@ -17,8 +17,9 @@ export interface GeminiUsage {
   ttsRequested?: boolean;
 }
 
-export const DEFAULT_TEXT_MODEL = 'gemini-2.5-flash';
-export const DEFAULT_TTS_MODEL = 'gemini-2.5-flash-preview-tts';
+export const DEFAULT_TEXT_MODEL = 'gemini-3.8-flash';
+export const DEFAULT_TTS_MODEL = 'gemini-3.8-flash-tts';
+export const FALLBACK_TTS_MODEL = 'gemini-3.8-flash-lite-tts';
 export const ALLOWED_VOICES = ['Kore', 'Aoede', 'Puck', 'Fenrir', 'Charon'] as const;
 export type AllowedVoice = (typeof ALLOWED_VOICES)[number];
 
@@ -158,6 +159,7 @@ interface GeminiGenerateResponse {
   candidates?: Array<{
     content?: {
       parts?: Array<{
+        thought?: boolean;
         text?: string;
         inlineData?: { mimeType?: string; data?: string };
       }>;
@@ -176,10 +178,11 @@ export async function callGeminiText(
   model: string,
   opts: GeminiTextOptions,
 ): Promise<{ text: string; usage: GeminiUsage }> {
+  const isLegacy25 = /gemini-2\.5/i.test(model);
   const generationConfig: Record<string, unknown> = {
     temperature: opts.temperature ?? 0.65,
-    maxOutputTokens: opts.maxOutputTokens ?? 1600,
-    thinkingConfig: { thinkingBudget: 0 },
+    maxOutputTokens: opts.maxOutputTokens ?? 2400,
+    thinkingConfig: isLegacy25 ? { thinkingBudget: 0 } : { thinkingLevel: 'LOW' },
   };
   if (opts.responseMimeType) {
     generationConfig.responseMimeType = opts.responseMimeType;
@@ -215,6 +218,7 @@ export async function callGeminiText(
 
   const parts = payload?.candidates?.[0]?.content?.parts || [];
   const text = parts
+    .filter((p) => !p.thought && p.text)
     .map((p) => p.text || '')
     .join('')
     .trim();
@@ -293,13 +297,12 @@ export function sanitizeVoiceName(raw?: string): AllowedVoice {
   return 'Kore';
 }
 
-export async function callGeminiTtsWav(
+async function requestTtsOnce(
   apiKey: string,
   model: string,
-  text: string,
-  voiceName: AllowedVoice = 'Kore',
+  prompt: string,
+  voiceName: AllowedVoice,
 ): Promise<{ audioBase64Wav: string; mimeType: 'audio/wav'; sampleRate: number }> {
-  const prompt = `请用沉稳、有画面感的历史纪录片普通话旁白朗读以下文字，不要额外加任何解释或前缀：\n\n${text}`;
   const res = await fetch(`${GEMINI_API_BASE}/${encodeURIComponent(model)}:generateContent`, {
     method: 'POST',
     headers: {
@@ -328,7 +331,10 @@ export async function callGeminiTtsWav(
 
   const payload = (await res.json().catch(() => null)) as GeminiGenerateResponse | null;
   if (!res.ok) {
-    throw new Error(payload?.error?.message || `Gemini TTS HTTP ${res.status}`);
+    const msg = payload?.error?.message || `Gemini TTS HTTP ${res.status}`;
+    const err = new Error(msg) as Error & { status?: number };
+    err.status = res.status;
+    throw err;
   }
 
   const audioPart = payload?.candidates?.[0]?.content?.parts?.find((p) => p.inlineData?.data);
@@ -350,4 +356,26 @@ export async function callGeminiTtsWav(
     mimeType: 'audio/wav',
     sampleRate,
   };
+}
+
+export async function callGeminiTtsWav(
+  apiKey: string,
+  model: string,
+  text: string,
+  voiceName: AllowedVoice = 'Kore',
+): Promise<{ audioBase64Wav: string; mimeType: 'audio/wav'; sampleRate: number }> {
+  const prompt = `请用沉稳、有画面感的历史纪录片普通话旁白朗读以下文字，不要额外加任何解释或前缀：\n\n${text}`;
+  try {
+    return await requestTtsOnce(apiKey, model, prompt, voiceName);
+  } catch (err) {
+    const status = (err as { status?: number }).status;
+    const msg = err instanceof Error ? err.message : '';
+    const shouldFallback =
+      model !== FALLBACK_TTS_MODEL &&
+      (status === 404 || /no longer available|not found/i.test(msg));
+    if (shouldFallback) {
+      return await requestTtsOnce(apiKey, FALLBACK_TTS_MODEL, prompt, voiceName);
+    }
+    throw err;
+  }
 }

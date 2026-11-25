@@ -141,7 +141,7 @@ export const onRequestPost = async (context: PagesCtx): Promise<Response> => {
         systemInstruction,
         contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
         temperature: 0.45,
-        maxOutputTokens: 1000,
+        maxOutputTokens: 1600,
         responseMimeType: 'application/json',
         responseSchema: QUIZ_GRADE_SCHEMA,
       });
@@ -185,7 +185,7 @@ export const onRequestPost = async (context: PagesCtx): Promise<Response> => {
       systemInstruction,
       contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
       temperature: 0.6,
-      maxOutputTokens: 1800,
+      maxOutputTokens: 2400,
       responseMimeType: 'application/json',
       responseSchema: QUIZ_GEN_SCHEMA,
     });

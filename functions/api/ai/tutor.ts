@@ -170,7 +170,7 @@ export const onRequestPost = async (context: PagesCtx): Promise<Response> => {
         systemInstruction,
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         temperature: 0.55,
-        maxOutputTokens: 1600,
+        maxOutputTokens: 2400,
         responseMimeType: 'application/json',
         responseSchema: COMPARE_SCHEMA,
       });
@@ -212,7 +212,7 @@ export const onRequestPost = async (context: PagesCtx): Promise<Response> => {
       systemInstruction,
       contents,
       temperature: 0.65,
-      maxOutputTokens: 1400,
+      maxOutputTokens: 2400,
     });
 
     return jsonResponse({ reply: res.text, usage: res.usage });

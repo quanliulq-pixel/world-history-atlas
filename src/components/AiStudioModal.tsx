@@ -238,8 +238,8 @@ export function AiStudioModal({
         configured: false,
         passcodeRequired: true,
         allowPublic: false,
-        textModel: 'gemini-2.5-flash',
-        ttsModel: 'gemini-2.5-flash-preview-tts',
+        textModel: 'gemini-3.8-flash',
+        ttsModel: 'gemini-3.8-flash-tts',
       });
       if (err instanceof AiClientError) {
         setPasscodeError(err.message);

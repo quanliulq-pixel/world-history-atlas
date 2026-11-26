@@ -1,9 +1,54 @@
-import { ChevronDown, Film, Loader2, Pause, Sparkles, Volume2, VolumeX, X } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import {
+  ChevronDown,
+  Film,
+  GripVertical,
+  Loader2,
+  Pause,
+  Sparkles,
+  Volume2,
+  VolumeX,
+  X,
+} from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { DIMENSION_META, REGION_META } from '../data/eras';
 import type { Era, HistoryEvent, SubPeriod, ThemeMode } from '../types/history';
 import type { AiDocumentaryBeat } from '../utils/aiClient';
 import { formatYear } from '../utils/timeline';
+
+const TICKER_POS_KEY = 'world-history-atlas:ticker-pos:v1';
+
+interface TickerPos {
+  x: number;
+  y: number;
+}
+
+function readStoredTickerPos(): TickerPos | null {
+  try {
+    const raw = localStorage.getItem(TICKER_POS_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Partial<TickerPos>;
+    if (
+      typeof parsed.x === 'number' &&
+      Number.isFinite(parsed.x) &&
+      typeof parsed.y === 'number' &&
+      Number.isFinite(parsed.y)
+    ) {
+      return { x: parsed.x, y: parsed.y };
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function saveStoredTickerPos(pos: TickerPos | null): void {
+  try {
+    if (!pos) localStorage.removeItem(TICKER_POS_KEY);
+    else localStorage.setItem(TICKER_POS_KEY, JSON.stringify(pos));
+  } catch {
+    // Ignore storage errors
+  }
+}
 
 interface ChronicleTickerProps {
   visible: boolean;
@@ -53,7 +98,43 @@ export function ChronicleTicker({
   onDismiss,
 }: ChronicleTickerProps) {
   const [speedOpen, setSpeedOpen] = useState(false);
+  const [pos, setPos] = useState<TickerPos | null>(() => readStoredTickerPos());
+  const [isDragging, setIsDragging] = useState(false);
   const speedRef = useRef<HTMLDivElement | null>(null);
+  const cardRef = useRef<HTMLDivElement | null>(null);
+  const dragRef = useRef<{
+    pointerId: number;
+    startX: number;
+    startY: number;
+    originLeft: number;
+    originTop: number;
+  } | null>(null);
+
+  const clampPosToParent = useCallback((x: number, y: number): TickerPos => {
+    const card = cardRef.current;
+    const parent = card?.offsetParent as HTMLElement | null;
+    if (!card || !parent) return { x: Math.max(8, x), y: Math.max(8, y) };
+    const pad = 8;
+    const maxX = Math.max(pad, parent.clientWidth - card.offsetWidth - pad);
+    const maxY = Math.max(pad, parent.clientHeight - card.offsetHeight - pad);
+    return {
+      x: Math.round(Math.max(pad, Math.min(maxX, x))),
+      y: Math.round(Math.max(pad, Math.min(maxY, y))),
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!visible || !pos) return;
+    const syncClamp = () => {
+      setPos((cur) => (cur ? clampPosToParent(cur.x, cur.y) : null));
+    };
+    const rafId = window.requestAnimationFrame(syncClamp);
+    window.addEventListener('resize', syncClamp);
+    return () => {
+      window.cancelAnimationFrame(rafId);
+      window.removeEventListener('resize', syncClamp);
+    };
+  }, [visible, pos !== null, clampPosToParent]);
 
   useEffect(() => {
     if (!speedOpen) return;
@@ -66,6 +147,61 @@ export function ChronicleTicker({
     return () => window.removeEventListener('mousedown', onOutside);
   }, [speedOpen]);
 
+  const handleDragPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.button !== 0) return;
+    const targetEl = e.target as HTMLElement | null;
+    if (targetEl?.closest('button, a, input, select, [role="listbox"]')) return;
+    const card = cardRef.current;
+    const parent = card?.offsetParent as HTMLElement | null;
+    if (!card || !parent) return;
+
+    const cardRect = card.getBoundingClientRect();
+    const parentRect = parent.getBoundingClientRect();
+    const originLeft = pos ? pos.x : cardRect.left - parentRect.left;
+    const originTop = pos ? pos.y : cardRect.top - parentRect.top;
+
+    e.currentTarget.setPointerCapture(e.pointerId);
+    dragRef.current = {
+      pointerId: e.pointerId,
+      startX: e.clientX,
+      startY: e.clientY,
+      originLeft,
+      originTop,
+    };
+    setIsDragging(true);
+  };
+
+  const handleDragPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const drag = dragRef.current;
+    if (!drag || drag.pointerId !== e.pointerId) return;
+    const next = clampPosToParent(
+      drag.originLeft + (e.clientX - drag.startX),
+      drag.originTop + (e.clientY - drag.startY),
+    );
+    setPos(next);
+  };
+
+  const handleDragPointerEnd = (e: React.PointerEvent<HTMLDivElement>) => {
+    const drag = dragRef.current;
+    if (!drag || drag.pointerId !== e.pointerId) return;
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
+    dragRef.current = null;
+    setIsDragging(false);
+    setPos((cur) => {
+      if (!cur) return null;
+      const clamped = clampPosToParent(cur.x, cur.y);
+      saveStoredTickerPos(clamped);
+      return clamped;
+    });
+  };
+
+  const handleResetPos = () => {
+    setPos(null);
+    saveStoredTickerPos(null);
+  };
+
   if (!visible) return null;
 
   const activeMode = cinemaMode || isPlaying;
@@ -75,18 +211,49 @@ export function ChronicleTicker({
       : DIMENSION_META[event.primaryDimension].color
     : currentEra.accentColor;
 
+  const parentHeight = (cardRef.current?.offsetParent as HTMLElement | null)?.clientHeight ?? 0;
+  const openSpeedUpward = Boolean(pos && parentHeight > 0 && pos.y > parentHeight * 0.55);
+
   return (
     <div
-      className="atlas-ticker-enter pointer-events-auto absolute left-3 md:left-16 right-3 lg:right-auto lg:left-[calc(50%-210px)] lg:-translate-x-1/2 lg:w-[540px] max-w-full top-3 z-20 rounded-2xl border px-3.5 py-2.5 shadow-xl backdrop-blur-md"
+      ref={cardRef}
+      className={
+        pos
+          ? 'pointer-events-auto absolute z-20 rounded-2xl border px-3.5 py-2.5 shadow-xl backdrop-blur-md'
+          : 'atlas-ticker-enter pointer-events-auto absolute left-3 md:left-16 right-3 lg:right-auto lg:left-[calc(50%-210px)] lg:-translate-x-1/2 lg:w-[540px] max-w-full top-3 z-20 rounded-2xl border px-3.5 py-2.5 shadow-xl backdrop-blur-md'
+      }
       style={{
+        ...(pos
+          ? {
+              left: `${pos.x}px`,
+              top: `${pos.y}px`,
+              width: 'min(540px, calc(100% - 16px))',
+            }
+          : undefined),
         backgroundColor:
           theme === 'obsidian' ? 'rgba(18, 28, 40, 0.92)' : 'rgba(251, 248, 241, 0.94)',
         borderColor: accent,
         color: 'var(--text-primary)',
+        userSelect: isDragging ? 'none' : undefined,
       }}
     >
-      <div className="flex items-center justify-between gap-2">
+      <div
+        onPointerDown={handleDragPointerDown}
+        onPointerMove={handleDragPointerMove}
+        onPointerUp={handleDragPointerEnd}
+        onPointerCancel={handleDragPointerEnd}
+        onDoubleClick={handleResetPos}
+        className={`flex items-center justify-between gap-2 touch-none select-none ${
+          isDragging ? 'cursor-grabbing' : 'cursor-grab'
+        }`}
+        title="按住拖动悬浮框位置，双击恢复默认位置"
+      >
         <div className="flex flex-wrap items-center gap-1.5 min-w-0">
+          <GripVertical
+            className="h-3.5 w-3.5 shrink-0 opacity-45 hover:opacity-80 transition-opacity -ml-1"
+            style={{ color: 'var(--text-muted)' }}
+            aria-hidden="true"
+          />
           <span
             className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold text-white shrink-0"
             style={{ backgroundColor: accent }}
@@ -130,7 +297,9 @@ export function ChronicleTicker({
 
               {speedOpen && (
                 <div
-                  className="absolute right-0 top-full mt-1 z-40 min-w-[72px] rounded-xl border p-1 shadow-xl backdrop-blur-md"
+                  className={`absolute right-0 z-40 min-w-[72px] rounded-xl border p-1 shadow-xl backdrop-blur-md ${
+                    openSpeedUpward ? 'bottom-full mb-1' : 'top-full mt-1'
+                  }`}
                   style={{
                     backgroundColor:
                       theme === 'obsidian' ? 'rgba(18, 28, 40, 0.96)' : 'rgba(251, 248, 241, 0.98)',

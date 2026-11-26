@@ -1,4 +1,1777 @@
 {
   "version": 1,
-  "items": {}
+  "generatedAt": "2026-11-25T13:10:23.309103Z",
+  "model": "stabilityai/sdxl-turbo",
+  "items": {
+    "era:era-1": {
+      "file": "era/era-1.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "era:era-2": {
+      "file": "era/era-2.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "era:era-3": {
+      "file": "era/era-3.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "era:era-4": {
+      "file": "era/era-4.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "era:era-5": {
+      "file": "era/era-5.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "era:era-6": {
+      "file": "era/era-6.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "era:era-7": {
+      "file": "era/era-7.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "era:era-8": {
+      "file": "era/era-8.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "country:china": {
+      "file": "country/china.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "country:japan": {
+      "file": "country/japan.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "country:korea": {
+      "file": "country/korea.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "country:mongolia": {
+      "file": "country/mongolia.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "country:india": {
+      "file": "country/india.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "country:vietnam": {
+      "file": "country/vietnam.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "country:thailand": {
+      "file": "country/thailand.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "country:indonesia": {
+      "file": "country/indonesia.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "country:iran": {
+      "file": "country/iran.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "country:greece": {
+      "file": "country/greece.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "country:italy": {
+      "file": "country/italy.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "country:france": {
+      "file": "country/france.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "country:britain": {
+      "file": "country/britain.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "country:germany": {
+      "file": "country/germany.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "country:spain": {
+      "file": "country/spain.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "country:portugal": {
+      "file": "country/portugal.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "country:netherlands": {
+      "file": "country/netherlands.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "country:austria": {
+      "file": "country/austria.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "country:poland": {
+      "file": "country/poland.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "country:russia": {
+      "file": "country/russia.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "country:sweden": {
+      "file": "country/sweden.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "country:turkey": {
+      "file": "country/turkey.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "country:arabia": {
+      "file": "country/arabia.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "country:egypt": {
+      "file": "country/egypt.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "country:ethiopia": {
+      "file": "country/ethiopia.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "country:west-africa": {
+      "file": "country/west-africa.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "country:usa": {
+      "file": "country/usa.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "country:mexico": {
+      "file": "country/mexico.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "country:peru": {
+      "file": "country/peru.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "country:brazil": {
+      "file": "country/brazil.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "figure:fig-hammurabi": {
+      "file": "figure/fig-hammurabi.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-ramesses-ii": {
+      "file": "figure/fig-ramesses-ii.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-fu-hao": {
+      "file": "figure/fig-fu-hao.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-zhou-gong": {
+      "file": "figure/fig-zhou-gong.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-cyrus": {
+      "file": "figure/fig-cyrus.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-laozi": {
+      "file": "figure/fig-laozi.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-buddha": {
+      "file": "figure/fig-buddha.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-confucius": {
+      "file": "figure/fig-confucius.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-pericles": {
+      "file": "figure/fig-pericles.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-socrates": {
+      "file": "figure/fig-socrates.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-plato": {
+      "file": "figure/fig-plato.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-shang-yang": {
+      "file": "figure/fig-shang-yang.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-aristotle": {
+      "file": "figure/fig-aristotle.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-alexander": {
+      "file": "figure/fig-alexander.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-ashoka": {
+      "file": "figure/fig-ashoka.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-qin-shihuang": {
+      "file": "figure/fig-qin-shihuang.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-hannibal": {
+      "file": "figure/fig-hannibal.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-zhang-qian": {
+      "file": "figure/fig-zhang-qian.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-han-wudi": {
+      "file": "figure/fig-han-wudi.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-augustus": {
+      "file": "figure/fig-augustus.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-jesus": {
+      "file": "figure/fig-jesus.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-cai-lun": {
+      "file": "figure/fig-cai-lun.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-constantine": {
+      "file": "figure/fig-constantine.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-aryabhata": {
+      "file": "figure/fig-aryabhata.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-justinian": {
+      "file": "figure/fig-justinian.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-muhammad": {
+      "file": "figure/fig-muhammad.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-tang-taizong": {
+      "file": "figure/fig-tang-taizong.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-xuanzang": {
+      "file": "figure/fig-xuanzang.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-wu-zetian": {
+      "file": "figure/fig-wu-zetian.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-charlemagne": {
+      "file": "figure/fig-charlemagne.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-alkhwarizmi": {
+      "file": "figure/fig-alkhwarizmi.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-wang-anshi": {
+      "file": "figure/fig-wang-anshi.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-shen-kuo": {
+      "file": "figure/fig-shen-kuo.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-saladin": {
+      "file": "figure/fig-saladin.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-genghis-khan": {
+      "file": "figure/fig-genghis-khan.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-aquinas": {
+      "file": "figure/fig-aquinas.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-kublai-khan": {
+      "file": "figure/fig-kublai-khan.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-marco-polo": {
+      "file": "figure/fig-marco-polo.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-mansa-musa": {
+      "file": "figure/fig-mansa-musa.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-zhu-yuanzhang": {
+      "file": "figure/fig-zhu-yuanzhang.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-zheng-he": {
+      "file": "figure/fig-zheng-he.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-gutenberg": {
+      "file": "figure/fig-gutenberg.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-mehmed-ii": {
+      "file": "figure/fig-mehmed-ii.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-columbus": {
+      "file": "figure/fig-columbus.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-da-vinci": {
+      "file": "figure/fig-da-vinci.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-da-gama": {
+      "file": "figure/fig-da-gama.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-machiavelli": {
+      "file": "figure/fig-machiavelli.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-luther": {
+      "file": "figure/fig-luther.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-magellan": {
+      "file": "figure/fig-magellan.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-copernicus": {
+      "file": "figure/fig-copernicus.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-akbar": {
+      "file": "figure/fig-akbar.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-zhang-juzheng": {
+      "file": "figure/fig-zhang-juzheng.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-tokugawa": {
+      "file": "figure/fig-tokugawa.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-galileo": {
+      "file": "figure/fig-galileo.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-newton": {
+      "file": "figure/fig-newton.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-locke": {
+      "file": "figure/fig-locke.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-kangxi": {
+      "file": "figure/fig-kangxi.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-peter-great": {
+      "file": "figure/fig-peter-great.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-voltaire": {
+      "file": "figure/fig-voltaire.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-rousseau": {
+      "file": "figure/fig-rousseau.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-watt": {
+      "file": "figure/fig-watt.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-adam-smith": {
+      "file": "figure/fig-adam-smith.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-washington": {
+      "file": "figure/fig-washington.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-toussaint": {
+      "file": "figure/fig-toussaint.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-napoleon": {
+      "file": "figure/fig-napoleon.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-bolivar": {
+      "file": "figure/fig-bolivar.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-marx": {
+      "file": "figure/fig-marx.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-darwin": {
+      "file": "figure/fig-darwin.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-lincoln": {
+      "file": "figure/fig-lincoln.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-bismarck": {
+      "file": "figure/fig-bismarck.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-edison": {
+      "file": "figure/fig-edison.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-tesla": {
+      "file": "figure/fig-tesla.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-ito-hirobumi": {
+      "file": "figure/fig-ito-hirobumi.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-sun-yatsen": {
+      "file": "figure/fig-sun-yatsen.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-henry-ford": {
+      "file": "figure/fig-henry-ford.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-einstein": {
+      "file": "figure/fig-einstein.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-lenin": {
+      "file": "figure/fig-lenin.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-gandhi": {
+      "file": "figure/fig-gandhi.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-fdr": {
+      "file": "figure/fig-fdr.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-keynes": {
+      "file": "figure/fig-keynes.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-churchill": {
+      "file": "figure/fig-churchill.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-mao": {
+      "file": "figure/fig-mao.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-deng": {
+      "file": "figure/fig-deng.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-gorbachev": {
+      "file": "figure/fig-gorbachev.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-berners-lee": {
+      "file": "figure/fig-berners-lee.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-mandela": {
+      "file": "figure/fig-mandela.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "figure:fig-jobs": {
+      "file": "figure/fig-jobs.webp",
+      "width": 512,
+      "height": 512,
+      "aspect": "1:1"
+    },
+    "event:e1-uruk": {
+      "file": "event/e1-uruk.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e1-narmer": {
+      "file": "event/e1-narmer.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e1-pyramid": {
+      "file": "event/e1-pyramid.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e1-indus": {
+      "file": "event/e1-indus.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e1-akkad": {
+      "file": "event/e1-akkad.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e1-bronze-network": {
+      "file": "event/e1-bronze-network.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e1-ur-iii": {
+      "file": "event/e1-ur-iii.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e1-erlitou": {
+      "file": "event/e1-erlitou.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e1-hammurabi": {
+      "file": "event/e1-hammurabi.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e1-minoan": {
+      "file": "event/e1-minoan.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e1-hittite-iron": {
+      "file": "event/e1-hittite-iron.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e1-shang-oracle": {
+      "file": "event/e1-shang-oracle.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e1-kadesh": {
+      "file": "event/e1-kadesh.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e1-bronze-collapse": {
+      "file": "event/e1-bronze-collapse.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e1-olmec": {
+      "file": "event/e1-olmec.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e1-zhou-mandate": {
+      "file": "event/e1-zhou-mandate.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e1-phoenician": {
+      "file": "event/e1-phoenician.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e1-chavin": {
+      "file": "event/e1-chavin.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e1-upani-vedic": {
+      "file": "event/e1-upani-vedic.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e1-kush": {
+      "file": "event/e1-kush.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e1-spring-autumn-iron": {
+      "file": "event/e1-spring-autumn-iron.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e2-greek-polis": {
+      "file": "event/e2-greek-polis.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e2-assyria": {
+      "file": "event/e2-assyria.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e2-coins-lydia": {
+      "file": "event/e2-coins-lydia.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e2-cyrus-persia": {
+      "file": "event/e2-cyrus-persia.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e2-confucius": {
+      "file": "event/e2-confucius.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e2-buddha": {
+      "file": "event/e2-buddha.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e2-greco-persian": {
+      "file": "event/e2-greco-persian.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e2-athens-democracy": {
+      "file": "event/e2-athens-democracy.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e2-shangyang": {
+      "file": "event/e2-shangyang.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e2-alexander": {
+      "file": "event/e2-alexander.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e2-ashoka": {
+      "file": "event/e2-ashoka.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e2-punic-wars": {
+      "file": "event/e2-punic-wars.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e2-qin-unification": {
+      "file": "event/e2-qin-unification.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e2-han-wenjing": {
+      "file": "event/e2-han-wenjing.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e2-zhang-qian": {
+      "file": "event/e2-zhang-qian.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e2-han-salt-iron": {
+      "file": "event/e2-han-salt-iron.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e2-caesar-rubicon": {
+      "file": "event/e2-caesar-rubicon.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e2-roman-empire": {
+      "file": "event/e2-roman-empire.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e2-christianity": {
+      "file": "event/e2-christianity.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e2-kushan": {
+      "file": "event/e2-kushan.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e2-cai-lun": {
+      "file": "event/e2-cai-lun.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e2-teotihuacan": {
+      "file": "event/e2-teotihuacan.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e3-yellow-turban": {
+      "file": "event/e3-yellow-turban.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e2-aksum": {
+      "file": "event/e2-aksum.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e3-sasanian": {
+      "file": "event/e3-sasanian.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e3-gupta": {
+      "file": "event/e3-gupta.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e3-milan-constantinople": {
+      "file": "event/e3-milan-constantinople.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e3-feishui-north-south": {
+      "file": "event/e3-feishui-north-south.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e3-gupta-collapse-hun": {
+      "file": "event/e3-gupta-collapse-hun.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e3-equal-field": {
+      "file": "event/e3-equal-field.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e3-justinian": {
+      "file": "event/e3-justinian.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e3-sui-grand-canal": {
+      "file": "event/e3-sui-grand-canal.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e3-keju": {
+      "file": "event/e3-keju.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e3-islam-rise": {
+      "file": "event/e3-islam-rise.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e3-tang-chang-an": {
+      "file": "event/e3-tang-chang-an.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e3-talas": {
+      "file": "event/e3-talas.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e3-an-lushan": {
+      "file": "event/e3-an-lushan.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e3-abbasid-baghdad": {
+      "file": "event/e3-abbasid-baghdad.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e3-liangshui": {
+      "file": "event/e3-liangshui.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e3-charlemagne": {
+      "file": "event/e3-charlemagne.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e3-ghana-gold": {
+      "file": "event/e3-ghana-gold.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e3-maya-classic": {
+      "file": "event/e3-maya-classic.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e3-viking-rus": {
+      "file": "event/e3-viking-rus.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e4-northern-song": {
+      "file": "event/e4-northern-song.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e4-jiaozi": {
+      "file": "event/e4-jiaozi.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e4-song-commerce": {
+      "file": "event/e4-song-commerce.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e4-crusades": {
+      "file": "event/e4-crusades.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e4-jingkang-south": {
+      "file": "event/e4-jingkang-south.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e4-angkor": {
+      "file": "event/e4-angkor.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e4-europe-universities": {
+      "file": "event/e4-europe-universities.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e4-kamakura": {
+      "file": "event/e4-kamakura.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e4-mongol-empire": {
+      "file": "event/e4-mongol-empire.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e4-magna-carta": {
+      "file": "event/e4-magna-carta.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e4-baghdad-1258": {
+      "file": "event/e4-baghdad-1258.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e4-yuan-china": {
+      "file": "event/e4-yuan-china.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e4-mali-mansa": {
+      "file": "event/e4-mali-mansa.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e4-hundred-years-war": {
+      "file": "event/e4-hundred-years-war.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e4-black-death": {
+      "file": "event/e4-black-death.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e4-ming-founding": {
+      "file": "event/e4-ming-founding.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e4-renaissance-medici": {
+      "file": "event/e4-renaissance-medici.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e4-zhenghe": {
+      "file": "event/e4-zhenghe.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e4-inca-tawantinsuyu": {
+      "file": "event/e4-inca-tawantinsuyu.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e4-gutenberg": {
+      "file": "event/e4-gutenberg.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e4-constantinople-1453": {
+      "file": "event/e4-constantinople-1453.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e5-columbus": {
+      "file": "event/e5-columbus.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e5-tordesillas": {
+      "file": "event/e5-tordesillas.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e5-da-gama": {
+      "file": "event/e5-da-gama.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e5-safavid": {
+      "file": "event/e5-safavid.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e5-luther-reformation": {
+      "file": "event/e5-luther-reformation.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e5-magellan": {
+      "file": "event/e5-magellan.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e5-aztec-conquest": {
+      "file": "event/e5-aztec-conquest.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e5-mughal": {
+      "file": "event/e5-mughal.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e5-copernicus-science": {
+      "file": "event/e5-copernicus-science.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e5-potosi-silver": {
+      "file": "event/e5-potosi-silver.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e5-manila-galleon": {
+      "file": "event/e5-manila-galleon.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e5-lepanto": {
+      "file": "event/e5-lepanto.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e5-ming-single-whip": {
+      "file": "event/e5-ming-single-whip.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e5-voc": {
+      "file": "event/e5-voc.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e5-tokugawa": {
+      "file": "event/e5-tokugawa.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e5-thirty-years-war": {
+      "file": "event/e5-thirty-years-war.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e5-qing-1644": {
+      "file": "event/e5-qing-1644.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e5-westphalia": {
+      "file": "event/e5-westphalia.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e5-glorious-revolution": {
+      "file": "event/e5-glorious-revolution.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e5-south-sea-bank": {
+      "file": "event/e5-south-sea-bank.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e5-peter-russia": {
+      "file": "event/e5-peter-russia.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e5-enlightenment": {
+      "file": "event/e5-enlightenment.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e6-seven-years-war": {
+      "file": "event/e6-seven-years-war.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e6-watt-steam": {
+      "file": "event/e6-watt-steam.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e6-wealth-of-nations": {
+      "file": "event/e6-wealth-of-nations.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e6-us-independence": {
+      "file": "event/e6-us-independence.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e6-us-constitution": {
+      "file": "event/e6-us-constitution.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e6-french-revolution": {
+      "file": "event/e6-french-revolution.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e6-haitian-revolution": {
+      "file": "event/e6-haitian-revolution.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e6-napoleon-code": {
+      "file": "event/e6-napoleon-code.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e6-congress-of-vienna": {
+      "file": "event/e6-congress-of-vienna.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e6-latin-independence": {
+      "file": "event/e6-latin-independence.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e6-opium-war": {
+      "file": "event/e6-opium-war.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e6-communist-manifesto": {
+      "file": "event/e6-communist-manifesto.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e6-taiping": {
+      "file": "event/e6-taiping.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e6-darwin": {
+      "file": "event/e6-darwin.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e6-us-civil-war": {
+      "file": "event/e6-us-civil-war.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e6-meiji": {
+      "file": "event/e6-meiji.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e6-suez-canal": {
+      "file": "event/e6-suez-canal.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e6-german-unification": {
+      "file": "event/e6-german-unification.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e6-second-industrial": {
+      "file": "event/e6-second-industrial.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e6-berlin-conference": {
+      "file": "event/e6-berlin-conference.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e6-trans-siberian": {
+      "file": "event/e6-trans-siberian.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e7-einstein-1905": {
+      "file": "event/e7-einstein-1905.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e6-qing-1911": {
+      "file": "event/e6-qing-1911.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e6-ford-assembly": {
+      "file": "event/e6-ford-assembly.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e7-ww1": {
+      "file": "event/e7-ww1.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e7-russian-rev": {
+      "file": "event/e7-russian-rev.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e7-versailles-may4": {
+      "file": "event/e7-versailles-may4.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e7-great-depression": {
+      "file": "event/e7-great-depression.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e7-keynes-newdeal": {
+      "file": "event/e7-keynes-newdeal.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e7-ww2": {
+      "file": "event/e7-ww2.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e7-bretton-woods": {
+      "file": "event/e7-bretton-woods.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e7-un-nuremberg": {
+      "file": "event/e7-un-nuremberg.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e7-india-partition": {
+      "file": "event/e7-india-partition.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e7-cold-war-marshall": {
+      "file": "event/e7-cold-war-marshall.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e7-prc-1949": {
+      "file": "event/e7-prc-1949.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e7-bandung": {
+      "file": "event/e7-bandung.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e7-sputnik-arpanet": {
+      "file": "event/e7-sputnik-arpanet.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e7-treaty-of-rome": {
+      "file": "event/e7-treaty-of-rome.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e7-african-year": {
+      "file": "event/e7-african-year.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e7-cuban-missile": {
+      "file": "event/e7-cuban-missile.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e7-apollo-arpanet": {
+      "file": "event/e7-apollo-arpanet.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e7-nixon-shock": {
+      "file": "event/e7-nixon-shock.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e7-oil-crisis-1973": {
+      "file": "event/e7-oil-crisis-1973.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e7-china-reform": {
+      "file": "event/e7-china-reform.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e7-iran-neoliberal": {
+      "file": "event/e7-iran-neoliberal.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e7-plaza-accord": {
+      "file": "event/e7-plaza-accord.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e7-berlin-wall": {
+      "file": "event/e7-berlin-wall.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e7-ussr-collapse": {
+      "file": "event/e7-ussr-collapse.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e8-www-maastricht": {
+      "file": "event/e8-www-maastricht.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e8-asian-crisis": {
+      "file": "event/e8-asian-crisis.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e8-china-wto": {
+      "file": "event/e8-china-wto.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e8-911": {
+      "file": "event/e8-911.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e8-smartphone-2007": {
+      "file": "event/e8-smartphone-2007.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e8-gfc-2008": {
+      "file": "event/e8-gfc-2008.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e8-bitcoin-2009": {
+      "file": "event/e8-bitcoin-2009.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e8-arab-spring": {
+      "file": "event/e8-arab-spring.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e8-bri": {
+      "file": "event/e8-bri.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e8-paris-climate": {
+      "file": "event/e8-paris-climate.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e8-us-china-trade": {
+      "file": "event/e8-us-china-trade.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e8-covid19": {
+      "file": "event/e8-covid19.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e8-ukraine-2022": {
+      "file": "event/e8-ukraine-2022.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e8-generative-ai": {
+      "file": "event/e8-generative-ai.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    },
+    "event:e8-multipolar-2025": {
+      "file": "event/e8-multipolar-2025.webp",
+      "width": 768,
+      "height": 432,
+      "aspect": "16:9"
+    }
+  }
 }

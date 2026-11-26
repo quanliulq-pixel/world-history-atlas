@@ -655,7 +655,36 @@ let activeAudioEl: HTMLAudioElement | null = null;
 let activePlaybackToken = 0;
 let cancelPendingWait: (() => void) | null = null;
 let activeTtsController: AbortController | null = null;
+let activeNarrationPlaybackRate = 1.0;
 const narrationStopListeners = new Set<() => void>();
+
+export function mapTimelineSpeedToAudioRate(playSpeed: number): number {
+  const table: Record<number, number> = {
+    0.5: 0.85,
+    0.75: 0.92,
+    1: 1.0,
+    1.25: 1.12,
+    1.5: 1.25,
+    2: 1.45,
+    3: 1.72,
+    4: 1.85,
+  };
+  const mapped = table[playSpeed] ?? (playSpeed <= 1 ? 0.85 + playSpeed * 0.15 : 1 + (playSpeed - 1) * 0.35);
+  return Math.max(0.75, Math.min(1.85, mapped));
+}
+
+export function setNarrationPlaybackRate(rate: number): void {
+  const clamped = Math.max(0.75, Math.min(1.85, rate));
+  activeNarrationPlaybackRate = clamped;
+  if (activeAudioEl) {
+    try {
+      activeAudioEl.playbackRate = clamped;
+      (activeAudioEl as HTMLAudioElement & { preservesPitch?: boolean }).preservesPitch = true;
+    } catch {
+      // Ignore
+    }
+  }
+}
 
 export function subscribeNarrationStop(listener: () => void): () => void {
   narrationStopListeners.add(listener);
@@ -922,6 +951,7 @@ export function speakWithBrowserSpeech(
   text: string,
   existingToken?: number,
   onProgress?: (ratio: number) => void,
+  playbackRate?: number,
 ): Promise<void> {
   return new Promise((resolve) => {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
@@ -933,7 +963,7 @@ export function speakWithBrowserSpeech(
       window.speechSynthesis.cancel();
       const utter = new SpeechSynthesisUtterance(text);
       utter.lang = 'zh-CN';
-      utter.rate = 1.02;
+      utter.rate = Math.max(0.75, Math.min(1.85, playbackRate ?? activeNarrationPlaybackRate));
       const voices = window.speechSynthesis.getVoices();
       const zhVoice =
         voices.find((v) => v.lang.startsWith('zh') && v.localService) ||
@@ -981,6 +1011,7 @@ async function playClipRespectingToken(
   clip: AiNarrationResult,
   sessionToken: number,
   onProgress?: (ratio: number) => void,
+  playbackRate?: number,
 ): Promise<'gemini' | 'browser' | 'silent'> {
   if (sessionToken !== activePlaybackToken) return 'silent';
 
@@ -993,6 +1024,12 @@ async function playClipRespectingToken(
         }
         let settled = false;
         const audio = new Audio(clip.audioBlobUrl!);
+        const targetRate = Math.max(
+          0.75,
+          Math.min(1.85, playbackRate ?? activeNarrationPlaybackRate),
+        );
+        audio.playbackRate = targetRate;
+        (audio as HTMLAudioElement & { preservesPitch?: boolean }).preservesPitch = true;
         const finish = () => {
           if (settled) return;
           settled = true;
@@ -1032,13 +1069,34 @@ async function playClipRespectingToken(
       return sessionToken === activePlaybackToken ? 'gemini' : 'silent';
     } catch {
       if (sessionToken !== activePlaybackToken) return 'silent';
-      await speakWithBrowserSpeech(clip.script, sessionToken, onProgress);
+      await speakWithBrowserSpeech(clip.script, sessionToken, onProgress, playbackRate);
       return 'browser';
     }
   }
 
-  await speakWithBrowserSpeech(clip.script, sessionToken, onProgress);
+  await speakWithBrowserSpeech(clip.script, sessionToken, onProgress, playbackRate);
   return 'browser';
+}
+
+export async function playSingleStaticAudio(params: {
+  audioUrl: string | null;
+  script: string;
+  playbackRate?: number;
+  onStartAudio?: () => void;
+}): Promise<'gemini' | 'browser' | 'silent'> {
+  stopActiveNarration(false);
+  const sessionToken = activePlaybackToken;
+  params.onStartAudio?.();
+  return playClipRespectingToken(
+    {
+      script: params.script,
+      audioBlobUrl: params.audioUrl,
+      ttsFallback: !params.audioUrl,
+    },
+    sessionToken,
+    undefined,
+    params.playbackRate,
+  );
 }
 
 export async function playStaticAudioBeats(params: {

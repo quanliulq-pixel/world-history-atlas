@@ -25,11 +25,12 @@ export interface PreGeneratedAudioBeat {
 }
 
 export interface PreGeneratedAudioEntry {
-  kind: 'event' | 'figure';
+  kind: 'event' | 'figure' | 'ticker';
   id: string;
   script: string;
   voice?: string;
   file?: string;
+  durationSec?: number;
   beats?: PreGeneratedAudioBeat[];
 }
 
@@ -148,13 +149,15 @@ export async function getPreGeneratedAudio(
   cacheKey: string,
 ): Promise<PreGeneratedAudioEntry | null> {
   const manifest = await loadAudioManifest();
-  const stripped = cacheKey.replace(/^(ev|fig|event|figure):/, '');
-  const entry =
-    manifest.items[cacheKey] ??
-    manifest.items[`ev:${stripped}`] ??
-    manifest.items[`fig:${stripped}`] ??
-    manifest.items[stripped] ??
-    null;
+  let entry: PreGeneratedAudioEntry | null = manifest.items[cacheKey] ?? null;
+  if (!entry && !cacheKey.startsWith('ticker:')) {
+    const stripped = cacheKey.replace(/^(ev|fig|event|figure):/, '');
+    entry =
+      manifest.items[`ev:${stripped}`] ??
+      manifest.items[`fig:${stripped}`] ??
+      manifest.items[stripped] ??
+      null;
+  }
   if (!entry) return null;
   const hasBeats = Array.isArray(entry.beats) && entry.beats.length > 0;
   if (!hasBeats && !entry.file) return null;

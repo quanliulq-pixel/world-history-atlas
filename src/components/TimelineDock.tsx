@@ -1,5 +1,16 @@
-import { ChevronLeft, ChevronRight, Film, Pause, Play, ZoomIn, ZoomOut } from 'lucide-react';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import {
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Film,
+  Pause,
+  Play,
+  Volume2,
+  VolumeX,
+  ZoomIn,
+  ZoomOut,
+} from 'lucide-react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DIMENSION_META, ERAS, MAX_YEAR, MIN_YEAR } from '../data/eras';
 import type { Era, HistoryEvent, SnapshotMeta, SubPeriod, ThemeMode } from '../types/history';
 import {
@@ -13,6 +24,16 @@ import {
   yearToProgress,
 } from '../utils/timeline';
 
+const SPEED_LABELS: Record<number, string> = {
+  0.5: '慢览',
+  0.75: '舒缓',
+  1: '标准',
+  1.25: '轻快',
+  1.5: '加速',
+  2: '疾行',
+  3: '极速',
+};
+
 interface TimelineDockProps {
   currentYear: number;
   currentEra: Era;
@@ -23,13 +44,16 @@ interface TimelineDockProps {
   isPlaying: boolean;
   cinemaMode: boolean;
   playSpeed: number;
+  speedOptions: number[];
+  voiceEnabled: boolean;
   timelineZoom: 'global' | 'era';
   theme: ThemeMode;
   onChangeYear: (year: number) => void;
   onSelectEra?: (era: Era) => void;
   onTogglePlay: () => void;
   onToggleCinemaMode: () => void;
-  onCycleSpeed: () => void;
+  onSelectSpeed: (speed: number) => void;
+  onToggleVoice: () => void;
   onToggleTimelineZoom: () => void;
   onPrevMilestone: () => void;
   onNextMilestone: () => void;
@@ -46,23 +70,39 @@ export function TimelineDock({
   isPlaying,
   cinemaMode,
   playSpeed,
+  speedOptions,
+  voiceEnabled,
   timelineZoom,
   theme,
   onChangeYear,
   onSelectEra,
   onTogglePlay,
   onToggleCinemaMode,
-  onCycleSpeed,
+  onSelectSpeed,
+  onToggleVoice,
   onToggleTimelineZoom,
   onPrevMilestone,
   onNextMilestone,
   onStepSnapshot,
 }: TimelineDockProps) {
   const trackRef = useRef<HTMLDivElement | null>(null);
+  const speedMenuRef = useRef<HTMLDivElement | null>(null);
   const [dragging, setDragging] = useState(false);
   const [hoverProgress, setHoverProgress] = useState<number | null>(null);
   const [editingYear, setEditingYear] = useState(false);
   const [yearInputVal, setYearInputVal] = useState(String(currentYear));
+  const [speedMenuOpen, setSpeedMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (!speedMenuOpen) return;
+    const onOutside = (e: MouseEvent) => {
+      if (speedMenuRef.current && !speedMenuRef.current.contains(e.target as Node)) {
+        setSpeedMenuOpen(false);
+      }
+    };
+    window.addEventListener('mousedown', onOutside);
+    return () => window.removeEventListener('mousedown', onOutside);
+  }, [speedMenuOpen]);
 
   const segments = useMemo(() => getEraSegments(), []);
 
@@ -264,18 +304,87 @@ export function TimelineDock({
             <ChevronRight className="h-4 w-4" />
           </button>
 
+          <div ref={speedMenuRef} className="relative">
+            <button
+              type="button"
+              onClick={() => setSpeedMenuOpen((v) => !v)}
+              className="inline-flex h-7 sm:h-8 items-center gap-0.5 rounded-lg border px-1.5 sm:px-2 text-[11px] font-semibold transition hover:opacity-85 cursor-pointer"
+              style={{
+                backgroundColor: speedMenuOpen ? `${currentEra.accentColor}1E` : 'var(--bg-surface)',
+                borderColor: speedMenuOpen ? currentEra.accentColor : 'var(--border-subtle)',
+                color: speedMenuOpen ? currentEra.accentColor : 'var(--text-primary)',
+              }}
+              title="选择演示与语音播放倍速"
+              aria-haspopup="listbox"
+              aria-expanded={speedMenuOpen}
+            >
+              <span className="tabular-nums">{playSpeed}×</span>
+              <ChevronDown className="h-3 w-3 opacity-70" />
+            </button>
+
+            {speedMenuOpen && (
+              <div
+                role="listbox"
+                aria-label="播放倍速选择"
+                className="absolute bottom-full left-0 mb-1.5 z-50 min-w-[118px] rounded-xl border p-1 shadow-xl backdrop-blur-md"
+                style={{
+                  backgroundColor:
+                    theme === 'obsidian' ? 'rgba(18, 28, 40, 0.96)' : 'rgba(251, 248, 241, 0.98)',
+                  borderColor: 'var(--border-strong)',
+                  color: 'var(--text-primary)',
+                }}
+              >
+                <div
+                  className="px-2 py-1 text-[10px] font-semibold"
+                  style={{ color: 'var(--text-muted)' }}
+                >
+                  播放倍速
+                </div>
+                {speedOptions.map((spd) => {
+                  const active = spd === playSpeed;
+                  return (
+                    <button
+                      key={spd}
+                      type="button"
+                      role="option"
+                      aria-selected={active}
+                      onClick={() => {
+                        onSelectSpeed(spd);
+                        setSpeedMenuOpen(false);
+                      }}
+                      className="flex w-full items-center justify-between gap-2 rounded-lg px-2 py-1 text-[11px] font-medium transition hover:opacity-85 cursor-pointer"
+                      style={{
+                        backgroundColor: active ? currentEra.accentColor : 'transparent',
+                        color: active ? '#FFFFFF' : 'var(--text-primary)',
+                      }}
+                    >
+                      <span className="tabular-nums font-bold">{spd}×</span>
+                      <span className="text-[10px] opacity-80">{SPEED_LABELS[spd] || ''}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
           <button
             type="button"
-            onClick={onCycleSpeed}
-            className="hidden sm:inline-flex h-8 items-center justify-center rounded-lg border px-1.5 text-[11px] font-semibold transition hover:opacity-80 cursor-pointer"
+            onClick={onToggleVoice}
+            className="inline-flex h-7 sm:h-8 items-center gap-1 rounded-lg border px-1.5 sm:px-2 text-[11px] font-semibold transition hover:opacity-85 cursor-pointer"
             style={{
-              backgroundColor: 'var(--bg-surface)',
-              borderColor: 'var(--border-subtle)',
-              color: 'var(--text-secondary)',
+              backgroundColor: voiceEnabled ? 'rgba(180, 116, 23, 0.14)' : 'var(--bg-surface)',
+              borderColor: voiceEnabled ? '#B47417' : 'var(--border-subtle)',
+              color: voiceEnabled
+                ? theme === 'obsidian'
+                  ? '#E5A94C'
+                  : '#9B5E0B'
+                : 'var(--text-muted)',
             }}
-            title="切换播放倍速 (0.5x / 1x / 2x / 4x)"
+            title={voiceEnabled ? '演进播放时同步语音播报（点击静音）' : '演进播放已静音（点击开启语音）'}
+            aria-label={voiceEnabled ? '关闭演示语音' : '开启演示语音'}
           >
-            {playSpeed}×
+            {voiceEnabled ? <Volume2 className="h-3.5 w-3.5" /> : <VolumeX className="h-3.5 w-3.5" />}
+            <span className="hidden xl:inline">{voiceEnabled ? '语音开' : '静音'}</span>
           </button>
 
           <button

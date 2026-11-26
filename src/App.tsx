@@ -49,8 +49,11 @@ import {
   getCachedDocumentaryPlan,
   getStoredPasscode,
   getVoicePrefs,
+  mapTimelineSpeedToAudioRate,
+  playSingleStaticAudio,
   playSpeechChunks,
   playStaticAudioBeats,
+  setNarrationPlaybackRate,
   speakWithBrowserSpeech,
   stopActiveNarration,
   subscribeNarrationStop,
@@ -84,7 +87,7 @@ import {
 } from './utils/timeline';
 
 const ALL_DIMENSIONS: Dimension[] = ['politics', 'economy', 'culture', 'tech'];
-const PLAY_SPEEDS = [0.5, 1, 2, 4];
+const PLAY_SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2, 3];
 
 function buildLocalFocusStoryboard(
   title: string,
@@ -176,6 +179,11 @@ export function App() {
   const [aiIntent, setAiIntent] = useState<AiStudioIntent | null>(null);
   const [aiUnlocked, setAiUnlocked] = useState(() => Boolean(getStoredPasscode()));
   const [cinemaVoiceEnabled, setCinemaVoiceEnabled] = useState(true);
+  const [timelineVoiceEnabled, setTimelineVoiceEnabled] = useState(true);
+  const [tickerNarrationStatus, setTickerNarrationStatus] = useState<
+    'idle' | 'playing' | 'browser'
+  >('idle');
+  const [tickerSpokenText, setTickerSpokenText] = useState<string | null>(null);
   const [cinemaNarrationStatus, setCinemaNarrationStatus] = useState<
     'idle' | 'loading' | 'playing' | 'browser'
   >('idle');
@@ -287,6 +295,13 @@ export function App() {
   playSpeedRef.current = playSpeed;
   const cinemaVoiceEnabledRef = useRef(cinemaVoiceEnabled);
   cinemaVoiceEnabledRef.current = cinemaVoiceEnabled;
+  const timelineVoiceEnabledRef = useRef(timelineVoiceEnabled);
+  timelineVoiceEnabledRef.current = timelineVoiceEnabled;
+
+  // Keep playing audio speed synchronized live when user changes playback speed selector
+  useEffect(() => {
+    setNarrationPlaybackRate(mapTimelineSpeedToAudioRate(playSpeed));
+  }, [playSpeed]);
 
   // Auto-clear event shockwave halo outside Cinema Mode holds
   useEffect(() => {
@@ -295,18 +310,86 @@ export function App() {
     return () => window.clearTimeout(timer);
   }, [recentTriggerEventId, cinemaMode]);
 
-  // Smooth chronological playback via requestAnimationFrame
+  // Smooth chronological playback via requestAnimationFrame with voice-synchronized milestone holds
   useEffect(() => {
     if (!isPlaying || cinemaMode) return;
+    let cancelled = false;
     let rafId = 0;
+    let resumeTimerId = 0;
     let lastTime = performance.now();
     const scopedEra = timelineZoom === 'era' ? currentEraRef.current : null;
     let progress = scopedEra
       ? eraYearToProgress(currentYearRef.current, scopedEra)
       : yearToProgress(currentYearRef.current);
     let lastCrossYear = currentYearRef.current;
+    let lastSpokenEraId = currentEraRef.current.id;
+    let lastSpokenEventId: string | null = null;
+    let voiceHoldActive = false;
+
+    const triggerTickerNarration = (opts: {
+      cacheKey: string;
+      fallbackEventKey?: string;
+      fallbackScript: string;
+    }) => {
+      voiceHoldActive = true;
+      setTickerSpokenText(opts.fallbackScript);
+      void (async () => {
+        try {
+          let entry =
+            getVoicePrefs().engine !== 'browser'
+              ? await getPreGeneratedAudio(opts.cacheKey)
+              : null;
+          if (!entry && opts.fallbackEventKey && getVoicePrefs().engine !== 'browser') {
+            entry = await getPreGeneratedAudio(opts.fallbackEventKey);
+          }
+          if (cancelled) return;
+          const relFile = entry?.file ?? entry?.beats?.[0]?.file ?? null;
+          const script = entry?.beats?.[0]?.narration || entry?.script || opts.fallbackScript;
+          setTickerSpokenText(script);
+          const audioUrl = relFile ? resolveAudioFileUrl(relFile) : null;
+          setTickerNarrationStatus(audioUrl ? 'playing' : 'browser');
+          const mode = await playSingleStaticAudio({
+            audioUrl,
+            script,
+            playbackRate: mapTimelineSpeedToAudioRate(playSpeedRef.current),
+          });
+          if (cancelled || mode === 'silent') return;
+        } catch {
+          // Continue timeline smoothly if audio playback fails
+        }
+        if (cancelled) return;
+        const pauseGapMs = Math.round(280 / Math.max(0.5, playSpeedRef.current));
+        resumeTimerId = window.setTimeout(() => {
+          if (cancelled) return;
+          voiceHoldActive = false;
+          setTickerSpokenText(null);
+          setTickerNarrationStatus('idle');
+          lastTime = performance.now();
+        }, pauseGapMs);
+      })();
+    };
+
+    if (timelineVoiceEnabledRef.current) {
+      const startEra = currentEraRef.current;
+      triggerTickerNarration({
+        cacheKey: `ticker:era:${startEra.id}`,
+        fallbackScript: `进入${startEra.name}。${startEra.overview.geopolitics}`,
+      });
+    }
 
     const tick = (now: number) => {
+      if (cancelled) return;
+      if (!timelineVoiceEnabledRef.current && voiceHoldActive) {
+        voiceHoldActive = false;
+        setTickerSpokenText(null);
+        setTickerNarrationStatus('idle');
+      }
+      if (voiceHoldActive) {
+        lastTime = now;
+        rafId = requestAnimationFrame(tick);
+        return;
+      }
+
       const dt = Math.min(0.1, (now - lastTime) / 1000);
       lastTime = now;
       const baseDurationSec = scopedEra ? 22 : 62;
@@ -325,11 +408,20 @@ export function App() {
         : progressToYear(nextProgress);
 
       if (nextYear !== lastCrossYear) {
+        const minImportance =
+          playSpeedRef.current >= 2 ? 3 : playSpeedRef.current >= 1.5 ? 2 : 1;
         let bestCrossed: HistoryEvent | null = null;
+        let bestVoiceEvent: HistoryEvent | null = null;
         for (const ev of dimensionFilteredEvents) {
           if (ev.year > lastCrossYear && ev.year <= nextYear) {
             if (!bestCrossed || ev.importance >= bestCrossed.importance) {
               bestCrossed = ev;
+            }
+            if (
+              ev.importance >= minImportance &&
+              (!bestVoiceEvent || ev.importance >= bestVoiceEvent.importance)
+            ) {
+              bestVoiceEvent = ev;
             }
           }
         }
@@ -338,6 +430,29 @@ export function App() {
           setTickerEventId(bestCrossed.id);
           setTickerVisible(true);
         }
+
+        const nextEra = getEraForYear(nextYear);
+        const eraChanged = nextEra.id !== lastSpokenEraId;
+        if (eraChanged) {
+          lastSpokenEraId = nextEra.id;
+        }
+
+        if (timelineVoiceEnabledRef.current && !voiceHoldActive) {
+          if (bestVoiceEvent && bestVoiceEvent.id !== lastSpokenEventId) {
+            lastSpokenEventId = bestVoiceEvent.id;
+            triggerTickerNarration({
+              cacheKey: `ticker:ev:${bestVoiceEvent.id}`,
+              fallbackEventKey: `ev:${bestVoiceEvent.id}`,
+              fallbackScript: `${bestVoiceEvent.dateDisplay}，${bestVoiceEvent.title}。${bestVoiceEvent.card.summary}`,
+            });
+          } else if (eraChanged) {
+            triggerTickerNarration({
+              cacheKey: `ticker:era:${nextEra.id}`,
+              fallbackScript: `进入${nextEra.name}。${nextEra.overview.geopolitics}`,
+            });
+          }
+        }
+
         lastCrossYear = nextYear;
         setCurrentYear(nextYear);
       }
@@ -346,7 +461,14 @@ export function App() {
     };
 
     rafId = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafId);
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(rafId);
+      window.clearTimeout(resumeTimerId);
+      stopActiveNarration();
+      setTickerSpokenText(null);
+      setTickerNarrationStatus('idle');
+    };
   }, [isPlaying, cinemaMode, timelineZoom, dimensionFilteredEvents]);
 
   const visibleEvents = useMemo<VisibleEventItem[]>(() => {
@@ -1603,22 +1725,38 @@ export function App() {
                 currentSubPeriod={currentSubPeriod}
                 event={tickerEvent || selectedEvent}
                 theme={theme}
-                cinemaVoiceEnabled={cinemaVoiceEnabled}
-                narrationStatus={cinemaNarrationStatus}
+                playSpeed={playSpeed}
+                speedOptions={PLAY_SPEEDS}
+                voiceEnabled={cinemaMode ? cinemaVoiceEnabled : timelineVoiceEnabled}
+                narrationStatus={cinemaMode ? cinemaNarrationStatus : tickerNarrationStatus}
                 narrationSubtitle={cinemaSubtitle}
                 narrationBeats={cinemaBeats}
                 activeBeatIndex={cinemaActiveBeatIdx}
-                onToggleCinemaVoice={() => {
-                  setCinemaVoiceEnabled((prev) => {
-                    const next = !prev;
-                    if (!next) {
-                      stopActiveNarration();
-                      setCinemaNarrationStatus('idle');
-                      setCinemaBeats(null);
-                      setCinemaScene(null);
-                    }
-                    return next;
-                  });
+                tickerSpokenText={tickerSpokenText}
+                onSelectSpeed={setPlaySpeed}
+                onToggleVoice={() => {
+                  if (cinemaMode) {
+                    setCinemaVoiceEnabled((prev) => {
+                      const next = !prev;
+                      if (!next) {
+                        stopActiveNarration();
+                        setCinemaNarrationStatus('idle');
+                        setCinemaBeats(null);
+                        setCinemaScene(null);
+                      }
+                      return next;
+                    });
+                  } else {
+                    setTimelineVoiceEnabled((prev) => {
+                      const next = !prev;
+                      if (!next) {
+                        stopActiveNarration();
+                        setTickerNarrationStatus('idle');
+                        setTickerSpokenText(null);
+                      }
+                      return next;
+                    });
+                  }
                 }}
                 onSelectEvent={(ev) => handleSelectEvent(ev)}
                 onStopPlayback={() => {
@@ -1834,6 +1972,8 @@ export function App() {
           isPlaying={isPlaying}
           cinemaMode={cinemaMode}
           playSpeed={playSpeed}
+          speedOptions={PLAY_SPEEDS}
+          voiceEnabled={cinemaMode ? cinemaVoiceEnabled : timelineVoiceEnabled}
           timelineZoom={timelineZoom}
           theme={theme}
           onChangeYear={applyYearChange}
@@ -1859,9 +1999,31 @@ export function App() {
               return next;
             });
           }}
-          onCycleSpeed={() =>
-            setPlaySpeed((s) => PLAY_SPEEDS[(PLAY_SPEEDS.indexOf(s) + 1) % PLAY_SPEEDS.length])
-          }
+          onSelectSpeed={setPlaySpeed}
+          onToggleVoice={() => {
+            if (cinemaMode) {
+              setCinemaVoiceEnabled((prev) => {
+                const next = !prev;
+                if (!next) {
+                  stopActiveNarration();
+                  setCinemaNarrationStatus('idle');
+                  setCinemaBeats(null);
+                  setCinemaScene(null);
+                }
+                return next;
+              });
+            } else {
+              setTimelineVoiceEnabled((prev) => {
+                const next = !prev;
+                if (!next) {
+                  stopActiveNarration();
+                  setTickerNarrationStatus('idle');
+                  setTickerSpokenText(null);
+                }
+                return next;
+              });
+            }
+          }}
           onToggleTimelineZoom={() => setTimelineZoom((z) => (z === 'global' ? 'era' : 'global'))}
           onPrevMilestone={() => handleStepMilestone(-1)}
           onNextMilestone={() => handleStepMilestone(1)}

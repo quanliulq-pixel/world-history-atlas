@@ -1,4 +1,5 @@
-import { Film, Loader2, Pause, Sparkles, Volume2, VolumeX, X } from 'lucide-react';
+import { ChevronDown, Film, Loader2, Pause, Sparkles, Volume2, VolumeX, X } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { DIMENSION_META, REGION_META } from '../data/eras';
 import type { Era, HistoryEvent, SubPeriod, ThemeMode } from '../types/history';
 import type { AiDocumentaryBeat } from '../utils/aiClient';
@@ -13,12 +14,16 @@ interface ChronicleTickerProps {
   currentSubPeriod: SubPeriod;
   event: HistoryEvent | null;
   theme: ThemeMode;
-  cinemaVoiceEnabled?: boolean;
+  playSpeed: number;
+  speedOptions: number[];
+  voiceEnabled: boolean;
   narrationStatus?: 'idle' | 'loading' | 'playing' | 'browser';
   narrationSubtitle?: string | null;
   narrationBeats?: AiDocumentaryBeat[] | null;
   activeBeatIndex?: number;
-  onToggleCinemaVoice?: () => void;
+  tickerSpokenText?: string | null;
+  onSelectSpeed: (speed: number) => void;
+  onToggleVoice: () => void;
   onSelectEvent: (ev: HistoryEvent) => void;
   onStopPlayback: () => void;
   onDismiss: () => void;
@@ -33,16 +38,34 @@ export function ChronicleTicker({
   currentSubPeriod,
   event,
   theme,
-  cinemaVoiceEnabled = true,
+  playSpeed,
+  speedOptions,
+  voiceEnabled,
   narrationStatus = 'idle',
   narrationSubtitle = null,
   narrationBeats = null,
   activeBeatIndex = 0,
-  onToggleCinemaVoice,
+  tickerSpokenText = null,
+  onSelectSpeed,
+  onToggleVoice,
   onSelectEvent,
   onStopPlayback,
   onDismiss,
 }: ChronicleTickerProps) {
+  const [speedOpen, setSpeedOpen] = useState(false);
+  const speedRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!speedOpen) return;
+    const onOutside = (e: MouseEvent) => {
+      if (speedRef.current && !speedRef.current.contains(e.target as Node)) {
+        setSpeedOpen(false);
+      }
+    };
+    window.addEventListener('mousedown', onOutside);
+    return () => window.removeEventListener('mousedown', onOutside);
+  }, [speedOpen]);
+
   if (!visible) return null;
 
   const activeMode = cinemaMode || isPlaying;
@@ -88,26 +111,77 @@ export function ChronicleTicker({
         </div>
 
         <div className="flex items-center gap-1 shrink-0">
-          {cinemaMode && onToggleCinemaVoice && (
+          {activeMode && (
+            <div ref={speedRef} className="relative">
+              <button
+                type="button"
+                onClick={() => setSpeedOpen((v) => !v)}
+                className="inline-flex items-center gap-0.5 rounded-lg border px-1.5 py-0.5 text-[10px] font-semibold hover:opacity-85 cursor-pointer"
+                style={{
+                  backgroundColor: speedOpen ? `${accent}1E` : 'var(--bg-surface)',
+                  borderColor: speedOpen ? accent : 'var(--border-subtle)',
+                  color: speedOpen ? accent : 'var(--text-primary)',
+                }}
+                title="调整播放倍速"
+              >
+                <span className="tabular-nums">{playSpeed}×</span>
+                <ChevronDown className="h-2.5 w-2.5 opacity-75" />
+              </button>
+
+              {speedOpen && (
+                <div
+                  className="absolute right-0 top-full mt-1 z-40 min-w-[72px] rounded-xl border p-1 shadow-xl backdrop-blur-md"
+                  style={{
+                    backgroundColor:
+                      theme === 'obsidian' ? 'rgba(18, 28, 40, 0.96)' : 'rgba(251, 248, 241, 0.98)',
+                    borderColor: 'var(--border-strong)',
+                  }}
+                >
+                  {speedOptions.map((spd) => {
+                    const active = spd === playSpeed;
+                    return (
+                      <button
+                        key={spd}
+                        type="button"
+                        onClick={() => {
+                          onSelectSpeed(spd);
+                          setSpeedOpen(false);
+                        }}
+                        className="block w-full rounded-md px-2 py-1 text-left text-[10.5px] font-semibold tabular-nums hover:opacity-85 cursor-pointer"
+                        style={{
+                          backgroundColor: active ? accent : 'transparent',
+                          color: active ? '#FFFFFF' : 'var(--text-primary)',
+                        }}
+                      >
+                        {spd}×
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeMode && (
             <button
               type="button"
-              onClick={onToggleCinemaVoice}
+              onClick={onToggleVoice}
               className="inline-flex items-center gap-1 rounded-lg border px-2 py-0.5 text-[10px] font-semibold hover:opacity-80 cursor-pointer"
               style={{
-                backgroundColor: cinemaVoiceEnabled ? 'rgba(180, 116, 23, 0.16)' : 'var(--bg-surface)',
-                borderColor: cinemaVoiceEnabled ? '#B47417' : 'var(--border-subtle)',
-                color: cinemaVoiceEnabled ? (theme === 'obsidian' ? '#E5A94C' : '#9B5E0B') : 'var(--text-muted)',
+                backgroundColor: voiceEnabled ? 'rgba(180, 116, 23, 0.16)' : 'var(--bg-surface)',
+                borderColor: voiceEnabled ? '#B47417' : 'var(--border-subtle)',
+                color: voiceEnabled ? (theme === 'obsidian' ? '#E5A94C' : '#9B5E0B') : 'var(--text-muted)',
               }}
-              title="开启或关闭电影模式 AI 语音旁白"
+              title={cinemaMode ? '开启或关闭电影模式语音旁白' : '开启或关闭进程实况语音播报'}
             >
               {narrationStatus === 'loading' ? (
                 <Loader2 className="h-3 w-3 animate-spin" />
-              ) : cinemaVoiceEnabled ? (
+              ) : voiceEnabled ? (
                 <Volume2 className="h-3 w-3" />
               ) : (
                 <VolumeX className="h-3 w-3" />
               )}
-              <span>{cinemaVoiceEnabled ? 'AI 旁白' : '静音'}</span>
+              <span>{voiceEnabled ? (cinemaMode ? 'AI 旁白' : '语音播报') : '静音'}</span>
             </button>
           )}
 
@@ -166,7 +240,29 @@ export function ChronicleTicker({
         </p>
       )}
 
-      {cinemaMode && cinemaVoiceEnabled && ((narrationBeats && narrationBeats.length > 0) || narrationSubtitle) && (
+      {isPlaying && !cinemaMode && voiceEnabled && tickerSpokenText && (
+        <div
+          className="mt-2 flex items-start gap-2 rounded-xl border px-2.5 py-1.5 text-[11px] leading-relaxed"
+          style={{
+            backgroundColor: 'var(--bg-elevated)',
+            borderColor: 'var(--border-subtle)',
+            color: 'var(--text-primary)',
+          }}
+        >
+          <span
+            className="mt-1 inline-flex items-end gap-[2px] h-2.5 shrink-0"
+            style={{ color: accent }}
+            aria-hidden="true"
+          >
+            <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar" />
+            <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar atlas-eq-bar-2" />
+            <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar atlas-eq-bar-3" />
+          </span>
+          <span className="line-clamp-2">{tickerSpokenText}</span>
+        </div>
+      )}
+
+      {cinemaMode && voiceEnabled && ((narrationBeats && narrationBeats.length > 0) || narrationSubtitle) && (
         <div
           className="mt-2 rounded-xl border px-2.5 py-2 text-[11px] leading-relaxed space-y-1.5"
           style={{

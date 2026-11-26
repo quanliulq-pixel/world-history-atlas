@@ -13,6 +13,7 @@
     "data:validate": "npx tsx scripts/validate-content.mjs",
     "media:prompts": "npx tsx scripts/export-illustration-prompts.mjs",
     "media:scripts": "npx tsx scripts/export-narration-scripts.mjs",
+    "media:ticker-scripts": "npx tsx scripts/export-ticker-scripts.mjs",
     "media:import": "node scripts/import-media-pack.mjs"
   },
   "dependencies": {

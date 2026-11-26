@@ -58,7 +58,14 @@ function findManifestDir(rootDir) {
 function detectPackType(manifestJson, forcedType) {
   if (forcedType === 'illustrations' || forcedType === 'audio') return forcedType;
   const items = Object.values(manifestJson?.items || {});
-  if (items.some((x) => Array.isArray(x?.beats) || /\.(mp3|opus|ogg|wav)$/i.test(x?.file || ''))) {
+  if (
+    items.some(
+      (x) =>
+        x?.kind === 'ticker' ||
+        Array.isArray(x?.beats) ||
+        /\.(mp3|opus|ogg|wav)$/i.test(x?.file || ''),
+    )
+  ) {
     return 'audio';
   }
   if (items.some((x) => /\.(webp|png|jpg|jpeg)$/i.test(x?.file || ''))) {

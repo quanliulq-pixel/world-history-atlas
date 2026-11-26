@@ -1,4 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
+import { ERAS } from '../data/eras';
+import { ALL_EVENTS } from '../data/events';
+import { ALL_FIGURES } from '../data/figures';
 import type { ProjectionMode, ThemeMode, UserStudyData } from '../types/history';
 
 const STUDY_STORAGE_KEY = 'world-history-atlas:study:v1';
@@ -154,6 +157,69 @@ export function useStudyStore() {
     }
   }, []);
 
+  const replaceStudyData = useCallback((next: UserStudyData) => {
+    setStudyData({
+      masteredIds: Array.isArray(next.masteredIds) ? next.masteredIds : [],
+      bookmarkedIds: Array.isArray(next.bookmarkedIds) ? next.bookmarkedIds : [],
+      notes: next.notes && typeof next.notes === 'object' ? next.notes : {},
+    });
+  }, []);
+
+  const exportMarkdown = useCallback(() => {
+    const masteredSet = new Set(studyData.masteredIds);
+    const bookmarkedSet = new Set(studyData.bookmarkedIds);
+    const lines: string[] = [
+      '# 世界通史时空图谱 · 个人研学笔记书',
+      '',
+      `> 导出时间：${new Date().toLocaleString('zh-CN')} · 已掌握 ${studyData.masteredIds.length} 项 · 收藏 ${studyData.bookmarkedIds.length} 项 · 笔记 ${Object.keys(studyData.notes).length} 条`,
+      '',
+    ];
+
+    for (const era of ERAS) {
+      const evs = ALL_EVENTS.filter((e) => e.eraId === era.id);
+      const figs = ALL_FIGURES.filter((f) => f.eraId === era.id);
+      const relevantEvs = evs.filter(
+        (e) => masteredSet.has(e.id) || bookmarkedSet.has(e.id) || Boolean(studyData.notes[e.id]),
+      );
+      const relevantFigs = figs.filter(
+        (f) => masteredSet.has(f.id) || bookmarkedSet.has(f.id) || Boolean(studyData.notes[f.id]),
+      );
+      if (relevantEvs.length === 0 && relevantFigs.length === 0) continue;
+
+      lines.push(`## ${era.name}`, '');
+      for (const ev of relevantEvs) {
+        const tags = [
+          masteredSet.has(ev.id) ? '✅已掌握' : '',
+          bookmarkedSet.has(ev.id) ? '🔖已收藏' : '',
+        ]
+          .filter(Boolean)
+          .join(' ');
+        lines.push(`### [事件] ${ev.title}（${ev.dateDisplay}） ${tags}`);
+        lines.push(`- **摘要**：${ev.card.summary}`);
+        if (studyData.notes[ev.id]) {
+          lines.push(`- **个人笔记**：${studyData.notes[ev.id]}`);
+        }
+        lines.push('');
+      }
+      for (const fig of relevantFigs) {
+        const tags = [
+          masteredSet.has(fig.id) ? '✅已掌握' : '',
+          bookmarkedSet.has(fig.id) ? '🔖已收藏' : '',
+        ]
+          .filter(Boolean)
+          .join(' ');
+        lines.push(`### [人物] ${fig.name}（${fig.lifespanDisplay}） ${tags}`);
+        lines.push(`- **核心评价**：${fig.card.oneLiner}`);
+        if (studyData.notes[fig.id]) {
+          lines.push(`- **个人笔记**：${studyData.notes[fig.id]}`);
+        }
+        lines.push('');
+      }
+    }
+
+    return lines.join('\n');
+  }, [studyData]);
+
   const toggleTheme = useCallback(() => {
     setTheme((t) => (t === 'parchment' ? 'obsidian' : 'parchment'));
   }, []);
@@ -171,6 +237,8 @@ export function useStudyStore() {
     setNote,
     exportJson,
     importJson,
+    replaceStudyData,
+    exportMarkdown,
     toggleTheme,
     toggleProjection,
     setProjection,

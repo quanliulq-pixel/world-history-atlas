@@ -1,6 +1,8 @@
+import type * as maplibregl from 'maplibre-gl';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AiStageBar } from './components/AiStageBar';
 import { AiStudioModal, type AiStudioIntent } from './components/AiStudioModal';
+import { CausalGraphModal } from './components/CausalGraphModal';
 import { ChronicleTicker } from './components/ChronicleTicker';
 import {
   CountryEvolutionHeader,
@@ -8,8 +10,10 @@ import {
   CountryMapDock,
 } from './components/CountryEvolutionView';
 import { EventCardPanel } from './components/EventCardPanel';
+import { GeoChronoGameModal } from './components/GeoChronoGameModal';
 import { SearchAndProgressModal } from './components/SearchAndProgressModal';
 import { StorylinePickerModal, StorylinePlayerBar } from './components/StorylineOverlay';
+import { TimeSwipeOverlay } from './components/TimeSwipeOverlay';
 import { TimelineDock } from './components/TimelineDock';
 import { TopBar } from './components/TopBar';
 import {
@@ -64,6 +68,7 @@ import {
   type AiTutorContext,
 } from './utils/aiClient';
 import { getPreGeneratedAudio, resolveAudioFileUrl } from './utils/mediaAssets';
+import { isAmbientEnabled, setAmbientEnabled, setAmbientEra } from './utils/ambientBgm';
 import { buildDocumentarySpeechChunks } from './utils/speechSync';
 import {
   loadManifest,
@@ -131,6 +136,8 @@ export function App() {
     setNote,
     exportJson,
     importJson,
+    replaceStudyData,
+    exportMarkdown,
     toggleTheme,
     toggleProjection,
   } = useStudyStore();
@@ -173,6 +180,10 @@ export function App() {
   const [pulseOpen, setPulseOpen] = useState(false);
   const [storyPickerOpen, setStoryPickerOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [timeSwipeOpen, setTimeSwipeOpen] = useState(false);
+  const [chronoGameOpen, setChronoGameOpen] = useState(false);
+  const [causalGraphOpen, setCausalGraphOpen] = useState(false);
+  const [mainMapInstance, setMainMapInstance] = useState<maplibregl.Map | null>(null);
 
   // Gemini AI Studio & Voice Narration state
   const [aiOpen, setAiOpen] = useState(false);
@@ -180,6 +191,9 @@ export function App() {
   const [aiUnlocked, setAiUnlocked] = useState(() => Boolean(getStoredPasscode()));
   const [cinemaVoiceEnabled, setCinemaVoiceEnabled] = useState(true);
   const [timelineVoiceEnabled, setTimelineVoiceEnabled] = useState(true);
+  const [syncCardDuringPlay, setSyncCardDuringPlay] = useState(true);
+  const [ambientEnabled, setAmbientEnabledState] = useState(() => isAmbientEnabled());
+  const [storyVoiceEnabled, setStoryVoiceEnabled] = useState(true);
   const [tickerNarrationStatus, setTickerNarrationStatus] = useState<
     'idle' | 'playing' | 'browser'
   >('idle');
@@ -223,6 +237,10 @@ export function App() {
   const [activeCountry, setActiveCountry] = useState<ResolvedCountryEvolution | null>(null);
   const [countryPlaying, setCountryPlaying] = useState(false);
   const [countryFullReading, setCountryFullReading] = useState(false);
+  const [countrySpeed, setCountrySpeed] = useState<number>(1);
+  const [countryVoiceEnabled, setCountryVoiceEnabled] = useState(true);
+  const [countrySpokenText, setCountrySpokenText] = useState<string | null>(null);
+  const [narratingStageId, setNarratingStageId] = useState<string | null>(null);
 
   // Map geospatial datasets
   const [physical, setPhysical] = useState<PhysicalAtlasData | null>(null);
@@ -297,11 +315,24 @@ export function App() {
   cinemaVoiceEnabledRef.current = cinemaVoiceEnabled;
   const timelineVoiceEnabledRef = useRef(timelineVoiceEnabled);
   timelineVoiceEnabledRef.current = timelineVoiceEnabled;
+  const syncCardDuringPlayRef = useRef(syncCardDuringPlay);
+  syncCardDuringPlayRef.current = syncCardDuringPlay;
+  const countrySpeedRef = useRef(countrySpeed);
+  countrySpeedRef.current = countrySpeed;
+  const countryVoiceEnabledRef = useRef(countryVoiceEnabled);
+  countryVoiceEnabledRef.current = countryVoiceEnabled;
+
+  // Sync Era mood to ambient documentary background audio
+  useEffect(() => {
+    setAmbientEra(currentEra.id);
+  }, [currentEra.id]);
 
   // Keep playing audio speed synchronized live when user changes playback speed selector
   useEffect(() => {
-    setNarrationPlaybackRate(mapTimelineSpeedToAudioRate(playSpeed));
-  }, [playSpeed]);
+    setNarrationPlaybackRate(
+      mapTimelineSpeedToAudioRate(activeCountry ? countrySpeed : playSpeed),
+    );
+  }, [playSpeed, countrySpeed, activeCountry]);
 
   // Auto-clear event shockwave halo outside Cinema Mode holds
   useEffect(() => {
@@ -429,6 +460,13 @@ export function App() {
           setRecentTriggerEventId(bestCrossed.id);
           setTickerEventId(bestCrossed.id);
           setTickerVisible(true);
+          if (syncCardDuringPlayRef.current) {
+            setSelectedFigureId(null);
+            setSelectedEventId(bestCrossed.id);
+            if (window.innerWidth >= 1024) {
+              setDesktopCollapsed(false);
+            }
+          }
         }
 
         const nextEra = getEraForYear(nextYear);
@@ -583,8 +621,8 @@ export function App() {
       pool.length >= 2
         ? pool
         : dimensionFilteredEvents.filter((ev) =>
-            scopedEra ? ev.eraId === scopedEra.id : ev.importance >= 2,
-          );
+          scopedEra ? ev.eraId === scopedEra.id : ev.importance >= 2,
+        );
     if (milestones.length === 0) {
       setCinemaMode(false);
       return;
@@ -655,52 +693,52 @@ export function App() {
         // Pre-fetch 3-beat documentary plan in parallel with camera flight when AI voice is enabled
         const docPromise = cinemaVoiceEnabledRef.current
           ? (async () => {
-              const staticEntry =
-                getVoicePrefs().engine !== 'browser'
-                  ? await getPreGeneratedAudio(`ev:${ev.id}`)
-                  : null;
-              if (staticEntry?.beats?.length) {
-                const cachedPlan = getCachedDocumentaryPlan(`ev:${ev.id}`);
-                const beats = staticEntry.beats.map((b) => ({
-                  title: b.title,
-                  narration: b.narration,
-                }));
-                const plan: AiDocumentaryPlan = cachedPlan ?? {
-                  script: staticEntry.script,
-                  beats,
-                  storyboard: buildLocalFocusStoryboard(ev.title, ev.year, ev.coords, beats),
-                };
-                return {
-                  plan,
-                  staticAudioUrls: staticEntry.beats.map((b) => resolveAudioFileUrl(b.file)),
-                };
-              }
-              setCinemaNarrationStatus('loading');
-              setCinemaSubtitle(`${ev.title} — 正在撰写纪录片脚本并编排地图动画...`);
-              try {
-                const plan = await generateDocumentaryPlan({
-                  cacheKey: `ev:${ev.id}`,
-                  title: ev.title,
-                  year: ev.year,
-                  yearDisplay: ev.dateDisplay,
-                  coords: ev.coords,
-                  eraName: evEra.name,
-                  subPeriodName: evSub.name,
-                  regionLabel: REGION_META[ev.region].label,
-                  summary: ev.card.summary,
-                  geography: ev.card.geography,
-                  politics: ev.card.politics,
-                  economy: ev.card.economy,
-                  culture: ev.card.culture,
-                  consequence: ev.card.consequence,
-                });
-                return { plan, staticAudioUrls: undefined };
-              } catch {
-                return {
-                  fallbackText: `${ev.dateDisplay}，${ev.title}。${ev.card.summary}`,
-                };
-              }
-            })()
+            const staticEntry =
+              getVoicePrefs().engine !== 'browser'
+                ? await getPreGeneratedAudio(`ev:${ev.id}`)
+                : null;
+            if (staticEntry?.beats?.length) {
+              const cachedPlan = getCachedDocumentaryPlan(`ev:${ev.id}`);
+              const beats = staticEntry.beats.map((b) => ({
+                title: b.title,
+                narration: b.narration,
+              }));
+              const plan: AiDocumentaryPlan = cachedPlan ?? {
+                script: staticEntry.script,
+                beats,
+                storyboard: buildLocalFocusStoryboard(ev.title, ev.year, ev.coords, beats),
+              };
+              return {
+                plan,
+                staticAudioUrls: staticEntry.beats.map((b) => resolveAudioFileUrl(b.file)),
+              };
+            }
+            setCinemaNarrationStatus('loading');
+            setCinemaSubtitle(`${ev.title} — 正在撰写纪录片脚本并编排地图动画...`);
+            try {
+              const plan = await generateDocumentaryPlan({
+                cacheKey: `ev:${ev.id}`,
+                title: ev.title,
+                year: ev.year,
+                yearDisplay: ev.dateDisplay,
+                coords: ev.coords,
+                eraName: evEra.name,
+                subPeriodName: evSub.name,
+                regionLabel: REGION_META[ev.region].label,
+                summary: ev.card.summary,
+                geography: ev.card.geography,
+                politics: ev.card.politics,
+                economy: ev.card.economy,
+                culture: ev.card.culture,
+                consequence: ev.card.consequence,
+              });
+              return { plan, staticAudioUrls: undefined };
+            } catch {
+              return {
+                fallbackText: `${ev.dateDisplay}，${ev.title}。${ev.card.summary}`,
+              };
+            }
+          })()
           : null;
 
         await animateYearTo(currentYearRef.current, ev.year, travelMs);
@@ -961,9 +999,67 @@ export function App() {
     [flyToLocation, stopAiNarrationAndStage],
   );
 
-  // Storyline auto-advance timer
+  // Storyline voice narration & optional auto-advance
   useEffect(() => {
-    if (!activeStoryline || !storyAutoPlay) return;
+    if (!activeStoryline) return;
+    const step = activeStoryline.steps[storyStepIdx];
+    const ev = step ? EVENT_MAP[step.eventId] : null;
+    if (!step || !ev) return;
+
+    let cancelled = false;
+    let timerId = 0;
+
+    if (storyVoiceEnabled) {
+      void (async () => {
+        try {
+          const entry =
+            getVoicePrefs().engine !== 'browser'
+              ? await getPreGeneratedAudio(`story:${activeStoryline.id}:${storyStepIdx}`)
+              : null;
+          if (cancelled) return;
+          const script = entry?.script || `${ev.dateDisplay}，${ev.title}。${step.narrative}`;
+          const audioUrl = entry?.file ? resolveAudioFileUrl(entry.file) : null;
+          const mode = await playSingleStaticAudio({
+            audioUrl,
+            script,
+            playbackRate: mapTimelineSpeedToAudioRate(playSpeedRef.current),
+          });
+          if (cancelled || mode === 'silent') return;
+        } catch {
+          // Ignore interruption
+        }
+        if (cancelled || !storyAutoPlay) return;
+        timerId = window.setTimeout(() => {
+          if (cancelled) return;
+          setStoryStepIdx((prev) => {
+            const next = prev + 1;
+            if (next >= activeStoryline.steps.length) {
+              setStoryAutoPlay(false);
+              return prev;
+            }
+            const nextStep = activeStoryline.steps[next];
+            const nextEv = nextStep ? EVENT_MAP[nextStep.eventId] : null;
+            if (nextEv) {
+              setSelectedFigureId(null);
+              setSelectedEventId(nextEv.id);
+              setCurrentYear(nextEv.year);
+              setFocusRouteId(nextStep.highlightRouteIds?.[0] || nextEv.routeIds?.[0] || null);
+              setRecentTriggerEventId(nextEv.id);
+              flyToLocation(nextStep.center || nextEv.coords, nextStep.zoom || 3.4);
+            }
+            return next;
+          });
+        }, 650);
+      })();
+
+      return () => {
+        cancelled = true;
+        window.clearTimeout(timerId);
+        stopActiveNarration();
+      };
+    }
+
+    if (!storyAutoPlay) return;
     const timer = window.setInterval(() => {
       setStoryStepIdx((prev) => {
         const next = prev + 1;
@@ -971,20 +1067,20 @@ export function App() {
           setStoryAutoPlay(false);
           return prev;
         }
-        const step = activeStoryline.steps[next];
-        const ev = step ? EVENT_MAP[step.eventId] : null;
-        if (ev) {
+        const nextStep = activeStoryline.steps[next];
+        const nextEv = nextStep ? EVENT_MAP[nextStep.eventId] : null;
+        if (nextEv) {
           setSelectedFigureId(null);
-          setSelectedEventId(ev.id);
-          setCurrentYear(ev.year);
-          setFocusRouteId(step.highlightRouteIds?.[0] || ev.routeIds?.[0] || null);
-          flyToLocation(step.center || ev.coords, step.zoom || 3.4);
+          setSelectedEventId(nextEv.id);
+          setCurrentYear(nextEv.year);
+          setFocusRouteId(nextStep.highlightRouteIds?.[0] || nextEv.routeIds?.[0] || null);
+          flyToLocation(nextStep.center || nextEv.coords, nextStep.zoom || 3.4);
         }
         return next;
       });
     }, 6000);
     return () => window.clearInterval(timer);
-  }, [activeStoryline, storyAutoPlay, flyToLocation]);
+  }, [activeStoryline, storyStepIdx, storyAutoPlay, storyVoiceEnabled, flyToLocation]);
 
   const handleToggleDimension = useCallback((dim: Dimension | 'all') => {
     if (dim === 'all') {
@@ -1036,35 +1132,35 @@ export function App() {
       subPeriodName: currentSubPeriod.name,
       event: selectedEvent
         ? {
-            title: selectedEvent.title,
-            dateDisplay: selectedEvent.dateDisplay,
-            locationName: selectedEvent.locationName,
-            summary: selectedEvent.card.summary,
-            politics: selectedEvent.card.politics,
-            economy: selectedEvent.card.economy,
-            culture: selectedEvent.card.culture,
-            consequence: selectedEvent.card.consequence,
-          }
+          title: selectedEvent.title,
+          dateDisplay: selectedEvent.dateDisplay,
+          locationName: selectedEvent.locationName,
+          summary: selectedEvent.card.summary,
+          politics: selectedEvent.card.politics,
+          economy: selectedEvent.card.economy,
+          culture: selectedEvent.card.culture,
+          consequence: selectedEvent.card.consequence,
+        }
         : null,
       figure: selectedFigure
         ? {
-            name: selectedFigure.name,
-            title: selectedFigure.title,
-            lifespanDisplay: selectedFigure.lifespanDisplay,
-            oneLiner: selectedFigure.card.oneLiner,
-            coreContributions: selectedFigure.card.coreContributions,
-            historicalImpact: selectedFigure.card.historicalImpact,
-          }
+          name: selectedFigure.name,
+          title: selectedFigure.title,
+          lifespanDisplay: selectedFigure.lifespanDisplay,
+          oneLiner: selectedFigure.card.oneLiner,
+          coreContributions: selectedFigure.card.coreContributions,
+          historicalImpact: selectedFigure.card.historicalImpact,
+        }
         : null,
       country: activeCountry
         ? {
-            name: activeCountry.name,
-            tagline: activeCountry.tagline,
-            geography: activeCountry.overview.geography,
-            politics: activeCountry.overview.politics,
-            economy: activeCountry.overview.economy,
-            culture: activeCountry.overview.culture,
-          }
+          name: activeCountry.name,
+          tagline: activeCountry.tagline,
+          geography: activeCountry.overview.geography,
+          politics: activeCountry.overview.politics,
+          economy: activeCountry.overview.economy,
+          culture: activeCountry.overview.culture,
+        }
         : null,
     };
   }, [currentYear, currentEra, currentSubPeriod, selectedEvent, selectedFigure, activeCountry]);
@@ -1554,7 +1650,42 @@ export function App() {
     [handleSelectFigure],
   );
 
-  // Country Mode stage autoplay
+  const handleNarrateCountryStage = useCallback(
+    async (stage: ResolvedCountryEvolution['stages'][number]) => {
+      if (!activeCountry) return;
+      if (narratingStageId === stage.id) {
+        stopActiveNarration();
+        setNarratingStageId(null);
+        setCountrySpokenText(null);
+        return;
+      }
+      setCountryPlaying(false);
+      setCurrentYear(stage.snapshotYear);
+      const fallbackScript = `${activeCountry.name}，${stage.periodDisplay}，${stage.name}。${stage.summary}`;
+      setNarratingStageId(stage.id);
+      setCountrySpokenText(fallbackScript);
+      try {
+        const entry =
+          getVoicePrefs().engine !== 'browser'
+            ? await getPreGeneratedAudio(`country:${activeCountry.id}:${stage.id}`)
+            : null;
+        const script = entry?.script || fallbackScript;
+        setCountrySpokenText(script);
+        const audioUrl = entry?.file ? resolveAudioFileUrl(entry.file) : null;
+        await playSingleStaticAudio({
+          audioUrl,
+          script,
+          playbackRate: mapTimelineSpeedToAudioRate(countrySpeedRef.current),
+        });
+      } finally {
+        setNarratingStageId((cur) => (cur === stage.id ? null : cur));
+        setCountrySpokenText(null);
+      }
+    },
+    [activeCountry, narratingStageId],
+  );
+
+  // Country Mode stage autoplay with voice synchronization & speed control
   useEffect(() => {
     if (!activeCountry || !countryPlaying) return;
     const stages = activeCountry.stages;
@@ -1563,20 +1694,138 @@ export function App() {
       return;
     }
 
-    const timer = window.setInterval(() => {
-      const curIdx = findMatchingStageIndex(stages, currentYearRef.current);
-      if (curIdx >= stages.length - 1) {
+    let cancelled = false;
+    let timerId = 0;
+
+    void (async () => {
+      let idx = Math.max(0, findMatchingStageIndex(stages, currentYearRef.current));
+      for (; idx < stages.length; idx++) {
+        if (cancelled) break;
+        const stage = stages[idx];
+        setCurrentYear(stage.snapshotYear);
+
+        if (countryVoiceEnabledRef.current) {
+          const fallbackScript = `${activeCountry.name}，${stage.periodDisplay}，${stage.name}。${stage.summary}`;
+          setNarratingStageId(stage.id);
+          setCountrySpokenText(fallbackScript);
+          try {
+            const entry =
+              getVoicePrefs().engine !== 'browser'
+                ? await getPreGeneratedAudio(`country:${activeCountry.id}:${stage.id}`)
+                : null;
+            if (cancelled) break;
+            const script = entry?.script || fallbackScript;
+            setCountrySpokenText(script);
+            const audioUrl = entry?.file ? resolveAudioFileUrl(entry.file) : null;
+            const mode = await playSingleStaticAudio({
+              audioUrl,
+              script,
+              playbackRate: mapTimelineSpeedToAudioRate(countrySpeedRef.current),
+            });
+            if (cancelled || mode === 'silent') break;
+          } catch {
+            // Fallback pause if audio fails
+          }
+          if (cancelled) break;
+          await new Promise<void>((r) => {
+            timerId = window.setTimeout(r, Math.round(450 / Math.max(0.5, countrySpeedRef.current)));
+          });
+        } else {
+          setNarratingStageId(null);
+          setCountrySpokenText(null);
+          await new Promise<void>((r) => {
+            timerId = window.setTimeout(r, Math.round(2100 / Math.max(0.5, countrySpeedRef.current)));
+          });
+        }
+      }
+      if (!cancelled) {
         setCountryPlaying(false);
+        setNarratingStageId(null);
+        setCountrySpokenText(null);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timerId);
+      stopActiveNarration();
+      setNarratingStageId(null);
+      setCountrySpokenText(null);
+    };
+  }, [activeCountry, countryPlaying]);
+
+  // Global keyboard shortcuts (Space play/pause, Left/Right step milestone, [/] speed, M voice, B BGM)
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (aiOpen || pulseOpen || storyPickerOpen || searchOpen || chronoGameOpen || causalGraphOpen) {
         return;
       }
-      const nextStage = stages[curIdx + 1];
-      if (nextStage) {
-        setCurrentYear(nextStage.snapshotYear);
+      const tag = (e.target as HTMLElement | null)?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (e.target as HTMLElement | null)?.isContentEditable) {
+        return;
       }
-    }, 1900);
 
-    return () => window.clearInterval(timer);
-  }, [activeCountry, countryPlaying]);
+      if (e.code === 'Space' && !activeCountry) {
+        e.preventDefault();
+        if (cinemaMode) {
+          setCinemaMode(false);
+          stopActiveNarration();
+        } else {
+          stopAiNarrationAndStage(true, true);
+          setIsPlaying((p) => {
+            const next = !p;
+            if (next) setTickerVisible(true);
+            return next;
+          });
+        }
+      } else if (e.key === 'ArrowLeft' && !activeCountry) {
+        e.preventDefault();
+        handleStepMilestone(-1);
+      } else if (e.key === 'ArrowRight' && !activeCountry) {
+        e.preventDefault();
+        handleStepMilestone(1);
+      } else if (e.key === '[') {
+        setPlaySpeed((s) => {
+          const i = PLAY_SPEEDS.indexOf(s);
+          return i > 0 ? PLAY_SPEEDS[i - 1] : PLAY_SPEEDS[0];
+        });
+      } else if (e.key === ']') {
+        setPlaySpeed((s) => {
+          const i = PLAY_SPEEDS.indexOf(s);
+          return i !== -1 && i < PLAY_SPEEDS.length - 1 ? PLAY_SPEEDS[i + 1] : PLAY_SPEEDS[PLAY_SPEEDS.length - 1];
+        });
+      } else if (e.key === 'm' || e.key === 'M') {
+        setTimelineVoiceEnabled((v) => {
+          const next = !v;
+          if (!next) {
+            stopActiveNarration();
+            setTickerNarrationStatus('idle');
+            setTickerSpokenText(null);
+          }
+          return next;
+        });
+      } else if (e.key === 'b' || e.key === 'B') {
+        setAmbientEnabledState((prev) => {
+          const next = !prev;
+          setAmbientEnabled(next);
+          return next;
+        });
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [
+    aiOpen,
+    pulseOpen,
+    storyPickerOpen,
+    searchOpen,
+    chronoGameOpen,
+    causalGraphOpen,
+    activeCountry,
+    cinemaMode,
+    stopAiNarrationAndStage,
+    handleStepMilestone,
+  ]);
 
   // Escape key returns to World Map when in Country Mode and no modal is open
   useEffect(() => {
@@ -1647,6 +1896,19 @@ export function App() {
             stopAiNarrationAndStage(true, true);
             setStoryPickerOpen(true);
           }}
+          onOpenCausalGraph={() => {
+            stopAiNarrationAndStage(true, true);
+            setCausalGraphOpen(true);
+          }}
+          onOpenChronoGame={() => {
+            stopAiNarrationAndStage(true, true);
+            setChronoGameOpen(true);
+          }}
+          timeSwipeOpen={timeSwipeOpen}
+          onToggleTimeSwipe={() => {
+            stopAiNarrationAndStage(true, true);
+            setTimeSwipeOpen((v) => !v);
+          }}
           onOpenSearch={() => {
             stopAiNarrationAndStage(true, true);
             setSearchOpen(true);
@@ -1698,17 +1960,50 @@ export function App() {
               setSelectedEventId(null);
               setSelectedFigureId(null);
             }}
+            onMapInstance={setMainMapInstance}
           />
+
+          {!activeCountry && (
+            <TimeSwipeOverlay
+              open={timeSwipeOpen}
+              mainMap={mainMapInstance}
+              physical={physical}
+              snapshots={snapshots}
+              currentYear={currentYear}
+              activeSnapshotYear={activeSnapshot?.year ?? null}
+              theme={theme}
+              projection={projection}
+              onSelectRightYear={applyYearChange}
+              onClose={() => setTimeSwipeOpen(false)}
+            />
+          )}
 
           {activeCountry && (
             <CountryMapDock
               country={activeCountry}
               currentYear={currentYear}
               isPlaying={countryPlaying}
+              playSpeed={countrySpeed}
+              speedOptions={[0.5, 1, 1.5, 2]}
+              voiceEnabled={countryVoiceEnabled}
+              spokenText={countrySpokenText}
               theme={theme}
               onTogglePlay={() => setCountryPlaying((p) => !p)}
+              onSelectSpeed={setCountrySpeed}
+              onToggleVoice={() => {
+                setCountryVoiceEnabled((prev) => {
+                  const next = !prev;
+                  if (!next) {
+                    stopActiveNarration();
+                    setNarratingStageId(null);
+                    setCountrySpokenText(null);
+                  }
+                  return next;
+                });
+              }}
               onSelectYear={(yr) => {
                 setCountryPlaying(false);
+                stopActiveNarration();
                 setCurrentYear(yr);
               }}
             />
@@ -1728,6 +2023,7 @@ export function App() {
                 playSpeed={playSpeed}
                 speedOptions={PLAY_SPEEDS}
                 voiceEnabled={cinemaMode ? cinemaVoiceEnabled : timelineVoiceEnabled}
+                syncCardDuringPlay={syncCardDuringPlay}
                 narrationStatus={cinemaMode ? cinemaNarrationStatus : tickerNarrationStatus}
                 narrationSubtitle={cinemaSubtitle}
                 narrationBeats={cinemaBeats}
@@ -1758,6 +2054,7 @@ export function App() {
                     });
                   }
                 }}
+                onToggleSyncCard={() => setSyncCardDuringPlay((v) => !v)}
                 onSelectEvent={(ev) => handleSelectEvent(ev)}
                 onStopPlayback={() => {
                   setIsPlaying(false);
@@ -1788,6 +2085,7 @@ export function App() {
                   storyline={activeStoryline}
                   stepIndex={storyStepIdx}
                   autoPlaying={storyAutoPlay}
+                  voiceEnabled={storyVoiceEnabled}
                   theme={theme}
                   onPrev={() => applyStoryStep(activeStoryline, Math.max(0, storyStepIdx - 1))}
                   onNext={() =>
@@ -1797,7 +2095,15 @@ export function App() {
                     )
                   }
                   onToggleAuto={() => setStoryAutoPlay((v) => !v)}
+                  onToggleVoice={() => {
+                    setStoryVoiceEnabled((v) => {
+                      const next = !v;
+                      if (!next) stopActiveNarration();
+                      return next;
+                    });
+                  }}
                   onExit={() => {
+                    stopActiveNarration();
                     setActiveStoryline(null);
                     setStoryAutoPlay(false);
                   }}
@@ -1936,6 +2242,7 @@ export function App() {
             currentYear={currentYear}
             theme={theme}
             fullReading={countryFullReading}
+            narratingStageId={narratingStageId}
             onSelectYear={(yr) => {
               setCountryPlaying(false);
               setCurrentYear(yr);
@@ -1943,6 +2250,7 @@ export function App() {
             onSelectModernCountry={handleSelectModernCountry}
             onSelectEventInWorld={handleJumpFromCountryToEvent}
             onSelectFigureInWorld={handleJumpFromCountryToFigure}
+            onNarrateStage={(st) => void handleNarrateCountryStage(st)}
             onAskAiAboutCountry={(c) =>
               openAiWithIntent({
                 tab: 'tutor',
@@ -1974,6 +2282,7 @@ export function App() {
           playSpeed={playSpeed}
           speedOptions={PLAY_SPEEDS}
           voiceEnabled={cinemaMode ? cinemaVoiceEnabled : timelineVoiceEnabled}
+          ambientEnabled={ambientEnabled}
           timelineZoom={timelineZoom}
           theme={theme}
           onChangeYear={applyYearChange}
@@ -2024,6 +2333,13 @@ export function App() {
               });
             }
           }}
+          onToggleAmbient={() => {
+            setAmbientEnabledState((prev) => {
+              const next = !prev;
+              setAmbientEnabled(next);
+              return next;
+            });
+          }}
           onToggleTimelineZoom={() => setTimelineZoom((z) => (z === 'global' ? 'era' : 'global'))}
           onPrevMilestone={() => handleStepMilestone(-1)}
           onNextMilestone={() => handleStepMilestone(1)}
@@ -2065,7 +2381,26 @@ export function App() {
         onSelectEvent={(ev) => handleSelectEvent(ev)}
         onSelectFigure={(fig) => handleSelectFigure(fig)}
         onExportJson={exportJson}
+        onExportMarkdown={exportMarkdown}
         onImportJson={importJson}
+        onReplaceStudyData={replaceStudyData}
+        onRequireAiUnlock={() => openAiWithIntent({ tab: 'tutor' })}
+      />
+
+      <GeoChronoGameModal
+        open={chronoGameOpen}
+        theme={theme}
+        physical={physical}
+        onClose={() => setChronoGameOpen(false)}
+        onJumpToEvent={(ev) => handleSelectEvent(ev)}
+      />
+
+      <CausalGraphModal
+        open={causalGraphOpen}
+        theme={theme}
+        initialFocusEventId={selectedEventId}
+        onClose={() => setCausalGraphOpen(false)}
+        onSelectEvent={(ev) => handleSelectEvent(ev)}
       />
 
       <AiStudioModal

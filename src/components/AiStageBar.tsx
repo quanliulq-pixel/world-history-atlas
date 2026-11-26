@@ -1,7 +1,19 @@
-import { ChevronLeft, ChevronRight, Pause, Play, RotateCcw, Sparkles, X } from 'lucide-react';
+import {
+  ChevronLeft,
+  ChevronRight,
+  GripVertical,
+  Pause,
+  Play,
+  RotateCcw,
+  Sparkles,
+  X,
+} from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ThemeMode } from '../types/history';
 import type { AiStoryboard } from '../utils/aiClient';
 import { formatYear } from '../utils/timeline';
+
+const AI_STAGE_POS_KEY = 'world-history-atlas:aistage-pos:v1';
 
 interface AiStageBarProps {
   storyboard: AiStoryboard;
@@ -34,6 +46,37 @@ export function AiStageBar({
   onClose,
   onOpenAiDrawer,
 }: AiStageBarProps) {
+  const barRef = useRef<HTMLDivElement | null>(null);
+  const [pos, setPos] = useState<{ x: number; y: number } | null>(() => {
+    try {
+      const raw = localStorage.getItem(AI_STAGE_POS_KEY);
+      if (!raw) return null;
+      const p = JSON.parse(raw) as { x?: number; y?: number };
+      return typeof p.x === 'number' && typeof p.y === 'number' ? { x: p.x, y: p.y } : null;
+    } catch {
+      return null;
+    }
+  });
+  const [dragging, setDragging] = useState(false);
+  const dragRef = useRef<{ id: number; sx: number; sy: number; ox: number; oy: number } | null>(null);
+
+  const clamp = useCallback((x: number, y: number) => {
+    const el = barRef.current;
+    const w = el?.offsetWidth ?? 560;
+    const h = el?.offsetHeight ?? 140;
+    return {
+      x: Math.round(Math.max(8, Math.min(Math.max(8, window.innerWidth - w - 8), x))),
+      y: Math.round(Math.max(8, Math.min(Math.max(8, window.innerHeight - h - 8), y))),
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!pos) return;
+    const onResize = () => setPos((cur) => (cur ? clamp(cur.x, cur.y) : null));
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [pos !== null, clamp]);
+
   const steps = storyboard.steps;
   const currentStep = steps[stepIndex] || steps[0];
   if (!currentStep) return null;
@@ -42,20 +85,80 @@ export function AiStageBar({
 
   return (
     <div
-      className={`pointer-events-auto fixed left-3 right-3 bottom-[88px] sm:bottom-[94px] z-30 rounded-2xl border p-2.5 shadow-2xl backdrop-blur-md transition-all ${
-        aiDrawerOpen
-          ? 'lg:left-14 lg:right-[488px]'
-          : 'lg:left-1/2 lg:-translate-x-1/2 lg:w-[760px] lg:max-w-[90vw]'
-      }`}
+      ref={barRef}
+      className={
+        pos
+          ? 'pointer-events-auto fixed z-30 rounded-2xl border p-2.5 shadow-2xl backdrop-blur-md'
+          : `pointer-events-auto fixed left-3 right-3 bottom-[88px] sm:bottom-[94px] z-30 rounded-2xl border p-2.5 shadow-2xl backdrop-blur-md transition-all ${
+              aiDrawerOpen
+                ? 'lg:left-14 lg:right-[488px]'
+                : 'lg:left-1/2 lg:-translate-x-1/2 lg:w-[760px] lg:max-w-[90vw]'
+            }`
+      }
       style={{
+        ...(pos ? { left: `${pos.x}px`, top: `${pos.y}px`, width: 'min(760px, calc(100vw - 16px))' } : undefined),
         backgroundColor: isDark ? 'rgba(18, 28, 40, 0.92)' : 'rgba(251, 248, 241, 0.95)',
         borderColor: 'var(--border-strong)',
         color: 'var(--text-primary)',
+        userSelect: dragging ? 'none' : undefined,
       }}
     >
-      {/* Top Director Header */}
-      <div className="flex flex-wrap items-center justify-between gap-2">
+      {/* Top Director Header (draggable) */}
+      <div
+        onPointerDown={(e) => {
+          if (e.button !== 0 || (e.target as HTMLElement | null)?.closest('button')) return;
+          const el = barRef.current;
+          if (!el) return;
+          const r = el.getBoundingClientRect();
+          e.currentTarget.setPointerCapture(e.pointerId);
+          dragRef.current = {
+            id: e.pointerId,
+            sx: e.clientX,
+            sy: e.clientY,
+            ox: pos ? pos.x : r.left,
+            oy: pos ? pos.y : r.top,
+          };
+          setDragging(true);
+        }}
+        onPointerMove={(e) => {
+          const d = dragRef.current;
+          if (!d || d.id !== e.pointerId) return;
+          setPos(clamp(d.ox + (e.clientX - d.sx), d.oy + (e.clientY - d.sy)));
+        }}
+        onPointerUp={(e) => {
+          const d = dragRef.current;
+          if (!d || d.id !== e.pointerId) return;
+          if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+            e.currentTarget.releasePointerCapture(e.pointerId);
+          }
+          dragRef.current = null;
+          setDragging(false);
+          setPos((cur) => {
+            if (!cur) return null;
+            const c = clamp(cur.x, cur.y);
+            try {
+              localStorage.setItem(AI_STAGE_POS_KEY, JSON.stringify(c));
+            } catch {
+              // Ignore
+            }
+            return c;
+          });
+        }}
+        onDoubleClick={() => {
+          setPos(null);
+          try {
+            localStorage.removeItem(AI_STAGE_POS_KEY);
+          } catch {
+            // Ignore
+          }
+        }}
+        className={`flex flex-wrap items-center justify-between gap-2 touch-none select-none ${
+          dragging ? 'cursor-grabbing' : 'cursor-grab'
+        }`}
+        title="按住拖动移动 AI 演播条位置，双击复位"
+      >
         <div className="flex items-center gap-2 min-w-0">
+          <GripVertical className="h-3.5 w-3.5 shrink-0 opacity-45 -ml-1" style={{ color: 'var(--text-muted)' }} />
           <span
             className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold text-white shrink-0"
             style={{ backgroundColor: 'var(--accent-primary)' }}

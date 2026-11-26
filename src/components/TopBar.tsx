@@ -1,12 +1,15 @@
 import {
   BookOpen,
+  Columns2,
   Compass,
+  Gamepad2,
   Globe,
   Landmark,
   Layers,
   Map as MapIcon,
   Moon,
   Mountain,
+  Network,
   Route as RouteIcon,
   Search,
   Sparkles,
@@ -43,6 +46,10 @@ interface TopBarProps {
   onToggleTheme: () => void;
   onOpenPulse: () => void;
   onOpenStorylines: () => void;
+  onOpenCausalGraph: () => void;
+  onOpenChronoGame: () => void;
+  timeSwipeOpen: boolean;
+  onToggleTimeSwipe: () => void;
   onOpenSearch: () => void;
   onOpenAiStudio: () => void;
   aiUnlocked: boolean;
@@ -75,6 +82,10 @@ export function TopBar({
   onToggleTheme,
   onOpenPulse,
   onOpenStorylines,
+  onOpenCausalGraph,
+  onOpenChronoGame,
+  timeSwipeOpen,
+  onToggleTimeSwipe,
   onOpenSearch,
   onOpenAiStudio,
   aiUnlocked,
@@ -173,6 +184,36 @@ export function TopBar({
           >
             <Compass className="h-3.5 w-3.5" />
             <span className="hidden sm:inline">同代横切</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={onOpenCausalGraph}
+            className="inline-flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-medium border transition hover:opacity-90 cursor-pointer"
+            style={{
+              backgroundColor: 'var(--bg-surface)',
+              borderColor: 'var(--border-subtle)',
+              color: 'var(--text-primary)',
+            }}
+            title="全局历史因果脉络星图 (170 节点)"
+          >
+            <Network className="h-3.5 w-3.5" style={{ color: '#296B9E' }} />
+            <span className="hidden xl:inline">因果星图</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={onOpenChronoGame}
+            className="inline-flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-medium border transition hover:opacity-90 cursor-pointer"
+            style={{
+              backgroundColor: 'var(--bg-surface)',
+              borderColor: 'var(--border-subtle)',
+              color: 'var(--text-primary)',
+            }}
+            title="看历史油画猜地点与年代小游戏"
+          >
+            <Gamepad2 className="h-3.5 w-3.5" style={{ color: '#059669' }} />
+            <span className="hidden xl:inline">猜时空</span>
           </button>
 
           <button
@@ -355,6 +396,21 @@ export function TopBar({
         >
           <Layers className="h-3 w-3" />
           <span>{showAllEras ? '全史标点: 开' : '仅当期大事'}</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={onToggleTimeSwipe}
+          className="shrink-0 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium border transition cursor-pointer"
+          style={{
+            backgroundColor: timeSwipeOpen ? 'rgba(140, 45, 45, 0.14)' : 'var(--bg-surface)',
+            borderColor: timeSwipeOpen ? 'var(--accent-primary)' : 'var(--border-subtle)',
+            color: timeSwipeOpen ? 'var(--accent-primary)' : 'var(--text-muted)',
+          }}
+          title="开启左右卷帘对比任意两个历史年份的帝国疆域"
+        >
+          <Columns2 className="h-3 w-3" />
+          <span>双时空对比</span>
         </button>
       </div>
     </header>

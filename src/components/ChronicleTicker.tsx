@@ -3,6 +3,7 @@ import {
   Film,
   GripVertical,
   Loader2,
+  PanelRight,
   Pause,
   Sparkles,
   Volume2,
@@ -62,6 +63,7 @@ interface ChronicleTickerProps {
   playSpeed: number;
   speedOptions: number[];
   voiceEnabled: boolean;
+  syncCardDuringPlay?: boolean;
   narrationStatus?: 'idle' | 'loading' | 'playing' | 'browser';
   narrationSubtitle?: string | null;
   narrationBeats?: AiDocumentaryBeat[] | null;
@@ -69,6 +71,7 @@ interface ChronicleTickerProps {
   tickerSpokenText?: string | null;
   onSelectSpeed: (speed: number) => void;
   onToggleVoice: () => void;
+  onToggleSyncCard?: () => void;
   onSelectEvent: (ev: HistoryEvent) => void;
   onStopPlayback: () => void;
   onDismiss: () => void;
@@ -86,6 +89,7 @@ export function ChronicleTicker({
   playSpeed,
   speedOptions,
   voiceEnabled,
+  syncCardDuringPlay = true,
   narrationStatus = 'idle',
   narrationSubtitle = null,
   narrationBeats = null,
@@ -93,6 +97,7 @@ export function ChronicleTicker({
   tickerSpokenText = null,
   onSelectSpeed,
   onToggleVoice,
+  onToggleSyncCard,
   onSelectEvent,
   onStopPlayback,
   onDismiss,
@@ -351,6 +356,23 @@ export function ChronicleTicker({
                 <VolumeX className="h-3 w-3" />
               )}
               <span>{voiceEnabled ? (cinemaMode ? 'AI 旁白' : '语音播报') : '静音'}</span>
+            </button>
+          )}
+
+          {isPlaying && !cinemaMode && onToggleSyncCard && (
+            <button
+              type="button"
+              onClick={onToggleSyncCard}
+              className="hidden sm:inline-flex items-center gap-1 rounded-lg border px-1.5 py-0.5 text-[10px] font-semibold hover:opacity-80 cursor-pointer"
+              style={{
+                backgroundColor: syncCardDuringPlay ? 'rgba(5, 150, 105, 0.14)' : 'var(--bg-surface)',
+                borderColor: syncCardDuringPlay ? '#059669' : 'var(--border-subtle)',
+                color: syncCardDuringPlay ? '#059669' : 'var(--text-muted)',
+              }}
+              title="开启后，演进播报大事件时自动同步展开右侧详卡"
+            >
+              <PanelRight className="h-3 w-3" />
+              <span>联动详卡</span>
             </button>
           )}
 

@@ -310,4 +310,356 @@ export const STORYLINES: Storyline[] = [
       },
     ],
   },
+  {
+    id: 'story-media-knowledge',
+    title: '媒介革命：从泥板造纸到生成式 AI',
+    subtitle: 'BC 3000 – 2025 · 信息载体每一次降本如何撬动文明飞跃',
+    yearSpan: 'BC 3000 – 2025',
+    description:
+      '追踪人类存储与传播知识的载体革命：乌鲁克泥板记账、腓尼基拼音字母、蔡伦造纸术西传、古登堡活字印刷点燃科学革命，直到万维网与生成式 AI 重构人类认知边界。',
+    accentColor: '#734B9B',
+    steps: [
+      {
+        eventId: 'e1-uruk',
+        narrative:
+          '一切始于两河流域的神庙仓库：为了精准核算大麦与啤酒税赋，苏美尔人刻下首批楔形文字泥板，知识首次突破口耳相传的寿命极限。',
+        center: [45.6, 31.3],
+        zoom: 4,
+      },
+      {
+        eventId: 'e1-phoenician',
+        narrative:
+          '黎凡特的腓尼基商人为跨海记账把复杂象形文字简化为 22 个辅音字母，极大降低了平民与商人学写字的门槛，衍生出希腊与拉丁字母。',
+        center: [35.2, 33.3],
+        zoom: 4.2,
+      },
+      {
+        eventId: 'e2-cai-lun',
+        narrative:
+          '公元 105 年东汉蔡伦用树皮、麻头与破布改良造纸术，使书写成本相对羊皮纸、竹简断崖下跌，书籍从此具备大规模普及的物理底座。',
+        center: [112.4, 34.6],
+        zoom: 4,
+        highlightRouteIds: ['route-paper-west'],
+      },
+      {
+        eventId: 'e3-talas',
+        narrative:
+          '公元 751 年怛罗斯之战后造纸工匠传入中亚与巴格达，催生阿拉伯“智慧宫”百年翻译运动，并经安达卢西亚最终输入中世纪欧洲。',
+        center: [64, 38],
+        zoom: 3.3,
+        highlightRouteIds: ['route-paper-west'],
+      },
+      {
+        eventId: 'e4-gutenberg',
+        narrative:
+          '15 世纪中叶美因茨的古登堡将油墨、金属活字与螺旋压榨机结合：欧洲五十年内印出数千万册书籍，直接点爆宗教改革与知识爆炸。',
+        center: [8.3, 50],
+        zoom: 4.2,
+      },
+      {
+        eventId: 'e5-copernicus-science',
+        narrative:
+          '印刷术让欧洲天文学家与物理学家得以即时交叉校验观测数据与公式，哥白尼、伽利略与牛顿的科学革命从此不可逆转。',
+        center: [14, 49],
+        zoom: 3.8,
+      },
+      {
+        eventId: 'e8-www-maastricht',
+        narrative:
+          '1991 年万维网（WWW）向全球公众免费开放，超链接与浏览器把全人类图书馆和市场搬上同一张实时光缆网。',
+        center: [6.1, 46.2],
+        zoom: 3.6,
+        highlightRouteIds: ['route-modern-supply'],
+      },
+      {
+        eventId: 'e8-generative-ai',
+        narrative:
+          '2020 年代大模型将全人类累积的文本与知识压缩进高维权重空间，知识检索、科研辅助与软件生产率迎来新一轮范式跃迁。',
+        center: [-122, 37.5],
+        zoom: 3.2,
+      },
+    ],
+  },
+  {
+    id: 'story-energy-transitions',
+    title: '能源五千年：青铜、煤炭、石油与低碳',
+    subtitle: 'BC 2000 – 2025 · 能源密度如何决定帝国上限与霸权更替',
+    yearSpan: 'BC 2000 – 2025',
+    description:
+      '从早期的铜锡远途冶金和铁器牛耕突破，到瓦特蒸汽机引爆化石能源时代、电力内燃机普及、1973 年石油危机震荡，再到当代碳中和竞赛。',
+    accentColor: '#296B9E',
+    steps: [
+      {
+        eventId: 'e1-bronze-network',
+        narrative:
+          '青铜时代被迫把千里之外的阿富汗锡矿与地中海铜矿捏合在一起，金属工坊的能量与矿产瓶颈决定了早期帝国的武装上限。',
+        center: [52, 34],
+        zoom: 3.2,
+      },
+      {
+        eventId: 'e1-hittite-iron',
+        narrative:
+          '冶铁技术普及与木炭高温炉破除了铜锡稀缺垄断，廉价铁犁与铁兵器让开垦重土与百万级人口大国成为现实。',
+        center: [34.6, 40],
+        zoom: 4,
+      },
+      {
+        eventId: 'e6-watt-steam',
+        narrative:
+          '1769 年瓦特蒸汽机把地底沉积亿万年的煤炭化学能直接转化为机械功，人类文明历史上首次彻底打破“土地与肌肉能量”的天花板。',
+        center: [-2, 53],
+        zoom: 4.3,
+        highlightRouteIds: ['route-industrial-spread'],
+      },
+      {
+        eventId: 'e6-second-industrial',
+        narrative:
+          '19 世纪后期电网、内燃机与合成化工三大技术共振，石油以更高能量密度接替煤炭，将工业动力送进汽车、轮船与万家灯火。',
+        center: [8, 50],
+        zoom: 3.8,
+        highlightRouteIds: ['route-industrial-spread'],
+      },
+      {
+        eventId: 'e6-ford-assembly',
+        narrative:
+          '20 世纪初福特流水线配合廉价汽油把内燃机汽车推入普通家庭，石化工业、高速公路网与现代大众消费社会一体成形。',
+        center: [-83, 42.3],
+        zoom: 4.1,
+      },
+      {
+        eventId: 'e7-oil-crisis-1973',
+        narrative:
+          '1973 年中东石油禁运令油价数月暴涨四倍：西方高能耗制造陷入滞胀危机，迫使全球狂飙节能技术并重估波斯湾地缘命脉。',
+        center: [46, 26],
+        zoom: 3.4,
+      },
+      {
+        eventId: 'e8-paris-climate',
+        narrative:
+          '面对碳排放带来的气候红线，光伏、储能电池、电动车与电网智能化正推动人类开启从化石能源向可再生能源的第三次大转型。',
+        center: [18, 36],
+        zoom: 2.3,
+        highlightRouteIds: ['route-modern-supply'],
+      },
+    ],
+  },
+  {
+    id: 'story-money-finance',
+    title: '货币、财政与现代金融帝国',
+    subtitle: 'BC 600 – 2025 · 信用体系如何放大国家动员与全球资本',
+    yearSpan: 'BC 600 – 2025',
+    description:
+      '理解大国兴衰背后的“钱袋子密码”：从吕底亚铸币、汉唐税制变革、北宋交子纸币、张居正白银财政，到荷兰股份与英国央行信用、布雷顿森林美元与数字资产探索。',
+    accentColor: '#B47417',
+    steps: [
+      {
+        eventId: 'e2-coins-lydia',
+        narrative:
+          '公元前 600 年安纳托利亚的吕底亚国王在琥珀金块上打下官方印记，标准铸币告别称重验金的繁琐，引爆地中海零售商业与雇佣兵财政。',
+        center: [28, 38.5],
+        zoom: 4.5,
+      },
+      {
+        eventId: 'e2-han-salt-iron',
+        narrative:
+          '西汉武帝推行五铢钱官铸与盐铁专卖，用国家级商品垄断替代单纯田税，撑起了开拓丝绸之路与远征漠北的巨额军费。',
+        center: [109, 34.3],
+        zoom: 3.8,
+        highlightRouteIds: ['route-silk-land'],
+      },
+      {
+        eventId: 'e4-jiaozi',
+        narrative:
+          '1024 年北宋四川商户创制的“交子”收归官营，诞生人类最早由政府背书的纸币，摆脱笨重铜铁钱对商业扩张的物理束缚。',
+        center: [104, 30.7],
+        zoom: 4,
+      },
+      {
+        eventId: 'e5-ming-single-whip',
+        narrative:
+          '1581 年明朝张居正推行“一条鞭法”，将繁杂力役与实物税统一折银征收，使庞大帝国财政深深嵌入全球美洲与日本白银循环。',
+        center: [116.4, 39.9],
+        zoom: 3.6,
+        highlightRouteIds: ['route-manila-galleon'],
+      },
+      {
+        eventId: 'e5-voc',
+        narrative:
+          '1602 年阿姆斯特丹为分散远洋香料贸易巨额风险，组建永续股份制的荷兰东印度公司并开放证券二级流通，现代股票交易所由此诞生。',
+        center: [4.9, 52.4],
+        zoom: 4.4,
+      },
+      {
+        eventId: 'e5-south-sea-bank',
+        narrative:
+          '光荣革命后 1694 年英格兰银行成立，议会信用背书的长期国债把英国海军军费利率压到对手的一半以下，造就百年海上霸权底座。',
+        center: [-0.1, 51.5],
+        zoom: 4.4,
+      },
+      {
+        eventId: 'e7-bretton-woods',
+        narrative:
+          '二战尾声美英确立以美元挂钩黄金、各国货币挂钩美元的布雷顿森林秩序与 IMF/世界银行，战后贸易黄金三十年由此启航。',
+        center: [-71.3, 44.3],
+        zoom: 3.6,
+      },
+      {
+        eventId: 'e7-nixon-shock',
+        narrative:
+          '1971 年美国宣布美元与黄金脱钩，“尼克松冲击”宣告人类全面进入纯主权信用本位与浮动汇率时代，全球金融体量指数级膨胀。',
+        center: [-77, 38.9],
+        zoom: 3.6,
+      },
+      {
+        eventId: 'e8-bitcoin-2009',
+        narrative:
+          '2008 年次贷危机动摇大众对华尔街与央行救市信任后，2009 年比特币创世区块上线，开启区块链与数字央行货币（CBDC）的跨界实验。',
+        center: [10, 30],
+        zoom: 2.1,
+      },
+    ],
+  },
+  {
+    id: 'story-ecology-plagues',
+    title: '瘟疫、气候与生态冲击改写历史',
+    subtitle: 'BC 1200 – 2022 · 看得见的帝国与看不见的微生物',
+    yearSpan: 'BC 1200 – 2022',
+    description:
+      '很多历史转折并非单纯出于帝王决策：从青铜时代末期的千年大旱、玛雅生态超载、黑死病重塑西欧劳工价格、哥伦布生物交换，到奎宁助推殖民非洲与当代全球供应链大考。',
+    accentColor: '#059669',
+    steps: [
+      {
+        eventId: 'e1-bronze-collapse',
+        narrative:
+          '公元前 1200 年前后持续干冷干旱叠加地震与“海上民族”迁徙，几年内接连震碎迈锡尼与赫梯两大青铜王权，迫使西亚地中海步入铁器时代。',
+        center: [28, 36.5],
+        zoom: 3.8,
+      },
+      {
+        eventId: 'e3-maya-classic',
+        narrative:
+          '9 世纪中美洲玛雅低地遭遇严重多年干旱加森林过度砍伐与城邦混战，宏伟石灰岩金字塔群短短数代内遭热带雨林重新吞没。',
+        center: [-89.6, 17.2],
+        zoom: 4.2,
+      },
+      {
+        eventId: 'e4-black-death',
+        narrative:
+          '1347 年鼠疫杆菌顺着商路船队横扫欧亚：西欧失去近半人口却意外推高人工工资、瓦解农奴依附关系，逼出节水节能的技术与金融升级。',
+        center: [14, 44],
+        zoom: 3.5,
+      },
+      {
+        eventId: 'e5-columbus',
+        narrative:
+          '1492 年后的哥伦布生物大交换一边用旧大陆天花麻疹令美洲原住民锐减八九成，一边用玉米马铃薯甘薯突破欧亚山地承载上限。',
+        center: [-68, 22],
+        zoom: 3,
+        highlightRouteIds: ['route-columbus'],
+      },
+      {
+        eventId: 'e6-berlin-conference',
+        narrative:
+          '19 世纪后期直到廉价提纯抗疟疾药物奎宁与蒸汽内河船结合，欧洲殖民者才终于穿透曾被称为“白人坟墓”的非洲热带内陆疟疾带。',
+        center: [16, 8],
+        zoom: 2.7,
+      },
+      {
+        eventId: 'e8-covid19',
+        narrative:
+          '2020 年新冠大流行瞬间冻结跨国航空与线下聚会，加速远程协作与供应链近岸回流，再次提醒人类全球化依然共享脆弱的生物圈。',
+        center: [30, 26],
+        zoom: 2,
+        highlightRouteIds: ['route-modern-supply'],
+      },
+    ],
+  },
+  {
+    id: 'story-law-governance',
+    title: '法典、宪政与国家治理形态演进',
+    subtitle: 'BC 1750 – 1948 · 从刻在玄武岩上的律条到国际契约',
+    yearSpan: 'BC 1750 – 1948',
+    description:
+      '梳理人类如何反复解决“权力交接、官僚选拔、限权制衡与国际秩序”四大制度难题：汉谟拉比、雅典民主、秦郡县、科举、《大宪章》、威斯特伐利亚体系、美法宪政直至联合国框架。',
+    accentColor: '#9E3434',
+    steps: [
+      {
+        eventId: 'e1-hammurabi',
+        narrative:
+          '公元前 1750 年汉谟拉比把 282 条成文法律刻在巴比伦神庙黑色石柱上，尽管依等级量刑不平等，却是“公开成文法高于私刑”的关键一步。',
+        center: [44.4, 32.5],
+        zoom: 4.3,
+      },
+      {
+        eventId: 'e2-athens-democracy',
+        narrative:
+          '雅典在公元前 5 世纪尝试抽签轮流执政、公民大会投票与陶片放逐法，在城邦尺度上把“主权在民与公职问责”推向极高纯度。',
+        center: [23.7, 38],
+        zoom: 4.6,
+      },
+      {
+        eventId: 'e2-qin-unification',
+        narrative:
+          '秦始皇将法家“非世袭流官 + 郡县直辖”推广至千万级疆域，“大一统官僚文书治理”从此成为东亚国家形态的主脊梁。',
+        center: [108.7, 34.3],
+        zoom: 3.9,
+      },
+      {
+        eventId: 'e3-justinian',
+        narrative:
+          '6 世纪查士丁尼系统编纂《民法大全》，留存下清晰精密的物权、契约与法人概念，千年后仍深刻支撑着欧陆民法体系。',
+        center: [28.9, 41],
+        zoom: 4.2,
+      },
+      {
+        eventId: 'e3-keju',
+        narrative:
+          '隋唐科举制度用公平笔试打破贵族门阀对仕途的世袭垄断，搭建起“寒门凭学识晋升治理阶层”的文官选拔通道。',
+        center: [108.9, 34.2],
+        zoom: 3.9,
+      },
+      {
+        eventId: 'e4-magna-carta',
+        narrative:
+          '1215 年英国《大宪章》迫使国王书面承认征税需经贵族议事同意、“国王亦在法律之下”，埋下日后议会与法治宪政的种子。',
+        center: [-0.6, 51.4],
+        zoom: 4.6,
+      },
+      {
+        eventId: 'e5-westphalia',
+        narrative:
+          '1648 年《威斯特伐利亚和约》结束三十年宗教混战，确立了以“主权领土平等与互不干涉内政”为核心的现代国际关系原则。',
+        center: [7.8, 52],
+        zoom: 4.3,
+      },
+      {
+        eventId: 'e5-glorious-revolution',
+        narrative:
+          '1688 年《权利法案》将最高征税权与立法权稳稳锚定在英国议会手中，实现罕见的“不动武流血却锁定分权”制度转型。',
+        center: [-0.1, 51.5],
+        zoom: 4.5,
+      },
+      {
+        eventId: 'e6-us-constitution',
+        narrative:
+          '1787 年费城制宪会议首创大型共和国“联邦制 + 三权分立制衡”成文宪法，解决了既要统一大市场又要防止极权的两难。',
+        center: [-75.1, 40],
+        zoom: 4.1,
+      },
+      {
+        eventId: 'e6-napoleon-code',
+        narrative:
+          '1804 年《拿破仑法典》把法律面前人人平等、世俗婚姻与私有产权不可侵犯写进清晰法条，随法国影响扩散至欧洲与拉美。',
+        center: [2.3, 48.8],
+        zoom: 4.2,
+      },
+      {
+        eventId: 'e7-un-nuremberg',
+        narrative:
+          '历经两次世界大战浩劫，1945 年《联合国宪章》与纽伦堡国际审判首次试图以超国家机构和国际法约束主权国家的侵略暴力。',
+        center: [-74, 40.7],
+        zoom: 3.4,
+      },
+    ],
+  },
 ];

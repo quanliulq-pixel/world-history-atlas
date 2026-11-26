@@ -82,6 +82,7 @@ interface WorldMapProps {
   onSelectFigure: (fig: HistoricalFigure) => void;
   onSelectPolity?: (polity: ClickedPolityPayload) => void;
   onDeselectEvent?: () => void;
+  onMapInstance?: (map: maplibregl.Map | null) => void;
 }
 
 const EMPTY_FC: GeoJSON.FeatureCollection = { type: 'FeatureCollection', features: [] };
@@ -210,6 +211,7 @@ export function WorldMap({
   onSelectFigure,
   onSelectPolity,
   onDeselectEvent,
+  onMapInstance,
 }: WorldMapProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
@@ -1260,9 +1262,11 @@ export function WorldMap({
 
     map.on('load', () => {
       setMapReady(true);
+      onMapInstance?.(map);
     });
     if (map.loaded()) {
       setMapReady(true);
+      onMapInstance?.(map);
     }
     map.on('error', (e: { sourceId?: string; error?: unknown }) => {
       if (e?.sourceId === 'shaded-relief') return;
@@ -1372,6 +1376,7 @@ export function WorldMap({
       map.remove();
       mapRef.current = null;
       setMapReady(false);
+      onMapInstance?.(null);
     };
     // Only initialize once
     // eslint-disable-next-line react-hooks/exhaustive-deps

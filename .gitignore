@@ -7,3 +7,4 @@ dist
 .DS_Store
 *.log
 public/maplibre-gl-worker.js
+.r2-sync-cache.json

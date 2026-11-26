@@ -14,7 +14,9 @@
     "media:prompts": "npx tsx scripts/export-illustration-prompts.mjs",
     "media:scripts": "npx tsx scripts/export-narration-scripts.mjs",
     "media:ticker-scripts": "npx tsx scripts/export-ticker-scripts.mjs",
-    "media:import": "node scripts/import-media-pack.mjs"
+    "media:extras-scripts": "npx tsx scripts/export-extras-audio-scripts.mjs",
+    "media:import": "node scripts/import-media-pack.mjs",
+    "media:r2-sync": "node scripts/sync-media-r2.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.511.0",

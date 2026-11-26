@@ -25,7 +25,7 @@ export interface PreGeneratedAudioBeat {
 }
 
 export interface PreGeneratedAudioEntry {
-  kind: 'event' | 'figure' | 'ticker';
+  kind: 'event' | 'figure' | 'ticker' | 'country' | 'story';
   id: string;
   script: string;
   voice?: string;
@@ -150,7 +150,12 @@ export async function getPreGeneratedAudio(
 ): Promise<PreGeneratedAudioEntry | null> {
   const manifest = await loadAudioManifest();
   let entry: PreGeneratedAudioEntry | null = manifest.items[cacheKey] ?? null;
-  if (!entry && !cacheKey.startsWith('ticker:')) {
+  if (
+    !entry &&
+    !cacheKey.startsWith('ticker:') &&
+    !cacheKey.startsWith('country:') &&
+    !cacheKey.startsWith('story:')
+  ) {
     const stripped = cacheKey.replace(/^(ev|fig|event|figure):/, '');
     entry =
       manifest.items[`ev:${stripped}`] ??

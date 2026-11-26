@@ -1,3 +1,4 @@
+import { setAmbientVoiceDucking } from './ambientBgm';
 import type { SpeechChunk } from './speechSync';
 
 export type AiVoiceName = 'Kore' | 'Aoede' | 'Puck' | 'Fenrir' | 'Charon';
@@ -906,6 +907,7 @@ export async function generateNarration(params: {
 }
 
 export function stopActiveNarration(notifyListeners = true): void {
+  setAmbientVoiceDucking(false);
   activePlaybackToken += 1;
   if (activeTtsController) {
     try {
@@ -976,6 +978,7 @@ export function speakWithBrowserSpeech(
         settled = true;
         utter.onboundary = null;
         if (cancelPendingWait === finish) cancelPendingWait = null;
+        setAmbientVoiceDucking(false);
         resolve();
       };
       cancelPendingWait = finish;
@@ -1000,6 +1003,7 @@ export function speakWithBrowserSpeech(
         finish();
         return;
       }
+      setAmbientVoiceDucking(true);
       window.speechSynthesis.speak(utter);
     } catch {
       resolve();
@@ -1035,11 +1039,13 @@ async function playClipRespectingToken(
           settled = true;
           audio.ontimeupdate = null;
           if (cancelPendingWait === finish) cancelPendingWait = null;
+          setAmbientVoiceDucking(false);
           resolve();
         };
         cancelPendingWait = finish;
 
         activeAudioEl = audio;
+        setAmbientVoiceDucking(true);
         audio.ontimeupdate = () => {
           if (audio.duration > 0 && Number.isFinite(audio.duration)) {
             onProgress?.(Math.max(0, Math.min(1, audio.currentTime / audio.duration)));

@@ -1,7 +1,10 @@
 import {
   Bookmark,
   CheckCircle2,
+  CloudDownload,
+  CloudUpload,
   Download,
+  FileText,
   Search,
   Trophy,
   Upload,
@@ -18,8 +21,10 @@ import type {
   HistoricalFigure,
   HistoryEvent,
   ThemeMode,
+  UserStudyData,
   WorldRegion,
 } from '../types/history';
+import { getStoredPasscode } from '../utils/aiClient';
 
 interface SearchAndProgressModalProps {
   open: boolean;
@@ -31,7 +36,10 @@ interface SearchAndProgressModalProps {
   onSelectEvent: (ev: HistoryEvent) => void;
   onSelectFigure: (fig: HistoricalFigure) => void;
   onExportJson: () => string;
+  onExportMarkdown: () => string;
   onImportJson: (raw: string) => { ok: boolean; error?: string };
+  onReplaceStudyData: (next: UserStudyData) => void;
+  onRequireAiUnlock?: () => void;
 }
 
 export function SearchAndProgressModal({
@@ -44,7 +52,10 @@ export function SearchAndProgressModal({
   onSelectEvent,
   onSelectFigure,
   onExportJson,
+  onExportMarkdown,
   onImportJson,
+  onReplaceStudyData,
+  onRequireAiUnlock,
 }: SearchAndProgressModalProps) {
   const [tab, setTab] = useState<'search' | 'figures' | 'progress'>('search');
   const [query, setQuery] = useState('');
@@ -54,6 +65,8 @@ export function SearchAndProgressModal({
   const [filterEra, setFilterEra] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<'all' | 'bookmarked' | 'mastered' | 'unmastered'>('all');
   const [importMessage, setImportMessage] = useState<string | null>(null);
+  const [cloudBusy, setCloudBusy] = useState(false);
+  const [cloudStatus, setCloudStatus] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const filteredEvents = useMemo(() => {
@@ -134,6 +147,87 @@ export function SearchAndProgressModal({
     a.download = `world-history-study-notes-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const handleDownloadMarkdown = () => {
+    const blob = new Blob([onExportMarkdown()], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `世界通史研学笔记-${new Date().toISOString().slice(0, 10)}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleCloudUpload = async () => {
+    const code = getStoredPasscode();
+    if (!code) {
+      setCloudStatus('请先点右上角「AI 导师」输入个人口令后再同步云端');
+      onRequireAiUnlock?.();
+      return;
+    }
+    setCloudBusy(true);
+    setCloudStatus(null);
+    try {
+      const res = await fetch('/api/study-sync', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Atlas-Passcode': code,
+        },
+        body: JSON.stringify({
+          masteredIds: [...masteredIds],
+          bookmarkedIds: [...bookmarkedIds],
+          notes,
+        }),
+      });
+      const json = (await res.json()) as { ok?: boolean; error?: string; updatedAt?: string };
+      if (!res.ok) {
+        setCloudStatus(json.error || `同步失败 (${res.status})`);
+      } else {
+        setCloudStatus(`已上传至 Cloudflare KV 云端 (${new Date(json.updatedAt || Date.now()).toLocaleTimeString('zh-CN')})`);
+      }
+    } catch {
+      setCloudStatus('网络异常，云端上传失败');
+    } finally {
+      setCloudBusy(false);
+    }
+  };
+
+  const handleCloudRestore = async () => {
+    const code = getStoredPasscode();
+    if (!code) {
+      setCloudStatus('请先点右上角「AI 导师」输入个人口令后再拉取云端');
+      onRequireAiUnlock?.();
+      return;
+    }
+    setCloudBusy(true);
+    setCloudStatus(null);
+    try {
+      const res = await fetch('/api/study-sync', {
+        method: 'GET',
+        headers: { 'X-Atlas-Passcode': code },
+      });
+      const json = (await res.json()) as {
+        studyData?: UserStudyData | null;
+        updatedAt?: string | null;
+        error?: string;
+      };
+      if (!res.ok) {
+        setCloudStatus(json.error || `恢复失败 (${res.status})`);
+      } else if (!json.studyData) {
+        setCloudStatus('云端尚无备份记录，请先点击「上传至云端」');
+      } else {
+        onReplaceStudyData(json.studyData);
+        setCloudStatus(
+          `已从云端恢复（备份时间 ${json.updatedAt ? new Date(json.updatedAt).toLocaleString('zh-CN') : '最近'}）`,
+        );
+      }
+    } catch {
+      setCloudStatus('网络异常，云端恢复失败');
+    } finally {
+      setCloudBusy(false);
+    }
   };
 
   const handleFileImport = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -595,7 +689,21 @@ export function SearchAndProgressModal({
                   style={{ backgroundColor: 'var(--accent-primary)' }}
                 >
                   <Download className="h-3.5 w-3.5" />
-                  <span>导出学习笔记 (JSON)</span>
+                  <span>导出备份 (JSON)</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleDownloadMarkdown}
+                  className="inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold cursor-pointer hover:opacity-85"
+                  style={{
+                    backgroundColor: 'var(--bg-surface)',
+                    borderColor: 'var(--accent-gold)',
+                    color: theme === 'obsidian' ? '#E5A94C' : '#9B5E0B',
+                  }}
+                >
+                  <FileText className="h-3.5 w-3.5" />
+                  <span>导出笔记书 (.md)</span>
                 </button>
 
                 <button
@@ -621,6 +729,48 @@ export function SearchAndProgressModal({
 
                 {importMessage && (
                   <span className="text-xs font-medium text-emerald-600">{importMessage}</span>
+                )}
+              </div>
+
+              <div
+                className="mt-2 pt-2.5 border-t flex flex-wrap items-center gap-2"
+                style={{ borderColor: 'var(--border-subtle)' }}
+              >
+                <span className="text-[11px] font-semibold" style={{ color: 'var(--text-secondary)' }}>
+                  跨设备云同步 (Cloudflare KV)：
+                </span>
+                <button
+                  type="button"
+                  disabled={cloudBusy}
+                  onClick={() => void handleCloudUpload()}
+                  className="inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-[11px] font-semibold cursor-pointer hover:opacity-85 disabled:opacity-50"
+                  style={{
+                    backgroundColor: 'var(--bg-surface)',
+                    borderColor: 'var(--border-strong)',
+                    color: 'var(--text-primary)',
+                  }}
+                >
+                  <CloudUpload className="h-3.5 w-3.5" style={{ color: '#296B9E' }} />
+                  <span>上传至云端</span>
+                </button>
+                <button
+                  type="button"
+                  disabled={cloudBusy}
+                  onClick={() => void handleCloudRestore()}
+                  className="inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-[11px] font-semibold cursor-pointer hover:opacity-85 disabled:opacity-50"
+                  style={{
+                    backgroundColor: 'var(--bg-surface)',
+                    borderColor: 'var(--border-strong)',
+                    color: 'var(--text-primary)',
+                  }}
+                >
+                  <CloudDownload className="h-3.5 w-3.5" style={{ color: '#059669' }} />
+                  <span>从云端恢复</span>
+                </button>
+                {cloudStatus && (
+                  <span className="text-[11px] font-medium" style={{ color: 'var(--accent-primary)' }}>
+                    {cloudStatus}
+                  </span>
                 )}
               </div>
             </div>

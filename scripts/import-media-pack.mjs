@@ -62,6 +62,8 @@ function detectPackType(manifestJson, forcedType) {
     items.some(
       (x) =>
         x?.kind === 'ticker' ||
+        x?.kind === 'country' ||
+        x?.kind === 'story' ||
         Array.isArray(x?.beats) ||
         /\.(mp3|opus|ogg|wav)$/i.test(x?.file || ''),
     )

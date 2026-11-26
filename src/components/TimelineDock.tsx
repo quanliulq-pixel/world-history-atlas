@@ -3,6 +3,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Film,
+  Music,
   Pause,
   Play,
   Volume2,
@@ -46,6 +47,7 @@ interface TimelineDockProps {
   playSpeed: number;
   speedOptions: number[];
   voiceEnabled: boolean;
+  ambientEnabled: boolean;
   timelineZoom: 'global' | 'era';
   theme: ThemeMode;
   onChangeYear: (year: number) => void;
@@ -54,6 +56,7 @@ interface TimelineDockProps {
   onToggleCinemaMode: () => void;
   onSelectSpeed: (speed: number) => void;
   onToggleVoice: () => void;
+  onToggleAmbient: () => void;
   onToggleTimelineZoom: () => void;
   onPrevMilestone: () => void;
   onNextMilestone: () => void;
@@ -72,6 +75,7 @@ export function TimelineDock({
   playSpeed,
   speedOptions,
   voiceEnabled,
+  ambientEnabled,
   timelineZoom,
   theme,
   onChangeYear,
@@ -80,6 +84,7 @@ export function TimelineDock({
   onToggleCinemaMode,
   onSelectSpeed,
   onToggleVoice,
+  onToggleAmbient,
   onToggleTimelineZoom,
   onPrevMilestone,
   onNextMilestone,
@@ -380,11 +385,30 @@ export function TimelineDock({
                   : '#9B5E0B'
                 : 'var(--text-muted)',
             }}
-            title={voiceEnabled ? '演进播放时同步语音播报（点击静音）' : '演进播放已静音（点击开启语音）'}
+            title={voiceEnabled ? '演进播放时同步语音播报（点击静音，快捷键 M）' : '演进播放已静音（点击开启语音，快捷键 M）'}
             aria-label={voiceEnabled ? '关闭演示语音' : '开启演示语音'}
           >
             {voiceEnabled ? <Volume2 className="h-3.5 w-3.5" /> : <VolumeX className="h-3.5 w-3.5" />}
             <span className="hidden xl:inline">{voiceEnabled ? '语音开' : '静音'}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={onToggleAmbient}
+            className="hidden sm:inline-flex h-7 sm:h-8 items-center gap-1 rounded-lg border px-1.5 text-[11px] font-semibold transition hover:opacity-85 cursor-pointer"
+            style={{
+              backgroundColor: ambientEnabled ? 'rgba(41, 107, 158, 0.14)' : 'var(--bg-surface)',
+              borderColor: ambientEnabled ? '#296B9E' : 'var(--border-subtle)',
+              color: ambientEnabled
+                ? theme === 'obsidian'
+                  ? '#58A3D9'
+                  : '#296B9E'
+                : 'var(--text-muted)',
+            }}
+            title={ambientEnabled ? '时代氛围背景音已开启（语音开口自动压低音量，快捷键 B）' : '开启时代氛围背景音（快捷键 B）'}
+            aria-label="切换时代氛围背景音"
+          >
+            <Music className="h-3.5 w-3.5" />
           </button>
 
           <button

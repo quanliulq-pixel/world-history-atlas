@@ -100,8 +100,8 @@ for (const r of HISTORICAL_ROUTES) {
   }
 }
 
-if (STORYLINES.length !== 5) {
-  errors.push(`Expected 5 storylines, found ${STORYLINES.length}`);
+if (STORYLINES.length < 10) {
+  errors.push(`Expected >= 10 storylines, found ${STORYLINES.length}`);
 }
 
 for (const sl of STORYLINES) {

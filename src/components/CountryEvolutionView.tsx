@@ -1,5 +1,6 @@
 import {
   ArrowLeft,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   Coins,
@@ -23,8 +24,11 @@ import {
   ScrollText,
   Search,
   Sparkles,
+  Square,
   Sun,
   UserRound,
+  Volume2,
+  VolumeX,
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { COUNTRY_PROFILES, findMatchingStageIndex } from '../data/countries';
@@ -359,8 +363,14 @@ interface CountryMapDockProps {
   country: ResolvedCountryEvolution;
   currentYear: number;
   isPlaying: boolean;
+  playSpeed: number;
+  speedOptions: number[];
+  voiceEnabled: boolean;
+  spokenText?: string | null;
   theme: ThemeMode;
   onTogglePlay: () => void;
+  onSelectSpeed: (speed: number) => void;
+  onToggleVoice: () => void;
   onSelectYear: (year: number) => void;
 }
 
@@ -368,10 +378,28 @@ export function CountryMapDock({
   country,
   currentYear,
   isPlaying,
+  playSpeed,
+  speedOptions,
+  voiceEnabled,
+  spokenText = null,
   theme,
   onTogglePlay,
+  onSelectSpeed,
+  onToggleVoice,
   onSelectYear,
 }: CountryMapDockProps) {
+  const [speedOpen, setSpeedOpen] = useState(false);
+  const speedRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!speedOpen) return;
+    const onOut = (e: MouseEvent) => {
+      if (speedRef.current && !speedRef.current.contains(e.target as Node)) setSpeedOpen(false);
+    };
+    window.addEventListener('mousedown', onOut);
+    return () => window.removeEventListener('mousedown', onOut);
+  }, [speedOpen]);
+
   const activeStageIdx = useMemo(
     () => findMatchingStageIndex(country.stages, currentYear),
     [country.stages, currentYear],
@@ -385,6 +413,29 @@ export function CountryMapDock({
 
   return (
     <div className="pointer-events-none absolute inset-x-2 bottom-2.5 z-20 flex flex-col gap-1.5">
+      {voiceEnabled && spokenText && (
+        <div
+          className="pointer-events-auto flex items-start gap-2 rounded-xl border px-2.5 py-1.5 text-[11px] shadow-lg backdrop-blur-md"
+          style={{
+            backgroundColor:
+              theme === 'obsidian' ? 'rgba(18, 28, 40, 0.92)' : 'rgba(251, 248, 241, 0.94)',
+            borderColor: country.accentColor,
+            color: 'var(--text-primary)',
+          }}
+        >
+          <span
+            className="mt-1 inline-flex items-end gap-[2px] h-2.5 shrink-0"
+            style={{ color: country.accentColor }}
+            aria-hidden="true"
+          >
+            <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar" />
+            <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar atlas-eq-bar-2" />
+            <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar atlas-eq-bar-3" />
+          </span>
+          <span className="line-clamp-2">{spokenText}</span>
+        </div>
+      )}
+
       <div
         className="pointer-events-auto flex items-center gap-1.5 rounded-2xl border px-2 py-1.5 shadow-xl backdrop-blur-md"
         style={{
@@ -401,7 +452,68 @@ export function CountryMapDock({
           style={{ backgroundColor: country.accentColor }}
         >
           {isPlaying ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
-          <span>{isPlaying ? '暂停演变' : '播放本国演变'}</span>
+          <span>{isPlaying ? '暂停演变' : '播放演变'}</span>
+        </button>
+
+        <div ref={speedRef} className="relative shrink-0">
+          <button
+            type="button"
+            onClick={() => setSpeedOpen((v) => !v)}
+            className="inline-flex h-7 items-center gap-0.5 rounded-lg border px-1.5 text-[11px] font-semibold cursor-pointer hover:opacity-85"
+            style={{
+              backgroundColor: 'var(--bg-surface)',
+              borderColor: 'var(--border-subtle)',
+              color: 'var(--text-primary)',
+            }}
+            title="国别演变播放倍速"
+          >
+            <span className="tabular-nums">{playSpeed}×</span>
+            <ChevronDown className="h-2.5 w-2.5 opacity-75" />
+          </button>
+
+          {speedOpen && (
+            <div
+              className="absolute bottom-full left-0 mb-1.5 z-40 min-w-[68px] rounded-xl border p-1 shadow-xl backdrop-blur-md"
+              style={{
+                backgroundColor:
+                  theme === 'obsidian' ? 'rgba(18, 28, 40, 0.96)' : 'rgba(251, 248, 241, 0.98)',
+                borderColor: 'var(--border-strong)',
+              }}
+            >
+              {speedOptions.map((spd) => (
+                <button
+                  key={spd}
+                  type="button"
+                  onClick={() => {
+                    onSelectSpeed(spd);
+                    setSpeedOpen(false);
+                  }}
+                  className="block w-full rounded-md px-2 py-1 text-left text-[11px] font-semibold tabular-nums cursor-pointer"
+                  style={{
+                    backgroundColor: spd === playSpeed ? country.accentColor : 'transparent',
+                    color: spd === playSpeed ? '#FFFFFF' : 'var(--text-primary)',
+                  }}
+                >
+                  {spd}×
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <button
+          type="button"
+          onClick={onToggleVoice}
+          className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border cursor-pointer hover:opacity-85"
+          style={{
+            backgroundColor: voiceEnabled ? 'rgba(180, 116, 23, 0.14)' : 'var(--bg-surface)',
+            borderColor: voiceEnabled ? '#B47417' : 'var(--border-subtle)',
+            color: voiceEnabled ? (theme === 'obsidian' ? '#E5A94C' : '#9B5E0B') : 'var(--text-muted)',
+          }}
+          title={voiceEnabled ? '开启了国别旁白（点击静音）' : '已静音（点击开启旁白）'}
+          aria-label="切换国别旁白语音"
+        >
+          {voiceEnabled ? <Volume2 className="h-3.5 w-3.5" /> : <VolumeX className="h-3.5 w-3.5" />}
         </button>
 
         <div className="flex items-center gap-0.5 shrink-0">
@@ -622,10 +734,12 @@ interface CountryEvolutionPanelProps {
   currentYear: number;
   theme: ThemeMode;
   fullReading: boolean;
+  narratingStageId?: string | null;
   onSelectYear: (year: number) => void;
   onSelectModernCountry: (modernKey: string) => void;
   onSelectEventInWorld: (ev: HistoryEvent) => void;
   onSelectFigureInWorld: (fig: HistoricalFigure) => void;
+  onNarrateStage?: (stage: ResolvedCountryEvolution['stages'][number]) => void;
   onAskAiAboutCountry?: (country: ResolvedCountryEvolution) => void;
   onCompareCountry?: (country: ResolvedCountryEvolution) => void;
   onRequireAiUnlock?: () => void;
@@ -636,10 +750,12 @@ export function CountryEvolutionPanel({
   currentYear,
   theme,
   fullReading,
+  narratingStageId = null,
   onSelectYear,
   onSelectModernCountry,
   onSelectEventInWorld,
   onSelectFigureInWorld,
+  onNarrateStage,
   onAskAiAboutCountry,
   onCompareCountry,
   onRequireAiUnlock,
@@ -1089,19 +1205,44 @@ export function CountryEvolutionPanel({
                         </div>
                       </div>
 
-                      <button
-                        type="button"
-                        onClick={() => onSelectYear(st.snapshotYear)}
-                        className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition hover:opacity-90 cursor-pointer shrink-0"
-                        style={{
-                          backgroundColor: isActive ? country.accentColor : 'var(--bg-surface)',
-                          color: isActive ? '#FFFFFF' : country.accentColor,
-                          border: `1px solid ${country.accentColor}`,
-                        }}
-                      >
-                        <Compass className="h-3 w-3" />
-                        <span>定位 {formatShortYear(st.snapshotYear)} 版图</span>
-                      </button>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        {onNarrateStage && (
+                          <button
+                            type="button"
+                            onClick={() => onNarrateStage(st)}
+                            className="inline-flex h-7 w-7 items-center justify-center rounded-lg border transition hover:opacity-85 cursor-pointer"
+                            style={{
+                              backgroundColor:
+                                narratingStageId === st.id ? country.accentColor : 'var(--bg-surface)',
+                              borderColor:
+                                narratingStageId === st.id ? country.accentColor : 'var(--border-subtle)',
+                              color: narratingStageId === st.id ? '#FFFFFF' : 'var(--text-secondary)',
+                            }}
+                            title={narratingStageId === st.id ? '停止本阶段播报' : '朗读本阶段历史脉络'}
+                            aria-label={narratingStageId === st.id ? '停止本阶段播报' : '朗读本阶段历史脉络'}
+                          >
+                            {narratingStageId === st.id ? (
+                              <Square className="h-3 w-3" />
+                            ) : (
+                              <Volume2 className="h-3.5 w-3.5" />
+                            )}
+                          </button>
+                        )}
+
+                        <button
+                          type="button"
+                          onClick={() => onSelectYear(st.snapshotYear)}
+                          className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition hover:opacity-90 cursor-pointer shrink-0"
+                          style={{
+                            backgroundColor: isActive ? country.accentColor : 'var(--bg-surface)',
+                            color: isActive ? '#FFFFFF' : country.accentColor,
+                            border: `1px solid ${country.accentColor}`,
+                          }}
+                        >
+                          <Compass className="h-3 w-3" />
+                          <span>定位 {formatShortYear(st.snapshotYear)} 版图</span>
+                        </button>
+                      </div>
                     </div>
 
                     <p

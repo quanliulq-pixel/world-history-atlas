@@ -3,10 +3,14 @@ import {
   ChevronLeft,
   ChevronRight,
   FileText,
+  GripVertical,
   Pause,
   Play,
+  Volume2,
+  VolumeX,
   X,
 } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { EVENT_MAP } from '../data/events';
 import { STORYLINES } from '../data/storylines';
 import type { Storyline, ThemeMode } from '../types/history';
@@ -123,10 +127,12 @@ interface StorylinePlayerProps {
   storyline: Storyline;
   stepIndex: number;
   autoPlaying: boolean;
+  voiceEnabled: boolean;
   theme: ThemeMode;
   onPrev: () => void;
   onNext: () => void;
   onToggleAuto: () => void;
+  onToggleVoice: () => void;
   onExit: () => void;
   onExpandCard: () => void;
 }
@@ -135,28 +141,97 @@ export function StorylinePlayerBar({
   storyline,
   stepIndex,
   autoPlaying,
+  voiceEnabled,
   theme,
   onPrev,
   onNext,
   onToggleAuto,
+  onToggleVoice,
   onExit,
   onExpandCard,
 }: StorylinePlayerProps) {
   const step = storyline.steps[stepIndex];
   const event = step ? EVENT_MAP[step.eventId] : null;
+  const barRef = useRef<HTMLDivElement | null>(null);
+  const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
+  const [dragging, setDragging] = useState(false);
+  const dragRef = useRef<{ id: number; sx: number; sy: number; ox: number; oy: number } | null>(null);
+
+  const clamp = useCallback((x: number, y: number) => {
+    const el = barRef.current;
+    const p = el?.offsetParent as HTMLElement | null;
+    if (!el || !p) return { x: Math.max(8, x), y: Math.max(8, y) };
+    return {
+      x: Math.round(Math.max(8, Math.min(Math.max(8, p.clientWidth - el.offsetWidth - 8), x))),
+      y: Math.round(Math.max(8, Math.min(Math.max(8, p.clientHeight - el.offsetHeight - 8), y))),
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!pos) return;
+    const onResize = () => setPos((cur) => (cur ? clamp(cur.x, cur.y) : null));
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [pos !== null, clamp]);
+
   if (!step || !event) return null;
 
   return (
     <div
-      className="pointer-events-auto absolute left-3 md:left-14 right-3 lg:right-auto lg:w-[440px] top-3 z-20 rounded-2xl border p-3 shadow-2xl backdrop-blur-md"
+      ref={barRef}
+      className={
+        pos
+          ? 'pointer-events-auto absolute z-20 rounded-2xl border p-3 shadow-2xl backdrop-blur-md'
+          : 'pointer-events-auto absolute left-3 md:left-14 right-3 lg:right-auto lg:w-[440px] top-3 z-20 rounded-2xl border p-3 shadow-2xl backdrop-blur-md'
+      }
       style={{
+        ...(pos ? { left: `${pos.x}px`, top: `${pos.y}px`, width: 'min(440px, calc(100% - 16px))' } : undefined),
         backgroundColor:
           theme === 'obsidian' ? 'rgba(20, 30, 43, 0.94)' : 'rgba(251, 248, 241, 0.95)',
         borderColor: storyline.accentColor,
+        userSelect: dragging ? 'none' : undefined,
       }}
     >
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2 min-w-0">
+      <div
+        onPointerDown={(e) => {
+          if (e.button !== 0 || (e.target as HTMLElement | null)?.closest('button')) return;
+          const el = barRef.current;
+          const p = el?.offsetParent as HTMLElement | null;
+          if (!el || !p) return;
+          const cr = el.getBoundingClientRect();
+          const pr = p.getBoundingClientRect();
+          e.currentTarget.setPointerCapture(e.pointerId);
+          dragRef.current = {
+            id: e.pointerId,
+            sx: e.clientX,
+            sy: e.clientY,
+            ox: pos ? pos.x : cr.left - pr.left,
+            oy: pos ? pos.y : cr.top - pr.top,
+          };
+          setDragging(true);
+        }}
+        onPointerMove={(e) => {
+          const d = dragRef.current;
+          if (!d || d.id !== e.pointerId) return;
+          setPos(clamp(d.ox + (e.clientX - d.sx), d.oy + (e.clientY - d.sy)));
+        }}
+        onPointerUp={(e) => {
+          const d = dragRef.current;
+          if (!d || d.id !== e.pointerId) return;
+          if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+            e.currentTarget.releasePointerCapture(e.pointerId);
+          }
+          dragRef.current = null;
+          setDragging(false);
+        }}
+        onDoubleClick={() => setPos(null)}
+        className={`flex items-center justify-between gap-2 touch-none select-none ${
+          dragging ? 'cursor-grabbing' : 'cursor-grab'
+        }`}
+        title="按住拖动移动位置，双击复位"
+      >
+        <div className="flex items-center gap-1.5 min-w-0">
+          <GripVertical className="h-3.5 w-3.5 shrink-0 opacity-45 -ml-1" style={{ color: 'var(--text-muted)' }} />
           <span
             className="shrink-0 rounded px-1.5 py-0.5 text-[10px] font-bold text-white"
             style={{ backgroundColor: storyline.accentColor }}
@@ -166,15 +241,32 @@ export function StorylinePlayerBar({
           <span className="truncate text-xs font-bold">{storyline.title}</span>
         </div>
 
-        <button
-          type="button"
-          onClick={onExit}
-          className="shrink-0 rounded-md p-1 hover:opacity-75 cursor-pointer"
-          style={{ color: 'var(--text-muted)' }}
-          aria-label="退出导览"
-        >
-          <X className="h-4 w-4" />
-        </button>
+        <div className="flex items-center gap-1 shrink-0">
+          <button
+            type="button"
+            onClick={onToggleVoice}
+            className="inline-flex items-center gap-1 rounded-lg border px-1.5 py-0.5 text-[10px] font-semibold cursor-pointer hover:opacity-85"
+            style={{
+              backgroundColor: voiceEnabled ? 'rgba(180, 116, 23, 0.15)' : 'var(--bg-surface)',
+              borderColor: voiceEnabled ? '#B47417' : 'var(--border-subtle)',
+              color: voiceEnabled ? (theme === 'obsidian' ? '#E5A94C' : '#9B5E0B') : 'var(--text-muted)',
+            }}
+            title={voiceEnabled ? '专题语音解说开（点击静音）' : '已静音（点击开启语音）'}
+          >
+            {voiceEnabled ? <Volume2 className="h-3 w-3" /> : <VolumeX className="h-3 w-3" />}
+            <span>{voiceEnabled ? '语音' : '静音'}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={onExit}
+            className="shrink-0 rounded-md p-1 hover:opacity-75 cursor-pointer"
+            style={{ color: 'var(--text-muted)' }}
+            aria-label="退出导览"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
       </div>
 
       {/* Step progress dots */}

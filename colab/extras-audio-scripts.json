@@ -1,0 +1,1291 @@
+{
+  "version": 1,
+  "generatedAt": "2026-11-26T12:10:50.604Z",
+  "counts": {
+    "total": 160,
+    "countryStages": 85,
+    "storylineSteps": 75
+  },
+  "items": [
+    {
+      "key": "country:china:china-preqin",
+      "kind": "country",
+      "id": "china:china-preqin",
+      "title": "中国 · 早期王权与礼乐争霸",
+      "file": "country/china/china-preqin.mp3",
+      "script": "中国，约前 2070 — 前 221 年，早期王权与礼乐争霸。从二里头广域王权、商代甲骨青铜礼制到西周分封宗法，经春秋战国铁器牛耕普及、百家争鸣与商鞅变法耕战机器淬炼出中央集权前夜。 周室天命观以血缘封建维系天下共主，战国各国行郡县制、废世卿世禄，法家率先锻造高效军功官僚体系。"
+    },
+    {
+      "key": "country:china:china-qinhan",
+      "kind": "country",
+      "id": "china:china-qinhan",
+      "title": "中国 · 秦汉大一统与丝路开辟",
+      "file": "country/china/china-qinhan.mp3",
+      "script": "中国，前 221 — 公元 220 年，秦汉大一统与丝路开辟。秦并六国确立书同文、车同轨、行同伦与郡县帝国雏形，两汉文景之治休养、独尊儒术与张骞凿空西域把中原接入欧亚大陆商贸网。 皇帝制度、三公九卿加郡县二级制定型，察举制与太学构建儒生官僚集团，外儒内法成为后世正统治理术。"
+    },
+    {
+      "key": "country:china:china-wei-jin",
+      "kind": "country",
+      "id": "china:china-wei-jin",
+      "title": "中国 · 魏晋南北朝碰撞与融合",
+      "file": "country/china/china-wei-jin.mp3",
+      "script": "中国，公元 220 — 581 年，魏晋南北朝碰撞与融合。帝国分裂三百余年，北族内迁入主中原并推行孝文帝汉化、均田制与府兵制，江南大规模开发（永嘉南渡），门阀政治与玄佛交融孕育出焕然一新的胡汉混合帝国基因。"
+    },
+    {
+      "key": "country:china:china-suitang",
+      "kind": "country",
+      "id": "china:china-suitang",
+      "title": "中国 · 隋唐世界性开放帝国",
+      "file": "country/china/china-suitang.mp3",
+      "script": "中国，公元 581 — 907 年，隋唐世界性开放帝国。隋开大运河、创科举与三省六部，盛唐长安汇聚粟特、波斯、新罗与遣唐使，胡风胡乐与律令体制共冶，安史之乱后通过两税法与经济南移完成中世转型。 三省六部制形成精密的决策—审议—执行制衡，科举向寒门敞开政权，天可汗体系兼领农耕与草原。"
+    },
+    {
+      "key": "country:china:china-songyuan",
+      "kind": "country",
+      "id": "china:china-songyuan",
+      "title": "中国 · 宋辽金元多元竞逐与欧亚贯通",
+      "file": "country/china/china-songyuan.mp3",
+      "script": "中国，公元 960 — 1368 年，宋辽金元多元竞逐与欧亚贯通。宋代脱去门阀残余形成平民文官社会，引爆纸币交子、活字、火药指南针与海上丝路，蒙元以行省制重统全中国并纳入欧亚大陆驿站体系。 唐宋变革打破贵族垄断，元设行中书省并由宣政院直接辖治西藏，奠定现代省级行政格局基础。"
+    },
+    {
+      "key": "country:china:china-mingqing",
+      "kind": "country",
+      "id": "china:china-mingqing",
+      "title": "中国 · 明清鼎革、白银潮与多民族版图定型",
+      "file": "country/china/china-mingqing.mp3",
+      "script": "中国，公元 1368 — 1911 年，明清鼎革、白银潮与多民族版图定型。明太祖废宰相行内阁，郑和七下西洋复归闭关海禁，张居正一条鞭法靠美洲—日本白银重塑税制，清以理藩院与改土归流将东北、内外蒙、新疆、西藏与台湾纳入统一主权版图。"
+    },
+    {
+      "key": "country:china:china-modern",
+      "kind": "country",
+      "id": "china:china-modern",
+      "title": "中国 · 共和探索、工业重构与当代复兴",
+      "file": "country/china/china-modern.mp3",
+      "script": "中国，公元 1911 年至今，共和探索、工业重构与当代复兴。辛亥革命终结两千年帝制，历经军阀混战与全民族抗战，1949 年建立中华人民共和国构建完整重工业体系，1978 年改革开放与入世接入全球供应链，崛起为全球制造业与数字基建核心极。"
+    },
+    {
+      "key": "country:japan:japan-ancient",
+      "kind": "country",
+      "id": "japan:japan-ancient",
+      "title": "日本 · 大和王权与奈良平安律令制",
+      "file": "country/japan/japan-ancient.mp3",
+      "script": "日本，前 300 — 公元 1185 年，大和王权与奈良平安律令制。弥生稻作扩散后大和朝廷统一列岛，大化改新直接移植唐朝律令、班田制与汉字假名，京都贵族诞生世界最早长篇小说《源氏物语》。 仿效唐代太政官制度并确立天皇神格称号，后期藤原氏外戚专权，地方庄园脱离中央课税。"
+    },
+    {
+      "key": "country:japan:japan-shogunate",
+      "kind": "country",
+      "id": "japan:japan-shogunate",
+      "title": "日本 · 镰仓室町武家封建与战国群雄",
+      "file": "country/japan/japan-shogunate.mp3",
+      "script": "日本，公元 1185 — 1603 年，镰仓室町武家封建与战国群雄。源赖朝建立镰仓幕府开创与西欧神似的武士封臣制度（御恩与奉公），两挫元军跨海远征后陷入应仁乱后群雄并起，石见银山产量跻身世界前二并卷入葡萄牙铁炮输入。"
+    },
+    {
+      "key": "country:japan:japan-edo",
+      "kind": "country",
+      "id": "japan:japan-edo",
+      "title": "日本 · 德川江户“锁国”与市民商业蓄势",
+      "file": "country/japan/japan-edo.mp3",
+      "script": "日本，公元 1603 — 1868 年，德川江户“锁国”与市民商业蓄势。德川家康于关原之战定鼎天下，以参觐交代驯服两百余藩大名，换取逾两百五十年国内绝对和平，只留长崎出岛兰学窗口，城市识字率跃居世界最高梯队。 幕藩体制既抑制地方割据又允许各藩试行财政与专卖改革（如萨摩、长州），为维新保存了变革主体。"
+    },
+    {
+      "key": "country:japan:japan-meiji",
+      "kind": "country",
+      "id": "japan:japan-meiji",
+      "title": "日本 · 明治维新、近代帝国与二战悲剧",
+      "file": "country/japan/japan-meiji.mp3",
+      "script": "日本，公元 1868 — 1945 年，明治维新、近代帝国与二战悲剧。佩里黑船来航触发尊王攘夷倒幕，明治新政废藩置县、殖产兴业、颁《明治宪法》，凭甲午日俄战争挤入列强之林，但统帅权独立失控最终拖入太平洋战争毁灭。"
+    },
+    {
+      "key": "country:japan:japan-postwar",
+      "kind": "country",
+      "id": "japan:japan-postwar",
+      "title": "日本 · 战后平和宪法、经济奇迹与少子老龄转型",
+      "file": "country/japan/japan-postwar.mp3",
+      "script": "日本，公元 1945 年至今，战后平和宪法、经济奇迹与少子老龄转型。农地改革、解散财阀与和平宪法第九条释出巨大民用生产力，紧握韩战特需与通产省产业政策缔造 1960—80 年代世界第二经济体，九十年代泡沫破灭后靠高端半导体材料、精密机器人与动漫全球影响力立足。"
+    },
+    {
+      "key": "country:korea:korea-three-silla",
+      "kind": "country",
+      "id": "korea:korea-three-silla",
+      "title": "朝鲜与韩国 · 三国鼎立、统一新罗与高丽王朝",
+      "file": "country/korea/korea-three-silla.mp3",
+      "script": "朝鲜与韩国，前 1 世纪 — 公元 1392 年，三国鼎立、统一新罗与高丽王朝。高句丽、百济、新罗三足鼎立并吸收魏晋隋唐法制佛学，高丽王朝建制科举、雕印世界罕见《高丽大藏经》与早于古登堡的铜活字印刷术。 高丽抵御契丹辽军后被迫臣服蒙元百余年，形成武臣政权与文臣士大夫更迭博弈。"
+    },
+    {
+      "key": "country:korea:korea-joseon",
+      "kind": "country",
+      "id": "korea:korea-joseon",
+      "title": "朝鲜与韩国 · 朝鲜王朝、谚文创制与近代折冲",
+      "file": "country/korea/korea-joseon.mp3",
+      "script": "朝鲜与韩国，公元 1392 — 1910 年，朝鲜王朝、谚文创制与近代折冲。李成桂立国建立尊崇朱子学的世俗文官秩序，世宗大王创制科学的拼音文字谚文，经历壬辰倭乱与丙子胡乱创痛，晚近开放通商后终沦为日本殖民地。 两班士大夫主导朋党政治与中央集权，大韩帝国短暂近代化努力最终被日俄博弈吞没。"
+    },
+    {
+      "key": "country:korea:korea-divided-miracle",
+      "kind": "country",
+      "id": "korea:korea-divided-miracle",
+      "title": "朝鲜与韩国 · 冷战南北分断与“汉江奇迹”科技强国",
+      "file": "country/korea/korea-divided-miracle.mp3",
+      "script": "朝鲜与韩国，公元 1945 年至今，冷战南北分断与“汉江奇迹”科技强国。二战光复后随冷战三八线分治并爆发朝鲜战争，韩国自 1960 年代起聚焦出口制造、钢铁、造船、存储芯片与娱乐文化，完成从极贫农业国到全球创新强国逆袭。 历经军事威权发展主义到 1987 年六月民主化抗争实现政党和平轮替。"
+    },
+    {
+      "key": "country:mongolia:mongolia-xiongnu-turk",
+      "kind": "country",
+      "id": "mongolia:mongolia-xiongnu-turk",
+      "title": "蒙古与欧亚草原 · 匈奴、柔然、突厥与回鹘诸汗国",
+      "file": "country/mongolia/mongolia-xiongnu-turk.mp3",
+      "script": "蒙古与欧亚草原，前 3 世纪 — 公元 12 世纪，匈奴、柔然、突厥与回鹘诸汗国。冒顿单于首建横跨漠北的匈奴帝国制衡秦汉并催生丝路，突厥以铁器战甲确立东西草原帝国，回鹘则引摩尼教、粟特文与定居绿洲建城，深远塑造中亚各族。 确立单于/可汗二元分庭统御制度及和亲、互市、岁币三种经典游牧—定居互动范式。"
+    },
+    {
+      "key": "country:mongolia:mongolia-empire",
+      "kind": "country",
+      "id": "mongolia:mongolia-empire",
+      "title": "蒙古与欧亚草原 · 成吉思汗统一与“蒙古和平”大帝国",
+      "file": "country/mongolia/mongolia-empire.mp3",
+      "script": "蒙古与欧亚草原，公元 1206 — 1368 年，成吉思汗统一与“蒙古和平”大帝国。铁木真打破氏族血缘重构十户千户军制，半世纪横扫金、西夏、花剌子模、基辅罗斯、南宋与巴格达，建立史上陆疆最辽阔的四大汗国联体与全球首张东西方直通驿道。 高度宗教宽容兼重用怯薛军与色目理财官僚，大扎撒法典维系草原与城市法权兼容。"
+    },
+    {
+      "key": "country:mongolia:mongolia-qing-modern",
+      "kind": "country",
+      "id": "mongolia:mongolia-qing-modern",
+      "title": "蒙古与欧亚草原 · 北元分合、清代盟旗与现代蒙古国",
+      "file": "country/mongolia/mongolia-qing-modern.mp3",
+      "script": "蒙古与欧亚草原，公元 1368 年至今，北元分合、清代盟旗与现代蒙古国。明代北元、瓦剌与准噶尔同沙俄清廷博弈，清代全面推行盟旗制并共信藏传佛教，1921 年建立独立蒙古人民共和国，九十年代转型矿产民主共和国家。 从满蒙联姻、八旗扎萨克体制过渡至俄中夹缝中的内陆中立外交。"
+    },
+    {
+      "key": "country:india:india-harappa-vedic",
+      "kind": "country",
+      "id": "india:india-harappa-vedic",
+      "title": "印度 · 印度河谷城市与吠陀沙门思想爆发",
+      "file": "country/india/india-harappa-vedic.mp3",
+      "script": "印度，约前 2600 — 前 321 年，印度河谷城市与吠陀沙门思想爆发。哈拉帕棋盘街区与排水暗渠展现惊人早期市政智慧，雅利安人南下确立吠陀经典与瓦尔纳种姓等级，前六世纪沙门思潮催生释迦牟尼佛教与耆那教。 十六雄国兼并，恒河下游摩揭陀凭借铁器开垦与象兵确立次大陆第一波统一势能。"
+    },
+    {
+      "key": "country:india:india-maurya-gupta",
+      "kind": "country",
+      "id": "india:india-maurya-gupta",
+      "title": "印度 · 孔雀帝国、贵霜丝路与笈多古典黄金期",
+      "file": "country/india/india-maurya-gupta.mp3",
+      "script": "印度，前 321 — 公元 550 年，孔雀帝国、贵霜丝路与笈多古典黄金期。阿育王将佛教推为普世宗教并派遣使团南下斯里兰卡、西行叙利亚，贵霜连通中原丝路孕育犍陀罗造像，笈多王朝见证十进制位值法与印度天文几何巅峰。 《政事论》详载密探、税制与水利国策，笈多推行分封土地与梵文雅化回归婆罗门复兴。"
+    },
+    {
+      "key": "country:india:india-sultanate-mughal",
+      "kind": "country",
+      "id": "india:india-sultanate-mughal",
+      "title": "印度 · 德里苏丹、南印海权与莫卧儿辉煌",
+      "file": "country/india/india-sultanate-mughal.mp3",
+      "script": "印度，公元 1206 — 1757 年，德里苏丹、南印海权与莫卧儿辉煌。突厥波斯化政权落脚北印度引入拱券、造纸与波斯行政，莫卧儿阿克巴大帝推行信仰包容与精准土地测算（扎布特），兴建泰姬陵使孟加拉棉纺与帝国经济达到鼎盛。 曼萨布达尔军政俸禄制捆绑不同族群武将，后期奥朗则布宗教高压引发马拉地等离心反叛。"
+    },
+    {
+      "key": "country:india:india-raj",
+      "kind": "country",
+      "id": "india:india-raj",
+      "title": "印度 · 英国殖民、“非暴力”抗争与印巴分治",
+      "file": "country/india/india-raj.mp3",
+      "script": "印度，公元 1757 — 1947 年，英国殖民、“非暴力”抗争与印巴分治。普拉西战后英东印度公司逐步吞并次大陆，1857 年大起义后归英王直辖，修筑四通八达铁路网却迫使本土纺织凋零沦为原料附庸，甘地食盐进军打破殖民道义合法性，终在 1947 年仓促分治流血独立。"
+    },
+    {
+      "key": "country:india:india-republic",
+      "kind": "country",
+      "id": "india:india-republic",
+      "title": "印度 · 不结盟、1991 年自由化与数字南方大国",
+      "file": "country/india/india-republic.mp3",
+      "script": "印度，公元 1947 年至今，不结盟、1991 年自由化与数字南方大国。初期行混合计划经济与绿色农业革命摆脱饥荒，1991 年彻底开放市场并借班加罗尔软件外包、仿制药与人口红利腾飞，近年建成全球最大生物识别数字支付网并跃居全球人口第一与第五大经济体。"
+    },
+    {
+      "key": "country:vietnam:vietnam-autonomous",
+      "kind": "country",
+      "id": "vietnam:vietnam-autonomous",
+      "title": "越南 · 北属熔铸与大越李陈黎王朝南进",
+      "file": "country/vietnam/vietnam-autonomous.mp3",
+      "script": "越南，前 2 世纪 — 公元 1858 年，北属熔铸与大越李陈黎王朝南进。吴权九三八年白藤江胜利独立立国，李陈朝三败蒙元铁骑，后黎圣宗兴设科举文官制度，阮朝完成横跨红河至湄公河三角洲现代版图定型。 外以东亚朝贡礼仪稳固北方边界，内称大越皇帝并实施乡社村镇基层自治。"
+    },
+    {
+      "key": "country:vietnam:vietnam-colony-war",
+      "kind": "country",
+      "id": "vietnam:vietnam-colony-war",
+      "title": "越南 · 法属印度支那、抗战统一与“革新开放”",
+      "file": "country/vietnam/vietnam-colony-war.mp3",
+      "script": "越南，公元 1858 年至今，法属印度支那、抗战统一与“革新开放”。19 世纪末沦为法属印支，胡志明于 1954 奠边府败法并历经越战伤痛于 1975 统一全境，1986 年革新开放重返全球化并成长为东南亚经济增长极。 通过抗法抗美民族独立铸就高度整合的国家建构力，外交奉行竹子外交大国平衡术。"
+    },
+    {
+      "key": "country:thailand:thailand-sukhothai-ayutthaya",
+      "kind": "country",
+      "id": "thailand:thailand-sukhothai-ayutthaya",
+      "title": "泰国与中南半岛 · 高棉余晖、素可泰与阿瑜陀耶国际商港",
+      "file": "country/thailand/thailand-sukhothai-ayutthaya.mp3",
+      "script": "泰国与中南半岛，公元 13 — 18 世纪，高棉余晖、素可泰与阿瑜陀耶国际商港。泰人继承吴哥水利及婆罗门王权礼仪建立素可泰并创制泰文，阿瑜陀耶时代成长为云集明朝、葡荷英日雇佣兵与商队的印度洋—南中国海国际大都会。 结合上座部法王（Dharmaraja）理念与严密曼陀罗外藩体系统御湄南河与半岛城邦。"
+    },
+    {
+      "key": "country:thailand:thailand-chakri-modern",
+      "kind": "country",
+      "id": "thailand:thailand-chakri-modern",
+      "title": "泰国与中南半岛 · 却克里维新免殖民与当代东盟工业中心",
+      "file": "country/thailand/thailand-chakri-modern.mp3",
+      "script": "泰国与中南半岛，公元 1782 年至今，却克里维新免殖民与当代东盟工业中心。拉玛四世与五世（朱拉隆功大帝）主动废奴、修路、聘欧洲顾问按西洋建制改革军政并割让边缘属地换取核心主权完整，二战后依托城市化与亚洲跨国产业链实现东盟跃迁。"
+    },
+    {
+      "key": "country:indonesia:indonesia-maritime-empires",
+      "kind": "country",
+      "id": "indonesia:indonesia-maritime-empires",
+      "title": "印度尼西亚与马来群岛 · 三佛齐、满者伯夷与香料伊斯兰苏丹国",
+      "file": "country/indonesia/indonesia-maritime-empires.mp3",
+      "script": "印度尼西亚与马来群岛，公元 7 — 16 世纪，三佛齐、满者伯夷与香料伊斯兰苏丹国。室利佛逝（三佛齐）控扼马六甲海峡五百年并资助印唐僧侣，满者伯夷建立全群岛贸易霸权，十五世纪伴随郑和与印阿商船，海港城邦纷纷伊斯兰化缔造淡目、亚齐等活跃苏丹国。 典型海权城邦联盟，用舰队、港口特权与神王宗教礼仪管理广阔海域。"
+    },
+    {
+      "key": "country:indonesia:indonesia-voc-republic",
+      "kind": "country",
+      "id": "indonesia:indonesia-voc-republic",
+      "title": "印度尼西亚与马来群岛 · 荷属东印度公司霸权、独立抗争与当代大国",
+      "file": "country/indonesia/indonesia-voc-republic.mp3",
+      "script": "印度尼西亚与马来群岛，公元 1602 年至今，荷属东印度公司霸权、独立抗争与当代大国。1602 年荷兰 VOC 以股份金融垄断群岛香料与强制种植咖啡糖料，1945 年苏加诺宣布独立并举办奠定第三世界声音的 1955 年万隆会议，当下凭庞大年轻人口与锂电池关键镍矿崛起。"
+    },
+    {
+      "key": "country:iran:iran-achaemenid-sasanian",
+      "kind": "country",
+      "id": "iran:iran-achaemenid-sasanian",
+      "title": "伊朗与波斯 · 阿契美尼德、安息与萨珊三代古典波斯帝国",
+      "file": "country/iran/iran-achaemenid-sasanian.mp3",
+      "script": "伊朗与波斯，前 550 — 公元 651 年，阿契美尼德、安息与萨珊三代古典波斯帝国。居鲁士大帝创立世界史上首个真正兼容多民族多信仰的三洲大国并颁居鲁士圆柱，帕提亚与萨珊相继以重装具装骑兵对峙罗马与拜占庭长达七百年，牢扼陆海丝路咽喉。 首创总督行省制（Satrapy）、常设黄金币大流克与日行千里的帝国御道驿站。"
+    },
+    {
+      "key": "country:iran:iran-islamic-ilkhanate",
+      "kind": "country",
+      "id": "iran:iran-islamic-ilkhanate",
+      "title": "伊朗与波斯 · 伊斯兰化复兴与伊尔汗国文艺再起",
+      "file": "country/iran/iran-islamic-ilkhanate.mp3",
+      "script": "伊朗与波斯，公元 651 — 1501 年，伊斯兰化复兴与伊尔汗国文艺再起。阿拉伯征服后波斯文官直接撑起巴格达阿拔斯哈里发的国家运转，引发长达四百年的波斯间奏曲复兴，蒙古伊尔汗国虽灭巴格达却彻底波斯化并修拉施德《史集》。 尼扎姆·穆尔克与纳西尔丁·图西确立伊斯兰世界波斯—突厥二元搭档政治典范。"
+    },
+    {
+      "key": "country:iran:iran-safavid-modern",
+      "kind": "country",
+      "id": "iran:iran-safavid-modern",
+      "title": "伊朗与波斯 · 萨法维什叶重塑、石油民族主义与现代伊朗",
+      "file": "country/iran/iran-safavid-modern.mp3",
+      "script": "伊朗与波斯，公元 1501 年至今，萨法维什叶重塑、石油民族主义与现代伊朗。1501 年伊斯玛仪创立萨法维王朝立十二伊玛目什叶派为国教以铸就反抗奥斯曼的清晰国界，1979 年伊斯兰革命掀翻巴列维亲美王朝，开辟中东独一无二的教法学家监护神权共和道路。"
+    },
+    {
+      "key": "country:greece:greece-classical",
+      "kind": "country",
+      "id": "greece:greece-classical",
+      "title": "希腊 · 爱琴海诸岛、城邦黄金期与亚历山大东征",
+      "file": "country/greece/greece-classical.mp3",
+      "script": "希腊，前 2000 — 前 146 年，爱琴海诸岛、城邦黄金期与亚历山大东征。从克里特米诺斯海洋文明兴衰到雅典—斯巴达击败波斯入侵、点燃直接民主与苏格拉底柏拉图亚里士多德理性高潮，马其顿东征则把希腊语文化播撒至印度河口。"
+    },
+    {
+      "key": "country:greece:greece-roman-byzantine",
+      "kind": "country",
+      "id": "greece:greece-roman-byzantine",
+      "title": "希腊 · 罗马行省文化宗师与千年东罗马帝国中心",
+      "file": "country/greece/greece-roman-byzantine.mp3",
+      "script": "希腊，前 146 — 公元 1453 年，罗马行省文化宗师与千年东罗马帝国中心。罗马在武力上征服希腊，在文艺与哲学上反被希腊征服，西罗马倾覆后，操希腊语、奉东正教并守卫罗马法脉的拜占庭以巴尔干—安纳托利亚为双核傲立东地中海千年。"
+    },
+    {
+      "key": "country:greece:greece-modern",
+      "kind": "country",
+      "id": "greece:greece-modern",
+      "title": "希腊 · 奥斯曼统治、独立复国与现代地中海欧盟前沿",
+      "file": "country/greece/greece-modern.mp3",
+      "script": "希腊，公元 1453 年至今，奥斯曼统治、独立复国与现代地中海欧盟前沿。奥斯曼四百年统治期间借米勒特制和法纳尔希腊商人在帝国官僚与东地中海贸易保持影响力，1821 年独立战争获英法俄古典同情援助建国，战后历经右翼军政府、加入欧盟及欧债危机重塑。"
+    },
+    {
+      "key": "country:italy:italy-roman-republic-empire",
+      "kind": "country",
+      "id": "italy:italy-roman-republic-empire",
+      "title": "意大利与罗马 · 罗马王政、共和国扩张与“罗马和平”帝国",
+      "file": "country/italy/italy-roman-republic-empire.mp3",
+      "script": "意大利与罗马，前 753 — 公元 476 年，罗马王政、共和国扩张与“罗马和平”帝国。台伯河畔小邦经过布匿战争击败迦太基把地中海变为我们的海，凯撒卢比孔河与奥古斯都元首制结束内战开辟罗马和平，修成贯穿欧亚非的高速公路与万民法秩序，四世纪基督教成为国教后西罗马于 476 年谢幕。"
+    },
+    {
+      "key": "country:italy:italy-renaissance",
+      "kind": "country",
+      "id": "italy:italy-renaissance",
+      "title": "意大利与罗马 · 威尼斯佛罗伦萨海商自治与文艺复兴灯塔",
+      "file": "country/italy/italy-renaissance.mp3",
+      "script": "意大利与罗马，公元 1000 — 1550 年，威尼斯佛罗伦萨海商自治与文艺复兴灯塔。十字军唤醒亚平宁诸城市商业生命，威尼斯控制东地中海香料并发展现代专利与主权债券，佛罗伦萨美第奇家族金融网络撑起达·芬奇、米开朗琪罗、马基雅维利与伽利略的复兴伟业。"
+    },
+    {
+      "key": "country:italy:italy-unification-eu",
+      "kind": "country",
+      "id": "italy:italy-unification-eu",
+      "title": "意大利与罗马 · 意大利复兴统一、战后重建与《罗马条约》原点",
+      "file": "country/italy/italy-unification-eu.mp3",
+      "script": "意大利与罗马，公元 1861 年至今，意大利复兴统一、战后重建与《罗马条约》原点。加富尔借外交谋略携手加里波第红衫军完成建国，陷入法西斯极权战败苦果后在战后彻底转向议会共和，1957 年于罗马签订欧洲共同市场奠基条约并靠北方精密中小制造业崛起。 《意大利共和国宪法》塑造出虽频换内阁却充满韧性的多党福利国家。"
+    },
+    {
+      "key": "country:france:france-franks-capet",
+      "kind": "country",
+      "id": "france:france-franks-capet",
+      "title": "法国 · 高卢融合、查理曼帝国与卡佩王权",
+      "file": "country/france/france-franks-capet.mp3",
+      "script": "法国，前 50 — 公元 1453 年，高卢融合、查理曼帝国与卡佩王权。凯撒高卢全境拉丁化后克洛维确立墨洛温，800 年查理曼融合日耳曼、罗马行政与基督教成为欧洲之父，经卡佩慢火扩张与英法百年战争圣女贞德洗礼，摆脱领主封建碎片崛起成欧陆早熟民族国家。"
+    },
+    {
+      "key": "country:france:france-absolutism-revolution",
+      "kind": "country",
+      "id": "france:france-absolutism-revolution",
+      "title": "法国 · 波旁绝对王权、启蒙灯塔与法国大革命风暴",
+      "file": "country/france/france-absolutism-revolution.mp3",
+      "script": "法国，公元 1453 — 1815 年，波旁绝对王权、启蒙灯塔与法国大革命风暴。黎塞留与路易十四以凡尔赛宫把全国贵族收入行政常备军体系并用重商主义建立欧陆最庞大军事与殖民存在，启蒙哲学沙龙掀动 1789 大革命废除封建特权，拿破仑《民法典》与米制将革命理性推扫全欧。"
+    },
+    {
+      "key": "country:france:france-modern-eu",
+      "kind": "country",
+      "id": "france:france-modern-eu",
+      "title": "法国 · 工业共和、战后戴高乐主义与欧盟双核引擎",
+      "file": "country/france/france-modern-eu.mp3",
+      "script": "法国，公元 1815 年至今，工业共和、战后戴高乐主义与欧盟双核引擎。经历 1848 与 1871 巴黎公社等多次激荡后于第三共和国稳固世俗民主教育与共和传统，历经两次世界大战及阿尔及利亚去殖民剧痛，戴高乐力主法德和解、发展独立核武与空客高铁核电，成为当今欧洲战略自主主要推手。"
+    },
+    {
+      "key": "country:britain:britain-magna-carta",
+      "kind": "country",
+      "id": "britain:britain-magna-carta",
+      "title": "英国 · 盎格鲁撒克逊、诺曼征服与《大宪章》奠基",
+      "file": "country/britain/britain-magna-carta.mp3",
+      "script": "英国，公元 410 — 1485 年，盎格鲁撒克逊、诺曼征服与《大宪章》奠基。盎格鲁—撒克逊与北欧丹麦法区交融后，1066 年征服者威廉确立精细土地清册与全国统一巡回普通法庭，1215 年约翰王被迫签署《大宪章》，在欧陆专制潮流外埋下王在法下的制度奇葩。"
+    },
+    {
+      "key": "country:britain:britain-glorious-industrial",
+      "kind": "country",
+      "id": "britain:britain-glorious-industrial",
+      "title": "英国 · 光荣革命、金融跃升与第一次工业革命",
+      "file": "country/britain/britain-glorious-industrial.mp3",
+      "script": "英国，公元 1485 — 1815 年，光荣革命、金融跃升与第一次工业革命。都铎航海突破与败退西班牙无敌舰队夺得洋权，1688 年光荣革命和 1694 年英格兰银行打造稳健国债信用，靠煤炭替代木材突破生态上限，凭蒸汽机与铁路棉纺掀翻农业文明千年天花板。"
+    },
+    {
+      "key": "country:britain:britain-empire-modern",
+      "kind": "country",
+      "id": "britain:britain-empire-modern",
+      "title": "英国 · 维多利亚“日不落”、去殖民与现代金融科研强国",
+      "file": "country/britain/britain-empire-modern.mp3",
+      "script": "英国，公元 1815 年至今，维多利亚“日不落”、去殖民与现代金融科研强国。19 世纪统御世界四分之一陆疆人口与海洋航道并主推自由贸易金本位，两次大战损耗霸权重心移交华盛顿后顺利非殖民化建立英联邦，今凭全球顶级伦敦金融城与精英大学生命科学傲立国际。"
+    },
+    {
+      "key": "country:germany:germany-hre-reformation",
+      "kind": "country",
+      "id": "germany:germany-hre-reformation",
+      "title": "德国 · 神圣罗马帝国、汉萨同盟与印刷宗教改革",
+      "file": "country/germany/germany-hre-reformation.mp3",
+      "script": "德国，公元 962 — 1648 年，神圣罗马帝国、汉萨同盟与印刷宗教改革。奥托一世加冕立国并演化成诸侯选帝侯+自由市高度去中心化的千邦松散体系，1450 年美因茨古登堡金属活字点燃全欧知识大爆炸，1517 年路德改教击碎教廷一统并于三十年战后经《威斯特伐利亚和约》确立近代主权国家制度。"
+    },
+    {
+      "key": "country:germany:germany-prussia-empire",
+      "kind": "country",
+      "id": "germany:germany-prussia-empire",
+      "title": "德国 · 普鲁士崛起、俾斯麦铁血统一与两次世界大战剧痛",
+      "file": "country/germany/germany-prussia-empire.mp3",
+      "script": "德国，公元 1648 — 1945 年，普鲁士崛起、俾斯麦铁血统一与两次世界大战剧痛。1834 年德意志关税同盟率先经济合一，俾斯麦借对丹奥法三战铁血加冕并首创现代社会养老医保制度，靠化工电器内燃机在 1900 年代钢铁产量跃超英法，惜威廉二世两线作战宿命与纳粹狂悖造就人类最惨绝灭绝浩劫。"
+    },
+    {
+      "key": "country:germany:germany-reunified-eu",
+      "kind": "country",
+      "id": "germany:germany-reunified-eu",
+      "title": "德国 · 战后莱茵奇迹、柏林墙倒塌与欧盟核心支柱",
+      "file": "country/germany/germany-reunified-eu.mp3",
+      "script": "德国，公元 1945 年至今，战后莱茵奇迹、柏林墙倒塌与欧盟核心支柱。西德在马歇尔计划与社会市场经济（艾哈德改革）下创造莱茵河经济奇迹并坦诚反思历史，1989 年柏林墙倒塌实现和平再统一，联合法国推动欧元区成立并稳坐欧洲制造业及新能源转型枢纽。"
+    },
+    {
+      "key": "country:spain:spain-al-andalus-reconquista",
+      "kind": "country",
+      "id": "spain:spain-al-andalus-reconquista",
+      "title": "西班牙 · 安达卢斯科尔多瓦黄金期与收复失地运动",
+      "file": "country/spain/spain-al-andalus-reconquista.mp3",
+      "script": "西班牙，公元 711 — 1492 年，安达卢斯科尔多瓦黄金期与收复失地运动。倭马亚王朝治下安达卢斯科尔多瓦坐拥全欧最大藏书图书馆与路灯铺石大道，汇通亚里士多德、印阿数理与犹太哲学，1492 年天主教双王攻陷格拉纳达同年资助哥伦布西航。 伊比利亚基督徒在长期反攻圣战中塑成骑士军团崇高地位与宗教一统狂热。"
+    },
+    {
+      "key": "country:spain:spain-golden-silver-empire",
+      "kind": "country",
+      "id": "spain:spain-golden-silver-empire",
+      "title": "西班牙 · 美洲大白银时代、“日不落帝国”与西班牙语传播",
+      "file": "country/spain/spain-golden-silver-empire.mp3",
+      "script": "西班牙，公元 1492 — 1824 年，美洲大白银时代、“日不落帝国”与西班牙语传播。征服阿兹特克与印加并通过马尼拉大帆船铸起史上第一张全球白银与货物闭环贸易链，腓力二世兼领尼德兰、意南与菲律宾，然无敌舰队折戟与通胀懒惰错失工业转机，终在拿破仑入侵诱发 1820 年代拉美独立总溃退。"
+    },
+    {
+      "key": "country:spain:spain-modern-eu",
+      "kind": "country",
+      "id": "spain:spain-modern-eu",
+      "title": "西班牙 · 内战创伤、民主和平过渡与现代化转型",
+      "file": "country/spain/spain-modern-eu.mp3",
+      "script": "西班牙，公元 1824 年至今，内战创伤、民主和平过渡与现代化转型。1898 年美西战争丧尽古巴菲律宾最后余晖，三十年代经历全面意识形态试验内战进入漫长威权稳定期，七十年代末奇迹般平滑制宪实现高度自治联邦化分权融入欧共体。 平衡加泰罗尼亚、巴斯克地方历史民族主义自治与现代欧盟单一成员国统一。"
+    },
+    {
+      "key": "country:portugal:portugal-discoveries",
+      "kind": "country",
+      "id": "portugal:portugal-discoveries",
+      "title": "葡萄牙 · 早熟建国与掀起大航海第一波巨浪",
+      "file": "country/portugal/portugal-discoveries.mp3",
+      "script": "葡萄牙，公元 1139 — 1580 年，早熟建国与掀起大航海第一波巨浪。率先完成伊比利亚反穆斯林统一并将王室资金悉数押注大西洋探险：达·伽马绕好望角抵达印度卡利卡特、卡布拉尔登录巴西、占领马六甲及日本长崎南蛮贸易端口，把欧洲与亚洲直接对接。"
+    },
+    {
+      "key": "country:portugal:portugal-brazil-modern",
+      "kind": "country",
+      "id": "portugal:portugal-brazil-modern",
+      "title": "葡萄牙 · 巴西黄金周期、康乃馨革命与欧陆转型",
+      "file": "country/portugal/portugal-brazil-modern.mp3",
+      "script": "葡萄牙，公元 1580 年至今，巴西黄金周期、康乃馨革命与欧陆转型。经历短暂西葡共主及荷兰冲击丧失亚洲霸权后退守巴西甘蔗与黄金殖民利润，1755 年里斯本大地震催生庞巴尔侯爵现代城市规划与启蒙世俗改革，1974 年康乃馨革命放弃非洲最后殖民地迎来民主腾飞。"
+    },
+    {
+      "key": "country:netherlands:netherlands-golden-age",
+      "kind": "country",
+      "id": "netherlands:netherlands-golden-age",
+      "title": "荷兰与低地国家 · 八十年独立战争与十七世纪“黄金时代”金融奇迹",
+      "file": "country/netherlands/netherlands-golden-age.mp3",
+      "script": "荷兰与低地国家，公元 1568 — 1795 年，八十年独立战争与十七世纪“黄金时代”金融奇迹。低地新教徒抗击西班牙帝国获胜建立由市民富商执政的联邦共和国，依托低利率资金与福禄特高容积商船席卷波罗的海、爪哇香料与大西洋，阿姆斯特丹银行+VOC 股市让一介弹丸小国支撑世界级贸易舰队。"
+    },
+    {
+      "key": "country:netherlands:netherlands-modern-asml",
+      "kind": "country",
+      "id": "netherlands:netherlands-modern-asml",
+      "title": "荷兰与低地国家 · 立宪王国、农业科技强国与光刻机硅基霸主",
+      "file": "country/netherlands/netherlands-modern-asml.mp3",
+      "script": "荷兰与低地国家，公元 1815 年至今，立宪王国、农业科技强国与光刻机硅基霸主。维也纳会议重建联合王国后通过 1848 年和平立宪确立高信任协商民主，失荷属东印度后深耕鹿特丹世界枢纽港、精密温室农业与艾因霍温 ASML 光刻系统，成当今科技链不可取代的关键枢轴。"
+    },
+    {
+      "key": "country:austria:austria-habsburg",
+      "kind": "country",
+      "id": "austria:austria-habsburg",
+      "title": "奥地利与哈布斯堡中欧 · 哈布斯堡多瑙河多民族帝国与“欧洲协调”中枢",
+      "file": "country/austria/austria-habsburg.mp3",
+      "script": "奥地利与哈布斯堡中欧，公元 1278 — 1918 年，哈布斯堡多瑙河多民族帝国与“欧洲协调”中枢。两次在维也纳城下挡住奥斯曼围攻后，把奥地利、匈牙利、捷克波希米亚和斯洛伐克纳入同一王朝盾牌，拿破仑退场后梅特涅借维也纳会议奠定欧洲百年均势和平，然未能疏导斯拉夫民族分裂，终因萨拉热窝导火索崩瓦。"
+    },
+    {
+      "key": "country:austria:austria-republic",
+      "kind": "country",
+      "id": "austria:austria-republic",
+      "title": "奥地利与哈布斯堡中欧 · 战后永久中立联邦与高福利欧盟桥梁",
+      "file": "country/austria/austria-republic.mp3",
+      "script": "奥地利与哈布斯堡中欧，公元 1918 年至今，战后永久中立联邦与高福利欧盟桥梁。一战解体的痛苦夹缝在二战惨痛教训后被 1955 年四大占领国《奥地利国家条约》抚平：采取类似瑞士的永久中立地位并成为东西方冷战高峰维也纳外交缓冲平台及当代联合国会城之一。"
+    },
+    {
+      "key": "country:poland:poland-commonwealth",
+      "kind": "country",
+      "id": "poland:poland-commonwealth",
+      "title": "波兰与立陶宛 · 波兰—立陶宛自由贵族联邦与哥白尼之光",
+      "file": "country/poland/poland-commonwealth.mp3",
+      "script": "波兰与立陶宛，公元 966 — 1795 年，波兰—立陶宛自由贵族联邦与哥白尼之光。皮亚斯特立国、联合立陶宛构成从波罗的海延伸至黑海前夜的全欧最大版图联合王国，并以极度早熟的选王限权《亨利条款》保障宽容避难地，1683 年翼骑兵解围维也纳，最终受一票否定僵化制与俄普奥三次瓜分消失地图。"
+    },
+    {
+      "key": "country:poland:poland-partitions-rebirth",
+      "kind": "country",
+      "id": "poland:poland-partitions-rebirth",
+      "title": "波兰与立陶宛 · 百年瓜分抗争、团结工会与欧盟新引擎",
+      "file": "country/poland/poland-partitions-rebirth.mp3",
+      "script": "波兰与立陶宛，公元 1795 年至今，百年瓜分抗争、团结工会与欧盟新引擎。虽然版图从地图消失 123 年，波兰尚未灭亡精神通过语言音乐与反复起义代代接力，二战惨遭德苏双向铁蹄重创并随冷战落入东欧集团，1980 年格但斯克造船厂团结工会引发非暴力和平剧变，今已成为中东欧最强工业国防基地。"
+    },
+    {
+      "key": "country:russia:russia-rus-muscovy",
+      "kind": "country",
+      "id": "russia:russia-rus-muscovy",
+      "title": "俄罗斯 · 维京贸易基辅罗斯与莫斯科大公集权东扩",
+      "file": "country/russia/russia-rus-muscovy.mp3",
+      "script": "俄罗斯，公元 862 — 1682 年，维京贸易基辅罗斯与莫斯科大公集权东扩。北欧瓦良格水手沿第聂伯河立基辅罗斯并于 988 年奉东正教（罗斯受洗），金帐汗国统治两百余年间莫斯科公国替汗收税并逐步收集罗斯土地，伊凡四世称沙皇，哥萨克探险队只用半个多世纪便越过西伯利亚抵达太平洋！"
+    },
+    {
+      "key": "country:russia:russia-peter-empire",
+      "kind": "country",
+      "id": "russia:russia-peter-empire",
+      "title": "俄罗斯 · 彼得大帝全盘西化改革与欧亚帝国极盛",
+      "file": "country/russia/russia-peter-empire.mp3",
+      "script": "俄罗斯，公元 1682 — 1917 年，彼得大帝全盘西化改革与欧亚帝国极盛。彼得一世强剪胡须剪袍、兴建波罗的海出海新都圣彼得堡与现代军工海军，叶卡捷琳娜与亚历山大一世挫败拿破仑并东定外高加索中亚、开工西伯利亚大铁路，然农奴制残余与沙皇拒行立宪使俄国于一战彻底失血溃堤。"
+    },
+    {
+      "key": "country:russia:russia-ussr-modern",
+      "kind": "country",
+      "id": "russia:russia-ussr-modern",
+      "title": "俄罗斯 · 十月革命、苏联超级大国实验与当代转型",
+      "file": "country/russia/russia-ussr-modern.mp3",
+      "script": "俄罗斯，公元 1917 年至今，十月革命、苏联超级大国实验与当代转型。列宁十月革命建立世界首个社会主义工农联邦，斯大林以严酷重工业计划与二战斯大林格勒莫斯科惨烈牺牲成为反法西斯核心力量并在冷战发射首颗人造卫星与首位宇航员，1991 年计划僵化导致和平解体，当代依托能源大国资源重新走上抗衡北约西扩的路径。"
+    },
+    {
+      "key": "country:sweden:sweden-viking-empire",
+      "kind": "country",
+      "id": "sweden:sweden-viking-empire",
+      "title": "瑞典与北欧 · 维京探险、卡尔马联合与波罗的海“北欧雄狮”",
+      "file": "country/sweden/sweden-viking-empire.mp3",
+      "script": "瑞典与北欧，公元 800 — 1809 年，维京探险、卡尔马联合与波罗的海“北欧雄狮”。瑞典维京人沿着伏尔加河东达里海、巴格达与君士坦丁堡交易，摆脱丹麦卡尔马联盟后古斯塔夫·瓦萨兴立路德新教，古斯塔夫·阿道夫凭精锐火枪炮兵在三十年战争横扫德意志奠定近百年波罗的海大帝国。"
+    },
+    {
+      "key": "country:sweden:sweden-welfare-innovation",
+      "kind": "country",
+      "id": "sweden:sweden-welfare-innovation",
+      "title": "瑞典与北欧 · 两百年和平奇迹、社会民主福利国家与科技先锋",
+      "file": "country/sweden/sweden-welfare-innovation.mp3",
+      "script": "瑞典与北欧，公元 1814 年至今，两百年和平奇迹、社会民主福利国家与科技先锋。拿破仑时代后彻底退出大国地缘赌局，经历百年由欧洲最穷困农业移出区（百万人曾移居北美）逆转为全球首屈一指高福利工业科技强国，二十世纪三十年代确立人民之家劳资共识。"
+    },
+    {
+      "key": "country:turkey:turkey-hittite-byzantine",
+      "kind": "country",
+      "id": "turkey:turkey-hittite-byzantine",
+      "title": "土耳其与安纳托利亚 · 赫梯冶铁、吕底亚铸币与千年君士坦丁堡东罗马",
+      "file": "country/turkey/turkey-hittite-byzantine.mp3",
+      "script": "土耳其与安纳托利亚，前 1650 — 公元 1071 年，赫梯冶铁、吕底亚铸币与千年君士坦丁堡东罗马。赫梯率先掌握早期冶铁制敌并与埃及签下卡迭石古今首份外交条约，吕底亚以天然琥珀金铸造世界首批标准化国家货币引爆零售革命，君士坦丁立新都后拜占庭以此处百万大兵与粮区顶住欧亚重重围攻。"
+    },
+    {
+      "key": "country:turkey:turkey-seljuk-ottoman",
+      "kind": "country",
+      "id": "turkey:turkey-seljuk-ottoman",
+      "title": "土耳其与安纳托利亚 · 突厥西迁、攻克君堡与跨三洲奥斯曼帝国",
+      "file": "country/turkey/turkey-seljuk-ottoman.mp3",
+      "script": "土耳其与安纳托利亚，公元 1071 — 1922 年，突厥西迁、攻克君堡与跨三洲奥斯曼帝国。曼齐刻尔特一战打开突厥入主高原大门，1453 年征服者穆罕默德二世用乌尔班巨炮破城改称伊斯坦布尔，接续苏莱曼大帝雄扫多瑙河、埃及、汉志圣城与伊拉克，与哈布斯堡、萨法维三分东西旧世界长达三百年。"
+    },
+    {
+      "key": "country:turkey:turkey-republic",
+      "kind": "country",
+      "id": "turkey:turkey-republic",
+      "title": "土耳其与安纳托利亚 · 凯末尔世俗革命与跨区战略枢纽国家",
+      "file": "country/turkey/turkey-republic.mp3",
+      "script": "土耳其与安纳托利亚，公元 1923 年至今，凯末尔世俗革命与跨区战略枢纽国家。凯末尔率领独立战争反退西方瓜分和约，果断废除苏丹与哈里发政教合一、启用拉丁字母、给予女性选票，冷战中加入北约后发展出庞大欧洲近岸工业与多极跨洲积极外交。 在世俗现代民族共和基石与当代保守民粹回归之间维持强选举动员与大国周旋平衡。"
+    },
+    {
+      "key": "country:arabia:arabia-mesopotamia",
+      "kind": "country",
+      "id": "arabia:arabia-mesopotamia",
+      "title": "阿拉伯世界与新月沃地 · 苏美尔、巴比伦与腓尼基人类黎明",
+      "file": "country/arabia/arabia-mesopotamia.mp3",
+      "script": "阿拉伯世界与新月沃地，前 3500 — 前 539 年，苏美尔、巴比伦与腓尼基人类黎明。美索不达米亚率先点燃农业灌溉余粮、车轮青铜冶炼、六十进制和人类首个文字楔形文字，颁布《乌尔纳姆》《汉谟拉比法典》，新亚述建成行省御道大帝国，推罗腓尼基商船将字母传向希腊拉丁。"
+    },
+    {
+      "key": "country:arabia:arabia-caliphate",
+      "kind": "country",
+      "id": "arabia:arabia-caliphate",
+      "title": "阿拉伯世界与新月沃地 · 伊斯兰兴起、倭马亚至阿拔斯“智慧宫”黄金期",
+      "file": "country/arabia/arabia-caliphate.mp3",
+      "script": "阿拉伯世界与新月沃地，公元 622 — 1258 年，伊斯兰兴起、倭马亚至阿拔斯“智慧宫”黄金期。先知穆罕默德将阿拉伯散沙绿洲部落整合为兼具灵肉公义的乌玛共同体，伴随百年狂飙扩张定鼎西抵比利牛斯东临帕米尔，阿拔斯王朝于巴格达建智慧宫融汇汉唐造纸术、印度零数位与希腊科学，铸就当时全球知识与商业顶峰！"
+    },
+    {
+      "key": "country:arabia:arabia-oil-modern",
+      "kind": "country",
+      "id": "arabia:arabia-oil-modern",
+      "title": "阿拉伯世界与新月沃地 · 现代中东主权建制、石油危机与“2030 转型愿景”",
+      "file": "country/arabia/arabia-oil-modern.mp3",
+      "script": "阿拉伯世界与新月沃地，公元 1918 年至今，现代中东主权建制、石油危机与“2030 转型愿景”。一战瓦解奥斯曼与《赛克斯-皮科协定》重划板块后，伊本·沙特 1932 年一统广袤沙漠立国并在达曼探明浩瀚油田，借 1973 年 OPEC 禁运震动西方经济架构确立产油主权，当今沙特阿联酋正动用万亿美元级基金全力押注脱碳城市与人工智能多元布局。"
+    },
+    {
+      "key": "country:egypt:egypt-pharaoh-ptolemy",
+      "kind": "country",
+      "id": "egypt:egypt-pharaoh-ptolemy",
+      "title": "埃及 · 三大法老王国、赫梯对峙与托勒密亚历山大港",
+      "file": "country/egypt/egypt-pharaoh-ptolemy.mp3",
+      "script": "埃及，前 3100 — 前 30 年，三大法老王国、赫梯对峙与托勒密亚历山大港。纳尔迈一统上下埃及并在吉萨用巨型官僚协作砌起大金字塔，新王国拉美西斯二世战赫梯缔约传世，亚历山大东征后托勒密家族立都亚历山大里亚修巨型灯塔与大图书馆成就泛地中海学术心脏。"
+    },
+    {
+      "key": "country:egypt:egypt-mamluk-cairo",
+      "kind": "country",
+      "id": "egypt:egypt-mamluk-cairo",
+      "title": "埃及 · 阿拉伯化、法蒂玛—萨拉丁与马穆鲁克红海大枢纽",
+      "file": "country/egypt/egypt-mamluk-cairo.mp3",
+      "script": "埃及，公元 641 — 1805 年，阿拉伯化、法蒂玛—萨拉丁与马穆鲁克红海大枢纽。7 世纪伊斯兰征服完成语言宗教转折并由法蒂玛建爱资哈尔大学和开罗名城，萨拉丁击退十字军重夺圣城，马穆鲁克军团 1260 年首次打破蒙古西征神话并靠独家控制香料进欧洲红海商路富甲地中海两百余年！"
+    },
+    {
+      "key": "country:egypt:egypt-suez-modern",
+      "kind": "country",
+      "id": "egypt:egypt-suez-modern",
+      "title": "埃及 · 阿里近代化探索、苏伊士运河通航与阿拉伯共和先锋",
+      "file": "country/egypt/egypt-suez-modern.mp3",
+      "script": "埃及，公元 1805 年至今，阿里近代化探索、苏伊士运河通航与阿拉伯共和先锋。穆罕默德·阿里率先在非西方推动军工印染强国改革却被英法掐灭，1869 年苏伊士运河贯通彻底重绘欧亚海运并招致英军占领，1952 自由军官纳赛尔收复运河成为反殖灯塔，至今扛着尼罗河上亿人口基建民生与中东外交枢纽重担。"
+    },
+    {
+      "key": "country:ethiopia:ethiopia-aksum",
+      "kind": "country",
+      "id": "ethiopia:ethiopia-aksum",
+      "title": "埃塞俄比亚 · 阿克苏姆红海强权与拉利贝拉石头圣城",
+      "file": "country/ethiopia/ethiopia-aksum.mp3",
+      "script": "埃塞俄比亚，公元 100 — 1855 年，阿克苏姆红海强权与拉利贝拉石头圣城。阿克苏姆借红海阿杜利斯港掌握罗马与印度象牙香料航线并在四世纪与罗马同列全球四大帝国之一且自发改信基督教，中世纪扎格维与所罗门朝筑造全整块岩石凿空的拉利贝拉地下十字教堂。"
+    },
+    {
+      "key": "country:ethiopia:ethiopia-adwa-modern",
+      "kind": "country",
+      "id": "ethiopia:ethiopia-adwa-modern",
+      "title": "埃塞俄比亚 · 阿杜瓦胜利卫国、非盟总部落脚与高速增长极",
+      "file": "country/ethiopia/ethiopia-adwa-modern.mp3",
+      "script": "埃塞俄比亚，公元 1855 年至今，阿杜瓦胜利卫国、非盟总部落脚与高速增长极。孟尼利克二世于 1896 年阿杜瓦战役以现代化步枪大败意大利入侵震惊世界、使其独立象征鼓舞全非洲和黑人解放思想，经门格斯图左翼悲剧变革后于 21 世纪以庞大青年人口承接非洲工业园制造与亚吉铁路复兴。"
+    },
+    {
+      "key": "country:west-africa:west-africa-gold-empires",
+      "kind": "country",
+      "id": "west-africa:west-africa-gold-empires",
+      "title": "西非萨赫勒文明带 · 加纳、马里帝国与廷巴克图黄金与书卷时代",
+      "file": "country/west-africa/west-africa-gold-empires.mp3",
+      "script": "西非萨赫勒文明带，公元 700 — 1591 年，加纳、马里帝国与廷巴克图黄金与书卷时代。加纳确立西非铁器黄金贸易序幕，1324 年马里黄金国王曼萨·穆萨朝觐带往开罗黄金震荡地中海金价并延请诗人建筑师大建杰内与廷巴克图，桑海帝国更一度控有百万平米沃土直到 1591 年遭摩洛哥火枪军团击散。"
+    },
+    {
+      "key": "country:west-africa:west-africa-modern",
+      "kind": "country",
+      "id": "west-africa:west-africa-modern",
+      "title": "西非萨赫勒文明带 · 殖民裂解、1960 年“非洲独立年”与萨赫勒当代求索",
+      "file": "country/west-africa/west-africa-modern.mp3",
+      "script": "西非萨赫勒文明带，公元 1884 年至今，殖民裂解、1960 年“非洲独立年”与萨赫勒当代求索。柏林会议以后法国把大西洋塞内加尔至尼日尔内陆拼成法属西非强改经济作物，1960非洲独立年重夺主权以来在年轻人口、地缘干旱和全球气候矿产开发间艰难寻找自主安全与稳定发展平衡点。"
+    },
+    {
+      "key": "country:usa:usa-founding-constitution",
+      "kind": "country",
+      "id": "usa:usa-founding-constitution",
+      "title": "美国 · 十三殖民地独立战争与首部现代成文联邦宪法",
+      "file": "country/usa/usa-founding-constitution.mp3",
+      "script": "美国，公元 1607 — 1803 年，十三殖民地独立战争与首部现代成文联邦宪法。伦敦商业公司与清教自治团体沿大西洋岸开拓出高识字率的十三邦，七年战争后反抗无代表不纳税点燃独立之火，1787 年费城宪章以联邦制加立法司法行政三权分立破解传统启蒙哲人大国必专制魔咒，并随后买下路易斯安那版图倍增。"
+    },
+    {
+      "key": "country:usa:usa-westward-industrial",
+      "kind": "country",
+      "id": "usa:usa-westward-industrial",
+      "title": "美国 · 西进太平洋、南北战争再造宪政与流水线工业跃升",
+      "file": "country/usa/usa-westward-industrial.mp3",
+      "script": "美国，公元 1803 — 1941 年，西进太平洋、南北战争再造宪政与流水线工业跃升。半世纪内伴随对美原住民残酷驱逐与美墨战争打通两洋通途，1861—1865 年林肯以南北战争血火废除黑奴并保住全国统一大市场，爱迪生电力、特斯拉交流网、卡内基钢轨和福特流水线令美国于 1890 年代一举跃居世界工业产出第一！"
+    },
+    {
+      "key": "country:usa:usa-superpower-ai",
+      "kind": "country",
+      "id": "usa:usa-superpower-ai",
+      "title": "美国 · 冷战两极巅峰、阿波罗登月与硅谷数字信息纪元",
+      "file": "country/usa/usa-superpower-ai.mp3",
+      "script": "美国，公元 1941 年至今，冷战两极巅峰、阿波罗登月与硅谷数字信息纪元。二战民主兵工厂凭借联合国、布雷顿森林美元体系与关贸总协定重设全球秩序，冷战阿波罗登月伴生阿帕网（互联网前身），苏联解体后主导互联网芯片革命与当今生成式 AI 风潮，同时亦面临产业外移极化与多极重构深刻拷问。"
+    },
+    {
+      "key": "country:mexico:mexico-mesoamerica",
+      "kind": "country",
+      "id": "mexico:mexico-mesoamerica",
+      "title": "墨西哥 · 奥尔梅克、特奥蒂瓦坎、玛雅与阿兹特克荣光",
+      "file": "country/mexico/mexico-mesoamerica.mp3",
+      "script": "墨西哥，前 1500 — 公元 1521 年，奥尔梅克、特奥蒂瓦坎、玛雅与阿兹特克荣光。无大型拉车役畜、几乎无青铜铁犁却依靠极高产的玉米、豆类、南瓜三姐妹混合农业，独力孕育二十万人口的圣城特奥蒂瓦坎、精算金星日历与0的玛雅群城，及建立精美浮岛奇南帕斯水田湖城特诺奇蒂特兰的阿兹特克帝国。"
+    },
+    {
+      "key": "country:mexico:mexico-new-spain-modern",
+      "kind": "country",
+      "id": "mexico:mexico-new-spain-modern",
+      "title": "墨西哥 · 新西班牙白银中枢、革命宪法与当代北美制造 hub",
+      "file": "country/mexico/mexico-new-spain-modern.mp3",
+      "script": "墨西哥，公元 1521 年至今，新西班牙白银中枢、革命宪法与当代北美制造 hub。西班牙传教士与银矿彻底重绘社会图景：银块沿太平洋飞往马尼拉与闽粤换瓷器生丝，1810 伊达尔戈吹响独立号角，经历北方半壁土地被美国并吞苦痛，于 1910 墨西哥革命重分土地开启现代石油国有化与高速制造业出口腾飞。"
+    },
+    {
+      "key": "country:peru:peru-inca",
+      "kind": "country",
+      "id": "peru:peru-inca",
+      "title": "秘鲁与安第斯 · 查文先声与“四方之地”印加山岳大帝国",
+      "file": "country/peru/peru-inca.mp3",
+      "script": "秘鲁与安第斯，前 900 — 公元 1533 年，查文先声与“四方之地”印加山岳大帝国。自查文与莫切精细灌溉金工陶艺积淀起，1438 年帕查库蒂领库斯科小邦爆发崛起建起跨越智利至厄瓜多尔四千公里的印加帝国——铺成两万多公里翻山驿站大道与悬索吊桥网，构筑全球绝无仅有的高海拔统一规划非货币帝国！"
+    },
+    {
+      "key": "country:peru:peru-viceroyalty-republic",
+      "kind": "country",
+      "id": "peru:peru-viceroyalty-republic",
+      "title": "秘鲁与安第斯 · 利马“秘鲁总督区”白银潮与多民族共和立国",
+      "file": "country/peru/peru-viceroyalty-republic.mp3",
+      "script": "秘鲁与安第斯，公元 1533 年至今，利马“秘鲁总督区”白银潮与多民族共和立国。西班牙皮萨罗乘天花传播与皇位内斗瓦解印加后定都王者之城利马，动用波托西银山（玻秘古高地）改写欧亚物价并残酷征发本土米塔矿役，1824 年阿亚库乔决战迎来南美全面独立，今以矿业生态旅游与融汇中日本土风味的利马美食世界闻名。"
+    },
+    {
+      "key": "country:brazil:brazil-colony-empire",
+      "kind": "country",
+      "id": "brazil:brazil-colony-empire",
+      "title": "巴西 · 托尔德西里亚斯定界、蔗糖奴隶潮与唯一的美洲帝制",
+      "file": "country/brazil/brazil-colony-empire.mp3",
+      "script": "巴西，公元 1500 — 1889 年，托尔德西里亚斯定界、蔗糖奴隶潮与唯一的美洲帝制。1494 教皇子午线把南美东角划归葡萄牙，随之爆发数百万非洲奴隶跨洋输入建造全球制糖中心，1808 年葡王逃难里约直接将该地升格为跨洋帝国中心，并于 1822 年和平独立称巴西帝国，迟至 1888 年才成美洲最后废除奴隶制国家。"
+    },
+    {
+      "key": "country:brazil:brazil-republic-agri",
+      "kind": "country",
+      "id": "brazil:brazil-republic-agri",
+      "title": "巴西 · 工业都市跃升、迁都巴西利亚与全球能源绿色农产大国",
+      "file": "country/brazil/brazil-republic-agri.mp3",
+      "script": "巴西，公元 1889 年至今，工业都市跃升、迁都巴西利亚与全球能源绿色农产大国。经历瓦加斯劳工现代化国策与 1960 年以内陆超现代几何首都巴西利亚引导重心西移，在军政与 1985 年全面民主化更迭后发展起支线客机工业、生物甘蔗酒精动力以及高产酸土耕作塞拉多农业奇迹成为全球粮仓与气候博弈焦点。"
+    },
+    {
+      "key": "story:story-axial-empires:0",
+      "kind": "story",
+      "id": "story-axial-empires:0",
+      "title": "轴心时代与古典秩序诞生 (1/7)",
+      "file": "story/story-axial-empires/step-0.mp3",
+      "script": "公元前 550–330 年，阿契美尼德波斯帝国与包容行省制。旅程从伊朗高原出发：阿契美尼德波斯率先示范了宽容行省 + 驿道御道的大帝国治理术，连接起印度河、两河与地中海。"
+    },
+    {
+      "key": "story:story-axial-empires:1",
+      "kind": "story",
+      "id": "story-axial-empires:1",
+      "title": "轴心时代与古典秩序诞生 (2/7)",
+      "file": "story/story-axial-empires/step-1.mp3",
+      "script": "公元前 6–前 3 世纪，孔子兴私学与东亚轴心时代百家争鸣。同一世纪的东亚春秋，孔子与诸子百家面对礼崩乐坏展开大辩论，奠定了融合德治礼乐与法家官僚效率的中华文明精神底色。"
+    },
+    {
+      "key": "story:story-axial-empires:2",
+      "kind": "story",
+      "id": "story-axial-empires:2",
+      "title": "轴心时代与古典秩序诞生 (3/7)",
+      "file": "story/story-axial-empires/step-2.mp3",
+      "script": "约公元前 6–前 5 世纪，释迦牟尼创教与南亚沙门思潮。同一时期的恒河平原，乔达摩·悉达多打破种姓壁垒创立佛教，沿着商人城镇网络准备走向全亚洲。"
+    },
+    {
+      "key": "story:story-axial-empires:3",
+      "kind": "story",
+      "id": "story-axial-empires:3",
+      "title": "轴心时代与古典秩序诞生 (4/7)",
+      "file": "story/story-axial-empires/step-3.mp3",
+      "script": "公元前 5 世纪，雅典直接民主与古典希腊理性的高峰。视线西移至爱琴海：希腊城邦走出了完全相反的小国寡民公民自治路径，理性逻辑与政治哲学在广场辩论中成型。"
+    },
+    {
+      "key": "story:story-axial-empires:4",
+      "kind": "story",
+      "id": "story-axial-empires:4",
+      "title": "轴心时代与古典秩序诞生 (5/7)",
+      "file": "story/story-axial-empires/step-4.mp3",
+      "script": "公元前 221 年，秦朝统一六国与郡县官僚大一统。三百年铁血兼并后，秦朝用商鞅锤炼出的郡县与书同文、车同轨打破分封，建立起东亚绵延两千年的大一统国家基因。"
+    },
+    {
+      "key": "story:story-axial-empires:5",
+      "kind": "story",
+      "id": "story-axial-empires:5",
+      "title": "轴心时代与古典秩序诞生 (6/7)",
+      "file": "story/story-axial-empires/step-5.mp3",
+      "script": "公元前 27 年，奥古斯都元首制与罗马和平（Pax Romana）。欧亚另一端，罗马共和国吞并迦太基与希腊化世界后经屋大维转为帝制，靠成文万民法与海上零关税实现罗马和平。"
+    },
+    {
+      "key": "story:story-axial-empires:6",
+      "kind": "story",
+      "id": "story-axial-empires:6",
+      "title": "轴心时代与古典秩序诞生 (7/7)",
+      "file": "story/story-axial-empires/step-6.mp3",
+      "script": "公元 105 年，蔡伦改进造纸术：知识载体革命。最后来到东汉洛阳：蔡伦廉价造纸术的诞生，将让这五大古典轴心文明的所有思想与律法获得跨越千年的保存与传播带宽。"
+    },
+    {
+      "key": "story:story-eurasian-arteries:0",
+      "kind": "story",
+      "id": "story-eurasian-arteries:0",
+      "title": "欧亚大动脉：丝路、草原与季风海网 (1/6)",
+      "file": "story/story-eurasian-arteries/step-0.mp3",
+      "script": "公元前 138 年 / 前 119 年，张骞凿空西域与陆上丝绸之路开辟。汉武帝原本只为联络大月氏夹击匈奴，张骞十三年苦旅却意外接通长安与中亚撒马尔罕，陆上丝绸之路自此成形。"
+    },
+    {
+      "key": "story:story-eurasian-arteries:1",
+      "kind": "story",
+      "id": "story-eurasian-arteries:1",
+      "title": "欧亚大动脉：丝路、草原与季风海网 (2/6)",
+      "file": "story/story-eurasian-arteries/step-1.mp3",
+      "script": "公元 1–3 世纪，贵霜帝国：丝路十字路口与犍陀罗艺术。中亚贵霜帝国扼守丝路十字路口：大月氏王族用罗马金币结算中国丝绸，并让希腊雕刻师塑出了第一批佛像传入中国。"
+    },
+    {
+      "key": "story:story-eurasian-arteries:2",
+      "kind": "story",
+      "id": "story-eurasian-arteries:2",
+      "title": "欧亚大动脉：丝路、草原与季风海网 (3/6)",
+      "file": "story/story-eurasian-arteries/step-2.mp3",
+      "script": "公元 751 年，怛罗斯之战与造纸术西传伊斯兰世界。751 年怛罗斯一役使造纸工匠经撒马尔罕进入巴格达，智慧宫百年翻译运动因此有了廉价耐用的书写材料。"
+    },
+    {
+      "key": "story:story-eurasian-arteries:3",
+      "kind": "story",
+      "id": "story-eurasian-arteries:3",
+      "title": "欧亚大动脉：丝路、草原与季风海网 (4/6)",
+      "file": "story/story-eurasian-arteries/step-3.mp3",
+      "script": "公元 11–13 世纪，宋代商业革命、市舶司与市民文化。北宋交子与南移经济将航运中心推向东南海洋，泉州港凭借水密隔舱与指南针成为世界级季风海商枢纽。"
+    },
+    {
+      "key": "story:story-eurasian-arteries:4",
+      "kind": "story",
+      "id": "story-eurasian-arteries:4",
+      "title": "欧亚大动脉：丝路、草原与季风海网 (5/6)",
+      "file": "story/story-eurasian-arteries/step-4.mp3",
+      "script": "公元 1206–1368 年，蒙古帝国崛起与蒙古和平欧亚贯通。13 世纪蒙古铁骑拆除了欧亚全部内陆关卡，站赤驿道让威尼斯商人马可·波罗与阿拉伯学者得以横穿大漠直抵大都。"
+    },
+    {
+      "key": "story:story-eurasian-arteries:5",
+      "kind": "story",
+      "id": "story-eurasian-arteries:5",
+      "title": "欧亚大动脉：丝路、草原与季风海网 (6/6)",
+      "file": "story/story-eurasian-arteries/step-5.mp3",
+      "script": "公元 1405–1433 年，郑和七下西洋与朝贡体系的海洋巅峰。东亚传统陆海联通在 1405 年达至巅峰——郑和宝船抵达东非海岸，但赔本的朝贡政治逻辑却在 1433 年突然按下停止键。"
+    },
+    {
+      "key": "story:story-silver-globalization:0",
+      "kind": "story",
+      "id": "story-silver-globalization:0",
+      "title": "白银、大帆船与第一次全球化 (1/7)",
+      "file": "story/story-silver-globalization/step-0.mp3",
+      "script": "公元 1453 年，奥斯曼攻陷君士坦丁堡与贸易航路重构。1453 年君士坦丁堡城破后，奥斯曼帝国扼住传统地中海—黑海商道，沉重的中转溢价逼使伊比利亚王国冒险投身深海。"
+    },
+    {
+      "key": "story:story-silver-globalization:1",
+      "kind": "story",
+      "id": "story-silver-globalization:1",
+      "title": "白银、大帆船与第一次全球化 (2/7)",
+      "file": "story/story-silver-globalization/step-1.mp3",
+      "script": "公元 1492 年，哥伦布抵达美洲与哥伦布大交换。1492 年哥伦布抵达加勒比海，开启改变全人类饮食（玉米马铃薯番薯）与人口版图的哥伦布大交换。"
+    },
+    {
+      "key": "story:story-silver-globalization:2",
+      "kind": "story",
+      "id": "story-silver-globalization:2",
+      "title": "白银、大帆船与第一次全球化 (3/7)",
+      "file": "story/story-silver-globalization/step-2.mp3",
+      "script": "公元 1497–1499 年，达·伽马绕好望角打通印度直航。六年之后达·伽马绕过好望角在卡利卡特上岸，用舰炮和直接海运彻底取代了奥斯曼与威尼斯香料垄断。"
+    },
+    {
+      "key": "story:story-silver-globalization:3",
+      "kind": "story",
+      "id": "story-silver-globalization:3",
+      "title": "白银、大帆船与第一次全球化 (4/7)",
+      "file": "story/story-silver-globalization/step-3.mp3",
+      "script": "公元 1545 年，波托西银山发现与全球白银金融潮。玻利维亚四千米高原的波托西发现超级银矿，在安第斯原住民矿工的血汗下每年铸出巨量西班牙银元涌入世界。"
+    },
+    {
+      "key": "story:story-silver-globalization:4",
+      "kind": "story",
+      "id": "story-silver-globalization:4",
+      "title": "白银、大帆船与第一次全球化 (5/7)",
+      "file": "story/story-silver-globalization/step-4.mp3",
+      "script": "公元 1565–1815 年，马尼拉大帆船航线与太平洋白银链。1565 年开辟的马尼拉大帆船航线横跨太平洋：把美洲白银直接运至马尼拉，换取中国丝绸与瓷器装船运回美洲与欧洲。"
+    },
+    {
+      "key": "story:story-silver-globalization:5",
+      "kind": "story",
+      "id": "story-silver-globalization:5",
+      "title": "白银、大帆船与第一次全球化 (6/7)",
+      "file": "story/story-silver-globalization/step-5.mp3",
+      "script": "公元 1581 年，张居正一条鞭法：白银成为中国本位税制。正是依靠美洲与日本白银的大规模输入，张居正才得以在 1581 年推行一条鞭法，把中国正式带入白银货币财政时代。"
+    },
+    {
+      "key": "story:story-silver-globalization:6",
+      "kind": "story",
+      "id": "story-silver-globalization:6",
+      "title": "白银、大帆船与第一次全球化 (7/7)",
+      "file": "story/story-silver-globalization/step-6.mp3",
+      "script": "公元 1602 年，荷兰东印度公司（VOC）与现代股票交易所。而在大西洋彼岸，荷兰发明了永续股份制的东印度公司（VOC）与阿姆斯特丹股票交易所，随后英国光荣革命接棒完善议会与央行信用。"
+    },
+    {
+      "key": "story:story-industrial-divergence:0",
+      "kind": "story",
+      "id": "story-industrial-divergence:0",
+      "title": "双元革命、大分流与殖民霸权 (1/7)",
+      "file": "story/story-industrial-divergence/step-0.mp3",
+      "script": "公元 1769 年（18 世纪下半叶），瓦特改良蒸汽机与第一次工业革命引爆。1769 年瓦特蒸汽机走出英国工场，人类首次把地下蕴藏数亿年的化石煤炭转化为无限机械动力，突破农业生长天花板。"
+    },
+    {
+      "key": "story:story-industrial-divergence:1",
+      "kind": "story",
+      "id": "story-industrial-divergence:1",
+      "title": "双元革命、大分流与殖民霸权 (2/7)",
+      "file": "story/story-industrial-divergence/step-1.mp3",
+      "script": "公元 1776–1787 年，美国独立与成文联邦宪政体制实践。政治上，1776 年北美十三州发表《独立宣言》并在费城试验联邦成文宪法，同年亚当·斯密在英国出版《国富论》。"
+    },
+    {
+      "key": "story:story-industrial-divergence:2",
+      "kind": "story",
+      "id": "story-industrial-divergence:2",
+      "title": "双元革命、大分流与殖民霸权 (3/7)",
+      "file": "story/story-industrial-divergence/step-2.mp3",
+      "script": "公元 1789–1815 年，法国大革命与《人权宣言》的欧洲震荡。1789 年巴黎大革命炸毁欧陆封建贵族特权，把公民平等、民法典与民族主义随拿破仑大军扩散至整个欧洲大陆。"
+    },
+    {
+      "key": "story:story-industrial-divergence:3",
+      "kind": "story",
+      "id": "story-industrial-divergence:3",
+      "title": "双元革命、大分流与殖民霸权 (4/7)",
+      "file": "story/story-industrial-divergence/step-3.mp3",
+      "script": "公元 1839–1842 年，鸦片战争与东亚天朝朝贡体系崩塌。工业炮舰撞向古老东方：1840 年英国发动鸦片战争打破广州十三行体制，逼迫中国在屈辱中痛苦卷入世界条约体系。"
+    },
+    {
+      "key": "story:story-industrial-divergence:4",
+      "kind": "story",
+      "id": "story-industrial-divergence:4",
+      "title": "双元革命、大分流与殖民霸权 (5/7)",
+      "file": "story/story-industrial-divergence/step-4.mp3",
+      "script": "公元 1868 年，日本明治维新：亚洲率先成功的近代化赶超。面对同样黑船危机，日本凭借封建分权韧性与德川高识字底座在 1868 年成功明治维新工业化，却随后走上侵略邻居的歧途。"
+    },
+    {
+      "key": "story:story-industrial-divergence:5",
+      "kind": "story",
+      "id": "story-industrial-divergence:5",
+      "title": "双元革命、大分流与殖民霸权 (6/7)",
+      "file": "story/story-industrial-divergence/step-5.mp3",
+      "script": "公元 1884–1885 年，柏林会议与列强直尺瓜分非洲大陆。随着二次工业革命电力化工与机枪奎宁普及，1884 年欧洲列强用直尺在柏林桌上强行瓜分整个非洲。"
+    },
+    {
+      "key": "story:story-industrial-divergence:6",
+      "kind": "story",
+      "id": "story-industrial-divergence:6",
+      "title": "双元革命、大分流与殖民霸权 (7/7)",
+      "file": "story/story-industrial-divergence/step-6.mp3",
+      "script": "公元 1911 年，辛亥革命：两千年皇权帝制终结。重重内忧外患冲击下，1911 年辛亥革命终结中国两千年皇权帝制，亚洲首个民主共和国在武昌枪声中艰难诞生。"
+    },
+    {
+      "key": "story:story-century-of-reordering:0",
+      "kind": "story",
+      "id": "story-century-of-reordering:0",
+      "title": "战争、冷战、全球化与多极重构 (1/7)",
+      "file": "story/story-century-of-reordering/step-0.mp3",
+      "script": "公元 1914–1918 年，第一次世界大战与四大传统帝国瓦解。1914 年一战绞肉机打垮四大传统帝国、重创欧洲金融积累，并催生俄国十月革命开辟出另一条计划经济赛道。"
+    },
+    {
+      "key": "story:story-century-of-reordering:1",
+      "kind": "story",
+      "id": "story-century-of-reordering:1",
+      "title": "战争、冷战、全球化与多极重构 (2/7)",
+      "file": "story/story-century-of-reordering/step-1.mp3",
+      "script": "公元 1929–1933 年，1929 年华尔街股灾与全球大萧条。1929 年华尔街股灾引爆全球大萧条，金本位溃散，美英选择罗斯福新政和凯恩斯改良，而德意日则滑向二战法西斯深渊。"
+    },
+    {
+      "key": "story:story-century-of-reordering:2",
+      "kind": "story",
+      "id": "story-century-of-reordering:2",
+      "title": "战争、冷战、全球化与多极重构 (3/7)",
+      "file": "story/story-century-of-reordering/step-2.mp3",
+      "script": "公元 1944 年，布雷顿森林体系与现代国际金融秩序。1944–1945 年同盟国胜利确立联合国与布雷顿森林美元体系，而随后的冷战铁幕在核均势威慑下反而催生了西欧一体化与互联网前身阿帕网。"
+    },
+    {
+      "key": "story:story-century-of-reordering:3",
+      "kind": "story",
+      "id": "story-century-of-reordering:3",
+      "title": "战争、冷战、全球化与多极重构 (4/7)",
+      "file": "story/story-century-of-reordering/step-3.mp3",
+      "script": "公元 1947 年，印度独立与印巴分治：去殖民化浪潮起点。1947 年印度独立与 1960 年非洲独立年彻底埋葬持续四百年的海外殖民体制，亚非拉主权国家借万隆会议登上世界舞台。"
+    },
+    {
+      "key": "story:story-century-of-reordering:4",
+      "kind": "story",
+      "id": "story-century-of-reordering:4",
+      "title": "战争、冷战、全球化与多极重构 (5/7)",
+      "file": "story/story-century-of-reordering/step-4.mp3",
+      "script": "公元 1978 年，中国十一届三中全会与改革开放启幕。1978 年中国开启改革开放并于 2001 年加入 WTO，释放出史无前例的人力与制造供应链增量，令 90 年代后的互联网全球化如虎添翼。"
+    },
+    {
+      "key": "story:story-century-of-reordering:5",
+      "kind": "story",
+      "id": "story-century-of-reordering:5",
+      "title": "战争、冷战、全球化与多极重构 (6/7)",
+      "file": "story/story-century-of-reordering/step-5.mp3",
+      "script": "公元 2008 年，2008 年全球金融危机与民粹主义抬头。2008 年全球金融危机终结了自由放任的绝对神话，刺激各国转向政府干预、去全球化民粹以及基建和战略产业竞争。"
+    },
+    {
+      "key": "story:story-century-of-reordering:6",
+      "kind": "story",
+      "id": "story-century-of-reordering:6",
+      "title": "战争、冷战、全球化与多极重构 (7/7)",
+      "file": "story/story-century-of-reordering/step-6.mp3",
+      "script": "公元 2022–2025 年，生成式人工智能爆发与算力芯片地缘博弈。站在 2020 年代中叶：全球同时面临芯片算力 AI 跃迁、绿色能源低碳重构与俄乌/中美多极竞争，古代与现代在此交汇照亮未来。"
+    },
+    {
+      "key": "story:story-media-knowledge:0",
+      "kind": "story",
+      "id": "story-media-knowledge:0",
+      "title": "媒介革命：从泥板造纸到生成式 AI (1/8)",
+      "file": "story/story-media-knowledge/step-0.mp3",
+      "script": "约公元前 3000 年，苏美尔城邦与楔形文字诞生。一切始于两河流域的神庙仓库：为了精准核算大麦与啤酒税赋，苏美尔人刻下首批楔形文字泥板，知识首次突破口耳相传的寿命极限。"
+    },
+    {
+      "key": "story:story-media-knowledge:1",
+      "kind": "story",
+      "id": "story-media-knowledge:1",
+      "title": "媒介革命：从泥板造纸到生成式 AI (2/8)",
+      "file": "story/story-media-knowledge/step-1.mp3",
+      "script": "约公元前 1050–800 年，腓尼基字母与地中海商业殖民网。黎凡特的腓尼基商人为跨海记账把复杂象形文字简化为 22 个辅音字母，极大降低了平民与商人学写字的门槛，衍生出希腊与拉丁字母。"
+    },
+    {
+      "key": "story:story-media-knowledge:2",
+      "kind": "story",
+      "id": "story-media-knowledge:2",
+      "title": "媒介革命：从泥板造纸到生成式 AI (3/8)",
+      "file": "story/story-media-knowledge/step-2.mp3",
+      "script": "公元 105 年，蔡伦改进造纸术：知识载体革命。公元 105 年东汉蔡伦用树皮、麻头与破布改良造纸术，使书写成本相对羊皮纸、竹简断崖下跌，书籍从此具备大规模普及的物理底座。"
+    },
+    {
+      "key": "story:story-media-knowledge:3",
+      "kind": "story",
+      "id": "story-media-knowledge:3",
+      "title": "媒介革命：从泥板造纸到生成式 AI (4/8)",
+      "file": "story/story-media-knowledge/step-3.mp3",
+      "script": "公元 751 年，怛罗斯之战与造纸术西传伊斯兰世界。公元 751 年怛罗斯之战后造纸工匠传入中亚与巴格达，催生阿拉伯智慧宫百年翻译运动，并经安达卢西亚最终输入中世纪欧洲。"
+    },
+    {
+      "key": "story:story-media-knowledge:4",
+      "kind": "story",
+      "id": "story-media-knowledge:4",
+      "title": "媒介革命：从泥板造纸到生成式 AI (5/8)",
+      "file": "story/story-media-knowledge/step-4.mp3",
+      "script": "约公元 1450 年，古登堡金属活字印刷术：欧洲知识爆炸。15 世纪中叶美因茨的古登堡将油墨、金属活字与螺旋压榨机结合：欧洲五十年内印出数千万册书籍，直接点爆宗教改革与知识爆炸。"
+    },
+    {
+      "key": "story:story-media-knowledge:5",
+      "kind": "story",
+      "id": "story-media-knowledge:5",
+      "title": "媒介革命：从泥板造纸到生成式 AI (6/8)",
+      "file": "story/story-media-knowledge/step-5.mp3",
+      "script": "公元 1543 年，《天体运行论》与欧洲科学革命序幕。印刷术让欧洲天文学家与物理学家得以即时交叉校验观测数据与公式，哥白尼、伽利略与牛顿的科学革命从此不可逆转。"
+    },
+    {
+      "key": "story:story-media-knowledge:6",
+      "kind": "story",
+      "id": "story-media-knowledge:6",
+      "title": "媒介革命：从泥板造纸到生成式 AI (7/8)",
+      "file": "story/story-media-knowledge/step-6.mp3",
+      "script": "公元 1991–1993 年，万维网向公众开放与欧盟正式诞生。1991 年万维网（WWW）向全球公众免费开放，超链接与浏览器把全人类图书馆和市场搬上同一张实时光缆网。"
+    },
+    {
+      "key": "story:story-media-knowledge:7",
+      "kind": "story",
+      "id": "story-media-knowledge:7",
+      "title": "媒介革命：从泥板造纸到生成式 AI (8/8)",
+      "file": "story/story-media-knowledge/step-7.mp3",
+      "script": "公元 2022–2025 年，生成式人工智能爆发与算力芯片地缘博弈。2020 年代大模型将全人类累积的文本与知识压缩进高维权重空间，知识检索、科研辅助与软件生产率迎来新一轮范式跃迁。"
+    },
+    {
+      "key": "story:story-energy-transitions:0",
+      "kind": "story",
+      "id": "story-energy-transitions:0",
+      "title": "能源五千年：青铜、煤炭、石油与低碳 (1/7)",
+      "file": "story/story-energy-transitions/step-0.mp3",
+      "script": "约公元前 2200–1600 年，青铜时代跨欧亚锡铜贸易网。青铜时代被迫把千里之外的阿富汗锡矿与地中海铜矿捏合在一起，金属工坊的能量与矿产瓶颈决定了早期帝国的武装上限。"
+    },
+    {
+      "key": "story:story-energy-transitions:1",
+      "kind": "story",
+      "id": "story-energy-transitions:1",
+      "title": "能源五千年：青铜、煤炭、石油与低碳 (2/7)",
+      "file": "story/story-energy-transitions/step-1.mp3",
+      "script": "约公元前 1600 年，赫梯帝国兴起与早期冶铁战车强权。冶铁技术普及与木炭高温炉破除了铜锡稀缺垄断，廉价铁犁与铁兵器让开垦重土与百万级人口大国成为现实。"
+    },
+    {
+      "key": "story:story-energy-transitions:2",
+      "kind": "story",
+      "id": "story-energy-transitions:2",
+      "title": "能源五千年：青铜、煤炭、石油与低碳 (3/7)",
+      "file": "story/story-energy-transitions/step-2.mp3",
+      "script": "公元 1769 年（18 世纪下半叶），瓦特改良蒸汽机与第一次工业革命引爆。1769 年瓦特蒸汽机把地底沉积亿万年的煤炭化学能直接转化为机械功，人类文明历史上首次彻底打破土地与肌肉能量的天花板。"
+    },
+    {
+      "key": "story:story-energy-transitions:3",
+      "kind": "story",
+      "id": "story-energy-transitions:3",
+      "title": "能源五千年：青铜、煤炭、石油与低碳 (4/7)",
+      "file": "story/story-energy-transitions/step-3.mp3",
+      "script": "公元 1870–1914 年，第二次工业革命：电力、内燃机、化工与垄断资本。19 世纪后期电网、内燃机与合成化工三大技术共振，石油以更高能量密度接替煤炭，将工业动力送进汽车、轮船与万家灯火。"
+    },
+    {
+      "key": "story:story-energy-transitions:4",
+      "kind": "story",
+      "id": "story-energy-transitions:4",
+      "title": "能源五千年：青铜、煤炭、石油与低碳 (5/7)",
+      "file": "story/story-energy-transitions/step-4.mp3",
+      "script": "公元 1913 年，福特流水线与现代大众消费社会起点。20 世纪初福特流水线配合廉价汽油把内燃机汽车推入普通家庭，石化工业、高速公路网与现代大众消费社会一体成形。"
+    },
+    {
+      "key": "story:story-energy-transitions:5",
+      "kind": "story",
+      "id": "story-energy-transitions:5",
+      "title": "能源五千年：青铜、煤炭、石油与低碳 (6/7)",
+      "file": "story/story-energy-transitions/step-5.mp3",
+      "script": "公元 1973 年，1973 年石油危机与滞胀转折。1973 年中东石油禁运令油价数月暴涨四倍：西方高能耗制造陷入滞胀危机，迫使全球狂飙节能技术并重估波斯湾地缘命脉。"
+    },
+    {
+      "key": "story:story-energy-transitions:6",
+      "kind": "story",
+      "id": "story-energy-transitions:6",
+      "title": "能源五千年：青铜、煤炭、石油与低碳 (7/7)",
+      "file": "story/story-energy-transitions/step-6.mp3",
+      "script": "公元 2015 年，《巴黎协定》与全球能源低碳转型竞赛。面对碳排放带来的气候红线，光伏、储能电池、电动车与电网智能化正推动人类开启从化石能源向可再生能源的第三次大转型。"
+    },
+    {
+      "key": "story:story-money-finance:0",
+      "kind": "story",
+      "id": "story-money-finance:0",
+      "title": "货币、财政与现代金融帝国 (1/9)",
+      "file": "story/story-money-finance/step-0.mp3",
+      "script": "约公元前 620–550 年，吕底亚标准铸币与零售交换革命。公元前 600 年安纳托利亚的吕底亚国王在琥珀金块上打下官方印记，标准铸币告别称重验金的繁琐，引爆地中海零售商业与雇佣兵财政。"
+    },
+    {
+      "key": "story:story-money-finance:1",
+      "kind": "story",
+      "id": "story-money-finance:1",
+      "title": "货币、财政与现代金融帝国 (2/9)",
+      "file": "story/story-money-finance/step-1.mp3",
+      "script": "公元前 119 年（前后系列改革），汉武帝盐铁专卖、独尊儒术与平准均输。西汉武帝推行五铢钱官铸与盐铁专卖，用国家级商品垄断替代单纯田税，撑起了开拓丝绸之路与远征漠北的巨额军费。"
+    },
+    {
+      "key": "story:story-money-finance:2",
+      "kind": "story",
+      "id": "story-money-finance:2",
+      "title": "货币、财政与现代金融帝国 (3/9)",
+      "file": "story/story-money-finance/step-2.mp3",
+      "script": "公元 1024 年，北宋交子与人类史上首个官方纸币。1024 年北宋四川商户创制的交子收归官营，诞生人类最早由政府背书的纸币，摆脱笨重铜铁钱对商业扩张的物理束缚。"
+    },
+    {
+      "key": "story:story-money-finance:3",
+      "kind": "story",
+      "id": "story-money-finance:3",
+      "title": "货币、财政与现代金融帝国 (4/9)",
+      "file": "story/story-money-finance/step-3.mp3",
+      "script": "公元 1581 年，张居正一条鞭法：白银成为中国本位税制。1581 年明朝张居正推行一条鞭法，将繁杂力役与实物税统一折银征收，使庞大帝国财政深深嵌入全球美洲与日本白银循环。"
+    },
+    {
+      "key": "story:story-money-finance:4",
+      "kind": "story",
+      "id": "story-money-finance:4",
+      "title": "货币、财政与现代金融帝国 (5/9)",
+      "file": "story/story-money-finance/step-4.mp3",
+      "script": "公元 1602 年，荷兰东印度公司（VOC）与现代股票交易所。1602 年阿姆斯特丹为分散远洋香料贸易巨额风险，组建永续股份制的荷兰东印度公司并开放证券二级流通，现代股票交易所由此诞生。"
+    },
+    {
+      "key": "story:story-money-finance:5",
+      "kind": "story",
+      "id": "story-money-finance:5",
+      "title": "货币、财政与现代金融帝国 (6/9)",
+      "file": "story/story-money-finance/step-5.mp3",
+      "script": "公元 1694 年，英格兰银行成立与现代公共国债货币革命。光荣革命后 1694 年英格兰银行成立，议会信用背书的长期国债把英国海军军费利率压到对手的一半以下，造就百年海上霸权底座。"
+    },
+    {
+      "key": "story:story-money-finance:6",
+      "kind": "story",
+      "id": "story-money-finance:6",
+      "title": "货币、财政与现代金融帝国 (7/9)",
+      "file": "story/story-money-finance/step-6.mp3",
+      "script": "公元 1944 年，布雷顿森林体系与现代国际金融秩序。二战尾声美英确立以美元挂钩黄金、各国货币挂钩美元的布雷顿森林秩序与 IMF/世界银行，战后贸易黄金三十年由此启航。"
+    },
+    {
+      "key": "story:story-money-finance:7",
+      "kind": "story",
+      "id": "story-money-finance:7",
+      "title": "货币、财政与现代金融帝国 (8/9)",
+      "file": "story/story-money-finance/step-7.mp3",
+      "script": "公元 1971 年，尼克松冲击：脱离黄金的纯信用浮动货币时代。1971 年美国宣布美元与黄金脱钩，尼克松冲击宣告人类全面进入纯主权信用本位与浮动汇率时代，全球金融体量指数级膨胀。"
+    },
+    {
+      "key": "story:story-money-finance:8",
+      "kind": "story",
+      "id": "story-money-finance:8",
+      "title": "货币、财政与现代金融帝国 (9/9)",
+      "file": "story/story-money-finance/step-8.mp3",
+      "script": "公元 2009 年 1 月，比特币创世与去中心化分布式账本金融实验。2008 年次贷危机动摇大众对华尔街与央行救市信任后，2009 年比特币创世区块上线，开启区块链与数字央行货币（CBDC）的跨界实验。"
+    },
+    {
+      "key": "story:story-ecology-plagues:0",
+      "kind": "story",
+      "id": "story-ecology-plagues:0",
+      "title": "瘟疫、气候与生态冲击改写历史 (1/6)",
+      "file": "story/story-ecology-plagues/step-0.mp3",
+      "script": "约公元前 1200–1150 年，东地中海青铜时代崩溃与铁器普及。公元前 1200 年前后持续干冷干旱叠加地震与海上民族迁徙，几年内接连震碎迈锡尼与赫梯两大青铜王权，迫使西亚地中海步入铁器时代。"
+    },
+    {
+      "key": "story:story-ecology-plagues:1",
+      "kind": "story",
+      "id": "story-ecology-plagues:1",
+      "title": "瘟疫、气候与生态冲击改写历史 (2/6)",
+      "file": "story/story-ecology-plagues/step-1.mp3",
+      "script": "公元 250–900 年，玛雅古典文明高峰与生态衰退之谜。9 世纪中美洲玛雅低地遭遇严重多年干旱加森林过度砍伐与城邦混战，宏伟石灰岩金字塔群短短数代内遭热带雨林重新吞没。"
+    },
+    {
+      "key": "story:story-ecology-plagues:2",
+      "kind": "story",
+      "id": "story-ecology-plagues:2",
+      "title": "瘟疫、气候与生态冲击改写历史 (3/6)",
+      "file": "story/story-ecology-plagues/step-2.mp3",
+      "script": "公元 1347–1353 年，黑死病席卷欧亚与西欧劳动价值重塑。1347 年鼠疫杆菌顺着商路船队横扫欧亚：西欧失去近半人口却意外推高人工工资、瓦解农奴依附关系，逼出节水节能的技术与金融升级。"
+    },
+    {
+      "key": "story:story-ecology-plagues:3",
+      "kind": "story",
+      "id": "story-ecology-plagues:3",
+      "title": "瘟疫、气候与生态冲击改写历史 (4/6)",
+      "file": "story/story-ecology-plagues/step-3.mp3",
+      "script": "公元 1492 年，哥伦布抵达美洲与哥伦布大交换。1492 年后的哥伦布生物大交换一边用旧大陆天花麻疹令美洲原住民锐减八九成，一边用玉米马铃薯甘薯突破欧亚山地承载上限。"
+    },
+    {
+      "key": "story:story-ecology-plagues:4",
+      "kind": "story",
+      "id": "story-ecology-plagues:4",
+      "title": "瘟疫、气候与生态冲击改写历史 (5/6)",
+      "file": "story/story-ecology-plagues/step-4.mp3",
+      "script": "公元 1884–1885 年，柏林会议与列强直尺瓜分非洲大陆。19 世纪后期直到廉价提纯抗疟疾药物奎宁与蒸汽内河船结合，欧洲殖民者才终于穿透曾被称为白人坟墓的非洲热带内陆疟疾带。"
+    },
+    {
+      "key": "story:story-ecology-plagues:5",
+      "kind": "story",
+      "id": "story-ecology-plagues:5",
+      "title": "瘟疫、气候与生态冲击改写历史 (6/6)",
+      "file": "story/story-ecology-plagues/step-5.mp3",
+      "script": "公元 2020–2022 年，新冠大流行：全球供应链与公共治理大考。2020 年新冠大流行瞬间冻结跨国航空与线下聚会，加速远程协作与供应链近岸回流，再次提醒人类全球化依然共享脆弱的生物圈。"
+    },
+    {
+      "key": "story:story-law-governance:0",
+      "kind": "story",
+      "id": "story-law-governance:0",
+      "title": "法典、宪政与国家治理形态演进 (1/11)",
+      "file": "story/story-law-governance/step-0.mp3",
+      "script": "约公元前 1750 年，《汉谟拉比法典》与巴比伦王权。公元前 1750 年汉谟拉比把 282 条成文法律刻在巴比伦神庙黑色石柱上，尽管依等级量刑不平等，却是公开成文法高于私刑的关键一步。"
+    },
+    {
+      "key": "story:story-law-governance:1",
+      "kind": "story",
+      "id": "story-law-governance:1",
+      "title": "法典、宪政与国家治理形态演进 (2/11)",
+      "file": "story/story-law-governance/step-1.mp3",
+      "script": "公元前 5 世纪，雅典直接民主与古典希腊理性的高峰。雅典在公元前 5 世纪尝试抽签轮流执政、公民大会投票与陶片放逐法，在城邦尺度上把主权在民与公职问责推向极高纯度。"
+    },
+    {
+      "key": "story:story-law-governance:2",
+      "kind": "story",
+      "id": "story-law-governance:2",
+      "title": "法典、宪政与国家治理形态演进 (3/11)",
+      "file": "story/story-law-governance/step-2.mp3",
+      "script": "公元前 221 年，秦朝统一六国与郡县官僚大一统。秦始皇将法家非世袭流官 + 郡县直辖推广至千万级疆域，大一统官僚文书治理从此成为东亚国家形态的主脊梁。"
+    },
+    {
+      "key": "story:story-law-governance:3",
+      "kind": "story",
+      "id": "story-law-governance:3",
+      "title": "法典、宪政与国家治理形态演进 (4/11)",
+      "file": "story/story-law-governance/step-3.mp3",
+      "script": "公元 527–565 年，《查士丁尼法典》与东罗马再征服的代价。6 世纪查士丁尼系统编纂《民法大全》，留存下清晰精密的物权、契约与法人概念，千年后仍深刻支撑着欧陆民法体系。"
+    },
+    {
+      "key": "story:story-law-governance:4",
+      "kind": "story",
+      "id": "story-law-governance:4",
+      "title": "法典、宪政与国家治理形态演进 (5/11)",
+      "file": "story/story-law-governance/step-4.mp3",
+      "script": "公元 606 年（隋设进士科，唐宋完善），科举制确立：东亚文官选拔制度化。隋唐科举制度用公平笔试打破贵族门阀对仕途的世袭垄断，搭建起寒门凭学识晋升治理阶层的文官选拔通道。"
+    },
+    {
+      "key": "story:story-law-governance:5",
+      "kind": "story",
+      "id": "story-law-governance:5",
+      "title": "法典、宪政与国家治理形态演进 (6/11)",
+      "file": "story/story-law-governance/step-5.mp3",
+      "script": "公元 1215 年，英国《大宪章》与王权受法约束。1215 年英国《大宪章》迫使国王书面承认征税需经贵族议事同意、国王亦在法律之下，埋下日后议会与法治宪政的种子。"
+    },
+    {
+      "key": "story:story-law-governance:6",
+      "kind": "story",
+      "id": "story-law-governance:6",
+      "title": "法典、宪政与国家治理形态演进 (7/11)",
+      "file": "story/story-law-governance/step-6.mp3",
+      "script": "公元 1648 年，《威斯特伐利亚和约》与现代主权国家体系。1648 年《威斯特伐利亚和约》结束三十年宗教混战，确立了以主权领土平等与互不干涉内政为核心的现代国际关系原则。"
+    },
+    {
+      "key": "story:story-law-governance:7",
+      "kind": "story",
+      "id": "story-law-governance:7",
+      "title": "法典、宪政与国家治理形态演进 (8/11)",
+      "file": "story/story-law-governance/step-7.mp3",
+      "script": "公元 1688–1694 年，英国光荣革命、议会主权与金融革命。1688 年《权利法案》将最高征税权与立法权稳稳锚定在英国议会手中，实现罕见的不动武流血却锁定分权制度转型。"
+    },
+    {
+      "key": "story:story-law-governance:8",
+      "kind": "story",
+      "id": "story-law-governance:8",
+      "title": "法典、宪政与国家治理形态演进 (9/11)",
+      "file": "story/story-law-governance/step-8.mp3",
+      "script": "公元 1787 年，《美利坚合众国宪法》制定与联邦制衡首例。1787 年费城制宪会议首创大型共和国联邦制 + 三权分立制衡成文宪法，解决了既要统一大市场又要防止极权的两难。"
+    },
+    {
+      "key": "story:story-law-governance:9",
+      "kind": "story",
+      "id": "story-law-governance:9",
+      "title": "法典、宪政与国家治理形态演进 (10/11)",
+      "file": "story/story-law-governance/step-9.mp3",
+      "script": "公元 1804 年，《拿破仑法典》颁行：近代大陆民法与所有权定型。1804 年《拿破仑法典》把法律面前人人平等、世俗婚姻与私有产权不可侵犯写进清晰法条，随法国影响扩散至欧洲与拉美。"
+    },
+    {
+      "key": "story:story-law-governance:10",
+      "kind": "story",
+      "id": "story-law-governance:10",
+      "title": "法典、宪政与国家治理形态演进 (11/11)",
+      "file": "story/story-law-governance/step-10.mp3",
+      "script": "公元 1945 年，《联合国宪章》、纽伦堡审判与核纪元。历经两次世界大战浩劫，1945 年《联合国宪章》与纽伦堡国际审判首次试图以超国家机构和国际法约束主权国家的侵略暴力。"
+    }
+  ]
+}

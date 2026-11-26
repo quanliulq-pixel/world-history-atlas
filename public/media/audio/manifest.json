@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-25T13:59:25.599101Z",
+  "generatedAt": "2026-11-26T08:57:52.290957Z",
   "engine": "edge-tts:zh-CN-YunjianNeural",
   "items": {
     "ev:e1-uruk": {
@@ -6684,6 +6684,1622 @@
           "durationSec": 12.19
         }
       ]
+    },
+    "ticker:sp:sp-1-2": {
+      "kind": "ticker",
+      "id": "sp-1-2",
+      "script": "青铜帝国与礼制，汉谟拉比法典、二里头至殷商青铜礼制、赫梯—埃及卡迭石外交均势。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/subperiod/sp-1-2.mp3",
+      "durationSec": 8.14
+    },
+    "ticker:sp:sp-1-3": {
+      "kind": "ticker",
+      "id": "sp-1-3",
+      "script": "青铜崩溃与周制，东地中海青铜体系崩溃与铁器外溢、腓尼基字母、西周分封与宗法。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/subperiod/sp-1-3.mp3",
+      "durationSec": 8.26
+    },
+    "ticker:sp:sp-2-1": {
+      "kind": "ticker",
+      "id": "sp-2-1",
+      "script": "轴心思想大觉醒，希腊城邦民主、波斯一统近东、孔子百家争鸣与释迦牟尼沙门思潮同步绽放。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/subperiod/sp-2-1.mp3",
+      "durationSec": 8.76
+    },
+    "ticker:sp:sp-1-1": {
+      "kind": "ticker",
+      "id": "sp-1-1",
+      "script": "城邦与文字起源，苏美尔楔形文字、古埃及统一与金字塔工程、印度河谷都市成形。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/subperiod/sp-1-1.mp3",
+      "durationSec": 7.87
+    },
+    "ticker:era:era-2": {
+      "kind": "ticker",
+      "id": "era-2",
+      "script": "进入轴心时代与古典帝国，公元前 800 年至公元 220 年。铁器普及加速吞并战，欧亚大陆两端诞生秦汉郡县官僚帝国与罗马地中海霸权。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/era/era-2.mp3",
+      "durationSec": 13.27
+    },
+    "ticker:era:era-1": {
+      "kind": "ticker",
+      "id": "era-1",
+      "script": "进入大河文明与青铜时代，公元前 3000 年至公元前 800 年。两河、尼罗河、印度河与黄河流域率先跨过城市与国家门槛，王权与神权合一的早期领土国家兴起。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/era/era-1.mp3",
+      "durationSec": 14.86
+    },
+    "ticker:sp:sp-3-3": {
+      "kind": "ticker",
+      "id": "sp-3-3",
+      "script": "封建化与多中心，查理曼奠基西欧采邑制度、维京罗斯河道贸易网与北宋文官体制成型。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/subperiod/sp-3-3.mp3",
+      "durationSec": 7.97
+    },
+    "ticker:sp:sp-2-3": {
+      "kind": "ticker",
+      "id": "sp-2-3",
+      "script": "秦汉与罗马双雄，张骞凿空打通丝路、奥古斯都开启罗马和平、基督教兴起与蔡伦改良造纸术。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/subperiod/sp-2-3.mp3",
+      "durationSec": 8.81
+    },
+    "ticker:sp:sp-3-2": {
+      "kind": "ticker",
+      "id": "sp-3-2",
+      "script": "盛唐与伊斯兰兴起，隋唐大运河与科举确立、伊斯兰帝国横跨亚非欧、怛罗斯促成造纸术西传。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/subperiod/sp-3-2.mp3",
+      "durationSec": 8.69
+    },
+    "ticker:sp:sp-3-1": {
+      "kind": "ticker",
+      "id": "sp-3-1",
+      "script": "帝国裂变与迁徙，欧亚大迁徙、西罗马落幕、东亚门阀南北融合与《查士丁尼法典》汇编。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/subperiod/sp-3-1.mp3",
+      "durationSec": 7.97
+    },
+    "ticker:era:era-3": {
+      "kind": "ticker",
+      "id": "era-3",
+      "script": "进入宗教传播与欧亚重构，公元 220 年至公元 1000 年。古典帝国受游牧南下与瘟疫冲击而分裂重组：西欧进入封建碎片化，东罗马坚守千载。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/era/era-3.mp3",
+      "durationSec": 13.13
+    },
+    "ticker:sp:sp-2-2": {
+      "kind": "ticker",
+      "id": "sp-2-2",
+      "script": "变法兼并与希腊化，商鞅耕战变法、亚历山大东征、阿育王护持佛教普世传播与秦灭六国。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/subperiod/sp-2-2.mp3",
+      "durationSec": 8.45
+    },
+    "ticker:era:era-4": {
+      "kind": "ticker",
+      "id": "era-4",
+      "script": "进入宋元贸易与草原帝国，公元 1000 年至公元 1453 年。蒙古征服打造人类史上最大连续陆地帝国并重构欧亚政区，西欧王权借城市复兴崛起。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/era/era-4.mp3",
+      "durationSec": 13.34
+    },
+    "ticker:era:era-5": {
+      "kind": "ticker",
+      "id": "era-5",
+      "script": "进入大航海与白银全球化，公元 1453 年至公元 1750 年。欧洲借远洋船炮建立跨洋帝国，威斯特伐利亚体系确立主权国家法则。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/era/era-5.mp3",
+      "durationSec": 12.38
+    },
+    "ticker:sp:sp-4-2": {
+      "kind": "ticker",
+      "id": "sp-4-2",
+      "script": "蒙古欧亚大贯通，成吉思汗至忽必烈驿站畅行欧亚、英国《大宪章》、黑死病冲击西欧劳役。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/subperiod/sp-4-2.mp3",
+      "durationSec": 8.45
+    },
+    "ticker:sp:sp-4-1": {
+      "kind": "ticker",
+      "id": "sp-4-1",
+      "script": "宋商潮与十字军，北宋纸币交子与海外市舶、靖康经济南移、十字军东征与欧洲大学兴起。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/subperiod/sp-4-1.mp3",
+      "durationSec": 8.59
+    },
+    "ticker:sp:sp-5-1": {
+      "kind": "ticker",
+      "id": "sp-5-1",
+      "script": "远洋地理大发现，哥伦布大交换、达·伽马直航印度、路德宗教改革与麦哲伦首次环球航行。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/subperiod/sp-5-1.mp3",
+      "durationSec": 7.92
+    },
+    "ticker:sp:sp-4-3": {
+      "kind": "ticker",
+      "id": "sp-4-3",
+      "script": "明海权与文艺复兴，佛罗伦萨复式记账银行业、郑和下西洋、古登堡活字与奥斯曼攻陷君士坦丁堡。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/subperiod/sp-4-3.mp3",
+      "durationSec": 9.24
+    },
+    "ticker:sp:sp-5-2": {
+      "kind": "ticker",
+      "id": "sp-5-2",
+      "script": "白银环流与改革，哥白尼日心启蒙、波托西银山、大帆船银链汇入张居正一条鞭法及 VOC 成立。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/subperiod/sp-5-2.mp3",
+      "durationSec": 8.35
+    },
+    "ticker:sp:sp-5-3": {
+      "kind": "ticker",
+      "id": "sp-5-3",
+      "script": "主权国家与启蒙，《威斯特伐利亚和约》、光荣革命与英格兰银行信用体制、欧洲启蒙思想。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/subperiod/sp-5-3.mp3",
+      "durationSec": 7.75
+    },
+    "ticker:sp:sp-6-1": {
+      "kind": "ticker",
+      "id": "sp-6-1",
+      "script": "蒸汽与双元革命，瓦特蒸汽机、美法革命立宪、《国富论》《拿破仑法典》与维也纳均势。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/subperiod/sp-6-1.mp3",
+      "durationSec": 7.8
+    },
+    "ticker:sp:sp-6-2": {
+      "kind": "ticker",
+      "id": "sp-6-2",
+      "script": "铁路殖民与大分流，拉美独立、鸦片战争与晚清震荡、《共产党宣言》、达尔文进化论与美国内战。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/subperiod/sp-6-2.mp3",
+      "durationSec": 8.98
+    },
+    "ticker:sp:sp-6-3": {
+      "kind": "ticker",
+      "id": "sp-6-3",
+      "script": "电气时代与争霸，德意志统一、明治维新工业化、电气流水线、柏林瓜分非洲与帝国同盟积聚。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/subperiod/sp-6-3.mp3",
+      "durationSec": 8.59
+    },
+    "ticker:era:era-6": {
+      "kind": "ticker",
+      "id": "era-6",
+      "script": "进入工业革命与殖民帝国，公元 1750 年至公元 1914 年。美法革命普及民族主权与宪政浪潮，英国凭制海权与工业霸权构建日不落帝国。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/era/era-6.mp3",
+      "durationSec": 13.37
+    },
+    "ticker:sp:sp-7-2": {
+      "kind": "ticker",
+      "id": "sp-7-2",
+      "script": "冷战两极与独立潮，联合国与布雷顿森林、《罗马条约》、印巴非殖民化、新中国诞生与阿帕网雏形。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/subperiod/sp-7-2.mp3",
+      "durationSec": 8.83
+    },
+    "ticker:sp:sp-7-3": {
+      "kind": "ticker",
+      "id": "sp-7-3",
+      "script": "滞胀、改革与剧变，石油危机与尼克松冲击、1978中国改革开放、广场协议与柏林墙倒塌苏联解体。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/subperiod/sp-7-3.mp3",
+      "durationSec": 9.36
+    },
+    "ticker:sp:sp-7-1": {
+      "kind": "ticker",
+      "id": "sp-7-1",
+      "script": "大战、革命与萧条，一战四帝国解体、十月革命、1929大萧条、凯恩斯新政与二战反法西斯胜利。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/subperiod/sp-7-1.mp3",
+      "durationSec": 9.79
+    },
+    "ticker:era:era-8": {
+      "kind": "ticker",
+      "id": "era-8",
+      "script": "进入全球化与多极数字时代，公元 1991 年至公元 2025 年。冷战结束后的单极时刻逐步过渡为中美欧印等多极博弈与供应链重构。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/era/era-8.mp3",
+      "durationSec": 12.6
+    },
+    "ticker:era:era-7": {
+      "kind": "ticker",
+      "id": "era-7",
+      "script": "进入两次大战与冷战格局，公元 1914 年至公元 1991 年。两次世界大战终结欧洲数百年全球霸权，美苏两极冷战重塑地球阵营。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/era/era-7.mp3",
+      "durationSec": 12.55
+    },
+    "ticker:sp:sp-8-1": {
+      "kind": "ticker",
+      "id": "sp-8-1",
+      "script": "万维网与入世分工，万维网商用与欧盟诞生、亚洲金融危机、2001中国入世构建全球超级制造业网。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/subperiod/sp-8-1.mp3",
+      "durationSec": 9.36
+    },
+    "ticker:sp:sp-8-2": {
+      "kind": "ticker",
+      "id": "sp-8-2",
+      "script": "移动互联与危机反思，2008金融海啸、比特币实验、移动智能手机普及、《巴黎协定》与供应链调整。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/subperiod/sp-8-2.mp3",
+      "durationSec": 8.88
+    },
+    "ticker:sp:sp-8-3": {
+      "kind": "ticker",
+      "id": "sp-8-3",
+      "script": "AI 算力与多极秩序，新冠疫情压力测试、俄乌地缘重构、生成式 AI 浪潮与全球南方多极化兴起。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/subperiod/sp-8-3.mp3",
+      "durationSec": 8.45
+    },
+    "ticker:ev:e1-narmer": {
+      "kind": "ticker",
+      "id": "e1-narmer",
+      "script": "约公元前 3100–3000 年，古埃及上下埃及统一与早期王权。纳尔迈（美尼斯）统一尼罗河三角洲与河谷，确立集神权与世俗王权于一身的早期统一国家。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e1-narmer.mp3",
+      "durationSec": 14.09
+    },
+    "ticker:ev:e1-uruk": {
+      "kind": "ticker",
+      "id": "e1-uruk",
+      "script": "约公元前 3000 年，苏美尔城邦与楔形文字诞生。泥板账簿催生人类最早成熟文字，神庙经济与城邦国家在两河下游同步成形。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e1-uruk.mp3",
+      "durationSec": 11.54
+    },
+    "ticker:ev:e1-pyramid": {
+      "kind": "ticker",
+      "id": "e1-pyramid",
+      "script": "约公元前 2560 年，吉萨金字塔群与古王国官僚动员。胡夫大金字塔展现早期国家惊人的跨季劳动力调度、几何测绘与后勤补给极限。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e1-pyramid.mp3",
+      "durationSec": 12.84
+    },
+    "ticker:ev:e1-akkad": {
+      "kind": "ticker",
+      "id": "e1-akkad",
+      "script": "约公元前 2334 年，阿卡德帝国与史上首个跨城邦帝国。萨尔贡以职业常备军征服苏美尔诸城邦，首次将一城一神一邦整合为跨地域帝国。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e1-akkad.mp3",
+      "durationSec": 13.03
+    },
+    "ticker:ev:e1-bronze-network": {
+      "kind": "ticker",
+      "id": "e1-bronze-network",
+      "script": "约公元前 2200–1600 年，青铜时代跨欧亚锡铜贸易网。铜与锡在地理上极度错位，迫使青铜器必须依赖跨越数千公里的商队网才能铸造。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e1-bronze-network.mp3",
+      "durationSec": 12.62
+    },
+    "ticker:ev:e1-indus": {
+      "kind": "ticker",
+      "id": "e1-indus",
+      "script": "约公元前 2600–1900 年，印度河谷文明与棋盘城市规划。哈拉帕与摩亨佐达罗以统一砖规、暗渠排水与标准化砝码闻名，成为面积最广的早期青铜文明。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e1-indus.mp3",
+      "durationSec": 14.45
+    },
+    "ticker:ev:e1-ur-iii": {
+      "kind": "ticker",
+      "id": "e1-ur-iii",
+      "script": "约公元前 2100 年，乌尔第三王朝“苏美尔复兴”与《乌尔纳姆法典》。最早留下完整泥板行政档案与史上首部已知成文法典《乌尔纳姆法典》的中央集权官僚实验。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e1-ur-iii.mp3",
+      "durationSec": 13.56
+    },
+    "ticker:ev:e1-erlitou": {
+      "kind": "ticker",
+      "id": "e1-erlitou",
+      "script": "约公元前 1900–1500 年，二里头文化与中原早期广域王权。中轴线宫殿建筑群与青铜爵鼎铸造现身伊洛河畔，标志东亚最早进入成熟广域王权国家阶段。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e1-erlitou.mp3",
+      "durationSec": 14.69
+    },
+    "ticker:ev:e1-hammurabi": {
+      "kind": "ticker",
+      "id": "e1-hammurabi",
+      "script": "约公元前 1750 年，《汉谟拉比法典》与巴比伦王权。将习惯法、商业契约与等级刑罚刻于玄武岩柱公开颁布，奠定成文法与国家司法主权。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e1-hammurabi.mp3",
+      "durationSec": 12.77
+    },
+    "ticker:ev:e1-minoan": {
+      "kind": "ticker",
+      "id": "e1-minoan",
+      "script": "约公元前 1900–1450 年，克里特米诺斯海上宫殿贸易文明。欧洲最早的高等文明依托海运建立无城墙宫殿群，担任埃及、西亚与爱琴海间的海上中间商。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e1-minoan.mp3",
+      "durationSec": 14.33
+    },
+    "ticker:ev:e1-olmec": {
+      "kind": "ticker",
+      "id": "e1-olmec",
+      "script": "约公元前 1200–400 年，奥尔梅克文明：中美洲母体文化。在无青铜与大型驮畜条件下，依托玉米驯化构建出中美洲最早的宗教中心、历法与球赛传统。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e1-olmec.mp3",
+      "durationSec": 14.45
+    },
+    "ticker:ev:e1-hittite-iron": {
+      "kind": "ticker",
+      "id": "e1-hittite-iron",
+      "script": "约公元前 1600 年，赫梯帝国兴起与早期冶铁战车强权。盘踞安纳托利亚铁矿高地并与双轮轻战车结合，率先掌握早期冶铁技艺撼动两河与叙利亚均势。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e1-hittite-iron.mp3",
+      "durationSec": 13.9
+    },
+    "ticker:ev:e1-shang-oracle": {
+      "kind": "ticker",
+      "id": "e1-shang-oracle",
+      "script": "约公元前 1300–1046 年，商朝甲骨文与青铜礼制秩序。东亚最早的成熟体系文字与宏伟青铜铸造业在殷墟定型，汉字文化自此拥有连续可考的信史起点。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e1-shang-oracle.mp3",
+      "durationSec": 14.64
+    },
+    "ticker:ev:e1-bronze-collapse": {
+      "kind": "ticker",
+      "id": "e1-bronze-collapse",
+      "script": "约公元前 1200–1150 年，东地中海“青铜时代崩溃”与铁器普及。半世纪内迈锡尼、赫梯与黎凡特诸宫殿城邦接连倾覆，全球化锡铜商网断裂，迫使铁器登上历史舞台。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e1-bronze-collapse.mp3",
+      "durationSec": 15.07
+    },
+    "ticker:ev:e1-kadesh": {
+      "kind": "ticker",
+      "id": "e1-kadesh",
+      "script": "公元前 1274 年 / 前 1259 年和约，卡迭石之战与人类首份国际和约。埃及新王国与赫梯帝国在叙利亚激战后缔结成文互不侵犯与同盟和约，标志早期多极外交成熟。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e1-kadesh.mp3",
+      "durationSec": 14.66
+    },
+    "ticker:ev:e1-zhou-mandate": {
+      "kind": "ticker",
+      "id": "e1-zhou-mandate",
+      "script": "公元前 1046 年，西周分封制、宗法制与“天命”伦理。周代商后，以血缘宗法结合武装殖民（分封）统治广袤疆域，并提出统治者敬德保民方可受天命的政治哲学。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e1-zhou-mandate.mp3",
+      "durationSec": 15.53
+    },
+    "ticker:ev:e1-phoenician": {
+      "kind": "ticker",
+      "id": "e1-phoenician",
+      "script": "约公元前 1050–800 年，腓尼基字母与地中海商业殖民网。仅 22 个辅音字母的拼音体系极大降低了识字门槛，随地中海紫色染料贸易点亮整个环地中海商站。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e1-phoenician.mp3",
+      "durationSec": 14.45
+    },
+    "ticker:ev:e1-chavin": {
+      "kind": "ticker",
+      "id": "e1-chavin",
+      "script": "约公元前 900–200 年，安第斯查文文化与垂直生态交换。整合海岸渔业、高山马铃薯、羊驼放牧与亚马逊草药，在无大平原的安第斯山建立跨海拔泛区神庙网络。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e1-chavin.mp3",
+      "durationSec": 14.62
+    },
+    "ticker:ev:e1-kush": {
+      "kind": "ticker",
+      "id": "e1-kush",
+      "script": "约公元前 850–350 年，努比亚库施王国崛起与尼罗河铁冶。曾经的埃及附庸南下北伐成为埃及第 25 王朝（黑人法老），后续迁都麦罗埃成为非洲最早的钢铁中心之一。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e1-kush.mp3",
+      "durationSec": 15.34
+    },
+    "ticker:ev:e1-upani-vedic": {
+      "kind": "ticker",
+      "id": "e1-upani-vedic",
+      "script": "约公元前 1000–600 年，后期吠陀时代与种姓制度固化。雅利安人群东进恒河平原开启铁器农耕，婆罗门祭祀文献与四大瓦尔纳社会分层在南亚扎根。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e1-upani-vedic.mp3",
+      "durationSec": 13.97
+    },
+    "ticker:ev:e1-spring-autumn-iron": {
+      "kind": "ticker",
+      "id": "e1-spring-autumn-iron",
+      "script": "公元前 770 年，平王东迁、春秋诸侯争霸与铁器牛耕前夜。周王室失控关中后东迁洛邑，井田礼法松动叠加生铁冶铸兴起，启动东亚五百年大转型。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e1-spring-autumn-iron.mp3",
+      "durationSec": 14.06
+    },
+    "ticker:ev:e2-assyria": {
+      "kind": "ticker",
+      "id": "e2-assyria",
+      "script": "公元前 911–612 年，新亚述帝国与跨区铁血官僚机器。率先组建大型铁制兵器常备军、攻城工程兵与帝国驿道网，首创跨种族大帝国省区治理体系。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e2-assyria.mp3",
+      "durationSec": 14.74
+    },
+    "ticker:ev:e2-coins-lydia": {
+      "kind": "ticker",
+      "id": "e2-coins-lydia",
+      "script": "约公元前 620–550 年，吕底亚标准铸币与零售交换革命。人类首次由国家盖印担保固定成色与重量，将贵金属块转为一数即知的标准化铸币。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e2-coins-lydia.mp3",
+      "durationSec": 13.8
+    },
+    "ticker:ev:e2-cyrus-persia": {
+      "kind": "ticker",
+      "id": "e2-cyrus-persia",
+      "script": "公元前 550–330 年，阿契美尼德波斯帝国与包容行省制。居鲁士与大流士一世构建跨越印度河、两河、埃及至爱琴海的首个三洲大帝国，树立宗教宽容治理典范。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e2-cyrus-persia.mp3",
+      "durationSec": 15.26
+    },
+    "ticker:ev:e2-confucius": {
+      "kind": "ticker",
+      "id": "e2-confucius",
+      "script": "公元前 6–前 3 世纪，孔子兴私学与东亚“轴心时代”百家争鸣。礼崩乐坏下士阶层崛起，儒墨道法各派围绕秩序如何重建、君民何以安顿展开东亚思想大爆发。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e2-confucius.mp3",
+      "durationSec": 14.35
+    },
+    "ticker:ev:e2-greek-polis": {
+      "kind": "ticker",
+      "id": "e2-greek-polis",
+      "script": "约公元前 8 世纪中叶，希腊城邦崛起与重装步兵政治。山海阻隔与铁制武器平民化，造就数以百计小国寡民的公民自治城邦与地中海海外殖民浪潮。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e2-greek-polis.mp3",
+      "durationSec": 13.13
+    },
+    "ticker:ev:e2-buddha": {
+      "kind": "ticker",
+      "id": "e2-buddha",
+      "script": "约公元前 6–前 5 世纪，释迦牟尼创教与南亚“沙门思潮”。乔达摩·悉达多直指众生皆苦与缘起无我，以否定血统种姓特权和繁琐血祭的普世救赎引发宗教革命。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e2-buddha.mp3",
+      "durationSec": 14.71
+    },
+    "ticker:ev:e2-greco-persian": {
+      "kind": "ticker",
+      "id": "e2-greco-persian",
+      "script": "公元前 490—前 449 年，希波战争：马拉松—萨拉米斯捍卫地中海海权。希腊城邦重装步兵与雅典三列桨舰队击退波斯大军，守住城邦自治路线并催生古典雅典黄金盛世。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e2-greco-persian.mp3",
+      "durationSec": 15.96
+    },
+    "ticker:ev:e2-athens-democracy": {
+      "kind": "ticker",
+      "id": "e2-athens-democracy",
+      "script": "公元前 5 世纪，雅典直接民主与古典希腊理性的高峰。雅典建立成年男性公民直接参政、抽签轮任与陪审法庭制度，同时在哲学、史学与戏剧领域大放异彩。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e2-athens-democracy.mp3",
+      "durationSec": 14.09
+    },
+    "ticker:ev:e2-shangyang": {
+      "kind": "ticker",
+      "id": "e2-shangyang",
+      "script": "公元前 356–前 338 年，商鞅变法与秦国法家“耕战”国家机器。彻底铲除贵族世卿世禄与井田制，以军功爵制+郡县户籍+统一度量衡将整个社会改造为高效战争—农业引擎。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e2-shangyang.mp3",
+      "durationSec": 16.42
+    },
+    "ticker:ev:e2-punic-wars": {
+      "kind": "ticker",
+      "id": "e2-punic-wars",
+      "script": "公元前 264–前 146 年，布匿战争与罗马征服地中海。罗马与迦太基历时百余年三度生死博弈，陆权农耕公民兵团最终战胜海上商业帝国，确立地中海霸权。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e2-punic-wars.mp3",
+      "durationSec": 15.26
+    },
+    "ticker:ev:e2-alexander": {
+      "kind": "ticker",
+      "id": "e2-alexander",
+      "script": "公元前 334–前 323 年，亚历山大东征与希腊化跨文明圈。十一年征服横扫波斯帝国直抵印度河，虽英年早逝帝国三分，却开启延续三百年的希腊化世界。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e2-alexander.mp3",
+      "durationSec": 14.28
+    },
+    "ticker:ev:e2-qin-unification": {
+      "kind": "ticker",
+      "id": "e2-qin-unification",
+      "script": "公元前 221 年，秦朝统一六国与郡县官僚大一统。嬴政终结五百年分裂战乱，彻底废除分封制推行全国郡县，书同文、车同轨、度同制奠定中华国家底层架构。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e2-qin-unification.mp3",
+      "durationSec": 15.29
+    },
+    "ticker:ev:e2-han-wenjing": {
+      "kind": "ticker",
+      "id": "e2-han-wenjing",
+      "script": "公元前 202—前 141 年，西汉建立与“文景之治”轻徭薄赋休养。承袭秦郡县骨架而废苛法减税至三十税一，以六十余年无为休养攒出盛汉物质与人口底座。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e2-han-wenjing.mp3",
+      "durationSec": 14.64
+    },
+    "ticker:ev:e2-zhang-qian": {
+      "kind": "ticker",
+      "id": "e2-zhang-qian",
+      "script": "公元前 138 年 / 前 119 年，张骞凿空西域与陆上丝绸之路开辟。原本旨在联合大月氏夹击匈奴的外交军事使命，意外在政治上设置西域都护，在经济上打通贯通欧亚的丝绸之路。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e2-zhang-qian.mp3",
+      "durationSec": 16.22
+    },
+    "ticker:ev:e2-han-salt-iron": {
+      "kind": "ticker",
+      "id": "e2-han-salt-iron",
+      "script": "公元前 119 年（前后系列改革），汉武帝盐铁专卖、独尊儒术与平准均输。为支撑长期对匈奴战争与边疆开拓，汉廷推行国家财政垄断，同时将儒家思想确立为帝国意识形态正统。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e2-han-salt-iron.mp3",
+      "durationSec": 16.66
+    },
+    "ticker:ev:e2-caesar-rubicon": {
+      "kind": "ticker",
+      "id": "e2-caesar-rubicon",
+      "script": "公元前 49—前 44 年，凯撒渡卢比孔河与罗马共和国制度落幕。征服高卢的军事统帅凯撒打破元老院平衡成为终身独裁官，宣告城邦共和政制无法再驾驭地中海大帝国。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e2-caesar-rubicon.mp3",
+      "durationSec": 15.38
+    },
+    "ticker:ev:e2-ashoka": {
+      "kind": "ticker",
+      "id": "e2-ashoka",
+      "script": "公元前 268–前 232 年，孔雀帝国阿育王与佛教普世化。统一几乎整个印度次大陆后因羯陵伽惨战顿悟以法（达摩）治国，动用帝国资源将佛教推向亚洲各地。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e2-ashoka.mp3",
+      "durationSec": 15.43
+    },
+    "ticker:ev:e2-christianity": {
+      "kind": "ticker",
+      "id": "e2-christianity",
+      "script": "公元 1 世纪初，基督教兴起与跨阶级普世信仰构建。脱胎于犹太教，经保罗改造为面向非犹太外邦人的普世救赎宗教，沿罗马商道与都市网络深入社会各阶层。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e2-christianity.mp3",
+      "durationSec": 13.92
+    },
+    "ticker:ev:e2-roman-empire": {
+      "kind": "ticker",
+      "id": "e2-roman-empire",
+      "script": "公元前 27 年，奥古斯都元首制与“罗马和平”（Pax Romana）。屋大维披着共和外衣集军政财政大权于一身，开启地中海世界长达两百年的贸易繁盛与法制一体期。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e2-roman-empire.mp3",
+      "durationSec": 13.78
+    },
+    "ticker:ev:e2-kushan": {
+      "kind": "ticker",
+      "id": "e2-kushan",
+      "script": "公元 1–3 世纪，贵霜帝国：丝路十字路口与犍陀罗艺术。大月氏南下所建的游牧—绿洲—恒河帝国，充当汉朝、波斯、罗马与印度四大文明转口枢纽。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e2-kushan.mp3",
+      "durationSec": 14.18
+    },
+    "ticker:ev:e2-teotihuacan": {
+      "kind": "ticker",
+      "id": "e2-teotihuacan",
+      "script": "公元 100–550 年，特奥蒂瓦坎兴盛与中美洲黑曜石网。拥有超十万人口的古代美洲第一大都市，以精密棋盘格民居与绿色黑曜石垄断支配中美洲贸易与政治数百年。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e2-teotihuacan.mp3",
+      "durationSec": 14.66
+    },
+    "ticker:ev:e2-aksum": {
+      "kind": "ticker",
+      "id": "e2-aksum",
+      "script": "公元 1–7 世纪，阿克苏姆王国与红海—印度洋枢纽。被罗马波斯并列为世界四大强权之一的东非王国，扼守红海要冲并以非洲首个独立铸币国和早期基督教国闻名。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e2-aksum.mp3",
+      "durationSec": 14.57
+    },
+    "ticker:ev:e3-yellow-turban": {
+      "kind": "ticker",
+      "id": "e3-yellow-turban",
+      "script": "公元 184—280 年，黄巾起义、三国裂变与门阀士族时代开启。东汉末季土地兼并加小冰期饥荒引爆太平道民变，国家权力下移州牧豪强开启四百年分裂兼并。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e3-yellow-turban.mp3",
+      "durationSec": 15.41
+    },
+    "ticker:ev:e3-gupta": {
+      "kind": "ticker",
+      "id": "e3-gupta",
+      "script": "公元 320–550 年，印度笈多王朝“古典黄金时代”与十进制。政治相对分权却迎来印度教美学、梵语文学、那烂陀大学及十进制数字系统的全面爆发。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e3-gupta.mp3",
+      "durationSec": 14.35
+    },
+    "ticker:ev:e3-sasanian": {
+      "kind": "ticker",
+      "id": "e3-sasanian",
+      "script": "公元 224–651 年，萨珊波斯帝国与欧亚丝路中转垄断。推翻帕提亚重建强中央波斯帝国，借地理扼喉在四百年间同时制衡东罗马并与北魏、隋唐维持频繁往来。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e3-sasanian.mp3",
+      "durationSec": 16.13
+    },
+    "ticker:ev:e2-cai-lun": {
+      "kind": "ticker",
+      "id": "e2-cai-lun",
+      "script": "公元 105 年，蔡伦改进造纸术：知识载体革命。利用树皮、麻头、破布与旧渔网大规模廉价造纸，彻底取代笨重竹简与昂贵缣帛、羊皮纸。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e2-cai-lun.mp3",
+      "durationSec": 13.75
+    },
+    "ticker:ev:e3-milan-constantinople": {
+      "kind": "ticker",
+      "id": "e3-milan-constantinople",
+      "script": "公元 313 年 / 330 年，君士坦丁迁都与基督教国教化转型。罗马帝国战略重心东移至扼守欧亚咽喉的新罗马，同时基督教从地下受迫害团体跃升为帝国正统支柱。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e3-milan-constantinople.mp3",
+      "durationSec": 15.79
+    },
+    "ticker:ev:e3-feishui-north-south": {
+      "kind": "ticker",
+      "id": "e3-feishui-north-south",
+      "script": "公元 383 年，淝水之战与东亚南北朝民族文化双轨融合。前秦统一北方图南失败崩溃，保障江南六朝衣冠文脉存续同时触发北方鲜卑深度汉化。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e3-feishui-north-south.mp3",
+      "durationSec": 14.47
+    },
+    "ticker:ev:e3-justinian": {
+      "kind": "ticker",
+      "id": "e3-justinian",
+      "script": "公元 527–565 年，《查士丁尼法典》与东罗马再征服的代价。系统汇编千年罗马法精华留传欧洲后世，同时短暂收复北非与意大利却因战争与瘟疫透支了帝国元气。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e3-justinian.mp3",
+      "durationSec": 15.24
+    },
+    "ticker:ev:e3-equal-field": {
+      "kind": "ticker",
+      "id": "e3-equal-field",
+      "script": "公元 485–7 世纪，北魏至唐均田制与租庸调—府兵制。鲜卑拓跋政权利用战后大量无主荒地创设国家授田体系，将土地、赋役与兵役紧扣为一，助推中国重归统一。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e3-equal-field.mp3",
+      "durationSec": 15.89
+    },
+    "ticker:ev:e3-gupta-collapse-hun": {
+      "kind": "ticker",
+      "id": "e3-gupta-collapse-hun",
+      "script": "公元 476 年（4–5 世纪浪潮），欧亚大迁徙与西罗马帝国终结。匈人西迁引发的多米诺骨牌压垮莱茵河防线，日耳曼诸王国割据西欧，西罗马帝国正式落幕。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e3-gupta-collapse-hun.mp3",
+      "durationSec": 14.66
+    },
+    "ticker:ev:e3-keju": {
+      "kind": "ticker",
+      "id": "e3-keju",
+      "script": "公元 606 年（隋设进士科，唐宋完善），科举制确立：东亚文官选拔制度化。以公开考试文章策论替代九品中正血统门第，打开寒门士子上升通道，创造人类历史上最持久的文官精英选拔制度。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e3-keju.mp3",
+      "durationSec": 17.69
+    },
+    "ticker:ev:e3-sui-grand-canal": {
+      "kind": "ticker",
+      "id": "e3-sui-grand-canal",
+      "script": "公元 605–611 年，隋朝大运河贯通与南北经济融合。开凿纵贯南北两千余公里的人工水网，打通海河、黄河、淮河、长江、钱塘江五大水系。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e3-sui-grand-canal.mp3",
+      "durationSec": 14.45
+    },
+    "ticker:ev:e3-tang-chang-an": {
+      "kind": "ticker",
+      "id": "e3-tang-chang-an",
+      "script": "公元 7–8 世纪，盛唐长安与东亚“律令制”文化圈。当时全球人口最多、最开放的国际都市长安吸引粟特、波斯、日本与新罗人共居。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e3-tang-chang-an.mp3",
+      "durationSec": 12.17
+    },
+    "ticker:ev:e3-abbasid-baghdad": {
+      "kind": "ticker",
+      "id": "e3-abbasid-baghdad",
+      "script": "公元 762–9 世纪，阿拔斯王朝与巴格达“智慧宫”黄金时代。阿拔斯王朝迁都新建环形都城巴格达，吸纳波斯官僚、希腊哲学、印度数学与中国纸张，迎来伊斯兰科学与文化巅峰。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e3-abbasid-baghdad.mp3",
+      "durationSec": 16.1
+    },
+    "ticker:ev:e3-talas": {
+      "kind": "ticker",
+      "id": "e3-talas",
+      "script": "公元 751 年，怛罗斯之战与造纸术西传伊斯兰世界。盛唐安西军与阿拔斯阿拉伯军在中亚短暂交锋，军事格局未改大局，却使中国造纸术借撒马尔罕水磨作坊西传欧亚。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e3-talas.mp3",
+      "durationSec": 15.84
+    },
+    "ticker:ev:e3-liangshui": {
+      "kind": "ticker",
+      "id": "e3-liangshui",
+      "script": "公元 780 年，唐代“两税法”改革：从税人头转向税财产。安史之乱后均田制破产，宰相杨炎推行唯以资产为宗，不以丁身为本的两税法，开启中国税制史重大转折。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e3-liangshui.mp3",
+      "durationSec": 15.53
+    },
+    "ticker:ev:e3-islam-rise": {
+      "kind": "ticker",
+      "id": "e3-islam-rise",
+      "script": "公元 622–750 年，伊斯兰教兴起与阿拉伯帝国横跨三洲。先知穆罕默德以一神信仰统一分裂的阿拉伯部落，随后百余年间建立起西至西班牙、东抵帕米尔的巨型跨洲哈里发。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e3-islam-rise.mp3",
+      "durationSec": 15.82
+    },
+    "ticker:ev:e3-charlemagne": {
+      "kind": "ticker",
+      "id": "e3-charlemagne",
+      "script": "公元 800 年，查理曼加冕与西欧封建采邑制成形。法兰克国王查理大帝短暂整合法德意核心区，教皇为其加冕罗马人皇帝，确立西欧教权与世俗王权共治传统。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e3-charlemagne.mp3",
+      "durationSec": 14.74
+    },
+    "ticker:ev:e3-an-lushan": {
+      "kind": "ticker",
+      "id": "e3-an-lushan",
+      "script": "公元 755—763 年，安史之乱：盛唐帝国藩镇化与经济南迁分水岭。边镇节度使重兵反叛八年重创黄河流域与西域经略，府兵—均田崩塌并倒逼税制与经济重心不可逆转南移。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e3-an-lushan.mp3",
+      "durationSec": 16.8
+    },
+    "ticker:ev:e3-viking-rus": {
+      "kind": "ticker",
+      "id": "e3-viking-rus",
+      "script": "公元 793–1066 年，维京海盗贸易网与基辅罗斯建国。诺斯人凭借吃水极浅的维京长船劫掠西欧海岸、开辟北大西洋至北美。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e3-viking-rus.mp3",
+      "durationSec": 12.36
+    },
+    "ticker:ev:e3-maya-classic": {
+      "kind": "ticker",
+      "id": "e3-maya-classic",
+      "script": "公元 250–900 年，玛雅古典文明高峰与生态衰退之谜。在热带雨林环境独立发展出全美洲唯一成熟文字、精密金星历法及零数位概念，却在 9 世纪陡然废弃大城。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e3-maya-classic.mp3",
+      "durationSec": 15.46
+    },
+    "ticker:ev:e4-northern-song": {
+      "kind": "ticker",
+      "id": "e4-northern-song",
+      "script": "公元 960 年，北宋建立与“崇文抑武”平民文官政体确立。赵匡胤杯酒释兵权终结唐末五代两百年武人割据循环，以大幅扩张糊名科举重塑东亚士大夫共治格局。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e4-northern-song.mp3",
+      "durationSec": 14.74
+    },
+    "ticker:ev:e4-jiaozi": {
+      "kind": "ticker",
+      "id": "e4-jiaozi",
+      "script": "公元 1024 年，北宋“交子”与人类史上首个官方纸币。四川因铁钱沉重与铜荒率先产生民间交子铺，宋廷于 1024 年收归官办并设准备金制度。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e4-jiaozi.mp3",
+      "durationSec": 13.54
+    },
+    "ticker:ev:e4-song-commerce": {
+      "kind": "ticker",
+      "id": "e4-song-commerce",
+      "script": "公元 11–13 世纪，宋代商业革命、市舶司与市民文化。坊市墙倒塌与夜市兴起重构城市生活，经济重心彻底南移，泉州广州以海商巨港连通印度洋与阿拉伯海。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e4-song-commerce.mp3",
+      "durationSec": 15.58
+    },
+    "ticker:ev:e4-jingkang-south": {
+      "kind": "ticker",
+      "id": "e4-jingkang-south",
+      "script": "公元 1127 年，靖康之变、南宋偏安与中国经济重心彻底南移。女真金兵南下掳二帝致北宋溃灭，苏湖熟天下足的江南凭借市舶海贸替代陆路成为东亚财政心脏。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e4-jingkang-south.mp3",
+      "durationSec": 14.98
+    },
+    "ticker:ev:e4-crusades": {
+      "kind": "ticker",
+      "id": "e4-crusades",
+      "script": "公元 1096–1291 年，十字军东征与地中海城邦商业觉醒。西欧封建领主以收复圣地为号召远征东地中海，军事终告失败，却意外打通西欧向东方商贸与学术回流的阀门。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e4-crusades.mp3",
+      "durationSec": 16.25
+    },
+    "ticker:ev:e3-ghana-gold": {
+      "kind": "ticker",
+      "id": "e3-ghana-gold",
+      "script": "公元 8–11 世纪，西非加纳帝国与跨撒哈拉黄金贸易。借助阿拉伯骆驼商队跨过撒哈拉，把南部的冲积黄金卖到地中海换回食盐与马匹，成为西非最早的萨赫勒强权。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e3-ghana-gold.mp3",
+      "durationSec": 14.57
+    },
+    "ticker:ev:e4-angkor": {
+      "kind": "ticker",
+      "id": "e4-angkor",
+      "script": "公元 9–15 世纪（12 世纪巅峰），吴哥帝国水利工程与东南亚印度文化圈。高棉帝国凭借巨型人工水库巴莱精密调度季风雨季洪水，支撑百万人口的史上最大前工业低密度农业城市。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e4-angkor.mp3",
+      "durationSec": 16.46
+    },
+    "ticker:ev:e4-europe-universities": {
+      "kind": "ticker",
+      "id": "e4-europe-universities",
+      "script": "公元 12–13 世纪，欧洲中世纪大学与“自治法人”制度兴起。师生行会获教皇与皇帝双重特许独立法人地位，将古希腊理性、罗马法学与经院辩论制度化。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e4-europe-universities.mp3",
+      "durationSec": 14.52
+    },
+    "ticker:ev:e4-kamakura": {
+      "kind": "ticker",
+      "id": "e4-kamakura",
+      "script": "公元 1185–1192 年，镰仓幕府建立与日本“武家封建制”。源赖朝在京都公卿朝廷之外另建军事幕府政权，开启日本长达七百年的天皇虚位—武士执政封建二元体制。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e4-kamakura.mp3",
+      "durationSec": 15.12
+    },
+    "ticker:ev:e4-magna-carta": {
+      "kind": "ticker",
+      "id": "e4-magna-carta",
+      "script": "公元 1215 年，英国《大宪章》与王权受法约束。连年对法战败加税激怒英国贵族与城市教会，联合逼迫国王约翰签署文件，首次以成文法宣告国王亦在法律之下。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e4-magna-carta.mp3",
+      "durationSec": 14.81
+    },
+    "ticker:ev:e4-mongol-empire": {
+      "kind": "ticker",
+      "id": "e4-mongol-empire",
+      "script": "公元 1206–1368 年，蒙古帝国崛起与“蒙古和平”欧亚贯通。成吉思汗统一草原后掀起史无前例的欧亚大征服，将东亚、中亚、波斯与俄罗斯纳为一体，铸就蒙古和平。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e4-mongol-empire.mp3",
+      "durationSec": 15.43
+    },
+    "ticker:ev:e4-baghdad-1258": {
+      "kind": "ticker",
+      "id": "e4-baghdad-1258",
+      "script": "公元 1258 年，蒙古攻陷巴格达与伊斯兰重心转移。旭烈兀率军摧毁存在五百余年的阿拔斯哈里发都城，伊拉克灌渠体系重创。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e4-baghdad-1258.mp3",
+      "durationSec": 10.97
+    },
+    "ticker:ev:e4-yuan-china": {
+      "kind": "ticker",
+      "id": "e4-yuan-china",
+      "script": "公元 1271–1368 年，元朝大一统、行省制与《马可·波罗游记》。首次实现包括漠北、藏地、云南与中原在内的跨农牧大一统，创设延续至今的行省制。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e4-yuan-china.mp3",
+      "durationSec": 14.78
+    },
+    "ticker:ev:e4-mali-mansa": {
+      "kind": "ticker",
+      "id": "e4-mali-mansa",
+      "script": "公元 1324 年（13–15 世纪），马里帝国曼萨·穆萨朝觐与西非学术中心。马里帝王携海量黄金横穿撒哈拉赴麦加朝觐，在开罗狂撒黄金甚至造成埃及金价暴跌十年。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e4-mali-mansa.mp3",
+      "durationSec": 15.31
+    },
+    "ticker:ev:e4-black-death": {
+      "kind": "ticker",
+      "id": "e4-black-death",
+      "script": "公元 1347–1353 年，黑死病席卷欧亚与西欧劳动价值重塑。鼠疫杆菌沿蒙古驿站与热那亚商船进入地中海，五年内夺去欧洲约三分之一至半数人口，却意外击碎农奴制锁链。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e4-black-death.mp3",
+      "durationSec": 16.39
+    },
+    "ticker:ev:e4-hundred-years-war": {
+      "kind": "ticker",
+      "id": "e4-hundred-years-war",
+      "script": "公元 1337—1453 年，英法百年战争、火炮革新与西欧早期民族国家成型。超越封建领主效忠链的百年长期战争淘汰重甲骑士、普及野战火炮与常备税兵，同时塑造起英法清晰民族国家意识。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e4-hundred-years-war.mp3",
+      "durationSec": 18.46
+    },
+    "ticker:ev:e4-ming-founding": {
+      "kind": "ticker",
+      "id": "e4-ming-founding",
+      "script": "公元 1368 年，明朝建立、海禁与朝贡贸易体制。朱元璋驱逐元廷重建本土中原王朝，废除宰相强化皇权独裁。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e4-ming-founding.mp3",
+      "durationSec": 11.47
+    },
+    "ticker:ev:e4-renaissance-medici": {
+      "kind": "ticker",
+      "id": "e4-renaissance-medici",
+      "script": "公元 14–16 世纪，佛罗伦萨文艺复兴与复式记账银行。银行家美第奇家族用毛纺、外汇票据与复式记账累积的巨额资本赞助艺术家与学者。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e4-renaissance-medici.mp3",
+      "durationSec": 13.03
+    },
+    "ticker:ev:e4-inca-tawantinsuyu": {
+      "kind": "ticker",
+      "id": "e4-inca-tawantinsuyu",
+      "script": "公元 1438–1533 年，印加帝国与“无货币、无文字”的山岳巨网。在没有车轮、铁器、货币与字母文字的条件下。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e4-inca-tawantinsuyu.mp3",
+      "durationSec": 11.26
+    },
+    "ticker:ev:e4-constantinople-1453": {
+      "kind": "ticker",
+      "id": "e4-constantinople-1453",
+      "script": "公元 1453 年，奥斯曼攻陷君士坦丁堡与贸易航路重构。穆罕默德二世动用巨型乌尔班火炮轰破千年城墙终结拜占庭帝国，树立横跨亚非欧的伊斯兰火药帝国。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e4-constantinople-1453.mp3",
+      "durationSec": 14.88
+    },
+    "ticker:ev:e4-zhenghe": {
+      "kind": "ticker",
+      "id": "e4-zhenghe",
+      "script": "公元 1405–1433 年，郑和七下西洋与朝贡体系的海洋巅峰。在哥伦布前八十七年，明成祖派出二万七千官兵组成的宝船巨队七次跨越印度洋。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e4-zhenghe.mp3",
+      "durationSec": 13.39
+    },
+    "ticker:ev:e5-tordesillas": {
+      "kind": "ticker",
+      "id": "e5-tordesillas",
+      "script": "公元 1494 年，《托尔德西里亚斯条约》与教皇子午线。西葡两国在教皇仲裁下于大西洋划出经线瓜分全地球未发现非基督教世界，首开人类全球海洋地缘分区先例。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e5-tordesillas.mp3",
+      "durationSec": 14.59
+    },
+    "ticker:ev:e5-safavid": {
+      "kind": "ticker",
+      "id": "e5-safavid",
+      "script": "公元 1501 年，萨法维波斯与“三大火药帝国”并立。伊斯玛仪一世确立什叶派十二伊玛目派为伊朗国教。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e5-safavid.mp3",
+      "durationSec": 9.82
+    },
+    "ticker:ev:e5-columbus": {
+      "kind": "ticker",
+      "id": "e5-columbus",
+      "script": "公元 1492 年，哥伦布抵达美洲与“哥伦布大交换”。西班牙资助哥伦布向西直航亚洲，却误打误撞连起隔绝一万两千年的东、西半球生态圈与人类文明。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e5-columbus.mp3",
+      "durationSec": 13.58
+    },
+    "ticker:ev:e5-da-gama": {
+      "kind": "ticker",
+      "id": "e5-da-gama",
+      "script": "公元 1497–1499 年，达·伽马绕好望角打通印度直航。葡萄牙船队利用大西洋信风画大弧线绕过非洲，直抵印度香料港，将传统地中海—红海商业霸权彻底边缘化。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e5-da-gama.mp3",
+      "durationSec": 15.65
+    },
+    "ticker:ev:e5-luther-reformation": {
+      "kind": "ticker",
+      "id": "e5-luther-reformation",
+      "script": "公元 1517 年，马丁·路德宗教改革与欧洲信仰裂变。路德张贴《九十五条论纲》抨击赎罪券并提出因信称义，借助活字印刷风靡德意志。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e5-luther-reformation.mp3",
+      "durationSec": 12.5
+    },
+    "ticker:ev:e4-gutenberg": {
+      "kind": "ticker",
+      "id": "e4-gutenberg",
+      "script": "约公元 1450 年，古登堡金属活字印刷术：欧洲知识爆炸。利用合金铸字、油墨与葡萄榨汁螺旋压印机，配合源自中国西传的廉价纸张。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e4-gutenberg.mp3",
+      "durationSec": 12.89
+    },
+    "ticker:ev:e5-magellan": {
+      "kind": "ticker",
+      "id": "e5-magellan",
+      "script": "公元 1519–1522 年，麦哲伦船队完成人类首次环球航行。历时三年折损四船两百余人，以九死一生实证地球为球体、所有海洋彼此连通。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e5-magellan.mp3",
+      "durationSec": 13.46
+    },
+    "ticker:ev:e5-aztec-conquest": {
+      "kind": "ticker",
+      "id": "e5-aztec-conquest",
+      "script": "公元 1519–1521 年，西班牙征服阿兹特克与墨西哥殖民体制。科尔特斯仅凭数百西班牙火枪骑兵，巧借天花疫情+十万敌对原住民盟军。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e5-aztec-conquest.mp3",
+      "durationSec": 13.39
+    },
+    "ticker:ev:e5-copernicus-science": {
+      "kind": "ticker",
+      "id": "e5-copernicus-science",
+      "script": "公元 1543 年（至 1687 年牛顿体系），《天体运行论》与欧洲科学革命序幕。哥白尼提出日心说打破千年地球中心宇宙观。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e5-copernicus-science.mp3",
+      "durationSec": 11.5
+    },
+    "ticker:ev:e5-potosi-silver": {
+      "kind": "ticker",
+      "id": "e5-potosi-silver",
+      "script": "公元 1545 年，波托西“银山”发现与全球白银金融潮。海拔四千多米的安第斯高原发现世上最富集银矿，结合水银提纯工艺铸造出数万吨银元。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e5-potosi-silver.mp3",
+      "durationSec": 12.79
+    },
+    "ticker:ev:e5-manila-galleon": {
+      "kind": "ticker",
+      "id": "e5-manila-galleon",
+      "script": "公元 1565–1815 年，马尼拉大帆船航线与太平洋白银链。西班牙探明北太平洋东归洋流，架起阿卡普尔科（白银）↔ 马尼拉 ↔ 福建月港（生丝瓷器）两百五十年不断航的。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e5-manila-galleon.mp3",
+      "durationSec": 17.74
+    },
+    "ticker:ev:e5-lepanto": {
+      "kind": "ticker",
+      "id": "e5-lepanto",
+      "script": "公元 1571 年，勒班陀大海战与地中海—大西洋海权时代交替。天主教神圣同盟舰队击溃奥斯曼桨帆主力终止其西地中海推进，也成人类史上最后一场古典划桨战船大决战。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e5-lepanto.mp3",
+      "durationSec": 15.5
+    },
+    "ticker:ev:e5-ming-single-whip": {
+      "kind": "ticker",
+      "id": "e5-ming-single-whip",
+      "script": "公元 1581 年，张居正“一条鞭法”：白银成为中国本位税制。将纷繁赋役田赋合并归入田亩并统一折算白银缴纳，顺应明中后期民间商品化。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e5-ming-single-whip.mp3",
+      "durationSec": 12.96
+    },
+    "ticker:ev:e5-voc": {
+      "kind": "ticker",
+      "id": "e5-voc",
+      "script": "公元 1602 年，荷兰东印度公司（VOC）与现代股票交易所。将全社会闲散资金永续锁定为不可退股的股份，首创可自由买卖转让的股票二级市场。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e5-voc.mp3",
+      "durationSec": 13.25
+    },
+    "ticker:ev:e5-mughal": {
+      "kind": "ticker",
+      "id": "e5-mughal",
+      "script": "公元 1526–18 世纪初，莫卧儿帝国建立与南亚全球纺织中心。帖木儿后裔巴布尔携火炮南下建立莫卧儿帝国，鼎盛期掌握全球约四分之一工业制造业产值，印度棉布风靡全球。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e5-mughal.mp3",
+      "durationSec": 16.15
+    },
+    "ticker:ev:e5-thirty-years-war": {
+      "kind": "ticker",
+      "id": "e5-thirty-years-war",
+      "script": "公元 1618—1648 年，欧洲三十年战争：宗教内战化为现代国际体系阵痛。席卷中欧致德意志近三分之一人口凋零的惨烈大战。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e5-thirty-years-war.mp3",
+      "durationSec": 12.34
+    },
+    "ticker:ev:e5-qing-1644": {
+      "kind": "ticker",
+      "id": "e5-qing-1644",
+      "script": "公元 1644 年（康乾盛世定型版图），明清易代与多民族大一统清帝国版图塑造。满洲八旗入主中原并巧妙运用多重统治合法性：对汉人称皇帝行儒政、对蒙藏称大汗与转轮圣王。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e5-qing-1644.mp3",
+      "durationSec": 16.44
+    },
+    "ticker:ev:e5-westphalia": {
+      "kind": "ticker",
+      "id": "e5-westphalia",
+      "script": "公元 1648 年，《威斯特伐利亚和约》与现代主权国家体系。终结惨烈无比的三十年战争，宣告各邦主权领土平等与互不干涉宗教内政。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e5-westphalia.mp3",
+      "durationSec": 12.29
+    },
+    "ticker:ev:e5-glorious-revolution": {
+      "kind": "ticker",
+      "id": "e5-glorious-revolution",
+      "script": "公元 1688–1694 年，英国“光荣革命”、议会主权与金融革命。以不流血政变确立《权利法案》和议会至上宪政原则，紧随其后组建英格兰银行与永久公债制度。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e5-glorious-revolution.mp3",
+      "durationSec": 15.24
+    },
+    "ticker:ev:e5-south-sea-bank": {
+      "kind": "ticker",
+      "id": "e5-south-sea-bank",
+      "script": "公元 1694 年，英格兰银行成立与现代公共国债货币革命。英国国会以法定税收背书发行永续公债并创立英格兰银行发行钞票，将民间私房金银低成本转化为制海帝国军政财力。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e5-south-sea-bank.mp3",
+      "durationSec": 16.08
+    },
+    "ticker:ev:e5-tokugawa": {
+      "kind": "ticker",
+      "id": "e5-tokugawa",
+      "script": "公元 1603–1868 年，德川幕府确立与“参觐交代”和平二百年。德川家康终结战国百年混战，以大名隔年进京轮值兼扣留妻小（参觐交代）与有限锁国维系日本两百六十年空前内部和。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e5-tokugawa.mp3",
+      "durationSec": 17.3
+    },
+    "ticker:ev:e5-enlightenment": {
+      "kind": "ticker",
+      "id": "e5-enlightenment",
+      "script": "公元 18 世纪（以《论法的精神》与《百科全书》为盛），欧洲启蒙运动：理性的政治与市场方案。思想家将牛顿自然法则的探索移入人类社会：以公共沙龙、咖啡馆和百科全书批判绝对王权、宗教狂热与重商管制。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e5-enlightenment.mp3",
+      "durationSec": 18.72
+    },
+    "ticker:ev:e5-peter-russia": {
+      "kind": "ticker",
+      "id": "e5-peter-russia",
+      "script": "公元 1696–1725 年，彼得大帝西化改革与俄国跻身欧陆列强。打破内陆封闭，打开通往欧洲的窗户建起圣彼得堡，用自上而下铁腕威权移植西欧造船、兵工与十四级文官官制。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e5-peter-russia.mp3",
+      "durationSec": 16.94
+    },
+    "ticker:ev:e6-watt-steam": {
+      "kind": "ticker",
+      "id": "e6-watt-steam",
+      "script": "公元 1769 年（18 世纪下半叶），瓦特改良蒸汽机与第一次工业革命引爆。分离冷凝器使煤耗锐减七成五并实现旋转动力输出，结合珍妮纺纱机。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e6-watt-steam.mp3",
+      "durationSec": 13.13
+    },
+    "ticker:ev:e6-wealth-of-nations": {
+      "kind": "ticker",
+      "id": "e6-wealth-of-nations",
+      "script": "公元 1776 年，亚当·斯密《国富论》与古典自由贸易体系。系统驳斥重商主义把金银囤积等同国家富裕的谬误。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e6-wealth-of-nations.mp3",
+      "durationSec": 10.73
+    },
+    "ticker:ev:e6-seven-years-war": {
+      "kind": "ticker",
+      "id": "e6-seven-years-war",
+      "script": "公元 1756–1763 年，七年战争：首场真正意义上的全球大战。英法在欧洲大陆、北美森林、加勒比糖岛与印度同时爆发全面海陆决战，英国以金融公债压垮法国。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e6-seven-years-war.mp3",
+      "durationSec": 15.65
+    },
+    "ticker:ev:e6-us-independence": {
+      "kind": "ticker",
+      "id": "e6-us-independence",
+      "script": "公元 1776–1787 年，美国独立与成文联邦宪政体制实践。北美十三州以无代表不纳税打响现代反殖民独立第一枪。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e6-us-independence.mp3",
+      "durationSec": 10.8
+    },
+    "ticker:ev:e6-french-revolution": {
+      "kind": "ticker",
+      "id": "e6-french-revolution",
+      "script": "公元 1789–1815 年，法国大革命与《人权宣言》的欧洲震荡。财政破产与饥荒点燃巴士底狱怒火，彻底推翻欧洲最核心旧制度与等级特权。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e6-french-revolution.mp3",
+      "durationSec": 13.34
+    },
+    "ticker:ev:e6-us-constitution": {
+      "kind": "ticker",
+      "id": "e6-us-constitution",
+      "script": "公元 1787 年，《美利坚合众国宪法》制定与联邦制衡首例。费城五十五位代表突破松散邦联危机，制定出世界首部成文联邦宪法，在超广域大国中实操三权分立制衡与市场一统。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e6-us-constitution.mp3",
+      "durationSec": 16.06
+    },
+    "ticker:ev:e6-haitian-revolution": {
+      "kind": "ticker",
+      "id": "e6-haitian-revolution",
+      "script": "公元 1791–1804 年，海地革命：史上首个成功废奴的黑人共和国。法属圣多明各五十万黑奴受巴黎《人权宣言》鼓舞起义，连续击溃西班牙、英国与拿破仑远征军。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e6-haitian-revolution.mp3",
+      "durationSec": 15.67
+    },
+    "ticker:ev:e6-napoleon-code": {
+      "kind": "ticker",
+      "id": "e6-napoleon-code",
+      "script": "公元 1804 年，《拿破仑法典》颁行：近代大陆民法与所有权定型。将大革命推翻封建土地特权的成果提炼为 2281 条简洁清晰的公民民法。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e6-napoleon-code.mp3",
+      "durationSec": 13.51
+    },
+    "ticker:ev:e6-congress-of-vienna": {
+      "kind": "ticker",
+      "id": "e6-congress-of-vienna",
+      "script": "公元 1814–1815 年，维也纳会议与十九世纪“欧洲协调”均势。击败拿破仑后，英俄奥普与战败的法国在谈判桌前重绘欧洲版图。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e6-congress-of-vienna.mp3",
+      "durationSec": 12.43
+    },
+    "ticker:ev:e6-taiping": {
+      "kind": "ticker",
+      "id": "e6-taiping",
+      "script": "公元 1851–1864 年，太平天国运动与晚清权力下移。融合失意儒生与扭曲基督教义的农民巨震席卷半壁江山，夺命两千余万，虽然终遭湘淮军扑灭。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e6-taiping.mp3",
+      "durationSec": 14.62
+    },
+    "ticker:ev:e6-darwin": {
+      "kind": "ticker",
+      "id": "e6-darwin",
+      "script": "公元 1859 年，达尔文《物种起源》与社会达尔文主义流变。依托环球航海标本实证物竞天择、自然选择，在生物学彻底驱逐神创设计论。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e6-darwin.mp3",
+      "durationSec": 12.29
+    },
+    "ticker:ev:e6-us-civil-war": {
+      "kind": "ticker",
+      "id": "e6-us-civil-war",
+      "script": "公元 1861–1865 年，美国南北战争：统一市场与废奴宪政重铸。北方工业自由劳工制与南方棉花奴隶种植园的对决，铁路、电报、后装线膛枪造就史上首场工业化总体战。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e6-us-civil-war.mp3",
+      "durationSec": 16.51
+    },
+    "ticker:ev:e6-latin-independence": {
+      "kind": "ticker",
+      "id": "e6-latin-independence",
+      "script": "公元 1810–1825 年，拉丁美洲独立浪潮与“初级品出口”锁定。借拿破仑攻占西班牙之机，玻利瓦尔与圣马丁解放几乎全拉美。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e6-latin-independence.mp3",
+      "durationSec": 11.9
+    },
+    "ticker:ev:e6-communist-manifesto": {
+      "kind": "ticker",
+      "id": "e6-communist-manifesto",
+      "script": "公元 1848 年，1848 年欧洲大革命与《共产党宣言》。人民之春席卷欧洲五十余国街头，同时马克思与恩格斯在伦敦发表《共产党宣言》。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e6-communist-manifesto.mp3",
+      "durationSec": 12.67
+    },
+    "ticker:ev:e6-opium-war": {
+      "kind": "ticker",
+      "id": "e6-opium-war",
+      "script": "公元 1839–1842 年，鸦片战争与东亚“天朝朝贡体系”崩塌。英国为扭转对华茶叶生丝巨额逆差利用印度鸦片撬开闭关大门，工业蒸汽铁甲炮船撞碎农耕天朝迷梦。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e6-opium-war.mp3",
+      "durationSec": 15.29
+    },
+    "ticker:ev:e6-suez-canal": {
+      "kind": "ticker",
+      "id": "e6-suez-canal",
+      "script": "公元 1869 年，苏伊士运河通航：蒸汽轮船改写欧亚海权。打通地中海与红海使伦敦至孟买航程缩短近万公里，蒸汽铁船彻底击溃靠风力绕行好望角的帆船。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e6-suez-canal.mp3",
+      "durationSec": 14.38
+    },
+    "ticker:ev:e6-berlin-conference": {
+      "kind": "ticker",
+      "id": "e6-berlin-conference",
+      "script": "公元 1884–1885 年，柏林会议与列强直尺瓜分非洲大陆。没有一位非洲代表受邀在场，欧洲列强竟在柏林会议桌前用直尺标出有效占领原则。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e6-berlin-conference.mp3",
+      "durationSec": 13.54
+    },
+    "ticker:ev:e6-trans-siberian": {
+      "kind": "ticker",
+      "id": "e6-trans-siberian",
+      "script": "公元 1891–1916 年，西伯利亚大铁路开工与陆权地缘重估。俄国修筑横跨九千公里的钢铁动脉连接莫斯科与太平洋不冻港梦。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e6-trans-siberian.mp3",
+      "durationSec": 11.71
+    },
+    "ticker:ev:e6-second-industrial": {
+      "kind": "ticker",
+      "id": "e6-second-industrial",
+      "script": "公元 1870–1914 年，第二次工业革命：电力、内燃机、化工与垄断资本。科学研究首次直接领跑工程发明（而非传统工匠摸索）。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e6-second-industrial.mp3",
+      "durationSec": 12.79
+    },
+    "ticker:ev:e6-meiji": {
+      "kind": "ticker",
+      "id": "e6-meiji",
+      "script": "公元 1868 年，日本明治维新：亚洲率先成功的近代化赶超。黑船危机激出中下级武士尊王倒幕，彻底废藩置县打破封建割据。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e6-meiji.mp3",
+      "durationSec": 11.98
+    },
+    "ticker:ev:e6-german-unification": {
+      "kind": "ticker",
+      "id": "e6-german-unification",
+      "script": "公元 1871 年，德意志帝国成立：中欧钢铁煤炭巨兽与均势失衡。普鲁士借三场王朝战争一统中欧德意志，依托鲁尔煤铁、研究型大学化工与国家社保缔造欧洲第一工业引擎。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e6-german-unification.mp3",
+      "durationSec": 15.38
+    },
+    "ticker:ev:e7-russian-rev": {
+      "kind": "ticker",
+      "id": "e7-russian-rev",
+      "script": "公元 1917 年，俄国十月革命与计划经济体制实验。一战前线崩溃引爆俄国革命，列宁领导布尔什维克夺权并随后建立苏联。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e7-russian-rev.mp3",
+      "durationSec": 11.5
+    },
+    "ticker:ev:e6-ford-assembly": {
+      "kind": "ticker",
+      "id": "e6-ford-assembly",
+      "script": "公元 1913 年，福特流水线与现代大众消费社会起点。移动装配传送带将 T 型车总装时间从十二小时压缩至九十三分钟，配合五美元高日薪。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e6-ford-assembly.mp3",
+      "durationSec": 13.08
+    },
+    "ticker:ev:e7-ww1": {
+      "kind": "ticker",
+      "id": "e7-ww1",
+      "script": "公元 1914–1918 年，第一次世界大战与四大传统帝国瓦解。同盟国与协约国在机枪铁丝网战壕消耗近两千万生命，一举摧毁德意志、奥匈、俄罗斯与奥斯曼四大传统帝国。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e7-ww1.mp3",
+      "durationSec": 15.91
+    },
+    "ticker:ev:e7-einstein-1905": {
+      "kind": "ticker",
+      "id": "e7-einstein-1905",
+      "script": "公元 1905 年，爱因斯坦“奇迹年”与现代物理新纪元开启。二十六岁的专利局三等职员一年内连发四篇颠覆论文：确立光量子、狭义相对论及质能方程 E=mc²。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e7-einstein-1905.mp3",
+      "durationSec": 14.28
+    },
+    "ticker:ev:e7-versailles-may4": {
+      "kind": "ticker",
+      "id": "e7-versailles-may4",
+      "script": "公元 1919 年，巴黎和会与亚洲反殖民觉醒（五四运动）。民族自决口号破产——列强把德占山东转交日本、中东分赃并拒绝印度自治，激怒全亚洲知识青年与工人。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e7-versailles-may4.mp3",
+      "durationSec": 14.74
+    },
+    "ticker:ev:e6-qing-1911": {
+      "kind": "ticker",
+      "id": "e6-qing-1911",
+      "script": "公元 1911 年，辛亥革命：两千年皇权帝制终结。武昌新军枪响联动各省立宪派独立，一举推翻清朝建立亚洲首个民主共和国。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e6-qing-1911.mp3",
+      "durationSec": 12.07
+    },
+    "ticker:ev:e7-great-depression": {
+      "kind": "ticker",
+      "id": "e7-great-depression",
+      "script": "公元 1929–1933 年，1929 年华尔街股灾与全球大萧条。自由市场信贷杠杆泡沫崩盘叠加美国《斯姆特—霍利关税法》以邻为壑与金本位紧缩锁死。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e7-great-depression.mp3",
+      "durationSec": 14.62
+    },
+    "ticker:ev:e7-keynes-newdeal": {
+      "kind": "ticker",
+      "id": "e7-keynes-newdeal",
+      "script": "公元 1933–1936 年，罗斯福新政与凯恩斯现代宏观调控。罗斯福以百日新政救活金融、建立《社会保障法》与田纳西大型公共基建。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e7-keynes-newdeal.mp3",
+      "durationSec": 13.06
+    },
+    "ticker:ev:e7-ww2": {
+      "kind": "ticker",
+      "id": "e7-ww2",
+      "script": "公元 1937/1939–1945 年，第二次世界大战与轴心国溃败。人类历史上波及最广、死伤逾七千万的全面反法西斯战争。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e7-ww2.mp3",
+      "durationSec": 11.76
+    },
+    "ticker:ev:e7-un-nuremberg": {
+      "kind": "ticker",
+      "id": "e7-un-nuremberg",
+      "script": "公元 1945 年，《联合国宪章》、纽伦堡审判与核纪元。50 国签署宪章成立拥有安理会否决权的联合国并确立主权平等与禁止侵略战争法理。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e7-un-nuremberg.mp3",
+      "durationSec": 12.86
+    },
+    "ticker:ev:e7-bretton-woods": {
+      "kind": "ticker",
+      "id": "e7-bretton-woods",
+      "script": "公元 1944 年，布雷顿森林体系与现代国际金融秩序。44 个同盟国吸取大萧条教训，建立美元挂钩黄金（35 美元/盎司）、各国货币挂钩美元的固定汇率锚。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e7-bretton-woods.mp3",
+      "durationSec": 15.02
+    },
+    "ticker:ev:e7-india-partition": {
+      "kind": "ticker",
+      "id": "e7-india-partition",
+      "script": "公元 1947 年，印度独立与印巴分治：去殖民化浪潮起点。大英帝国皇冠上的明珠在甘地非暴力抗争与英帝国战后财力破产下赢得独立，却在短短数周匆忙划出蒙巴顿分治线。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e7-india-partition.mp3",
+      "durationSec": 16.18
+    },
+    "ticker:ev:e7-prc-1949": {
+      "kind": "ticker",
+      "id": "e7-prc-1949",
+      "script": "公元 1949 年，中华人民共和国成立与现代国家重构。彻底终结自鸦片战争以来的百年半殖民碎片化与战乱。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e7-prc-1949.mp3",
+      "durationSec": 10.75
+    },
+    "ticker:ev:e7-cold-war-marshall": {
+      "kind": "ticker",
+      "id": "e7-cold-war-marshall",
+      "script": "公元 1947–1955 年，铁幕降下、马歇尔计划与冷战两极格局。杜鲁门主义与柏林封锁划破欧陆铁幕，美国以 130 亿美元马歇尔计划复兴西欧市场并创立北约对抗苏联华约。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e7-cold-war-marshall.mp3",
+      "durationSec": 15.98
+    },
+    "ticker:ev:e7-bandung": {
+      "kind": "ticker",
+      "id": "e7-bandung",
+      "script": "公元 1955 年，万隆会议与“第三世界”不结盟运动。史上首次没有欧美西方殖民列强参与、完全由 29 个亚非新独立国家自主召集的峰会，提出和平共处五项原则。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e7-bandung.mp3",
+      "durationSec": 14.33
+    },
+    "ticker:ev:e7-sputnik-arpanet": {
+      "kind": "ticker",
+      "id": "e7-sputnik-arpanet",
+      "script": "公元 1957–1969 年，人造卫星上天与阿帕网：太空与互联网前夜。苏联发射斯普特尼克震撼西方触发太空竞赛（登月）。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e7-sputnik-arpanet.mp3",
+      "durationSec": 12.12
+    },
+    "ticker:ev:e7-apollo-arpanet": {
+      "kind": "ticker",
+      "id": "e7-apollo-arpanet",
+      "script": "公元 1969 年，阿波罗 11 号登月与阿帕网首条跨节点信息。同一年人类双脚踏上月球表面并在加州与斯坦福间传出首串分组交换网络报文。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e7-apollo-arpanet.mp3",
+      "durationSec": 13.25
+    },
+    "ticker:ev:e7-cuban-missile": {
+      "kind": "ticker",
+      "id": "e7-cuban-missile",
+      "script": "公元 1962 年 10 月，古巴导弹危机：冷战核毁灭边缘与“确保相互摧毁”机制。美苏核弹头在十三天内箭在弦上对峙加勒比，最终通过秘密外交让步险避核毁灭，冷战从此转入管控危机共处。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e7-cuban-missile.mp3",
+      "durationSec": 17.16
+    },
+    "ticker:ev:e7-african-year": {
+      "kind": "ticker",
+      "id": "e7-african-year",
+      "script": "公元 1960 年，1960 “非洲独立年”与大陆主权解放。仅 1960 年一年内就有 17 个非洲殖民地接连宣告主权独立。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e7-african-year.mp3",
+      "durationSec": 10.99
+    },
+    "ticker:ev:e7-nixon-shock": {
+      "kind": "ticker",
+      "id": "e7-nixon-shock",
+      "script": "公元 1971 年，“尼克松冲击”：脱离黄金的纯信用浮动货币时代。越战军费与欧洲挤兑黄金彻底耗干美国金库，尼克松单方面宣布美元停止兑换黄金。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e7-nixon-shock.mp3",
+      "durationSec": 13.51
+    },
+    "ticker:ev:e7-treaty-of-rome": {
+      "kind": "ticker",
+      "id": "e7-treaty-of-rome",
+      "script": "公元 1957 年，《罗马条约》签署与欧洲共同市场一体化启程。经历两次世界大战废墟后，法德意比荷卢六国以主权局部共享创建欧洲经济共同体，用市场供应链锁死欧陆百年战火。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e7-treaty-of-rome.mp3",
+      "durationSec": 16.1
+    },
+    "ticker:ev:e7-oil-crisis-1973": {
+      "kind": "ticker",
+      "id": "e7-oil-crisis-1973",
+      "script": "公元 1973 年，1973 年石油危机与滞胀转折。第四次中东战争期间阿拉伯产油国（OPEC）对西方实施石油禁运并提价四倍，直接撞垮欧美日战后高增长。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e7-oil-crisis-1973.mp3",
+      "durationSec": 14.04
+    },
+    "ticker:ev:e7-china-reform": {
+      "kind": "ticker",
+      "id": "e7-china-reform",
+      "script": "公元 1978 年，中国十一届三中全会与改革开放启幕。邓小平果断将工作重心转回经济建设与对外开放，农村包产到户释放生产力，借深圳特区接入东亚和西方产业链。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e7-china-reform.mp3",
+      "durationSec": 15.34
+    },
+    "ticker:ev:e7-iran-neoliberal": {
+      "kind": "ticker",
+      "id": "e7-iran-neoliberal",
+      "script": "公元 1979 年，1979 双重转折：伊朗革命与英美新自由主义。1979 年成为冷战后期分水岭：德黑兰推翻亲美巴列维建立什叶派神权共和国震惊中东。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e7-iran-neoliberal.mp3",
+      "durationSec": 15.17
+    },
+    "ticker:ev:e7-plaza-accord": {
+      "kind": "ticker",
+      "id": "e7-plaza-accord",
+      "script": "公元 1985 年，《广场协议》、日元大升值与东亚雁阵制造转移。美日德法英五国联合压低美元、逼日元三年翻倍升值。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e7-plaza-accord.mp3",
+      "durationSec": 10.9
+    },
+    "ticker:ev:e7-ussr-collapse": {
+      "kind": "ticker",
+      "id": "e7-ussr-collapse",
+      "script": "公元 1991 年 12 月，苏联解体与两极冷战体系正式终结。八一九政变流产后，存在六十九年的红色超级大国在未爆发全面外部战争的情况下和平解散为十五个独立共和国。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e7-ussr-collapse.mp3",
+      "durationSec": 15.55
+    },
+    "ticker:ev:e7-berlin-wall": {
+      "kind": "ticker",
+      "id": "e7-berlin-wall",
+      "script": "公元 1989 年，柏林墙倒塌与东欧铁幕消融。戈尔巴乔夫放弃武力维持东欧卫星国，百万东德民众和平跨越存在二十八年的柏林墙，冷战欧洲对抗一夜冰消。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e7-berlin-wall.mp3",
+      "durationSec": 14.3
+    },
+    "ticker:ev:e8-www-maastricht": {
+      "kind": "ticker",
+      "id": "e8-www-maastricht",
+      "script": "公元 1991–1993 年，万维网向公众开放与欧盟正式诞生。欧洲核子中心蒂姆·伯纳斯-李无偿公开万维网协议，同年《马斯特里赫特条约》创立统一市场与欧元蓝图。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e8-www-maastricht.mp3",
+      "durationSec": 15.96
+    },
+    "ticker:ev:e8-asian-crisis": {
+      "kind": "ticker",
+      "id": "e8-asian-crisis",
+      "script": "公元 1997–1998 年，1997 年亚洲金融危机与汇率安全警钟。泰国过早开放资本账户且维持死盯美元汇率引发热钱狂涌地产泡沫，遭国际对冲基金狙击崩盘后火烧印尼韩国。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e8-asian-crisis.mp3",
+      "durationSec": 16.73
+    },
+    "ticker:ev:e8-911": {
+      "kind": "ticker",
+      "id": "e8-911",
+      "script": "公元 2001 年 9 月 11 日，9·11 事件与反恐战争重塑全球安全。非国家极端恐怖网络以劫机撞毁世贸双塔，震碎美国冷战胜利后的绝对安全感。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e8-911.mp3",
+      "durationSec": 13.42
+    },
+    "ticker:ev:e8-china-wto": {
+      "kind": "ticker",
+      "id": "e8-china-wto",
+      "script": "公元 2001 年 12 月，中国加入 WTO 与“世界工厂”超级全球化。世界最大发展中人口大国全面并入基于规则的多边贸易系统，以惊人的基础设施和产业集群效率成为全球供应链中心。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e8-china-wto.mp3",
+      "durationSec": 15.82
+    },
+    "ticker:ev:e8-gfc-2008": {
+      "kind": "ticker",
+      "id": "e8-gfc-2008",
+      "script": "公元 2008 年，2008 年全球金融危机与民粹主义抬头。华尔街将劣质次贷打包成复杂衍生品在全球兜售，随着雷曼兄弟破产引爆自大萧条以来最惨重系统危机。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e8-gfc-2008.mp3",
+      "durationSec": 14.86
+    },
+    "ticker:ev:e8-bitcoin-2009": {
+      "kind": "ticker",
+      "id": "e8-bitcoin-2009",
+      "script": "公元 2009 年 1 月，比特币创世与去中心化分布式账本金融实验。在 2008 次贷海啸与央行巨额印钞救助大银行背景下诞生的加密账本协议。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e8-bitcoin-2009.mp3",
+      "durationSec": 12.77
+    },
+    "ticker:ev:e8-arab-spring": {
+      "kind": "ticker",
+      "id": "e8-arab-spring",
+      "script": "公元 2010–2012 年，“阿拉伯之春”与社交媒体时代的中东剧震。全球粮价高企与青年高失业率叠加推特、脸书实时扩散，短短数月推翻突尼斯、埃及、利比亚长期强人。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e8-arab-spring.mp3",
+      "durationSec": 15.29
+    },
+    "ticker:ev:e8-smartphone-2007": {
+      "kind": "ticker",
+      "id": "e8-smartphone-2007",
+      "script": "公元 2007 年（2010 年代普及全球），智能手机与移动互联网重塑社会连接。触屏 iPhone 与安卓生态把全球数十亿人直接随身在线化，发展中国家跳过桌面电脑和银行网点时代。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e8-smartphone-2007.mp3",
+      "durationSec": 15.98
+    },
+    "ticker:ev:e8-paris-climate": {
+      "kind": "ticker",
+      "id": "e8-paris-climate",
+      "script": "公元 2015 年，《巴黎协定》与全球能源低碳转型竞赛。近两百个缔约方达成将全球变暖控在 2°C 以内共识。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e8-paris-climate.mp3",
+      "durationSec": 10.08
+    },
+    "ticker:ev:e8-bri": {
+      "kind": "ticker",
+      "id": "e8-bri",
+      "script": "公元 2013 年起，“一带一路”倡议与欧亚非基建互联重构。中国依托自身世界第一的高铁、港口、电力基建产能与庞大外汇积累。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e8-bri.mp3",
+      "durationSec": 11.21
+    },
+    "ticker:ev:e8-covid19": {
+      "kind": "ticker",
+      "id": "e8-covid19",
+      "script": "公元 2020–2022 年，新冠大流行：全球供应链与公共治理大考。百年一遇的呼吸道病毒大流行在一周内迫使全球按下暂停键，mRNA 疫苗创下医学史上最速研发纪录。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e8-covid19.mp3",
+      "durationSec": 15.22
+    },
+    "ticker:ev:e8-us-china-trade": {
+      "kind": "ticker",
+      "id": "e8-us-china-trade",
+      "script": "公元 2018 年至今，中美战略竞争与全球供应链“去风险”重构。美国结束对华四十年接触战略转向全面关税、先进芯片封锁与友岸外包。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e8-us-china-trade.mp3",
+      "durationSec": 12.5
+    },
+    "ticker:ev:e8-ukraine-2022": {
+      "kind": "ticker",
+      "id": "e8-ukraine-2022",
+      "script": "公元 2022 年起，俄乌冲突升级与欧亚能源安全重排。欧洲爆发出二战结束以来最大规模常规大国领土战争，彻底击碎冷战后欧洲和平不可逆幻象。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e8-ukraine-2022.mp3",
+      "durationSec": 13.51
+    },
+    "ticker:ev:e8-generative-ai": {
+      "kind": "ticker",
+      "id": "e8-generative-ai",
+      "script": "公元 2022–2025 年，生成式人工智能爆发与算力芯片地缘博弈。大语言模型涌现通用推理与跨模态生成能力，AI 从感知工具跃升为认知生产力伙伴。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e8-generative-ai.mp3",
+      "durationSec": 13.7
+    },
+    "ticker:ev:e8-multipolar-2025": {
+      "kind": "ticker",
+      "id": "e8-multipolar-2025",
+      "script": "公元 2020 年代中叶，多极重构、全球南方兴起与新秩序探索。单一超强霸权和单一规则共识退场，印度、印尼、巴西、沙特等摇摆中间大国与金砖扩员展现前所未有的自主议价能力。",
+      "voice": "zh-CN-YunjianNeural",
+      "file": "ticker/event/e8-multipolar-2025.mp3",
+      "durationSec": 16.27
     }
   }
 }

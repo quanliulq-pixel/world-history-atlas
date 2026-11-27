@@ -662,4 +662,146 @@ export const STORYLINES: Storyline[] = [
       },
     ],
   },
+  {
+    id: 'story-financial-crises',
+    title: '从郁金香到次贷：全球金融泡沫与危机应对史',
+    subtitle: '人类如何在信用扩张、泡沫破碎与最后贷款人制度间反复校准边界',
+    yearSpan: '1637 — 2024',
+    description:
+      '跟随史上重大金融危机与制度应对，看懂高杠杆衍生品泡沫、金本位紧缩传导、美联储最后贷款人演变，以及当代主权债务与汇率安全三角。',
+    accentColor: '#C5831F',
+    steps: [
+      {
+        eventId: 'e5-tulip-mania',
+        narrative:
+          '1637 年荷兰“郁金香狂热”借远期“风交易”零门槛撬动大众狂热投机，当拍卖一朝流拍，人类首份近代金融泡沫教材就此写就。',
+        center: [4.64, 52.38],
+        zoom: 4.5,
+      },
+      {
+        eventId: 'e5-south-sea-bank',
+        narrative:
+          '1720 年英法“南海泡沫”与“密西西比危机”几乎同期破灭，证实银行印钞决不可与投机股票绑定，也促使英格兰银行锻造公共债务防线。',
+        center: [-0.1, 51.5],
+        zoom: 4.3,
+      },
+      {
+        eventId: 'e6-long-depression-1873',
+        narrative:
+          '1873 年维也纳与华尔街铁路恐慌叠加各国刚性金本位通缩，拉响持续二十余年的“长萧条”并逆转 19 世纪自由贸易气氛。',
+        center: [-74.0, 40.7],
+        zoom: 3.5,
+        highlightRouteIds: ['route-london-gold-cable'],
+      },
+      {
+        eventId: 'e6-federal-reserve-1913',
+        narrative:
+          '吸取 1907 年只能靠老摩根私营救市的惊险教训，美国于 1913 年立起美联储体系，期望设立常设现代最后贷款人。',
+        center: [-77.0, 38.9],
+        zoom: 4.0,
+      },
+      {
+        eventId: 'e7-great-depression',
+        narrative:
+          '1929 年华尔街股灾引爆史无前例大萧条，美联储任由银行缩表违约加深灾难，最终倒逼罗斯福新政、存款保险与凯恩斯调控。',
+        center: [-74.0, 40.7],
+        zoom: 3.4,
+      },
+      {
+        eventId: 'e7-volcker-shock',
+        narrative:
+          '1979 年面对大滞胀，沃尔克把美元利率拉升至 20% 刺破恶性通胀，但也直接引爆 1982 年拉美美元外债全面违约潮。',
+        center: [-99.1, 19.4],
+        zoom: 3.2,
+      },
+      {
+        eventId: 'e8-asian-crisis',
+        narrative:
+          '1997 年泰铢失守引爆亚洲金融危机，打破“固定汇率+短期热钱开放”美梦，倒逼东亚痛攒外汇储备并铸成区域货币互换盾牌。',
+        center: [105.0, 15.0],
+        zoom: 3.4,
+      },
+      {
+        eventId: 'e8-gfc-2008',
+        narrative:
+          '2008 年美国次贷衍生品崩盘冻住全球同业拆借，联储开启史无前例 QE 救市并将全球拖入十余年低利率与地缘重构新局。',
+        center: [-74.0, 40.7],
+        zoom: 3.0,
+      },
+    ],
+  },
+  {
+    id: 'story-trade-globalization',
+    title: '贸易秩序与产业链重塑：从丝路、汉萨到芯片全球化',
+    subtitle: '跨越两千年的运费压缩、港口变迁与世界制造业重心西移又东归',
+    yearSpan: '前 138 — 2025',
+    description:
+      '追踪推动跨洲商品汇流的交通路线、统一市场制度与关税秩序变革，重现“亚洲双中心 -> 欧美大西洋世界工厂 -> 东亚复合全球供应链”的历史钟摆。',
+    accentColor: '#2E7D6B',
+    steps: [
+      {
+        eventId: 'e2-zhang-qian',
+        narrative:
+          '公元前 138 年张骞凿空打通长安至地中海丝绸大道，汉代丝绸与帕提亚安息、罗马金银首次建立制度化陆上远程商业循环。',
+        center: [76.0, 39.5],
+        zoom: 3.0,
+        highlightRouteIds: ['route-silk-land'],
+      },
+      {
+        eventId: 'e4-hanseatic-league',
+        narrative:
+          '14 世纪北欧自治港市结成汉萨同盟，通过大宗粮食、木材与鲱鱼海运把波罗的海—北海塑造成高契约度的跨国区域商业网。',
+        center: [12.0, 54.5],
+        zoom: 4.0,
+        highlightRouteIds: ['route-hanseatic'],
+      },
+      {
+        eventId: 'e5-manila-galleon',
+        narrative:
+          '1565 年起墨西哥阿卡普尔科—马尼拉太平洋大帆船起航，把美洲波托西白银换取中国丝瓷的双向贸易织入史上首轮真实全球市场。',
+        center: [130.0, 18.0],
+        zoom: 2.3,
+        highlightRouteIds: ['route-manila-galleon'],
+      },
+      {
+        eventId: 'e6-zollverein',
+        narrative:
+          '1834 年德意志关税同盟拆除内部重重路卡并铺设铁路，论证了构建洲际级统一内部市场是后发制造业起飞的核心跳板。',
+        center: [11.0, 51.0],
+        zoom: 4.4,
+        highlightRouteIds: ['route-industrial-spread'],
+      },
+      {
+        eventId: 'e6-corn-laws-repeal',
+        narrative:
+          '1846 年英国单边废除谷物关税拥抱全球粮食进口，辅以 1869 年苏伊士运河通航，奠基“欧美工业制成品 + 世界其他地区农矿供给”百年大分流分工。',
+        center: [16.0, 42.0],
+        zoom: 2.8,
+        highlightRouteIds: ['route-suez-panama'],
+      },
+      {
+        eventId: 'e7-treaty-of-rome',
+        narrative:
+          '1957 年西欧六国签下《罗马条约》启动共同市场，彻底在核心战火区建立零关税产业集群并一步步迈向欧元单一货币区。',
+        center: [10.0, 48.0],
+        zoom: 4.0,
+      },
+      {
+        eventId: 'e8-china-wto',
+        narrative:
+          '2001 年中国入世使十四亿人口高效率制造业融入全球市场，形成美欧研发、东亚核心晶圆、中国集成组装与中东能源互补的超级全球化黄金链。',
+        center: [116.0, 31.0],
+        zoom: 2.9,
+        highlightRouteIds: ['route-modern-supply', 'route-gulf-oil-sea'],
+      },
+      {
+        eventId: 'e8-us-china-trade',
+        narrative:
+          '2018 年起大国关税竞争、芯片出口管制与“中国+N / 友岸重构”打破单一追求极致效率时代，世界供应链进入成本、安全与区域多元化再平衡期。',
+        center: [145.0, 28.0],
+        zoom: 2.2,
+        highlightRouteIds: ['route-modern-supply'],
+      },
+    ],
+  },
 ];

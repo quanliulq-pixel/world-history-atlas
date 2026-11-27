@@ -14,6 +14,7 @@ import {
   Search,
   Sparkles,
   Sun,
+  TrendingUp,
   Trophy,
   UserRound,
 } from 'lucide-react';
@@ -45,6 +46,7 @@ interface TopBarProps {
   onToggleProjection: () => void;
   onToggleTheme: () => void;
   onOpenPulse: () => void;
+  onOpenEconomicAtlas: () => void;
   onOpenStorylines: () => void;
   onOpenCausalGraph: () => void;
   onOpenChronoGame: () => void;
@@ -81,6 +83,7 @@ export function TopBar({
   onToggleProjection,
   onToggleTheme,
   onOpenPulse,
+  onOpenEconomicAtlas,
   onOpenStorylines,
   onOpenCausalGraph,
   onOpenChronoGame,
@@ -188,6 +191,21 @@ export function TopBar({
 
           <button
             type="button"
+            onClick={onOpenEconomicAtlas}
+            className="inline-flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-semibold border transition hover:opacity-90 cursor-pointer"
+            style={{
+              backgroundColor: 'rgba(197, 131, 31, 0.14)',
+              borderColor: 'rgba(197, 131, 31, 0.45)',
+              color: theme === 'obsidian' ? '#E5A94C' : '#9B5E0B',
+            }}
+            title="世界经济史量化图谱：全球 GDP 变迁、货币体系、金融危机与 30 国排行"
+          >
+            <TrendingUp className="h-3.5 w-3.5" />
+            <span className="hidden lg:inline">经济数据</span>
+          </button>
+
+          <button
+            type="button"
             onClick={onOpenCausalGraph}
             className="inline-flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-medium border transition hover:opacity-90 cursor-pointer"
             style={{
@@ -195,7 +213,7 @@ export function TopBar({
               borderColor: 'var(--border-subtle)',
               color: 'var(--text-primary)',
             }}
-            title="全局历史因果脉络星图 (170 节点)"
+            title="全局历史因果脉络星图"
           >
             <Network className="h-3.5 w-3.5" style={{ color: '#296B9E' }} />
             <span className="hidden xl:inline">因果星图</span>

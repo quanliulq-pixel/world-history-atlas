@@ -32,6 +32,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { COUNTRY_PROFILES, findMatchingStageIndex } from '../data/countries';
+import { COUNTRY_ECONOMIC_PROFILES } from '../data/countryEconomics';
 import { DIMENSION_META, FIGURE_ROLE_META, REGION_META } from '../data/eras';
 import type {
   CountryEvolutionProfile,
@@ -51,7 +52,7 @@ import {
 import { formatShortYear, formatYear } from '../utils/timeline';
 import { MuseumBanner } from './MuseumArtwork';
 
-type EvolutionTab = 'chronicle' | 'events' | 'figures' | 'ledger';
+type EvolutionTab = 'chronicle' | 'economy' | 'events' | 'figures' | 'ledger';
 
 const REGION_ORDER: CountryEvolutionProfile['region'][] = [
   'east-asia',
@@ -847,6 +848,7 @@ export function CountryEvolutionPanel({
         {(
           [
             { id: 'chronicle', label: '演进脉络' },
+            { id: 'economy', label: '经济档案' },
             { id: 'events', label: `重大史事 (${country.events.length})` },
             { id: 'figures', label: `历史人物 (${country.figures.length})` },
             { id: 'ledger', label: `版图实录 (${country.snapshotLedger.length})` },
@@ -1272,6 +1274,279 @@ export function CountryEvolutionPanel({
             </div>
           </div>
         )}
+
+        {tab === 'economy' && (() => {
+          const econProfile = COUNTRY_ECONOMIC_PROFILES[country.id] || null;
+          if (!econProfile) {
+            return (
+              <div
+                className="rounded-xl border p-5 text-center space-y-2"
+                style={{
+                  backgroundColor: 'var(--bg-elevated)',
+                  borderColor: 'var(--border-subtle)',
+                  color: 'var(--text-secondary)',
+                }}
+              >
+                <Coins className="h-6 w-6 mx-auto" style={{ color: '#C5831F' }} />
+                <div className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>
+                  {country.name} · 暂未收录长周期量化 GDP 序列
+                </div>
+                <p className="text-xs leading-relaxed">
+                  30 个精编核心国家现已收录公元 1—2024 年长周期经济档案。您可以切换到 30 个精编国家，或点击上方「问 AI 导师」即刻生成该政权的深层财税经济剖析。
+                </p>
+              </div>
+            );
+          }
+
+          const W = 540;
+          const H = 156;
+          const padL = 40;
+          const padR = 14;
+          const padT = 14;
+          const padB = 26;
+          const plotW = W - padL - padR;
+          const plotH = H - padT - padB;
+          const series = econProfile.series;
+          const xAt = (i: number) => padL + (i / Math.max(1, series.length - 1)) * plotW;
+          const maxShare = Math.max(2, ...series.map((s) => s.gdpSharePct));
+          const yShareAt = (v: number) => padT + plotH * (1 - v / maxShare);
+          const sharePath = series
+            .map((pt, i) => `${i === 0 ? 'M' : 'L'} ${xAt(i).toFixed(1)} ${yShareAt(pt.gdpSharePct).toFixed(1)}`)
+            .join(' ');
+          const maxPerCap = Math.max(1500, ...series.map((s) => s.gdpPerCapitaPPP));
+          const isDarkPanel = theme === 'obsidian';
+
+          return (
+            <div className="space-y-4">
+              {/* Structural Signature */}
+              <div
+                className="rounded-xl border p-3.5"
+                style={{
+                  backgroundColor: isDarkPanel ? 'rgba(197, 131, 31, 0.10)' : 'rgba(197, 131, 31, 0.08)',
+                  borderColor: 'rgba(197, 131, 31, 0.42)',
+                }}
+              >
+                <div className="flex items-center gap-1.5 text-xs font-bold mb-1" style={{ color: '#C5831F' }}>
+                  <Coins className="h-3.5 w-3.5" />
+                  <span>{country.name} · 千年经济结构特征</span>
+                </div>
+                <p className="text-xs leading-relaxed" style={{ color: 'var(--text-primary)' }}>
+                  {econProfile.structuralSignature}
+                </p>
+              </div>
+
+              {/* Currency & Fiscal Systems */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <div
+                  className="rounded-xl border p-3 space-y-1"
+                  style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}
+                >
+                  <div className="text-xs font-bold" style={{ color: '#B47417' }}>
+                    货币演进脉络
+                  </div>
+                  <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                    {econProfile.currencyHistory}
+                  </p>
+                </div>
+                <div
+                  className="rounded-xl border p-3 space-y-1"
+                  style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}
+                >
+                  <div className="text-xs font-bold" style={{ color: '#296B9E' }}>
+                    财税与国家信用
+                  </div>
+                  <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                    {econProfile.fiscalEvolution}
+                  </p>
+                </div>
+              </div>
+
+              {/* Global GDP Share SVG Trajectory */}
+              <div
+                className="rounded-xl border p-3.5 space-y-2"
+                style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <div className="text-xs font-bold">占全球 GDP 总量比重轨迹（公元 1 — 2024 年）</div>
+                  <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
+                    点击数据节点可定位版图年份
+                  </span>
+                </div>
+
+                <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto select-none">
+                  {[0, 0.5, 1].map((r) => {
+                    const y = padT + plotH * (1 - r);
+                    const val = (maxShare * r).toFixed(1);
+                    return (
+                      <g key={r}>
+                        <line
+                          x1={padL}
+                          x2={W - padR}
+                          y1={y}
+                          y2={y}
+                          stroke={isDarkPanel ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}
+                          strokeDasharray="3 3"
+                        />
+                        <text
+                          x={padL - 5}
+                          y={y + 3}
+                          textAnchor="end"
+                          fontSize="9"
+                          fill={isDarkPanel ? '#8FA2B8' : '#7A6F62'}
+                        >
+                          {val}%
+                        </text>
+                      </g>
+                    );
+                  })}
+
+                  <path d={sharePath} fill="none" stroke={country.accentColor} strokeWidth="2.4" />
+
+                  {series.map((pt, i) => {
+                    const x = xAt(i);
+                    const y = yShareAt(pt.gdpSharePct);
+                    const isNearCurrent = Math.abs(pt.year - currentYear) <= 45;
+                    return (
+                      <g
+                        key={pt.year}
+                        className="cursor-pointer"
+                        onClick={() => onSelectYear(pt.year)}
+                      >
+                        <circle
+                          cx={x}
+                          cy={y}
+                          r={isNearCurrent ? 4.8 : 3.5}
+                          fill={isNearCurrent ? '#C5831F' : country.accentColor}
+                          stroke="#FFFFFF"
+                          strokeWidth="1.2"
+                        />
+                        <text
+                          x={x}
+                          y={y - 7}
+                          textAnchor="middle"
+                          fontSize="8.5"
+                          fontWeight="600"
+                          fill={isDarkPanel ? '#DCE6F2' : '#3C342B'}
+                        >
+                          {pt.gdpSharePct}%
+                        </text>
+                        <text
+                          x={x}
+                          y={H - 7}
+                          textAnchor="middle"
+                          fontSize="8.5"
+                          fill={isNearCurrent ? '#C5831F' : isDarkPanel ? '#9DB0C4' : '#6E6458'}
+                        >
+                          {pt.year}
+                        </text>
+                      </g>
+                    );
+                  })}
+                </svg>
+              </div>
+
+              {/* Per-Capita GDP PPP & Population Bars */}
+              <div
+                className="rounded-xl border p-3.5 space-y-2"
+                style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}
+              >
+                <div className="flex items-center justify-between text-xs font-bold">
+                  <span>人均产出（2011 Int$ PPP）与人口规模对照</span>
+                  <span className="text-[10px] font-normal" style={{ color: 'var(--text-muted)' }}>
+                    Maddison 口径历史重建
+                  </span>
+                </div>
+                <div className="space-y-1.5">
+                  {series.map((pt) => {
+                    const barPct = Math.max(2, (pt.gdpPerCapitaPPP / maxPerCap) * 100);
+                    return (
+                      <button
+                        key={pt.year}
+                        type="button"
+                        onClick={() => onSelectYear(pt.year)}
+                        className="w-full flex items-center gap-2 text-left text-[11px] hover:opacity-85 cursor-pointer"
+                      >
+                        <span className="w-11 font-semibold shrink-0" style={{ color: 'var(--text-secondary)' }}>
+                          {pt.year === 1 ? 'AD 1' : pt.year}
+                        </span>
+                        <div className="flex-1 min-w-0">
+                          <div
+                            className="h-2 w-full rounded-full overflow-hidden"
+                            style={{ backgroundColor: 'var(--bg-muted)' }}
+                          >
+                            <div
+                              className="h-full rounded-full"
+                              style={{ width: `${barPct}%`, backgroundColor: '#C5831F' }}
+                            />
+                          </div>
+                        </div>
+                        <span className="w-16 text-right font-semibold shrink-0">
+                          ${pt.gdpPerCapitaPPP.toLocaleString('en-US')}
+                        </span>
+                        <span className="w-16 text-right shrink-0" style={{ color: 'var(--text-muted)' }}>
+                          {pt.populationM >= 100 ? `${Math.round(pt.populationM)}M` : `${pt.populationM}M`}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Pillar Industries */}
+              <div className="space-y-2">
+                <h3 className="text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>
+                  分阶段支柱产业与分工地位
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  {econProfile.pillarIndustries.map((item) => (
+                    <div
+                      key={item.era}
+                      className="rounded-xl border p-3 space-y-1"
+                      style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}
+                    >
+                      <div className="text-xs font-bold" style={{ color: country.accentColor }}>
+                        {item.era}
+                      </div>
+                      <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                        {item.sectors}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Economic Turning Points */}
+              <div className="space-y-2">
+                <h3 className="text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>
+                  关键经济制度拐点（点击跳转地图）
+                </h3>
+                <div className="space-y-2">
+                  {econProfile.turningPoints.map((tp) => (
+                    <button
+                      key={`${tp.year}-${tp.title}`}
+                      type="button"
+                      onClick={() => onSelectYear(tp.year)}
+                      className="w-full rounded-xl border p-3 text-left transition hover:opacity-85 cursor-pointer"
+                      style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-xs font-bold" style={{ color: 'var(--text-primary)' }}>
+                          {formatShortYear(tp.year)} · {tp.title}
+                        </span>
+                        <span className="text-[11px] font-semibold shrink-0" style={{ color: country.accentColor }}>
+                          定位地图 →
+                        </span>
+                      </div>
+                      <p className="mt-1 text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                        {tp.impact}
+                      </p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          );
+        })()}
 
         {tab === 'events' && (
           <div className="space-y-3">

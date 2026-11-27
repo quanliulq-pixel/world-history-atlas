@@ -10,6 +10,12 @@ import { HISTORICAL_MEGA_STRUCTURES, HISTORICAL_PLACES } from '../src/data/histo
 import { HISTORICAL_ROUTES } from '../src/data/routes.ts';
 import { STORYLINES } from '../src/data/storylines.ts';
 import { WORLD_PULSE_SLICES } from '../src/data/worldPulse.ts';
+import {
+  FINANCIAL_CRISES_CATALOG,
+  GLOBAL_ECON_BENCHMARKS,
+  MONETARY_REGIMES,
+} from '../src/data/economicHistory.ts';
+import { COUNTRY_ECONOMIC_PROFILES } from '../src/data/countryEconomics.ts';
 
 const errors = [];
 
@@ -19,8 +25,8 @@ if (Math.abs(weightSum - 1) > 1e-6) {
   errors.push(`ERAS weights sum to ${weightSum}, expected 1.0`);
 }
 
-if (ALL_EVENTS.length < 165) {
-  errors.push(`Expected >= 165 events, found ${ALL_EVENTS.length}`);
+if (ALL_EVENTS.length < 185) {
+  errors.push(`Expected >= 185 events, found ${ALL_EVENTS.length}`);
 }
 
 for (const era of ERAS) {
@@ -42,8 +48,8 @@ for (const era of ERAS) {
 }
 
 const routeMap = new Map(HISTORICAL_ROUTES.map((r) => [r.id, r]));
-if (HISTORICAL_ROUTES.length < 18) {
-  errors.push(`Expected >= 18 routes, found ${HISTORICAL_ROUTES.length}`);
+if (HISTORICAL_ROUTES.length < 22) {
+  errors.push(`Expected >= 22 routes, found ${HISTORICAL_ROUTES.length}`);
 }
 
 const seenEventIds = new Set();
@@ -100,8 +106,8 @@ for (const r of HISTORICAL_ROUTES) {
   }
 }
 
-if (STORYLINES.length < 10) {
-  errors.push(`Expected >= 10 storylines, found ${STORYLINES.length}`);
+if (STORYLINES.length < 12) {
+  errors.push(`Expected >= 12 storylines, found ${STORYLINES.length}`);
 }
 
 for (const sl of STORYLINES) {
@@ -135,8 +141,8 @@ for (const slice of WORLD_PULSE_SLICES) {
   }
 }
 
-if (ALL_FIGURES.length < 80) {
-  errors.push(`Expected >= 80 historical figures, found ${ALL_FIGURES.length}`);
+if (ALL_FIGURES.length < 98) {
+  errors.push(`Expected >= 98 historical figures, found ${ALL_FIGURES.length}`);
 }
 
 const seenFigureIds = new Set();
@@ -228,6 +234,61 @@ for (const c of COUNTRY_PROFILES) {
   if (countryIndexJson && !countryIndexJson.modernCountries?.[c.modernCountryKey]) {
     errors.push(`Country ${c.id} modernCountryKey "${c.modernCountryKey}" missing in country-evolution-index.json`);
   }
+  const econ = COUNTRY_ECONOMIC_PROFILES[c.id];
+  if (!econ) {
+    errors.push(`Country ${c.id} missing economic profile in COUNTRY_ECONOMIC_PROFILES`);
+  } else {
+    if (!Array.isArray(econ.series) || econ.series.length < 8) {
+      errors.push(`Country ${c.id} economic series must have >= 8 data points`);
+    } else {
+      for (let i = 1; i < econ.series.length; i++) {
+        if (econ.series[i].year <= econ.series[i - 1].year) {
+          errors.push(`Country ${c.id} economic series years must strictly increase`);
+        }
+      }
+    }
+    if (!Array.isArray(econ.pillarIndustries) || econ.pillarIndustries.length < 2) {
+      errors.push(`Country ${c.id} economic profile must have >= 2 pillarIndustries`);
+    }
+    if (!Array.isArray(econ.turningPoints) || econ.turningPoints.length < 2) {
+      errors.push(`Country ${c.id} economic profile must have >= 2 turningPoints`);
+    }
+  }
+}
+
+if (GLOBAL_ECON_BENCHMARKS.length < 16) {
+  errors.push(`Expected >= 16 global econ benchmarks, found ${GLOBAL_ECON_BENCHMARKS.length}`);
+}
+for (let i = 0; i < GLOBAL_ECON_BENCHMARKS.length; i++) {
+  const b = GLOBAL_ECON_BENCHMARKS[i];
+  if (i > 0 && b.year <= GLOBAL_ECON_BENCHMARKS[i - 1].year) {
+    errors.push(`GLOBAL_ECON_BENCHMARKS years must be strictly ascending (at ${b.year})`);
+  }
+  const shareVals = Object.values(b.gdpSharePct);
+  const sum = shareVals.reduce((acc, v) => acc + v, 0);
+  if (shareVals.some((v) => !Number.isFinite(v) || v < 0)) {
+    errors.push(`GLOBAL_ECON_BENCHMARKS(${b.year}) has invalid negative/non-finite share`);
+  }
+  if (sum < 98 || sum > 102) {
+    errors.push(`GLOBAL_ECON_BENCHMARKS(${b.year}) gdpSharePct sums to ${sum.toFixed(2)}, expected ~100`);
+  }
+}
+
+if (MONETARY_REGIMES.length < 7) {
+  errors.push(`Expected >= 7 monetary regimes, found ${MONETARY_REGIMES.length}`);
+}
+
+if (FINANCIAL_CRISES_CATALOG.length < 16) {
+  errors.push(`Expected >= 16 financial crises, found ${FINANCIAL_CRISES_CATALOG.length}`);
+}
+for (const fc of FINANCIAL_CRISES_CATALOG) {
+  const [lng, lat] = fc.coords;
+  if (!Number.isFinite(lng) || !Number.isFinite(lat) || lng < -180 || lng > 180 || lat < -90 || lat > 90) {
+    errors.push(`Financial crisis ${fc.id} has invalid coords`);
+  }
+  if (fc.relatedEventId && !EVENT_MAP[fc.relatedEventId]) {
+    errors.push(`Financial crisis ${fc.id} references unknown eventId: ${fc.relatedEventId}`);
+  }
 }
 
 if (errors.length > 0) {
@@ -286,3 +347,7 @@ console.log(`  - Historical places: ${HISTORICAL_PLACES.length}`);
 console.log(`  - Routes: ${HISTORICAL_ROUTES.length}`);
 console.log(`  - Storylines: ${STORYLINES.length}`);
 console.log(`  - World pulse slices: ${WORLD_PULSE_SLICES.length}`);
+console.log(`  - Global econ benchmarks: ${GLOBAL_ECON_BENCHMARKS.length}`);
+console.log(`  - Monetary regimes: ${MONETARY_REGIMES.length}`);
+console.log(`  - Financial crises: ${FINANCIAL_CRISES_CATALOG.length}`);
+console.log(`  - Country economic profiles: ${Object.keys(COUNTRY_ECONOMIC_PROFILES).length}`);

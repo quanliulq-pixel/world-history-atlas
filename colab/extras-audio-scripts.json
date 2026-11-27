@@ -1,10 +1,10 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-26T12:10:50.604Z",
+  "generatedAt": "2026-11-27T08:26:05.789Z",
   "counts": {
-    "total": 160,
+    "total": 176,
     "countryStages": 85,
-    "storylineSteps": 75
+    "storylineSteps": 91
   },
   "items": [
     {
@@ -1286,6 +1286,134 @@
       "title": "法典、宪政与国家治理形态演进 (11/11)",
       "file": "story/story-law-governance/step-10.mp3",
       "script": "公元 1945 年，《联合国宪章》、纽伦堡审判与核纪元。历经两次世界大战浩劫，1945 年《联合国宪章》与纽伦堡国际审判首次试图以超国家机构和国际法约束主权国家的侵略暴力。"
+    },
+    {
+      "key": "story:story-financial-crises:0",
+      "kind": "story",
+      "id": "story-financial-crises:0",
+      "title": "从郁金香到次贷：全球金融泡沫与危机应对史 (1/8)",
+      "file": "story/story-financial-crises/step-0.mp3",
+      "script": "1636 — 1637 年，荷兰郁金香狂热：近代最早衍生品与资产泡沫崩盘。1637 年荷兰郁金香狂热借远期风交易零门槛撬动大众狂热投机，当拍卖一朝流拍，人类首份近代金融泡沫教材就此写就。"
+    },
+    {
+      "key": "story:story-financial-crises:1",
+      "kind": "story",
+      "id": "story-financial-crises:1",
+      "title": "从郁金香到次贷：全球金融泡沫与危机应对史 (2/8)",
+      "file": "story/story-financial-crises/step-1.mp3",
+      "script": "公元 1694 年，英格兰银行成立与现代公共国债货币革命。1720 年英法南海泡沫与密西西比危机几乎同期破灭，证实银行印钞决不可与投机股票绑定，也促使英格兰银行锻造公共债务防线。"
+    },
+    {
+      "key": "story:story-financial-crises:2",
+      "kind": "story",
+      "id": "story-financial-crises:2",
+      "title": "从郁金香到次贷：全球金融泡沫与危机应对史 (3/8)",
+      "file": "story/story-financial-crises/step-2.mp3",
+      "script": "1873 — 1896 年，1873 年维也纳—华尔街恐慌与欧美二十年长萧条。1873 年维也纳与华尔街铁路恐慌叠加各国刚性金本位通缩，拉响持续二十余年的长萧条并逆转 19 世纪自由贸易气氛。"
+    },
+    {
+      "key": "story:story-financial-crises:3",
+      "kind": "story",
+      "id": "story-financial-crises:3",
+      "title": "从郁金香到次贷：全球金融泡沫与危机应对史 (4/8)",
+      "file": "story/story-financial-crises/step-3.mp3",
+      "script": "1913 年 12 月，美国《联邦储备法案》落地：现代核心央行体制确立。吸取 1907 年只能靠老摩根私营救市的惊险教训，美国于 1913 年立起美联储体系，期望设立常设现代最后贷款人。"
+    },
+    {
+      "key": "story:story-financial-crises:4",
+      "kind": "story",
+      "id": "story-financial-crises:4",
+      "title": "从郁金香到次贷：全球金融泡沫与危机应对史 (5/8)",
+      "file": "story/story-financial-crises/step-4.mp3",
+      "script": "公元 1929–1933 年，1929 年华尔街股灾与全球大萧条。1929 年华尔街股灾引爆史无前例大萧条，美联储任由银行缩表违约加深灾难，最终倒逼罗斯福新政、存款保险与凯恩斯调控。"
+    },
+    {
+      "key": "story:story-financial-crises:5",
+      "kind": "story",
+      "id": "story-financial-crises:5",
+      "title": "从郁金香到次贷：全球金融泡沫与危机应对史 (6/8)",
+      "file": "story/story-financial-crises/step-5.mp3",
+      "script": "1979 — 1982 年，沃尔克冲击：20% 铁腕高利率终结大滞胀与货币主义转折。1979 年面对大滞胀，沃尔克把美元利率拉升至 20% 刺破恶性通胀，但也直接引爆 1982 年拉美美元外债全面违约潮。"
+    },
+    {
+      "key": "story:story-financial-crises:6",
+      "kind": "story",
+      "id": "story-financial-crises:6",
+      "title": "从郁金香到次贷：全球金融泡沫与危机应对史 (7/8)",
+      "file": "story/story-financial-crises/step-6.mp3",
+      "script": "公元 1997–1998 年，1997 年亚洲金融危机与汇率安全警钟。1997 年泰铢失守引爆亚洲金融危机，打破固定汇率+短期热钱开放美梦，倒逼东亚痛攒外汇储备并铸成区域货币互换盾牌。"
+    },
+    {
+      "key": "story:story-financial-crises:7",
+      "kind": "story",
+      "id": "story-financial-crises:7",
+      "title": "从郁金香到次贷：全球金融泡沫与危机应对史 (8/8)",
+      "file": "story/story-financial-crises/step-7.mp3",
+      "script": "公元 2008 年，2008 年全球金融危机与民粹主义抬头。2008 年美国次贷衍生品崩盘冻住全球同业拆借，联储开启史无前例 QE 救市并将全球拖入十余年低利率与地缘重构新局。"
+    },
+    {
+      "key": "story:story-trade-globalization:0",
+      "kind": "story",
+      "id": "story-trade-globalization:0",
+      "title": "贸易秩序与产业链重塑：从丝路、汉萨到芯片全球化 (1/8)",
+      "file": "story/story-trade-globalization/step-0.mp3",
+      "script": "公元前 138 年 / 前 119 年，张骞凿空西域与陆上丝绸之路开辟。公元前 138 年张骞凿空打通长安至地中海丝绸大道，汉代丝绸与帕提亚安息、罗马金银首次建立制度化陆上远程商业循环。"
+    },
+    {
+      "key": "story:story-trade-globalization:1",
+      "kind": "story",
+      "id": "story-trade-globalization:1",
+      "title": "贸易秩序与产业链重塑：从丝路、汉萨到芯片全球化 (2/8)",
+      "file": "story/story-trade-globalization/step-1.mp3",
+      "script": "1358 年，汉萨同盟全盛：北欧港市商团主导波罗的海贸易网。14 世纪北欧自治港市结成汉萨同盟，通过大宗粮食、木材与鲱鱼海运把波罗的海—北海塑造成高契约度的跨国区域商业网。"
+    },
+    {
+      "key": "story:story-trade-globalization:2",
+      "kind": "story",
+      "id": "story-trade-globalization:2",
+      "title": "贸易秩序与产业链重塑：从丝路、汉萨到芯片全球化 (3/8)",
+      "file": "story/story-trade-globalization/step-2.mp3",
+      "script": "公元 1565–1815 年，马尼拉大帆船航线与太平洋白银链。1565 年起墨西哥阿卡普尔科—马尼拉太平洋大帆船起航，把美洲波托西白银换取中国丝瓷的双向贸易织入史上首轮真实全球市场。"
+    },
+    {
+      "key": "story:story-trade-globalization:3",
+      "kind": "story",
+      "id": "story-trade-globalization:3",
+      "title": "贸易秩序与产业链重塑：从丝路、汉萨到芯片全球化 (4/8)",
+      "file": "story/story-trade-globalization/step-3.mp3",
+      "script": "1834 年 1 月，德意志关税同盟（Zollverein）成立：先经济统一后政治建国。1834 年德意志关税同盟拆除内部重重路卡并铺设铁路，论证了构建洲际级统一内部市场是后发制造业起飞的核心跳板。"
+    },
+    {
+      "key": "story:story-trade-globalization:4",
+      "kind": "story",
+      "id": "story-trade-globalization:4",
+      "title": "贸易秩序与产业链重塑：从丝路、汉萨到芯片全球化 (5/8)",
+      "file": "story/story-trade-globalization/step-4.mp3",
+      "script": "1846 年 6 月，英国废除《谷物法》：单边自由贸易与国际分工定型。1846 年英国单边废除谷物关税拥抱全球粮食进口，辅以 1869 年苏伊士运河通航，奠基欧美工业制成品 + 世界其他地区农矿供给百年大分流分工。"
+    },
+    {
+      "key": "story:story-trade-globalization:5",
+      "kind": "story",
+      "id": "story-trade-globalization:5",
+      "title": "贸易秩序与产业链重塑：从丝路、汉萨到芯片全球化 (6/8)",
+      "file": "story/story-trade-globalization/step-5.mp3",
+      "script": "公元 1957 年，《罗马条约》签署与欧洲共同市场一体化启程。1957 年西欧六国签下《罗马条约》启动共同市场，彻底在核心战火区建立零关税产业集群并一步步迈向欧元单一货币区。"
+    },
+    {
+      "key": "story:story-trade-globalization:6",
+      "kind": "story",
+      "id": "story-trade-globalization:6",
+      "title": "贸易秩序与产业链重塑：从丝路、汉萨到芯片全球化 (7/8)",
+      "file": "story/story-trade-globalization/step-6.mp3",
+      "script": "公元 2001 年 12 月，中国加入 WTO 与世界工厂超级全球化。2001 年中国入世使十四亿人口高效率制造业融入全球市场，形成美欧研发、东亚核心晶圆、中国集成组装与中东能源互补的超级全球化黄金链。"
+    },
+    {
+      "key": "story:story-trade-globalization:7",
+      "kind": "story",
+      "id": "story-trade-globalization:7",
+      "title": "贸易秩序与产业链重塑：从丝路、汉萨到芯片全球化 (8/8)",
+      "file": "story/story-trade-globalization/step-7.mp3",
+      "script": "公元 2018 年至今，中美战略竞争与全球供应链去风险重构。2018 年起大国关税竞争、芯片出口管制与中国+N / 友岸重构打破单一追求极致效率时代，世界供应链进入成本、安全与区域多元化再平衡期。"
     }
   ]
 }

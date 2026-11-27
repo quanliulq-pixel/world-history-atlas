@@ -8,6 +8,7 @@ import { ERA6_EVENTS } from './era6';
 import { ERA7_EVENTS } from './era7';
 import { ERA8_EVENTS } from './era8';
 import { FINER_CHRONOLOGY_EVENTS } from './finerChronology';
+import { ECONOMIC_EXPANSION_EVENTS } from './economicExpansion';
 
 export const ALL_EVENTS: HistoryEvent[] = [
   ...ERA1_EVENTS,
@@ -19,6 +20,7 @@ export const ALL_EVENTS: HistoryEvent[] = [
   ...ERA7_EVENTS,
   ...ERA8_EVENTS,
   ...FINER_CHRONOLOGY_EVENTS,
+  ...ECONOMIC_EXPANSION_EVENTS,
 ].sort((a, b) => a.year - b.year);
 
 export const EVENT_MAP: Record<string, HistoryEvent> = Object.fromEntries(

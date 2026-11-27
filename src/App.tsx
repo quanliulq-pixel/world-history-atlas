@@ -9,6 +9,7 @@ import {
   CountryEvolutionPanel,
   CountryMapDock,
 } from './components/CountryEvolutionView';
+import { EconomicAtlasModal } from './components/EconomicAtlasModal';
 import { EventCardPanel } from './components/EventCardPanel';
 import { GeoChronoGameModal } from './components/GeoChronoGameModal';
 import { SearchAndProgressModal } from './components/SearchAndProgressModal';
@@ -178,6 +179,7 @@ export function App() {
   } | null>(null);
 
   const [pulseOpen, setPulseOpen] = useState(false);
+  const [economicAtlasOpen, setEconomicAtlasOpen] = useState(false);
   const [storyPickerOpen, setStoryPickerOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [timeSwipeOpen, setTimeSwipeOpen] = useState(false);
@@ -1817,6 +1819,7 @@ export function App() {
   }, [
     aiOpen,
     pulseOpen,
+    economicAtlasOpen,
     storyPickerOpen,
     searchOpen,
     chronoGameOpen,
@@ -1839,7 +1842,7 @@ export function App() {
       window.addEventListener('keydown', handleAiEsc);
       return () => window.removeEventListener('keydown', handleAiEsc);
     }
-    if (!activeCountry || pulseOpen || storyPickerOpen || searchOpen) return;
+    if (!activeCountry || pulseOpen || economicAtlasOpen || storyPickerOpen || searchOpen) return;
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') handleExitCountryMode();
     };
@@ -1891,6 +1894,10 @@ export function App() {
           onOpenPulse={() => {
             stopAiNarrationAndStage(true, true);
             setPulseOpen(true);
+          }}
+          onOpenEconomicAtlas={() => {
+            stopAiNarrationAndStage(true, true);
+            setEconomicAtlasOpen(true);
           }}
           onOpenStorylines={() => {
             stopAiNarrationAndStage(true, true);
@@ -2356,6 +2363,21 @@ export function App() {
           applyYearChange(yr);
         }}
         onSelectEvent={(ev) => handleSelectEvent(ev)}
+      />
+
+      <EconomicAtlasModal
+        open={economicAtlasOpen}
+        currentYear={currentYear}
+        theme={theme}
+        onClose={() => setEconomicAtlasOpen(false)}
+        onJumpToYear={(yr) => {
+          applyYearChange(yr);
+        }}
+        onSelectEvent={(ev) => handleSelectEvent(ev)}
+        onSelectCountry={(countryId) => {
+          setEconomicAtlasOpen(false);
+          handleSelectCuratedCountry(countryId);
+        }}
       />
 
       <StorylinePickerModal

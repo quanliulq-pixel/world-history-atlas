@@ -283,3 +283,84 @@ export interface ResolvedCountryEvolution {
   events: HistoryEvent[];
   figures: HistoricalFigure[];
 }
+
+export type GlobalMacroRegionKey =
+  | 'china'
+  | 'india'
+  | 'westernEurope'
+  | 'usa'
+  | 'japan'
+  | 'russiaUssr'
+  | 'middleEastNorthAfrica'
+  | 'latinAmerica'
+  | 'restOfWorld';
+
+export interface GlobalEconBenchmark {
+  year: number;
+  label: string;
+  worldPopulationM: number;
+  worldGdpBillionPPP: number;
+  worldGdpPerCapitaPPP: number;
+  tradeOpennessPct: number;
+  monetaryRegime: string;
+  dominantEconomy: string;
+  keyShift: string;
+  gdpSharePct: Record<GlobalMacroRegionKey, number>;
+  gdpPerCapitaPPP: {
+    china: number;
+    india: number;
+    westernEurope: number;
+    usa: number;
+    japan: number;
+    world: number;
+  };
+}
+
+export interface FinancialCrisisRecord {
+  id: string;
+  year: number;
+  yearDisplay: string;
+  name: string;
+  epicenter: string;
+  region: WorldRegion;
+  trigger: string;
+  mechanism: string;
+  peakImpact: string;
+  policyResponse: string;
+  institutionalLegacy: string;
+  severity: 1 | 2 | 3;
+  relatedEventId?: string;
+  coords: [number, number];
+}
+
+export interface MonetaryRegimeEpoch {
+  id: string;
+  startYear: number;
+  endYear: number;
+  periodLabel: string;
+  name: string;
+  anchorAsset: string;
+  coreCenter: string;
+  settlementMechanism: string;
+  strength: string;
+  vulnerability: string;
+  accentColor: string;
+}
+
+export interface CountryEconPoint {
+  year: number;
+  gdpSharePct: number;
+  gdpPerCapitaPPP: number;
+  populationM: number;
+  note?: string;
+}
+
+export interface CountryEconomicProfile {
+  countryId: string;
+  structuralSignature: string;
+  currencyHistory: string;
+  fiscalEvolution: string;
+  pillarIndustries: Array<{ era: string; sectors: string }>;
+  turningPoints: Array<{ year: number; title: string; impact: string }>;
+  series: CountryEconPoint[];
+}

@@ -1,6 +1,11 @@
-import { ArrowUpRight, Compass, X } from 'lucide-react';
+import { ArrowUpRight, Compass, TrendingUp, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { EVENT_MAP } from '../data/events';
+import {
+  GLOBAL_ECON_REGION_META,
+  GLOBAL_MACRO_REGION_KEYS,
+  findNearestEconBenchmark,
+} from '../data/economicHistory';
 import { WORLD_PULSE_SLICES } from '../data/worldPulse';
 import type { HistoryEvent, ThemeMode } from '../types/history';
 
@@ -46,6 +51,10 @@ export function WorldPulseModal({
 
   const activeSlice =
     WORLD_PULSE_SLICES.find((s) => s.id === selectedSliceId) || WORLD_PULSE_SLICES[0];
+  const econBench = findNearestEconBenchmark(activeSlice.year);
+  const topRegions = [...GLOBAL_MACRO_REGION_KEYS]
+    .sort((a, b) => econBench.gdpSharePct[b] - econBench.gdpSharePct[a])
+    .slice(0, 5);
 
   return (
     <div
@@ -136,6 +145,63 @@ export function WorldPulseModal({
               <span>看此年份地图</span>
               <ArrowUpRight className="h-3.5 w-3.5" />
             </button>
+          </div>
+
+          {/* Global Macroeconomic Reference Strip */}
+          <div
+            className="rounded-xl border p-3 space-y-2"
+            style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}
+          >
+            <div className="flex flex-wrap items-center justify-between gap-2 text-[11px]">
+              <div className="flex items-center gap-1.5 font-bold" style={{ color: '#C5831F' }}>
+                <TrendingUp className="h-3.5 w-3.5" />
+                <span>
+                  同期全球宏观经济参考（
+                  {activeSlice.year < 1 ? `参考公元 1 年基准` : `最邻近 ${econBench.year} 年基准`}）
+                </span>
+              </div>
+              <div className="flex flex-wrap items-center gap-3" style={{ color: 'var(--text-secondary)' }}>
+                <span>
+                  总人口：<strong style={{ color: 'var(--text-primary)' }}>{econBench.worldPopulationM >= 1000 ? `${(econBench.worldPopulationM / 1000).toFixed(2)}B` : `${econBench.worldPopulationM}M`}</strong>
+                </span>
+                <span>
+                  世界 GDP (PPP)：<strong style={{ color: 'var(--text-primary)' }}>{econBench.worldGdpBillionPPP >= 1000 ? `$${(econBench.worldGdpBillionPPP / 1000).toFixed(2)}T` : `$${econBench.worldGdpBillionPPP}B`}</strong>
+                </span>
+                <span>
+                  人均：<strong style={{ color: 'var(--text-primary)' }}>${econBench.worldGdpPerCapitaPPP.toLocaleString('en-US')}</strong>
+                </span>
+                <span className="hidden sm:inline truncate max-w-[260px]" title={econBench.monetaryRegime}>
+                  币制：{econBench.monetaryRegime}
+                </span>
+              </div>
+            </div>
+
+            <div className="h-2.5 w-full rounded-full overflow-hidden flex" style={{ backgroundColor: 'var(--bg-muted)' }}>
+              {GLOBAL_MACRO_REGION_KEYS.map((rk) => (
+                <div
+                  key={rk}
+                  style={{
+                    width: `${econBench.gdpSharePct[rk]}%`,
+                    backgroundColor: GLOBAL_ECON_REGION_META[rk].color,
+                  }}
+                  title={`${GLOBAL_ECON_REGION_META[rk].label}: ${econBench.gdpSharePct[rk]}%`}
+                />
+              ))}
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2.5 text-[10px]" style={{ color: 'var(--text-secondary)' }}>
+              {topRegions.map((rk) => (
+                <span key={rk} className="inline-flex items-center gap-1">
+                  <span
+                    className="h-2 w-2 rounded-sm"
+                    style={{ backgroundColor: GLOBAL_ECON_REGION_META[rk].color }}
+                  />
+                  <span>
+                    {GLOBAL_ECON_REGION_META[rk].shortLabel} {econBench.gdpSharePct[rk]}%
+                  </span>
+                </span>
+              ))}
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">

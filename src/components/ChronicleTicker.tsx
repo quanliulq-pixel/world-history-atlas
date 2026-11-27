@@ -3,6 +3,8 @@ import {
   Film,
   GripVertical,
   Loader2,
+  Maximize2,
+  Minimize2,
   PanelRight,
   Pause,
   Sparkles,
@@ -17,11 +19,22 @@ import type { AiDocumentaryBeat } from '../utils/aiClient';
 import { formatYear } from '../utils/timeline';
 
 const TICKER_POS_KEY = 'world-history-atlas:ticker-pos:v1';
+const TICKER_SIZE_KEY = 'world-history-atlas:ticker-size:v1';
+const TICKER_COMPACT_KEY = 'world-history-atlas:ticker-compact:v1';
+const MIN_TICKER_WIDTH = 300;
+const MIN_TICKER_HEIGHT = 104;
 
 interface TickerPos {
   x: number;
   y: number;
 }
+
+interface TickerSize {
+  width: number;
+  height: number | null;
+}
+
+type ResizeEdge = 'right' | 'bottom' | 'corner';
 
 function readStoredTickerPos(): TickerPos | null {
   try {
@@ -46,6 +59,50 @@ function saveStoredTickerPos(pos: TickerPos | null): void {
   try {
     if (!pos) localStorage.removeItem(TICKER_POS_KEY);
     else localStorage.setItem(TICKER_POS_KEY, JSON.stringify(pos));
+  } catch {
+    // Ignore storage errors
+  }
+}
+
+function readStoredTickerSize(): TickerSize | null {
+  try {
+    const raw = localStorage.getItem(TICKER_SIZE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Partial<TickerSize>;
+    if (typeof parsed.width === 'number' && Number.isFinite(parsed.width)) {
+      const height =
+        typeof parsed.height === 'number' && Number.isFinite(parsed.height)
+          ? parsed.height
+          : null;
+      return { width: parsed.width, height };
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function saveStoredTickerSize(size: TickerSize | null): void {
+  try {
+    if (!size) localStorage.removeItem(TICKER_SIZE_KEY);
+    else localStorage.setItem(TICKER_SIZE_KEY, JSON.stringify(size));
+  } catch {
+    // Ignore storage errors
+  }
+}
+
+function readStoredTickerCompact(): boolean {
+  try {
+    return localStorage.getItem(TICKER_COMPACT_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
+function saveStoredTickerCompact(compact: boolean): void {
+  try {
+    if (!compact) localStorage.removeItem(TICKER_COMPACT_KEY);
+    else localStorage.setItem(TICKER_COMPACT_KEY, '1');
   } catch {
     // Ignore storage errors
   }
@@ -106,7 +163,10 @@ export function ChronicleTicker({
 }: ChronicleTickerProps) {
   const [speedOpen, setSpeedOpen] = useState(false);
   const [pos, setPos] = useState<TickerPos | null>(() => readStoredTickerPos());
+  const [size, setSize] = useState<TickerSize | null>(() => readStoredTickerSize());
+  const [compact, setCompact] = useState<boolean>(() => readStoredTickerCompact());
   const [isDragging, setIsDragging] = useState(false);
+  const [isResizing, setIsResizing] = useState(false);
   const speedRef = useRef<HTMLDivElement | null>(null);
   const cardRef = useRef<HTMLDivElement | null>(null);
   const dragRef = useRef<{
@@ -115,6 +175,16 @@ export function ChronicleTicker({
     startY: number;
     originLeft: number;
     originTop: number;
+  } | null>(null);
+  const resizeRef = useRef<{
+    pointerId: number;
+    edge: ResizeEdge;
+    startX: number;
+    startY: number;
+    originLeft: number;
+    originTop: number;
+    startWidth: number;
+    startHeight: number;
   } | null>(null);
 
   const clampPosToParent = useCallback(
@@ -134,10 +204,64 @@ export function ChronicleTicker({
     [rightDrawerVisible],
   );
 
+  const clampSizeToParent = useCallback(
+    (width: number, height: number | null, anchorLeft?: number, anchorTop?: number): TickerSize => {
+      const card = cardRef.current;
+      const parent = card?.offsetParent as HTMLElement | null;
+      if (!card || !parent) {
+        return {
+          width: Math.round(Math.max(MIN_TICKER_WIDTH, width)),
+          height: height === null ? null : Math.round(Math.max(MIN_TICKER_HEIGHT, height)),
+        };
+      }
+      const pad = 8;
+      const rightReserve = rightDrawerVisible && parent.clientWidth >= 1024 ? 434 : pad;
+      const maxWidth =
+        anchorLeft !== undefined
+          ? Math.max(MIN_TICKER_WIDTH, parent.clientWidth - anchorLeft - rightReserve)
+          : Math.max(MIN_TICKER_WIDTH, parent.clientWidth - pad - rightReserve);
+      const maxHeight =
+        anchorTop !== undefined
+          ? Math.max(MIN_TICKER_HEIGHT, parent.clientHeight - anchorTop - pad)
+          : Math.max(MIN_TICKER_HEIGHT, parent.clientHeight - pad * 2);
+      return {
+        width: Math.round(Math.max(MIN_TICKER_WIDTH, Math.min(maxWidth, width))),
+        height:
+          height === null
+            ? null
+            : Math.round(Math.max(MIN_TICKER_HEIGHT, Math.min(maxHeight, height))),
+      };
+    },
+    [rightDrawerVisible],
+  );
+
   useEffect(() => {
-    if (!visible || !pos) return;
+    if (!visible || (!pos && !size)) return;
     const syncClamp = () => {
-      setPos((cur) => (cur ? clampPosToParent(cur.x, cur.y) : null));
+      setSize((cur) => {
+        if (!cur) return null;
+        const card = cardRef.current;
+        const parent = card?.offsetParent as HTMLElement | null;
+        const cardRect = card?.getBoundingClientRect();
+        const parentRect = parent?.getBoundingClientRect();
+        const anchorLeft = pos
+          ? pos.x
+          : cardRect && parentRect
+            ? Math.round(cardRect.left - parentRect.left)
+            : undefined;
+        const anchorTop = pos
+          ? pos.y
+          : cardRect && parentRect
+            ? Math.round(cardRect.top - parentRect.top)
+            : undefined;
+        const clamped = clampSizeToParent(cur.width, cur.height, anchorLeft, anchorTop);
+        return clamped.width === cur.width && clamped.height === cur.height ? cur : clamped;
+      });
+      setPos((cur) => {
+        if (!cur) return null;
+        const clamped = clampPosToParent(cur.x, cur.y);
+        return clamped.x === cur.x && clamped.y === cur.y ? cur : clamped;
+      });
     };
     const rafId = window.requestAnimationFrame(syncClamp);
     window.addEventListener('resize', syncClamp);
@@ -145,7 +269,14 @@ export function ChronicleTicker({
       window.cancelAnimationFrame(rafId);
       window.removeEventListener('resize', syncClamp);
     };
-  }, [visible, pos !== null, rightDrawerVisible, clampPosToParent]);
+  }, [
+    visible,
+    pos !== null,
+    size !== null,
+    rightDrawerVisible,
+    clampPosToParent,
+    clampSizeToParent,
+  ]);
 
   useEffect(() => {
     if (!speedOpen) return;
@@ -208,9 +339,97 @@ export function ChronicleTicker({
     });
   };
 
+  const handleResizePointerDown =
+    (edge: ResizeEdge) => (e: React.PointerEvent<HTMLDivElement>) => {
+      if (e.button !== 0) return;
+      e.stopPropagation();
+      const card = cardRef.current;
+      const parent = card?.offsetParent as HTMLElement | null;
+      if (!card || !parent) return;
+
+      const cardRect = card.getBoundingClientRect();
+      const parentRect = parent.getBoundingClientRect();
+      const originLeft = pos ? pos.x : Math.round(cardRect.left - parentRect.left);
+      const originTop = pos ? pos.y : Math.round(cardRect.top - parentRect.top);
+      if (!pos) {
+        setPos({ x: originLeft, y: originTop });
+      }
+
+      e.currentTarget.setPointerCapture(e.pointerId);
+      resizeRef.current = {
+        pointerId: e.pointerId,
+        edge,
+        startX: e.clientX,
+        startY: e.clientY,
+        originLeft,
+        originTop,
+        startWidth: Math.round(cardRect.width),
+        startHeight: Math.round(cardRect.height),
+      };
+      setIsResizing(true);
+    };
+
+  const handleResizePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const resize = resizeRef.current;
+    if (!resize || resize.pointerId !== e.pointerId) return;
+    const dx = e.clientX - resize.startX;
+    const dy = e.clientY - resize.startY;
+    const nextWidth = resize.edge === 'bottom' ? resize.startWidth : resize.startWidth + dx;
+    const nextHeight =
+      resize.edge === 'right' ? (size?.height ?? null) : resize.startHeight + dy;
+    setSize(
+      clampSizeToParent(nextWidth, nextHeight, resize.originLeft, resize.originTop),
+    );
+  };
+
+  const handleResizePointerEnd = (e: React.PointerEvent<HTMLDivElement>) => {
+    const resize = resizeRef.current;
+    if (!resize || resize.pointerId !== e.pointerId) return;
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
+    resizeRef.current = null;
+    setIsResizing(false);
+    setSize((cur) => {
+      if (!cur) return null;
+      const clamped = clampSizeToParent(
+        cur.width,
+        cur.height,
+        resize.originLeft,
+        resize.originTop,
+      );
+      saveStoredTickerSize(clamped);
+      return clamped;
+    });
+    setPos((cur) => {
+      if (!cur) return null;
+      const clamped = clampPosToParent(cur.x, cur.y);
+      saveStoredTickerPos(clamped);
+      return clamped;
+    });
+  };
+
+  const handleResetSize = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    setSize(null);
+    saveStoredTickerSize(null);
+  };
+
   const handleResetPos = () => {
     setPos(null);
+    setSize(null);
+    setCompact(false);
     saveStoredTickerPos(null);
+    saveStoredTickerSize(null);
+    saveStoredTickerCompact(false);
+  };
+
+  const handleToggleCompact = () => {
+    setCompact((prev) => {
+      const next = !prev;
+      saveStoredTickerCompact(next);
+      return next;
+    });
   };
 
   if (!visible) return null;
@@ -230,26 +449,37 @@ export function ChronicleTicker({
       ref={cardRef}
       className={
         pos
-          ? `pointer-events-auto absolute z-30 rounded-2xl border px-3.5 py-2.5 shadow-xl backdrop-blur-md ${
+          ? `pointer-events-auto absolute z-30 flex flex-col rounded-2xl border px-3.5 py-2.5 shadow-xl backdrop-blur-md max-w-[calc(100%-16px)] ${
               rightDrawerVisible ? 'lg:max-w-[calc(100%-450px)]' : ''
             }`
           : rightDrawerVisible
-            ? 'atlas-ticker-enter pointer-events-auto absolute left-3 md:left-16 right-3 lg:right-auto lg:left-16 lg:w-[min(500px,calc(100%-504px))] max-w-full top-3 z-30 rounded-2xl border px-3.5 py-2.5 shadow-xl backdrop-blur-md'
-            : 'atlas-ticker-enter pointer-events-auto absolute left-3 md:left-16 right-3 lg:right-auto lg:left-1/2 lg:-translate-x-1/2 lg:w-[540px] max-w-full top-3 z-30 rounded-2xl border px-3.5 py-2.5 shadow-xl backdrop-blur-md'
+            ? `atlas-ticker-enter pointer-events-auto absolute left-3 md:left-16 ${
+                size ? '' : 'right-3 lg:right-auto lg:w-[min(500px,calc(100%-504px))]'
+              } lg:left-16 max-w-full top-3 z-30 flex flex-col rounded-2xl border px-3.5 py-2.5 shadow-xl backdrop-blur-md`
+            : `atlas-ticker-enter pointer-events-auto absolute left-3 md:left-16 ${
+                size ? '' : 'right-3 lg:right-auto lg:w-[540px]'
+              } lg:left-1/2 lg:-translate-x-1/2 max-w-full top-3 z-30 flex flex-col rounded-2xl border px-3.5 py-2.5 shadow-xl backdrop-blur-md`
       }
       style={{
         ...(pos
           ? {
               left: `${pos.x}px`,
               top: `${pos.y}px`,
-              width: rightDrawerVisible ? 'min(500px, calc(100% - 16px))' : 'min(540px, calc(100% - 16px))',
+              width: size
+                ? `${size.width}px`
+                : rightDrawerVisible
+                  ? 'min(500px, calc(100% - 16px))'
+                  : 'min(540px, calc(100% - 16px))',
             }
-          : undefined),
+          : size
+            ? { width: `${size.width}px` }
+            : undefined),
+        ...(!compact && size && size.height !== null ? { height: `${size.height}px` } : undefined),
         backgroundColor:
           theme === 'obsidian' ? 'rgba(18, 28, 40, 0.92)' : 'rgba(251, 248, 241, 0.94)',
         borderColor: accent,
         color: 'var(--text-primary)',
-        userSelect: isDragging ? 'none' : undefined,
+        userSelect: isDragging || isResizing ? 'none' : undefined,
       }}
     >
       <div
@@ -258,10 +488,10 @@ export function ChronicleTicker({
         onPointerUp={handleDragPointerEnd}
         onPointerCancel={handleDragPointerEnd}
         onDoubleClick={handleResetPos}
-        className={`flex items-center justify-between gap-2 touch-none select-none ${
+        className={`flex shrink-0 items-center justify-between gap-2 touch-none select-none ${
           isDragging ? 'cursor-grabbing' : 'cursor-grab'
         }`}
-        title="按住拖动悬浮框位置，双击恢复默认位置"
+        title="按住拖动位置，拖右下角或边缘缩放，双击恢复默认位置与尺寸"
       >
         <div className="flex flex-wrap items-center gap-1.5 min-w-0">
           <GripVertical
@@ -386,6 +616,21 @@ export function ChronicleTicker({
             </button>
           )}
 
+          <button
+            type="button"
+            onClick={handleToggleCompact}
+            className="rounded-lg border p-1 hover:opacity-80 cursor-pointer"
+            style={{
+              backgroundColor: compact ? `${accent}1E` : 'var(--bg-surface)',
+              borderColor: compact ? accent : 'var(--border-subtle)',
+              color: compact ? accent : 'var(--text-muted)',
+            }}
+            title={compact ? '展开编年面板' : '收起为精简栏'}
+            aria-label={compact ? '展开编年面板' : '收起为精简栏'}
+          >
+            {compact ? <Maximize2 className="h-3 w-3" /> : <Minimize2 className="h-3 w-3" />}
+          </button>
+
           {activeMode && (
             <button
               type="button"
@@ -417,134 +662,182 @@ export function ChronicleTicker({
         </div>
       </div>
 
-      {event ? (
-        <button
-          type="button"
-          onClick={() => onSelectEvent(event)}
-          className="mt-1.5 w-full text-left group cursor-pointer"
-        >
-          <div className="flex items-center justify-between gap-2">
-            <span className="truncate text-xs sm:text-[13px] font-bold group-hover:underline">
-              {event.title}
-            </span>
-            <span className="shrink-0 text-[10px]" style={{ color: 'var(--text-muted)' }}>
-              {REGION_META[event.region].label}
-            </span>
-          </div>
-          <p className="mt-0.5 line-clamp-1 text-[11px]" style={{ color: 'var(--text-secondary)' }}>
-            {event.card.summary}
-          </p>
-        </button>
-      ) : (
-        <p className="mt-1.5 line-clamp-1 text-[11px]" style={{ color: 'var(--text-secondary)' }}>
-          {currentSubPeriod.themeSummary}
-        </p>
-      )}
-
-      {isPlaying && !cinemaMode && voiceEnabled && tickerSpokenText && (
-        <div
-          className="mt-2 flex items-start gap-2 rounded-xl border px-2.5 py-1.5 text-[11px] leading-relaxed"
-          style={{
-            backgroundColor: 'var(--bg-elevated)',
-            borderColor: 'var(--border-subtle)',
-            color: 'var(--text-primary)',
-          }}
-        >
-          <span
-            className="mt-1 inline-flex items-end gap-[2px] h-2.5 shrink-0"
-            style={{ color: accent }}
-            aria-hidden="true"
-          >
-            <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar" />
-            <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar atlas-eq-bar-2" />
-            <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar atlas-eq-bar-3" />
-          </span>
-          <span className="line-clamp-2">{tickerSpokenText}</span>
-        </div>
-      )}
-
-      {cinemaMode && voiceEnabled && ((narrationBeats && narrationBeats.length > 0) || narrationSubtitle) && (
-        <div
-          className="mt-2 rounded-xl border px-2.5 py-2 text-[11px] leading-relaxed space-y-1.5"
-          style={{
-            backgroundColor: 'var(--bg-elevated)',
-            borderColor: 'var(--border-subtle)',
-            color: 'var(--text-secondary)',
-          }}
-        >
-          {narrationBeats && narrationBeats.length > 0 ? (
-            <>
-              <div className="flex flex-wrap items-center gap-1">
-                <span className="inline-flex items-center gap-1 text-[10px] font-bold mr-1" style={{ color: accent }}>
-                  <span className="inline-flex items-end gap-[2px] h-2.5" aria-hidden="true">
-                    <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar" />
-                    <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar atlas-eq-bar-2" />
-                    <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar atlas-eq-bar-3" />
-                  </span>
-                  <span>纪录片分镜演播</span>
+      {!compact && (
+        <div className="atlas-scroll mt-1.5 flex-1 min-h-0 overflow-y-auto pr-0.5">
+          {event ? (
+            <button
+              type="button"
+              onClick={() => onSelectEvent(event)}
+              className="w-full text-left group cursor-pointer"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <span className="truncate text-xs sm:text-[13px] font-bold group-hover:underline">
+                  {event.title}
                 </span>
-                {narrationBeats.map((b, idx) => {
-                  const isAct = idx === activeBeatIndex;
-                  return (
-                    <span
-                      key={`${b.title}-${idx}`}
-                      className="inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[9.5px] font-semibold border transition-colors"
-                      style={{
-                        backgroundColor: isAct ? accent : 'var(--bg-surface)',
-                        borderColor: isAct ? accent : 'var(--border-subtle)',
-                        color: isAct ? '#FFFFFF' : 'var(--text-muted)',
-                      }}
-                    >
-                      <span>{idx + 1}.</span>
-                      <span>{b.title}</span>
-                    </span>
-                  );
-                })}
+                <span className="shrink-0 text-[10px]" style={{ color: 'var(--text-muted)' }}>
+                  {REGION_META[event.region].label}
+                </span>
               </div>
-
-              <div className="leading-relaxed">
-                {narrationBeats.map((b, idx) => {
-                  const isAct = idx === activeBeatIndex;
-                  return (
-                    <span
-                      key={`n-${idx}`}
-                      className={
-                        isAct
-                          ? 'rounded-sm px-0.5 py-[1px] font-medium transition-colors'
-                          : 'opacity-60 transition-opacity'
-                      }
-                      style={
-                        isAct
-                          ? {
-                              backgroundColor:
-                                theme === 'obsidian'
-                                  ? 'rgba(224, 166, 75, 0.24)'
-                                  : 'rgba(180, 116, 23, 0.18)',
-                              color: 'var(--text-primary)',
-                            }
-                          : undefined
-                      }
-                    >
-                      {b.narration}
-                      {idx < narrationBeats.length - 1 ? ' ' : ''}
-                    </span>
-                  );
-                })}
-              </div>
-            </>
+              <p className="mt-0.5 line-clamp-1 text-[11px]" style={{ color: 'var(--text-secondary)' }}>
+                {event.card.summary}
+              </p>
+            </button>
           ) : (
-            <div>
-              <span className="font-semibold" style={{ color: accent }}>
-                {narrationStatus === 'loading'
-                  ? '🎙 正在合成解说：'
-                  : narrationStatus === 'browser'
-                    ? '🎙 旁白（浏览器语音）：'
-                    : '🎙 AI 纪录片旁白：'}
+            <p className="line-clamp-1 text-[11px]" style={{ color: 'var(--text-secondary)' }}>
+              {currentSubPeriod.themeSummary}
+            </p>
+          )}
+
+          {isPlaying && !cinemaMode && voiceEnabled && tickerSpokenText && (
+            <div
+              className="mt-2 flex items-start gap-2 rounded-xl border px-2.5 py-1.5 text-[11px] leading-relaxed"
+              style={{
+                backgroundColor: 'var(--bg-elevated)',
+                borderColor: 'var(--border-subtle)',
+                color: 'var(--text-primary)',
+              }}
+            >
+              <span
+                className="mt-1 inline-flex items-end gap-[2px] h-2.5 shrink-0"
+                style={{ color: accent }}
+                aria-hidden="true"
+              >
+                <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar" />
+                <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar atlas-eq-bar-2" />
+                <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar atlas-eq-bar-3" />
               </span>
-              {narrationSubtitle}
+              <span className="line-clamp-2">{tickerSpokenText}</span>
+            </div>
+          )}
+
+          {cinemaMode && voiceEnabled && ((narrationBeats && narrationBeats.length > 0) || narrationSubtitle) && (
+            <div
+              className="mt-2 rounded-xl border px-2.5 py-2 text-[11px] leading-relaxed space-y-1.5"
+              style={{
+                backgroundColor: 'var(--bg-elevated)',
+                borderColor: 'var(--border-subtle)',
+                color: 'var(--text-secondary)',
+              }}
+            >
+              {narrationBeats && narrationBeats.length > 0 ? (
+                <>
+                  <div className="flex flex-wrap items-center gap-1">
+                    <span className="inline-flex items-center gap-1 text-[10px] font-bold mr-1" style={{ color: accent }}>
+                      <span className="inline-flex items-end gap-[2px] h-2.5" aria-hidden="true">
+                        <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar" />
+                        <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar atlas-eq-bar-2" />
+                        <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar atlas-eq-bar-3" />
+                      </span>
+                      <span>纪录片分镜演播</span>
+                    </span>
+                    {narrationBeats.map((b, idx) => {
+                      const isAct = idx === activeBeatIndex;
+                      return (
+                        <span
+                          key={`${b.title}-${idx}`}
+                          className="inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[9.5px] font-semibold border transition-colors"
+                          style={{
+                            backgroundColor: isAct ? accent : 'var(--bg-surface)',
+                            borderColor: isAct ? accent : 'var(--border-subtle)',
+                            color: isAct ? '#FFFFFF' : 'var(--text-muted)',
+                          }}
+                        >
+                          <span>{idx + 1}.</span>
+                          <span>{b.title}</span>
+                        </span>
+                      );
+                    })}
+                  </div>
+
+                  <div className="leading-relaxed">
+                    {narrationBeats.map((b, idx) => {
+                      const isAct = idx === activeBeatIndex;
+                      return (
+                        <span
+                          key={`n-${idx}`}
+                          className={
+                            isAct
+                              ? 'rounded-sm px-0.5 py-[1px] font-medium transition-colors'
+                              : 'opacity-60 transition-opacity'
+                          }
+                          style={
+                            isAct
+                              ? {
+                                  backgroundColor:
+                                    theme === 'obsidian'
+                                      ? 'rgba(224, 166, 75, 0.24)'
+                                      : 'rgba(180, 116, 23, 0.18)',
+                                  color: 'var(--text-primary)',
+                                }
+                              : undefined
+                          }
+                        >
+                          {b.narration}
+                          {idx < narrationBeats.length - 1 ? ' ' : ''}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </>
+              ) : (
+                <div>
+                  <span className="font-semibold" style={{ color: accent }}>
+                    {narrationStatus === 'loading'
+                      ? '🎙 正在合成解说：'
+                      : narrationStatus === 'browser'
+                        ? '🎙 旁白（浏览器语音）：'
+                        : '🎙 AI 纪录片旁白：'}
+                  </span>
+                  {narrationSubtitle}
+                </div>
+              )}
             </div>
           )}
         </div>
+      )}
+
+      <div
+        onPointerDown={handleResizePointerDown('right')}
+        onPointerMove={handleResizePointerMove}
+        onPointerUp={handleResizePointerEnd}
+        onPointerCancel={handleResizePointerEnd}
+        className="absolute top-3 bottom-4 right-0 w-2 cursor-ew-resize touch-none"
+        title="拖动调整宽度"
+        aria-hidden="true"
+      />
+
+      {!compact && (
+        <>
+          <div
+            onPointerDown={handleResizePointerDown('bottom')}
+            onPointerMove={handleResizePointerMove}
+            onPointerUp={handleResizePointerEnd}
+            onPointerCancel={handleResizePointerEnd}
+            className="absolute left-3 right-4 bottom-0 h-2 cursor-ns-resize touch-none"
+            title="拖动调整高度"
+            aria-hidden="true"
+          />
+          <div
+            onPointerDown={handleResizePointerDown('corner')}
+            onPointerMove={handleResizePointerMove}
+            onPointerUp={handleResizePointerEnd}
+            onPointerCancel={handleResizePointerEnd}
+            onDoubleClick={handleResetSize}
+            className="absolute right-0.5 bottom-0.5 flex h-5 w-5 items-end justify-end p-1 rounded-br-2xl cursor-nwse-resize touch-none opacity-55 hover:opacity-100 transition-opacity"
+            style={{ color: accent }}
+            title="拖动缩放大小，双击恢复默认尺寸"
+            aria-label="拖动缩放编年面板尺寸"
+          >
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+              <path
+                d="M9 1L1 9M9 5L5 9"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
+            </svg>
+          </div>
+        </>
       )}
     </div>
   );

@@ -2,6 +2,7 @@ import {
   BookOpen,
   Columns2,
   Compass,
+  Cpu,
   Globe,
   Landmark,
   Layers,
@@ -43,6 +44,7 @@ interface TopBarProps {
   onToggleTheme: () => void;
   onOpenPulse: () => void;
   onOpenEconomicAtlas: () => void;
+  onOpenTechAtlas: () => void;
   onOpenStorylines: () => void;
   onOpenCausalGraph: () => void;
   timeSwipeOpen: boolean;
@@ -77,6 +79,7 @@ export function TopBar({
   onToggleTheme,
   onOpenPulse,
   onOpenEconomicAtlas,
+  onOpenTechAtlas,
   onOpenStorylines,
   onOpenCausalGraph,
   timeSwipeOpen,
@@ -194,6 +197,21 @@ export function TopBar({
           >
             <TrendingUp className="h-3.5 w-3.5" />
             <span className="hidden lg:inline">经济数据</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={onOpenTechAtlas}
+            className="inline-flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-semibold border transition hover:opacity-90 cursor-pointer"
+            style={{
+              backgroundColor: 'rgba(41, 107, 158, 0.14)',
+              borderColor: 'rgba(41, 107, 158, 0.45)',
+              color: theme === 'obsidian' ? '#58A3D9' : '#296B9E',
+            }}
+            title="人类科学技术史图谱：寿命算力跃迁、六大技术浪潮与 World Bank 30 国实时研发数据"
+          >
+            <Cpu className="h-3.5 w-3.5" />
+            <span className="hidden lg:inline">科技数据</span>
           </button>
 
           <button

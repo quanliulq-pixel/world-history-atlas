@@ -1,10 +1,10 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-27T08:26:05.789Z",
+  "generatedAt": "2026-11-27T09:18:51.867Z",
   "counts": {
-    "total": 176,
+    "total": 192,
     "countryStages": 85,
-    "storylineSteps": 91
+    "storylineSteps": 107
   },
   "items": [
     {
@@ -1414,6 +1414,134 @@
       "title": "贸易秩序与产业链重塑：从丝路、汉萨到芯片全球化 (8/8)",
       "file": "story/story-trade-globalization/step-7.mp3",
       "script": "公元 2018 年至今，中美战略竞争与全球供应链去风险重构。2018 年起大国关税竞争、芯片出口管制与中国+N / 友岸重构打破单一追求极致效率时代，世界供应链进入成本、安全与区域多元化再平衡期。"
+    },
+    {
+      "key": "story:story-computing-ai:0",
+      "kind": "story",
+      "id": "story-computing-ai:0",
+      "title": "从图灵机到生成式 AI：人类算力与信息文明跃迁 (1/8)",
+      "file": "story/story-computing-ai/step-0.mp3",
+      "script": "628 年，婆罗摩笈多确立0算术规则与十进制位值记数西传。628 年印度婆罗摩笈多将0确立为独立运算数位，配合十进制位值法沿巴格达西传入欧洲，大幅简化一切复杂算术底座。"
+    },
+    {
+      "key": "story:story-computing-ai:1",
+      "kind": "story",
+      "id": "story-computing-ai:1",
+      "title": "从图灵机到生成式 AI：人类算力与信息文明跃迁 (2/8)",
+      "file": "story/story-computing-ai/step-1.mp3",
+      "script": "1844 — 1866 年，有线电报实用化与跨洲海底电缆：信息传输摆脱马匹帆船。1844–1866 年有线电报与跨大西洋海底光铜缆先后贯通，人类史上首次将消息传递与肉身移动速度彻底剥离。"
+    },
+    {
+      "key": "story:story-computing-ai:2",
+      "kind": "story",
+      "id": "story-computing-ai:2",
+      "title": "从图灵机到生成式 AI：人类算力与信息文明跃迁 (3/8)",
+      "file": "story/story-computing-ai/step-2.mp3",
+      "script": "1936 — 1947 年，图灵机理论至贝尔实验室晶体管发明：固态电子计算元年。1936 图灵定义可编程通用计算机，1947 年底贝尔实验室制成第一枚固态晶体管，让计算速度与微型化同时插上翅膀。"
+    },
+    {
+      "key": "story:story-computing-ai:3",
+      "kind": "story",
+      "id": "story-computing-ai:3",
+      "title": "从图灵机到生成式 AI：人类算力与信息文明跃迁 (4/8)",
+      "file": "story/story-computing-ai/step-3.mp3",
+      "script": "1958 — 1965 年，集成电路发明与摩尔定律确立：指数级硅基算力时代。1958 年硅片集成电路诞生并在硅谷演进成摩尔定律——单位美元能买到的算力在随后六十年飙升超百亿倍。"
+    },
+    {
+      "key": "story:story-computing-ai:4",
+      "kind": "story",
+      "id": "story-computing-ai:4",
+      "title": "从图灵机到生成式 AI：人类算力与信息文明跃迁 (5/8)",
+      "file": "story/story-computing-ai/step-4.mp3",
+      "script": "公元 1969 年，阿波罗 11 号登月与阿帕网首条跨节点信息。1969 年阿帕网四台主机初次交换数据包并搭载微芯片导引阿波罗 11 号登月，分布式网络基础设施诞生。"
+    },
+    {
+      "key": "story:story-computing-ai:5",
+      "kind": "story",
+      "id": "story-computing-ai:5",
+      "title": "从图灵机到生成式 AI：人类算力与信息文明跃迁 (6/8)",
+      "file": "story/story-computing-ai/step-5.mp3",
+      "script": "公元 1991–1993 年，万维网向公众开放与欧盟正式诞生。1991–1992 年欧洲核子中心蒂姆·伯纳斯-李无偿开放万维网 HTTP/HTML 协议，彻底让全球海量文本图片接入指尖互联。"
+    },
+    {
+      "key": "story:story-computing-ai:6",
+      "kind": "story",
+      "id": "story-computing-ai:6",
+      "title": "从图灵机到生成式 AI：人类算力与信息文明跃迁 (7/8)",
+      "file": "story/story-computing-ai/step-6.mp3",
+      "script": "公元 2007 年，智能手机与移动互联网重塑社会连接。2007 年多点触控智能手机把全球几十亿人口接入全天候移动宽带与云端实时交互时代。"
+    },
+    {
+      "key": "story:story-computing-ai:7",
+      "kind": "story",
+      "id": "story-computing-ai:7",
+      "title": "从图灵机到生成式 AI：人类算力与信息文明跃迁 (8/8)",
+      "file": "story/story-computing-ai/step-7.mp3",
+      "script": "公元 2022–2025 年，生成式人工智能爆发与算力芯片地缘博弈。2022–2025 年基于海量 EUV 芯片矩阵的 Transformer 大模型突破推理、代码与多模态能力，把人类算力红利正式引向认知协同。"
+    },
+    {
+      "key": "story:story-life-medicine:0",
+      "kind": "story",
+      "id": "story-life-medicine:0",
+      "title": "驯服瘟疫与改写寿命：医学、农业与生命科学史 (1/8)",
+      "file": "story/story-life-medicine/step-0.mp3",
+      "script": "约公元前 2800 年，实心车轮、陶轮与美索不达米亚大规模引水渠系统。前 2800 年美索不达米亚大规模引水渠与轮运确立农业能量剩余，支撑最初数十万人定居生活但高密都市也迎来早期瘟疫威胁。"
+    },
+    {
+      "key": "story:story-life-medicine:1",
+      "kind": "story",
+      "id": "story-life-medicine:1",
+      "title": "驯服瘟疫与改写寿命：医学、农业与生命科学史 (2/8)",
+      "file": "story/story-life-medicine/step-1.mp3",
+      "script": "公元 1347–1353 年，黑死病席卷欧亚与西欧劳动价值重塑。1347 年鼠疫黑死病沿商路狂飙夺走欧亚四成人口，倒逼威尼斯创设海港检疫隔离（Quarantine）并抬升劳工身价。"
+    },
+    {
+      "key": "story:story-life-medicine:2",
+      "kind": "story",
+      "id": "story-life-medicine:2",
+      "title": "驯服瘟疫与改写寿命：医学、农业与生命科学史 (3/8)",
+      "file": "story/story-life-medicine/step-2.mp3",
+      "script": "1796 — 1798 年，爱德华·詹纳发明牛痘疫苗：人类主动征服烈性传染病起点。1796 年英国詹纳用温和牛痘成功免疫致命天花，并随船队跨洋环绕地球开启主动防病时代，最终令天花在 1980 年彻底灭绝。"
+    },
+    {
+      "key": "story:story-life-medicine:3",
+      "kind": "story",
+      "id": "story-life-medicine:3",
+      "title": "驯服瘟疫与改写寿命：医学、农业与生命科学史 (4/8)",
+      "file": "story/story-life-medicine/step-3.mp3",
+      "script": "1861 — 1885 年，巴斯德细菌病原学说与现代无菌消毒外科革命。1864 年后巴斯德细菌理论、无菌手术及城市净水下水道网络彻底堵住了霍乱、产褥热与伤口腐败三大杀手。"
+    },
+    {
+      "key": "story:story-life-medicine:4",
+      "kind": "story",
+      "id": "story-life-medicine:4",
+      "title": "驯服瘟疫与改写寿命：医学、农业与生命科学史 (5/8)",
+      "file": "story/story-life-medicine/step-4.mp3",
+      "script": "1909 — 1913 年，哈伯-博施法合成氨工业化：向空气借粮突破全球人口极限。1909 年哈伯-博施法从空气合成氮肥打破了土壤生物自然极限，奠基全球八十亿人口蛋白质粮食基底。"
+    },
+    {
+      "key": "story:story-life-medicine:5",
+      "kind": "story",
+      "id": "story-life-medicine:5",
+      "title": "驯服瘟疫与改写寿命：医学、农业与生命科学史 (6/8)",
+      "file": "story/story-life-medicine/step-5.mp3",
+      "script": "1928 — 1944 年，青霉素发现与战时量产：抗生素时代骤降细菌死亡率。1928 年发现并经二战量产青霉素开启抗生素革命，连同普及疫苗把全球人均预期寿命短短三十年内推升逾二十年。"
+    },
+    {
+      "key": "story:story-life-medicine:6",
+      "kind": "story",
+      "id": "story-life-medicine:6",
+      "title": "驯服瘟疫与改写寿命：医学、农业与生命科学史 (7/8)",
+      "file": "story/story-life-medicine/step-6.mp3",
+      "script": "1953 年 4 月，DNA 双螺旋结构破译：分子生物学揭示生命遗传密码。1953 年 DNA 双螺旋结构揭示生命遗传数字代码，1960 年代农业绿色革命随后靠矮秆良种与氮肥挽救十亿级亚非民众远离饥馑。"
+    },
+    {
+      "key": "story:story-life-medicine:7",
+      "kind": "story",
+      "id": "story-life-medicine:7",
+      "title": "驯服瘟疫与改写寿命：医学、农业与生命科学史 (8/8)",
+      "file": "story/story-life-medicine/step-7.mp3",
+      "script": "2012 年，CRISPR-Cas9 基因编辑技术：精准低成本改写生命代码。2012 年 CRISPR 精准基因编辑与随后 mRNA 疫苗平台登场，人类正式迈入编写原子级生命编码修正遗传绝症新篇章。"
     }
   ]
 }

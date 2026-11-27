@@ -804,4 +804,142 @@ export const STORYLINES: Storyline[] = [
       },
     ],
   },
+  {
+    id: 'story-computing-ai',
+    title: '从图灵机到生成式 AI：人类算力与信息文明跃迁',
+    subtitle: '位值记数、固态晶体管、摩尔定律、互联网光缆与大模型智能交汇之路',
+    yearSpan: '628 — 2025',
+    description:
+      '追踪人类如何发明高效信息表示、将逻辑运算刻进微型硅芯片、织出跨洋光缆网络，最终引爆能够直接辅助推理写作编程的通用人工智能潮汐。',
+    accentColor: '#296B9E',
+    steps: [
+      {
+        eventId: 'e3-hindu-arabic-zero',
+        narrative:
+          '628 年印度婆罗摩笈多将“0”确立为独立运算数位，配合十进制位值法沿巴格达西传入欧洲，大幅简化一切复杂算术底座。',
+        center: [60.0, 28.0],
+        zoom: 3.1,
+      },
+      {
+        eventId: 'e6-telegraph-rail-1844',
+        narrative:
+          '1844–1866 年有线电报与跨大西洋海底光铜缆先后贯通，人类史上首次将消息传递与肉身移动速度彻底剥离。',
+        center: [-35.0, 46.0],
+        zoom: 2.6,
+        highlightRouteIds: ['route-london-gold-cable'],
+      },
+      {
+        eventId: 'e7-turing-transistor',
+        narrative:
+          '1936 图灵定义可编程通用计算机，1947 年底贝尔实验室制成第一枚固态晶体管，让计算速度与微型化同时插上翅膀。',
+        center: [-74.4, 40.7],
+        zoom: 4.0,
+      },
+      {
+        eventId: 'e7-ic-moore-law',
+        narrative:
+          '1958 年硅片集成电路诞生并在硅谷演进成“摩尔定律”——单位美元能买到的算力在随后六十年飙升超百亿倍。',
+        center: [-122.0, 37.4],
+        zoom: 4.3,
+      },
+      {
+        eventId: 'e7-apollo-arpanet',
+        narrative:
+          '1969 年“阿帕网”四台主机初次交换数据包并搭载微芯片导引阿波罗 11 号登月，分布式网络基础设施诞生。',
+        center: [-95.0, 34.0],
+        zoom: 3.2,
+      },
+      {
+        eventId: 'e8-www-maastricht',
+        narrative:
+          '1991–1992 年欧洲核子中心蒂姆·伯纳斯-李无偿开放万维网 HTTP/HTML 协议，彻底让全球海量文本图片接入指尖互联。',
+        center: [6.1, 46.2],
+        zoom: 3.8,
+        highlightRouteIds: ['route-undersea-internet-cables'],
+      },
+      {
+        eventId: 'e8-smartphone-2007',
+        narrative:
+          '2007 年多点触控智能手机把全球几十亿人口接入全天候移动宽带与云端实时交互时代。',
+        center: [-122.0, 37.4],
+        zoom: 3.0,
+        highlightRouteIds: ['route-undersea-internet-cables', 'route-modern-supply'],
+      },
+      {
+        eventId: 'e8-generative-ai',
+        narrative:
+          '2022–2025 年基于海量 EUV 芯片矩阵的 Transformer 大模型突破推理、代码与多模态能力，把人类算力红利正式引向认知协同。',
+        center: [-122.4, 37.7],
+        zoom: 2.8,
+        highlightRouteIds: ['route-undersea-internet-cables', 'route-modern-supply'],
+      },
+    ],
+  },
+  {
+    id: 'story-life-medicine',
+    title: '驯服瘟疫与改写寿命：医学、农业与生命科学史',
+    subtitle: '预期寿命如何从三千年 28 岁魔咒一路突破七旬大关',
+    yearSpan: '前 2800 — 2024',
+    description:
+      '循着灌溉丰粮、免疫天花、消灭微生物死因、合成氨破除饥荒极限、直至解码 DNA 双螺旋与 CRISPR 基因手术刀的路径，看见科技对普通生命最深情的庇护。',
+    accentColor: '#2F855A',
+    steps: [
+      {
+        eventId: 'e1-wheel-irrigation',
+        narrative:
+          '前 2800 年美索不达米亚大规模引水渠与轮运确立农业能量剩余，支撑最初数十万人定居生活但高密都市也迎来早期瘟疫威胁。',
+        center: [45.6, 31.3],
+        zoom: 4.1,
+      },
+      {
+        eventId: 'e4-black-death',
+        narrative:
+          '1347 年鼠疫黑死病沿商路狂飙夺走欧亚四成人口，倒逼威尼斯创设海港检疫隔离（Quarantine）并抬升劳工身价。',
+        center: [12.3, 45.4],
+        zoom: 3.8,
+      },
+      {
+        eventId: 'e6-jenner-vaccination',
+        narrative:
+          '1796 年英国詹纳用温和牛痘成功免疫致命天花，并随船队跨洋环绕地球开启主动防病时代，最终令天花在 1980 年彻底灭绝。',
+        center: [-2.4, 51.7],
+        zoom: 4.3,
+      },
+      {
+        eventId: 'e6-pasteur-germ-theory',
+        narrative:
+          '1864 年后巴斯德细菌理论、无菌手术及城市净水下水道网络彻底堵住了霍乱、产褥热与伤口腐败三大杀手。',
+        center: [2.3, 48.8],
+        zoom: 4.2,
+      },
+      {
+        eventId: 'e6-haber-bosch-1909',
+        narrative:
+          '1909 年哈伯-博施法从空气合成氮肥打破了土壤生物自然极限，奠基全球八十亿人口蛋白质粮食基底。',
+        center: [8.4, 49.0],
+        zoom: 4.3,
+      },
+      {
+        eventId: 'e7-penicillin-1928',
+        narrative:
+          '1928 年发现并经二战量产青霉素开启抗生素革命，连同普及疫苗把全球人均预期寿命短短三十年内推升逾二十年。',
+        center: [-0.2, 51.5],
+        zoom: 3.7,
+      },
+      {
+        eventId: 'e7-dna-double-helix',
+        narrative:
+          '1953 年 DNA 双螺旋结构揭示生命遗传数字代码，1960 年代农业绿色革命随后靠矮秆良种与氮肥挽救十亿级亚非民众远离饥馑。',
+        center: [75.8, 30.9],
+        zoom: 3.1,
+      },
+      {
+        eventId: 'e8-crispr-gene-editing',
+        narrative:
+          '2012 年 CRISPR 精准基因编辑与随后 mRNA 疫苗平台登场，人类正式迈入编写原子级生命编码修正遗传绝症新篇章。',
+        center: [-122.3, 37.8],
+        zoom: 3.2,
+      },
+    ],
+  },
 ];

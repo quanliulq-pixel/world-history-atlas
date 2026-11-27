@@ -358,3 +358,55 @@ export interface CountryEconomicProfile {
   turningPoints: Array<{ year: number; title: string; impact: string }>;
   series: CountryEconPoint[];
 }
+
+export type TechDomainKey = 'energy' | 'computing' | 'medicine' | 'transport' | 'science';
+
+export interface TechProgressBenchmark {
+  year: number;
+  label: string;
+  lifeExpectancyYears: number;
+  globalLiteracyPct: number;
+  energyPerCapitaKwhDay: number;
+  maxTravelSpeedKmh: number;
+  computeFlopsLog10: number;
+  dominantEnergy: string;
+  keyBreakthrough: string;
+}
+
+export interface TechRevolutionWave {
+  id: string;
+  startYear: number;
+  endYear: number;
+  periodLabel: string;
+  name: string;
+  coreEnergy: string;
+  infoMedium: string;
+  flagshipInventions: string;
+  structuralShift: string;
+  accentColor: string;
+  relatedEventIds: string[];
+}
+
+export interface LiveIndicatorDatum {
+  value: number;
+  year: number;
+}
+
+export interface LiveCountryIndicators {
+  countryId: string;
+  iso3: string;
+  isoNote?: string;
+  rndPctGdp?: LiveIndicatorDatum;
+  internetPct?: LiveIndicatorDatum;
+  renewableEnergyPct?: LiveIndicatorDatum;
+  highTechExportsPct?: LiveIndicatorDatum;
+  gdpPerCapitaPPP?: LiveIndicatorDatum;
+  population?: LiveIndicatorDatum;
+}
+
+export interface LiveIndicatorsPayload {
+  source: string;
+  fetchedAt: string;
+  worldBankLastUpdated?: string;
+  countries: Record<string, LiveCountryIndicators>;
+}

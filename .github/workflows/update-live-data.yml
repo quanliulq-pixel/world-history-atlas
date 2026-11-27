@@ -1,0 +1,60 @@
+name: Update Live World Bank Tech & Macro Indicators
+
+on:
+  schedule:
+    # Run once a month on the 1st at 03:00 UTC
+    - cron: '0 3 1 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fetch-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Fetch latest World Bank indicators
+        run: node scripts/fetch-live-indicators.mjs
+
+      - name: Commit updated live-indicators.json if changed
+        id: git_commit
+        run: |
+          if git diff --quiet public/data/live-indicators.json; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No changes in live indicators."
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add public/data/live-indicators.json
+            git commit -m "chore(data): auto-update World Bank live tech & econ indicators"
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install dependencies and build (if Cloudflare secrets configured)
+        if: steps.git_commit.outputs.changed == 'true' && env.CF_TOKEN != '' && env.CF_ACCOUNT != ''
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          npm ci
+          npm run build
+
+      - name: Deploy updated Pages dist (if Cloudflare secrets configured)
+        if: steps.git_commit.outputs.changed == 'true' && env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != ''
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=world-history-atlas --branch=main
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

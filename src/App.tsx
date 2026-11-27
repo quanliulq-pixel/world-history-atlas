@@ -12,6 +12,7 @@ import {
 import { EconomicAtlasModal } from './components/EconomicAtlasModal';
 import { EventCardPanel } from './components/EventCardPanel';
 import { SearchAndProgressModal } from './components/SearchAndProgressModal';
+import { TechAtlasModal } from './components/TechAtlasModal';
 import { StorylinePickerModal, StorylinePlayerBar } from './components/StorylineOverlay';
 import { TimeSwipeOverlay } from './components/TimeSwipeOverlay';
 import { TimelineDock } from './components/TimelineDock';
@@ -171,6 +172,7 @@ export function App() {
 
   const [pulseOpen, setPulseOpen] = useState(false);
   const [economicAtlasOpen, setEconomicAtlasOpen] = useState(false);
+  const [techAtlasOpen, setTechAtlasOpen] = useState(false);
   const [storyPickerOpen, setStoryPickerOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [timeSwipeOpen, setTimeSwipeOpen] = useState(false);
@@ -1746,7 +1748,7 @@ export function App() {
   // Global keyboard shortcuts (Space play/pause, Left/Right step milestone, [/] speed, M voice, B BGM)
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
-      if (aiOpen || pulseOpen || economicAtlasOpen || storyPickerOpen || searchOpen || causalGraphOpen) {
+      if (aiOpen || pulseOpen || economicAtlasOpen || techAtlasOpen || storyPickerOpen || searchOpen || causalGraphOpen) {
         return;
       }
       const tag = (e.target as HTMLElement | null)?.tagName;
@@ -1807,6 +1809,7 @@ export function App() {
     aiOpen,
     pulseOpen,
     economicAtlasOpen,
+    techAtlasOpen,
     storyPickerOpen,
     searchOpen,
     causalGraphOpen,
@@ -1828,7 +1831,7 @@ export function App() {
       window.addEventListener('keydown', handleAiEsc);
       return () => window.removeEventListener('keydown', handleAiEsc);
     }
-    if (!activeCountry || pulseOpen || economicAtlasOpen || storyPickerOpen || searchOpen) return;
+    if (!activeCountry || pulseOpen || economicAtlasOpen || techAtlasOpen || storyPickerOpen || searchOpen) return;
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') handleExitCountryMode();
     };
@@ -1882,6 +1885,10 @@ export function App() {
           onOpenEconomicAtlas={() => {
             stopAiNarrationAndStage(true, true);
             setEconomicAtlasOpen(true);
+          }}
+          onOpenTechAtlas={() => {
+            stopAiNarrationAndStage(true, true);
+            setTechAtlasOpen(true);
           }}
           onOpenStorylines={() => {
             stopAiNarrationAndStage(true, true);
@@ -2348,6 +2355,21 @@ export function App() {
         onSelectEvent={(ev) => handleSelectEvent(ev)}
         onSelectCountry={(countryId) => {
           setEconomicAtlasOpen(false);
+          handleSelectCuratedCountry(countryId);
+        }}
+      />
+
+      <TechAtlasModal
+        open={techAtlasOpen}
+        currentYear={currentYear}
+        theme={theme}
+        onClose={() => setTechAtlasOpen(false)}
+        onJumpToYear={(yr) => {
+          applyYearChange(yr);
+        }}
+        onSelectEvent={(ev) => handleSelectEvent(ev)}
+        onSelectCountry={(countryId) => {
+          setTechAtlasOpen(false);
           handleSelectCuratedCountry(countryId);
         }}
       />

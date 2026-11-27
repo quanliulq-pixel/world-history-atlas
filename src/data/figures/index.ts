@@ -4,6 +4,7 @@ import { EARLY_MODERN_FIGURES } from './earlyModern';
 import { MEDIEVAL_FIGURES } from './medieval';
 import { MODERN_FIGURES } from './modern';
 import { ECONOMIC_FIGURES } from './economicFigures';
+import { TECH_FIGURES } from './techFigures';
 
 export const ALL_FIGURES: HistoricalFigure[] = [
   ...ANCIENT_FIGURES,
@@ -11,6 +12,7 @@ export const ALL_FIGURES: HistoricalFigure[] = [
   ...EARLY_MODERN_FIGURES,
   ...MODERN_FIGURES,
   ...ECONOMIC_FIGURES,
+  ...TECH_FIGURES,
 ].sort((a, b) => a.activeYear - b.activeYear || a.birthYear - b.birthYear);
 
 export const FIGURE_MAP: Record<string, HistoricalFigure> = Object.fromEntries(

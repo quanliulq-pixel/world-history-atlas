@@ -16,6 +16,10 @@ import {
   MONETARY_REGIMES,
 } from '../src/data/economicHistory.ts';
 import { COUNTRY_ECONOMIC_PROFILES } from '../src/data/countryEconomics.ts';
+import {
+  TECH_PROGRESS_BENCHMARKS,
+  TECH_REVOLUTION_WAVES,
+} from '../src/data/techHistory.ts';
 
 const errors = [];
 
@@ -25,8 +29,8 @@ if (Math.abs(weightSum - 1) > 1e-6) {
   errors.push(`ERAS weights sum to ${weightSum}, expected 1.0`);
 }
 
-if (ALL_EVENTS.length < 185) {
-  errors.push(`Expected >= 185 events, found ${ALL_EVENTS.length}`);
+if (ALL_EVENTS.length < 205) {
+  errors.push(`Expected >= 205 events, found ${ALL_EVENTS.length}`);
 }
 
 for (const era of ERAS) {
@@ -48,8 +52,8 @@ for (const era of ERAS) {
 }
 
 const routeMap = new Map(HISTORICAL_ROUTES.map((r) => [r.id, r]));
-if (HISTORICAL_ROUTES.length < 22) {
-  errors.push(`Expected >= 22 routes, found ${HISTORICAL_ROUTES.length}`);
+if (HISTORICAL_ROUTES.length < 25) {
+  errors.push(`Expected >= 25 routes, found ${HISTORICAL_ROUTES.length}`);
 }
 
 const seenEventIds = new Set();
@@ -106,8 +110,8 @@ for (const r of HISTORICAL_ROUTES) {
   }
 }
 
-if (STORYLINES.length < 12) {
-  errors.push(`Expected >= 12 storylines, found ${STORYLINES.length}`);
+if (STORYLINES.length < 14) {
+  errors.push(`Expected >= 14 storylines, found ${STORYLINES.length}`);
 }
 
 for (const sl of STORYLINES) {
@@ -141,8 +145,8 @@ for (const slice of WORLD_PULSE_SLICES) {
   }
 }
 
-if (ALL_FIGURES.length < 98) {
-  errors.push(`Expected >= 98 historical figures, found ${ALL_FIGURES.length}`);
+if (ALL_FIGURES.length < 110) {
+  errors.push(`Expected >= 110 historical figures, found ${ALL_FIGURES.length}`);
 }
 
 const seenFigureIds = new Set();
@@ -291,6 +295,38 @@ for (const fc of FINANCIAL_CRISES_CATALOG) {
   }
 }
 
+if (TECH_PROGRESS_BENCHMARKS.length < 12) {
+  errors.push(`Expected >= 12 tech progress benchmarks, found ${TECH_PROGRESS_BENCHMARKS.length}`);
+}
+for (let i = 1; i < TECH_PROGRESS_BENCHMARKS.length; i++) {
+  if (TECH_PROGRESS_BENCHMARKS[i].year <= TECH_PROGRESS_BENCHMARKS[i - 1].year) {
+    errors.push(`TECH_PROGRESS_BENCHMARKS years must strictly increase`);
+  }
+}
+
+if (TECH_REVOLUTION_WAVES.length < 6) {
+  errors.push(`Expected >= 6 tech revolution waves, found ${TECH_REVOLUTION_WAVES.length}`);
+}
+for (const w of TECH_REVOLUTION_WAVES) {
+  for (const evId of w.relatedEventIds || []) {
+    if (!EVENT_MAP[evId]) {
+      errors.push(`Tech wave ${w.id} references unknown eventId: ${evId}`);
+    }
+  }
+}
+
+const liveIndicatorsPath = path.resolve(__validateDir, '..', 'public', 'data', 'live-indicators.json');
+if (!fs.existsSync(liveIndicatorsPath)) {
+  errors.push(`Missing live indicators file at ${liveIndicatorsPath}`);
+} else {
+  const liveJson = JSON.parse(fs.readFileSync(liveIndicatorsPath, 'utf8'));
+  for (const c of COUNTRY_PROFILES) {
+    if (!liveJson.countries?.[c.id]) {
+      errors.push(`Country ${c.id} missing in live-indicators.json`);
+    }
+  }
+}
+
 if (errors.length > 0) {
   console.error('Content validation FAILED:');
   for (const err of errors) console.error('  -', err);
@@ -351,3 +387,5 @@ console.log(`  - Global econ benchmarks: ${GLOBAL_ECON_BENCHMARKS.length}`);
 console.log(`  - Monetary regimes: ${MONETARY_REGIMES.length}`);
 console.log(`  - Financial crises: ${FINANCIAL_CRISES_CATALOG.length}`);
 console.log(`  - Country economic profiles: ${Object.keys(COUNTRY_ECONOMIC_PROFILES).length}`);
+console.log(`  - Tech benchmarks: ${TECH_PROGRESS_BENCHMARKS.length}`);
+console.log(`  - Tech waves: ${TECH_REVOLUTION_WAVES.length}`);

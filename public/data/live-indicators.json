@@ -1,0 +1,849 @@
+{
+  "source": "World Bank Open Data API (v2)",
+  "fetchedAt": "2026-11-27T09:17:09.454Z",
+  "worldBankLastUpdated": "2026-11-11",
+  "countries": {
+    "china": {
+      "countryId": "china",
+      "iso3": "CHN",
+      "rndPctGdp": {
+        "value": 2.58,
+        "year": 2023
+      },
+      "internetPct": {
+        "value": 91.6,
+        "year": 2025
+      },
+      "renewableEnergyPct": {
+        "value": 15.2,
+        "year": 2021
+      },
+      "highTechExportsPct": {
+        "value": 26.3,
+        "year": 2024
+      },
+      "gdpPerCapitaPPP": {
+        "value": 25067,
+        "year": 2025
+      },
+      "population": {
+        "value": 1406585000,
+        "year": 2025
+      }
+    },
+    "japan": {
+      "countryId": "japan",
+      "iso3": "JPN",
+      "rndPctGdp": {
+        "value": 3.44,
+        "year": 2023
+      },
+      "internetPct": {
+        "value": 85.5,
+        "year": 2024
+      },
+      "renewableEnergyPct": {
+        "value": 8.8,
+        "year": 2021
+      },
+      "highTechExportsPct": {
+        "value": 17.6,
+        "year": 2024
+      },
+      "gdpPerCapitaPPP": {
+        "value": 48283,
+        "year": 2025
+      },
+      "population": {
+        "value": 123366734,
+        "year": 2025
+      }
+    },
+    "korea": {
+      "countryId": "korea",
+      "iso3": "KOR",
+      "rndPctGdp": {
+        "value": 4.94,
+        "year": 2023
+      },
+      "internetPct": {
+        "value": 97.9,
+        "year": 2024
+      },
+      "renewableEnergyPct": {
+        "value": 3.6,
+        "year": 2021
+      },
+      "highTechExportsPct": {
+        "value": 36.3,
+        "year": 2024
+      },
+      "gdpPerCapitaPPP": {
+        "value": 55697,
+        "year": 2025
+      },
+      "population": {
+        "value": 51684564,
+        "year": 2025
+      }
+    },
+    "mongolia": {
+      "countryId": "mongolia",
+      "iso3": "MNG",
+      "rndPctGdp": {
+        "value": 0.08,
+        "year": 2022
+      },
+      "internetPct": {
+        "value": 85.1,
+        "year": 2024
+      },
+      "renewableEnergyPct": {
+        "value": 3,
+        "year": 2021
+      },
+      "highTechExportsPct": {
+        "value": 22.5,
+        "year": 2023
+      },
+      "gdpPerCapitaPPP": {
+        "value": 17773,
+        "year": 2025
+      },
+      "population": {
+        "value": 3568978,
+        "year": 2025
+      }
+    },
+    "india": {
+      "countryId": "india",
+      "iso3": "IND",
+      "rndPctGdp": {
+        "value": 0.65,
+        "year": 2020
+      },
+      "internetPct": {
+        "value": 70,
+        "year": 2025
+      },
+      "renewableEnergyPct": {
+        "value": 34.9,
+        "year": 2021
+      },
+      "highTechExportsPct": {
+        "value": 18.6,
+        "year": 2024
+      },
+      "gdpPerCapitaPPP": {
+        "value": 10039,
+        "year": 2025
+      },
+      "population": {
+        "value": 1463865525,
+        "year": 2025
+      }
+    },
+    "vietnam": {
+      "countryId": "vietnam",
+      "iso3": "VNM",
+      "rndPctGdp": {
+        "value": 0.41,
+        "year": 2023
+      },
+      "internetPct": {
+        "value": 84.2,
+        "year": 2024
+      },
+      "renewableEnergyPct": {
+        "value": 24.2,
+        "year": 2021
+      },
+      "highTechExportsPct": {
+        "value": 44.3,
+        "year": 2023
+      },
+      "gdpPerCapitaPPP": {
+        "value": 15457,
+        "year": 2025
+      },
+      "population": {
+        "value": 101598527,
+        "year": 2025
+      }
+    },
+    "thailand": {
+      "countryId": "thailand",
+      "iso3": "THA",
+      "rndPctGdp": {
+        "value": 0.94,
+        "year": 2023
+      },
+      "internetPct": {
+        "value": 90.9,
+        "year": 2024
+      },
+      "renewableEnergyPct": {
+        "value": 19,
+        "year": 2021
+      },
+      "highTechExportsPct": {
+        "value": 28.3,
+        "year": 2024
+      },
+      "gdpPerCapitaPPP": {
+        "value": 22432,
+        "year": 2025
+      },
+      "population": {
+        "value": 71619863,
+        "year": 2025
+      }
+    },
+    "indonesia": {
+      "countryId": "indonesia",
+      "iso3": "IDN",
+      "rndPctGdp": {
+        "value": 0.28,
+        "year": 2020
+      },
+      "internetPct": {
+        "value": 72.8,
+        "year": 2024
+      },
+      "renewableEnergyPct": {
+        "value": 20.2,
+        "year": 2021
+      },
+      "highTechExportsPct": {
+        "value": 8.7,
+        "year": 2024
+      },
+      "gdpPerCapitaPPP": {
+        "value": 15091,
+        "year": 2025
+      },
+      "population": {
+        "value": 285721236,
+        "year": 2025
+      }
+    },
+    "iran": {
+      "countryId": "iran",
+      "iso3": "IRN",
+      "rndPctGdp": {
+        "value": 0.73,
+        "year": 2021
+      },
+      "internetPct": {
+        "value": 85.3,
+        "year": 2024
+      },
+      "renewableEnergyPct": {
+        "value": 0.9,
+        "year": 2021
+      },
+      "highTechExportsPct": {
+        "value": 0.8,
+        "year": 2022
+      },
+      "gdpPerCapitaPPP": {
+        "value": 16834,
+        "year": 2025
+      },
+      "population": {
+        "value": 92417681,
+        "year": 2025
+      }
+    },
+    "greece": {
+      "countryId": "greece",
+      "iso3": "GRC",
+      "rndPctGdp": {
+        "value": 1.49,
+        "year": 2023
+      },
+      "internetPct": {
+        "value": 86.3,
+        "year": 2024
+      },
+      "renewableEnergyPct": {
+        "value": 21.5,
+        "year": 2021
+      },
+      "highTechExportsPct": {
+        "value": 15,
+        "year": 2024
+      },
+      "gdpPerCapitaPPP": {
+        "value": 38219,
+        "year": 2025
+      },
+      "population": {
+        "value": 10413962,
+        "year": 2025
+      }
+    },
+    "italy": {
+      "countryId": "italy",
+      "iso3": "ITA",
+      "rndPctGdp": {
+        "value": 1.38,
+        "year": 2023
+      },
+      "internetPct": {
+        "value": 89.2,
+        "year": 2024
+      },
+      "renewableEnergyPct": {
+        "value": 17.5,
+        "year": 2021
+      },
+      "highTechExportsPct": {
+        "value": 11.9,
+        "year": 2024
+      },
+      "gdpPerCapitaPPP": {
+        "value": 53606,
+        "year": 2025
+      },
+      "population": {
+        "value": 58915656,
+        "year": 2025
+      }
+    },
+    "france": {
+      "countryId": "france",
+      "iso3": "FRA",
+      "rndPctGdp": {
+        "value": 2.18,
+        "year": 2023
+      },
+      "internetPct": {
+        "value": 88.7,
+        "year": 2024
+      },
+      "renewableEnergyPct": {
+        "value": 16.2,
+        "year": 2021
+      },
+      "highTechExportsPct": {
+        "value": 23.1,
+        "year": 2024
+      },
+      "gdpPerCapitaPPP": {
+        "value": 55125,
+        "year": 2025
+      },
+      "population": {
+        "value": 68720337,
+        "year": 2025
+      }
+    },
+    "britain": {
+      "countryId": "britain",
+      "iso3": "GBR",
+      "rndPctGdp": {
+        "value": 2.68,
+        "year": 2023
+      },
+      "internetPct": {
+        "value": 95.5,
+        "year": 2024
+      },
+      "renewableEnergyPct": {
+        "value": 12.2,
+        "year": 2021
+      },
+      "highTechExportsPct": {
+        "value": 29.2,
+        "year": 2024
+      },
+      "gdpPerCapitaPPP": {
+        "value": 53993,
+        "year": 2025
+      },
+      "population": {
+        "value": 69487000,
+        "year": 2025
+      }
+    },
+    "germany": {
+      "countryId": "germany",
+      "iso3": "DEU",
+      "rndPctGdp": {
+        "value": 3.15,
+        "year": 2023
+      },
+      "internetPct": {
+        "value": 93.5,
+        "year": 2024
+      },
+      "renewableEnergyPct": {
+        "value": 17.6,
+        "year": 2021
+      },
+      "highTechExportsPct": {
+        "value": 18,
+        "year": 2024
+      },
+      "gdpPerCapitaPPP": {
+        "value": 62824,
+        "year": 2025
+      },
+      "population": {
+        "value": 83491249,
+        "year": 2025
+      }
+    },
+    "spain": {
+      "countryId": "spain",
+      "iso3": "ESP",
+      "rndPctGdp": {
+        "value": 1.49,
+        "year": 2023
+      },
+      "internetPct": {
+        "value": 95.8,
+        "year": 2024
+      },
+      "renewableEnergyPct": {
+        "value": 19,
+        "year": 2021
+      },
+      "highTechExportsPct": {
+        "value": 9.3,
+        "year": 2024
+      },
+      "gdpPerCapitaPPP": {
+        "value": 49318,
+        "year": 2025
+      },
+      "population": {
+        "value": 49355143,
+        "year": 2025
+      }
+    },
+    "portugal": {
+      "countryId": "portugal",
+      "iso3": "PRT",
+      "rndPctGdp": {
+        "value": 1.69,
+        "year": 2023
+      },
+      "internetPct": {
+        "value": 88.5,
+        "year": 2024
+      },
+      "renewableEnergyPct": {
+        "value": 32.3,
+        "year": 2021
+      },
+      "highTechExportsPct": {
+        "value": 6.8,
+        "year": 2024
+      },
+      "gdpPerCapitaPPP": {
+        "value": 42577,
+        "year": 2025
+      },
+      "population": {
+        "value": 10804871,
+        "year": 2025
+      }
+    },
+    "netherlands": {
+      "countryId": "netherlands",
+      "iso3": "NLD",
+      "rndPctGdp": {
+        "value": 2.27,
+        "year": 2023
+      },
+      "internetPct": {
+        "value": 97,
+        "year": 2024
+      },
+      "renewableEnergyPct": {
+        "value": 12.2,
+        "year": 2021
+      },
+      "highTechExportsPct": {
+        "value": 23.5,
+        "year": 2024
+      },
+      "gdpPerCapitaPPP": {
+        "value": 71378,
+        "year": 2025
+      },
+      "population": {
+        "value": 18087633,
+        "year": 2025
+      }
+    },
+    "austria": {
+      "countryId": "austria",
+      "iso3": "AUT",
+      "rndPctGdp": {
+        "value": 3.26,
+        "year": 2023
+      },
+      "internetPct": {
+        "value": 91.9,
+        "year": 2025
+      },
+      "renewableEnergyPct": {
+        "value": 36,
+        "year": 2021
+      },
+      "highTechExportsPct": {
+        "value": 18.5,
+        "year": 2024
+      },
+      "gdpPerCapitaPPP": {
+        "value": 63970,
+        "year": 2025
+      },
+      "population": {
+        "value": 9208163,
+        "year": 2025
+      }
+    },
+    "poland": {
+      "countryId": "poland",
+      "iso3": "POL",
+      "rndPctGdp": {
+        "value": 1.56,
+        "year": 2023
+      },
+      "internetPct": {
+        "value": 88.6,
+        "year": 2024
+      },
+      "renewableEnergyPct": {
+        "value": 15.2,
+        "year": 2021
+      },
+      "highTechExportsPct": {
+        "value": 13.5,
+        "year": 2024
+      },
+      "gdpPerCapitaPPP": {
+        "value": 46925,
+        "year": 2025
+      },
+      "population": {
+        "value": 36435861,
+        "year": 2025
+      }
+    },
+    "russia": {
+      "countryId": "russia",
+      "iso3": "RUS",
+      "rndPctGdp": {
+        "value": 0.94,
+        "year": 2024
+      },
+      "internetPct": {
+        "value": 94.4,
+        "year": 2024
+      },
+      "renewableEnergyPct": {
+        "value": 3.5,
+        "year": 2021
+      },
+      "highTechExportsPct": {
+        "value": 9.7,
+        "year": 2021
+      },
+      "gdpPerCapitaPPP": {
+        "value": 42358,
+        "year": 2025
+      },
+      "population": {
+        "value": 143513328,
+        "year": 2025
+      }
+    },
+    "sweden": {
+      "countryId": "sweden",
+      "iso3": "SWE",
+      "rndPctGdp": {
+        "value": 3.6,
+        "year": 2023
+      },
+      "internetPct": {
+        "value": 95.8,
+        "year": 2025
+      },
+      "renewableEnergyPct": {
+        "value": 57.9,
+        "year": 2021
+      },
+      "highTechExportsPct": {
+        "value": 17.7,
+        "year": 2024
+      },
+      "gdpPerCapitaPPP": {
+        "value": 63362,
+        "year": 2025
+      },
+      "population": {
+        "value": 10596620,
+        "year": 2025
+      }
+    },
+    "turkey": {
+      "countryId": "turkey",
+      "iso3": "TUR",
+      "rndPctGdp": {
+        "value": 1.42,
+        "year": 2023
+      },
+      "internetPct": {
+        "value": 89.8,
+        "year": 2025
+      },
+      "renewableEnergyPct": {
+        "value": 12,
+        "year": 2021
+      },
+      "highTechExportsPct": {
+        "value": 5.1,
+        "year": 2024
+      },
+      "gdpPerCapitaPPP": {
+        "value": 37301,
+        "year": 2025
+      },
+      "population": {
+        "value": 85878556,
+        "year": 2025
+      }
+    },
+    "arabia": {
+      "countryId": "arabia",
+      "iso3": "SAU",
+      "isoNote": "以沙特阿拉伯数据为海湾代表",
+      "rndPctGdp": {
+        "value": 0.64,
+        "year": 2024
+      },
+      "internetPct": {
+        "value": 100,
+        "year": 2024
+      },
+      "renewableEnergyPct": {
+        "value": 0.1,
+        "year": 2021
+      },
+      "highTechExportsPct": {
+        "value": 0.5,
+        "year": 2024
+      },
+      "gdpPerCapitaPPP": {
+        "value": 63051,
+        "year": 2025
+      },
+      "population": {
+        "value": 36973555,
+        "year": 2025
+      }
+    },
+    "egypt": {
+      "countryId": "egypt",
+      "iso3": "EGY",
+      "rndPctGdp": {
+        "value": 1.02,
+        "year": 2024
+      },
+      "internetPct": {
+        "value": 74.6,
+        "year": 2024
+      },
+      "renewableEnergyPct": {
+        "value": 6.1,
+        "year": 2021
+      },
+      "highTechExportsPct": {
+        "value": 3.8,
+        "year": 2024
+      },
+      "gdpPerCapitaPPP": {
+        "value": 17265,
+        "year": 2025
+      },
+      "population": {
+        "value": 118365995,
+        "year": 2025
+      }
+    },
+    "ethiopia": {
+      "countryId": "ethiopia",
+      "iso3": "ETH",
+      "rndPctGdp": {
+        "value": 0.27,
+        "year": 2017
+      },
+      "internetPct": {
+        "value": 21.9,
+        "year": 2024
+      },
+      "renewableEnergyPct": {
+        "value": 90.6,
+        "year": 2021
+      },
+      "highTechExportsPct": {
+        "value": 3.8,
+        "year": 2023
+      },
+      "gdpPerCapitaPPP": {
+        "value": 3095,
+        "year": 2025
+      },
+      "population": {
+        "value": 135472051,
+        "year": 2025
+      }
+    },
+    "west-africa": {
+      "countryId": "west-africa",
+      "iso3": "NGA",
+      "isoNote": "以尼日利亚数据为西非代表",
+      "rndPctGdp": {
+        "value": 0.28,
+        "year": 2019
+      },
+      "internetPct": {
+        "value": 41.2,
+        "year": 2024
+      },
+      "renewableEnergyPct": {
+        "value": 80.3,
+        "year": 2021
+      },
+      "highTechExportsPct": {
+        "value": 2.7,
+        "year": 2024
+      },
+      "gdpPerCapitaPPP": {
+        "value": 8145,
+        "year": 2025
+      },
+      "population": {
+        "value": 237527782,
+        "year": 2025
+      }
+    },
+    "usa": {
+      "countryId": "usa",
+      "iso3": "USA",
+      "rndPctGdp": {
+        "value": 3.45,
+        "year": 2023
+      },
+      "internetPct": {
+        "value": 94.7,
+        "year": 2024
+      },
+      "renewableEnergyPct": {
+        "value": 10.9,
+        "year": 2021
+      },
+      "highTechExportsPct": {
+        "value": 24.3,
+        "year": 2024
+      },
+      "gdpPerCapitaPPP": {
+        "value": 76931,
+        "year": 2025
+      },
+      "population": {
+        "value": 341784857,
+        "year": 2025
+      }
+    },
+    "mexico": {
+      "countryId": "mexico",
+      "iso3": "MEX",
+      "rndPctGdp": {
+        "value": 0.25,
+        "year": 2024
+      },
+      "internetPct": {
+        "value": 83.1,
+        "year": 2024
+      },
+      "renewableEnergyPct": {
+        "value": 13,
+        "year": 2021
+      },
+      "highTechExportsPct": {
+        "value": 19.3,
+        "year": 2024
+      },
+      "gdpPerCapitaPPP": {
+        "value": 21912,
+        "year": 2025
+      },
+      "population": {
+        "value": 131946900,
+        "year": 2025
+      }
+    },
+    "peru": {
+      "countryId": "peru",
+      "iso3": "PER",
+      "rndPctGdp": {
+        "value": 0.18,
+        "year": 2023
+      },
+      "internetPct": {
+        "value": 82,
+        "year": 2024
+      },
+      "renewableEnergyPct": {
+        "value": 30.6,
+        "year": 2021
+      },
+      "highTechExportsPct": {
+        "value": 5.2,
+        "year": 2024
+      },
+      "gdpPerCapitaPPP": {
+        "value": 16079,
+        "year": 2025
+      },
+      "population": {
+        "value": 34576665,
+        "year": 2025
+      }
+    },
+    "brazil": {
+      "countryId": "brazil",
+      "iso3": "BRA",
+      "rndPctGdp": {
+        "value": 1.19,
+        "year": 2023
+      },
+      "internetPct": {
+        "value": 84.5,
+        "year": 2024
+      },
+      "renewableEnergyPct": {
+        "value": 46.5,
+        "year": 2021
+      },
+      "highTechExportsPct": {
+        "value": 11.1,
+        "year": 2024
+      },
+      "gdpPerCapitaPPP": {
+        "value": 20025,
+        "year": 2025
+      },
+      "population": {
+        "value": 212812405,
+        "year": 2025
+      }
+    }
+  }
+}

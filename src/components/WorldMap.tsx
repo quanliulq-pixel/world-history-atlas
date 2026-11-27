@@ -1872,6 +1872,7 @@ export function WorldMap({
       wrap.className = 'pointer-events-none relative flex items-center justify-center select-none';
       wrap.style.width = '40px';
       wrap.style.height = '40px';
+      wrap.style.zIndex = '38';
 
       const anim = document.createElement('div');
       anim.className = 'atlas-spot-enter relative flex items-center justify-center';
@@ -1912,7 +1913,7 @@ export function WorldMap({
       titleSpan.textContent = spot.label;
       pill.appendChild(titleSpan);
 
-      if (spot.sublabel) {
+      if (spot.sublabel && spot.sublabel.trim() !== spot.label.trim()) {
         const sub = document.createElement('span');
         sub.style.marginLeft = '4px';
         sub.style.fontSize = '10px';
@@ -2258,6 +2259,11 @@ export function WorldMap({
       const { event, active, opacity } = item;
       const isSelected = selectedEvent?.id === event.id;
       const isTriggered = recentTriggerEventId === event.id;
+      const hasOverlappingAiSpot = Boolean(
+        aiScene?.spots?.some(
+          (s) => Math.hypot(s.coords[0] - event.coords[0], s.coords[1] - event.coords[1]) < 1.8,
+        ),
+      );
       const dim = DIMENSION_META[event.primaryDimension];
       const pinColor = theme === 'obsidian' ? dim.darkColor : dim.color;
 
@@ -2296,28 +2302,38 @@ export function WorldMap({
       entry.coords = event.coords;
       const btn = entry.el;
       btn.style.opacity = String(isSelected || isTriggered ? 1 : opacity * (aiScene ? 0.42 : 1));
-      btn.style.zIndex = isSelected || isTriggered ? '35' : active ? (event.importance === 3 ? '20' : '12') : '5';
+      btn.style.zIndex = hasOverlappingAiSpot
+        ? '18'
+        : isSelected || isTriggered
+          ? '35'
+          : active
+            ? event.importance === 3
+              ? '20'
+              : '12'
+            : '5';
 
       const sizePx = isSelected || isTriggered ? 18 : event.importance === 3 ? 14 : 11;
       const borderColor = isSelected || isTriggered ? '#FFFFFF' : theme === 'obsidian' ? '#0D141D' : '#FBF8F1';
 
       btn.innerHTML = `
         ${
-          isTriggered
-            ? `<span class="atlas-shockwave absolute left-1/2 top-1/2 rounded-full pointer-events-none" style="width:26px;height:26px;border:2px solid ${pinColor};background:${pinColor}24;"></span><span class="atlas-shockwave-delayed absolute left-1/2 top-1/2 rounded-full pointer-events-none" style="width:26px;height:26px;border:1.8px solid ${pinColor};"></span>`
-            : isSelected
-              ? `<span class="atlas-beacon absolute left-1/2 top-1/2 rounded-full pointer-events-none" style="width:26px;height:26px;border:2px solid ${pinColor};background:${pinColor}33;"></span>`
-              : ''
+          hasOverlappingAiSpot
+            ? ''
+            : isTriggered
+              ? `<span class="atlas-shockwave absolute left-1/2 top-1/2 rounded-full pointer-events-none" style="width:26px;height:26px;border:2px solid ${pinColor};background:${pinColor}24;"></span><span class="atlas-shockwave-delayed absolute left-1/2 top-1/2 rounded-full pointer-events-none" style="width:26px;height:26px;border:1.8px solid ${pinColor};"></span>`
+              : isSelected
+                ? `<span class="atlas-beacon absolute left-1/2 top-1/2 rounded-full pointer-events-none" style="width:26px;height:26px;border:2px solid ${pinColor};background:${pinColor}33;"></span>`
+                : ''
         }
         <span class="relative block rounded-full transition-transform duration-150 group-hover:scale-125" style="width:${sizePx}px;height:${sizePx}px;background:${pinColor};border:2.2px solid ${borderColor};box-shadow:0 2px 8px rgba(0,0,0,0.32);"></span>
         <span class="pointer-events-none absolute left-1/2 top-full mt-0.5 -translate-x-1/2 whitespace-nowrap rounded px-1.5 py-0.5 text-[11px] shadow-sm transition-opacity ${
-          isSelected
+          isSelected && !hasOverlappingAiSpot
             ? 'opacity-100 font-semibold max-w-[210px] sm:max-w-none truncate'
             : 'opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 font-medium'
         }" style="background:${
           theme === 'obsidian' ? 'rgba(20,30,43,0.92)' : 'rgba(251,248,241,0.92)'
         };color:${theme === 'obsidian' ? '#EEF2F7' : '#1F1A14'};border:1px solid ${
-          isSelected ? pinColor : 'rgba(120,100,72,0.24)'
+          isSelected && !hasOverlappingAiSpot ? pinColor : 'rgba(120,100,72,0.24)'
         };">${event.title}</span>
       `;
     }

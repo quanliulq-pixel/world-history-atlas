@@ -75,6 +75,7 @@ interface ChronicleTickerProps {
   onSelectEvent: (ev: HistoryEvent) => void;
   onStopPlayback: () => void;
   onDismiss: () => void;
+  rightDrawerVisible?: boolean;
 }
 
 export function ChronicleTicker({
@@ -101,6 +102,7 @@ export function ChronicleTicker({
   onSelectEvent,
   onStopPlayback,
   onDismiss,
+  rightDrawerVisible = false,
 }: ChronicleTickerProps) {
   const [speedOpen, setSpeedOpen] = useState(false);
   const [pos, setPos] = useState<TickerPos | null>(() => readStoredTickerPos());
@@ -115,18 +117,22 @@ export function ChronicleTicker({
     originTop: number;
   } | null>(null);
 
-  const clampPosToParent = useCallback((x: number, y: number): TickerPos => {
-    const card = cardRef.current;
-    const parent = card?.offsetParent as HTMLElement | null;
-    if (!card || !parent) return { x: Math.max(8, x), y: Math.max(8, y) };
-    const pad = 8;
-    const maxX = Math.max(pad, parent.clientWidth - card.offsetWidth - pad);
-    const maxY = Math.max(pad, parent.clientHeight - card.offsetHeight - pad);
-    return {
-      x: Math.round(Math.max(pad, Math.min(maxX, x))),
-      y: Math.round(Math.max(pad, Math.min(maxY, y))),
-    };
-  }, []);
+  const clampPosToParent = useCallback(
+    (x: number, y: number): TickerPos => {
+      const card = cardRef.current;
+      const parent = card?.offsetParent as HTMLElement | null;
+      if (!card || !parent) return { x: Math.max(8, x), y: Math.max(8, y) };
+      const pad = 8;
+      const rightReserve = rightDrawerVisible && parent.clientWidth >= 1024 ? 434 : pad;
+      const maxX = Math.max(pad, parent.clientWidth - card.offsetWidth - rightReserve);
+      const maxY = Math.max(pad, parent.clientHeight - card.offsetHeight - pad);
+      return {
+        x: Math.round(Math.max(pad, Math.min(maxX, x))),
+        y: Math.round(Math.max(pad, Math.min(maxY, y))),
+      };
+    },
+    [rightDrawerVisible],
+  );
 
   useEffect(() => {
     if (!visible || !pos) return;
@@ -139,7 +145,7 @@ export function ChronicleTicker({
       window.cancelAnimationFrame(rafId);
       window.removeEventListener('resize', syncClamp);
     };
-  }, [visible, pos !== null, clampPosToParent]);
+  }, [visible, pos !== null, rightDrawerVisible, clampPosToParent]);
 
   useEffect(() => {
     if (!speedOpen) return;
@@ -224,15 +230,19 @@ export function ChronicleTicker({
       ref={cardRef}
       className={
         pos
-          ? 'pointer-events-auto absolute z-20 rounded-2xl border px-3.5 py-2.5 shadow-xl backdrop-blur-md'
-          : 'atlas-ticker-enter pointer-events-auto absolute left-3 md:left-16 right-3 lg:right-auto lg:left-[calc(50%-210px)] lg:-translate-x-1/2 lg:w-[540px] max-w-full top-3 z-20 rounded-2xl border px-3.5 py-2.5 shadow-xl backdrop-blur-md'
+          ? `pointer-events-auto absolute z-30 rounded-2xl border px-3.5 py-2.5 shadow-xl backdrop-blur-md ${
+              rightDrawerVisible ? 'lg:max-w-[calc(100%-450px)]' : ''
+            }`
+          : rightDrawerVisible
+            ? 'atlas-ticker-enter pointer-events-auto absolute left-3 md:left-16 right-3 lg:right-auto lg:left-16 lg:w-[min(500px,calc(100%-504px))] max-w-full top-3 z-30 rounded-2xl border px-3.5 py-2.5 shadow-xl backdrop-blur-md'
+            : 'atlas-ticker-enter pointer-events-auto absolute left-3 md:left-16 right-3 lg:right-auto lg:left-1/2 lg:-translate-x-1/2 lg:w-[540px] max-w-full top-3 z-30 rounded-2xl border px-3.5 py-2.5 shadow-xl backdrop-blur-md'
       }
       style={{
         ...(pos
           ? {
               left: `${pos.x}px`,
               top: `${pos.y}px`,
-              width: 'min(540px, calc(100% - 16px))',
+              width: rightDrawerVisible ? 'min(500px, calc(100% - 16px))' : 'min(540px, calc(100% - 16px))',
             }
           : undefined),
         backgroundColor:

@@ -2047,6 +2047,7 @@ export function App() {
                   }
                 }}
                 onToggleSyncCard={() => setSyncCardDuringPlay((v) => !v)}
+                rightDrawerVisible={!desktopCollapsed || Boolean(selectedEvent) || Boolean(selectedFigure)}
                 onSelectEvent={(ev) => handleSelectEvent(ev)}
                 onStopPlayback={() => {
                   setIsPlaying(false);

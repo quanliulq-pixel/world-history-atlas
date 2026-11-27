@@ -591,17 +591,75 @@ export function buildDocumentarySpeechChunks(
   beats: Array<{ title: string; narration: string }>,
 ): SpeechChunk[] {
   const chunks: SpeechChunk[] = [];
+  const maxSegLen = 150;
   for (let idx = 0; idx < beats.length; idx++) {
     const speechText = cleanSpeechText(beats[idx].narration);
     if (!speechText) continue;
-    chunks.push({
-      chunkIndex: chunks.length,
-      blockId: `beat-${idx}`,
-      sentenceIndices: [idx],
-      sentenceWeights: [Math.max(1, speechText.length)],
-      speechText,
-      sceneIndex: idx,
-    });
+    if (speechText.length <= maxSegLen) {
+      chunks.push({
+        chunkIndex: chunks.length,
+        blockId: `beat-${idx}`,
+        sentenceIndices: [idx],
+        sentenceWeights: [Math.max(1, speechText.length)],
+        speechText,
+        sceneIndex: idx,
+      });
+      continue;
+    }
+
+    const rawSentences = speechText
+      .split(/(?<=[。！？；])/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+    const pieces: string[] = [];
+    for (const s of rawSentences.length > 0 ? rawSentences : [speechText]) {
+      if (s.length <= maxSegLen) {
+        pieces.push(s);
+      } else {
+        const subParts = s
+          .split(/(?<=[，、：])/)
+          .map((p) => p.trim())
+          .filter(Boolean);
+        for (const p of subParts.length > 0 ? subParts : [s]) {
+          if (p.length <= maxSegLen) {
+            pieces.push(p);
+          } else {
+            for (let i = 0; i < p.length; i += maxSegLen) {
+              pieces.push(p.slice(i, i + maxSegLen));
+            }
+          }
+        }
+      }
+    }
+
+    let buf = '';
+    for (const p of pieces) {
+      if (!buf) {
+        buf = p;
+      } else if (buf.length + p.length <= maxSegLen) {
+        buf += p;
+      } else {
+        chunks.push({
+          chunkIndex: chunks.length,
+          blockId: `beat-${idx}`,
+          sentenceIndices: [idx],
+          sentenceWeights: [Math.max(1, buf.length)],
+          speechText: buf,
+          sceneIndex: idx,
+        });
+        buf = p;
+      }
+    }
+    if (buf) {
+      chunks.push({
+        chunkIndex: chunks.length,
+        blockId: `beat-${idx}`,
+        sentenceIndices: [idx],
+        sentenceWeights: [Math.max(1, buf.length)],
+        speechText: buf,
+        sceneIndex: idx,
+      });
+    }
   }
   return chunks;
 }

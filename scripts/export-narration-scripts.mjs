@@ -3,6 +3,11 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ALL_EVENTS } from '../src/data/events';
 import { ALL_FIGURES } from '../src/data/figures';
+import { getEraForYear, getSubPeriodForYear } from '../src/utils/timeline';
+import {
+  buildDeepEventStoryPlan,
+  buildDeepFigureStoryPlan,
+} from '../src/utils/chronicleStory';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT_DIR = path.resolve(__dirname, '..');
@@ -48,51 +53,21 @@ function normalizeSpoken(text) {
   if (!text) return '';
   return String(text)
     .replace(/[*_`#>~]/g, '')
-    .replace(/（[^（）]{0,28}）/g, (m) => (m.length <= 12 ? m : ''))
-    .replace(/\([^()]{0,28}\)/g, '')
     .replace(/[“”]/g, '')
     .replace(/\s+/g, ' ')
-    .replace(/[；;]+/g, '，')
     .trim();
 }
 
-function takeSentences(text, maxChars = 96) {
-  const clean = normalizeSpoken(text);
-  if (!clean) return '';
-  if (clean.length <= maxChars) {
-    return /[。！？]$/.test(clean) ? clean : `${clean}。`;
-  }
-  const parts = clean.split(/(?<=[。！？])/);
-  let out = '';
-  for (const p of parts) {
-    if (!out) {
-      out = p;
-    } else if (out.length + p.length <= maxChars) {
-      out += p;
-    } else {
-      break;
-    }
-  }
-  if (out.length > maxChars + 12) {
-    const commaCut = out.slice(0, maxChars).lastIndexOf('，');
-    out = commaCut > 24 ? `${out.slice(0, commaCut)}。` : `${out.slice(0, maxChars)}。`;
-  }
-  return /[。！？]$/.test(out) ? out : `${out}。`;
-}
-
 function buildEventItem(ev, idx) {
-  const beat0 = takeSentences(
-    `${ev.dateDisplay}，在${ev.locationName}，${ev.title}深刻改变了时代轨迹。${ev.card.summary}`,
-    105,
-  );
-  const beat1 = takeSentences(`${ev.card.politics} ${ev.card.economy}`, 115);
-  const beat2 = takeSentences(`${ev.card.culture} ${ev.card.consequence}`, 115);
-
-  const beats = [
-    { index: 0, title: '历史契机', narration: beat0, file: `event/${ev.id}/beat-0.mp3` },
-    { index: 1, title: '政经脉络', narration: beat1, file: `event/${ev.id}/beat-1.mp3` },
-    { index: 2, title: '文明回响', narration: beat2, file: `event/${ev.id}/beat-2.mp3` },
-  ];
+  const era = getEraForYear(ev.year);
+  const subPeriod = getSubPeriodForYear(ev.year);
+  const plan = buildDeepEventStoryPlan(ev, era, subPeriod);
+  const beats = plan.beats.map((b, beatIdx) => ({
+    index: beatIdx,
+    title: b.title,
+    narration: normalizeSpoken(b.narration),
+    file: `event/${ev.id}/beat-${beatIdx}.mp3`,
+  }));
 
   let tier = 'all';
   if (STARTER_EVENT_IDS.has(ev.id) || (ev.importance === 3 && idx < 15)) {
@@ -113,18 +88,14 @@ function buildEventItem(ev, idx) {
 }
 
 function buildFigureItem(fig, idx) {
-  const beat0 = takeSentences(
-    `${fig.lifespanDisplay}，${fig.name}，${fig.title}。${fig.card.oneLiner}`,
-    105,
-  );
-  const beat1 = takeSentences(`${fig.card.coreContributions}`, 115);
-  const beat2 = takeSentences(`${fig.card.historicalImpact}`, 115);
-
-  const beats = [
-    { index: 0, title: '时代登场', narration: beat0, file: `figure/${fig.id}/beat-0.mp3` },
-    { index: 1, title: '核心建树', narration: beat1, file: `figure/${fig.id}/beat-1.mp3` },
-    { index: 2, title: '深远回响', narration: beat2, file: `figure/${fig.id}/beat-2.mp3` },
-  ];
+  const era = getEraForYear(fig.activeYear);
+  const plan = buildDeepFigureStoryPlan(fig, era);
+  const beats = plan.beats.map((b, beatIdx) => ({
+    index: beatIdx,
+    title: b.title,
+    narration: normalizeSpoken(b.narration),
+    file: `figure/${fig.id}/beat-${beatIdx}.mp3`,
+  }));
 
   let tier = 'all';
   if (STARTER_FIGURE_IDS.has(fig.id) || (fig.importance === 3 && idx < 15)) {

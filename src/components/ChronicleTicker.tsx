@@ -1,4 +1,5 @@
 import {
+  BookOpen,
   ChevronDown,
   Film,
   GripVertical,
@@ -120,11 +121,14 @@ interface ChronicleTickerProps {
   playSpeed: number;
   speedOptions: number[];
   voiceEnabled: boolean;
+  narrationDepth?: 'story' | 'concise';
+  onToggleNarrationDepth?: () => void;
   syncCardDuringPlay?: boolean;
   narrationStatus?: 'idle' | 'loading' | 'playing' | 'browser';
   narrationSubtitle?: string | null;
   narrationBeats?: AiDocumentaryBeat[] | null;
   activeBeatIndex?: number;
+  chapterLabel?: string | null;
   tickerSpokenText?: string | null;
   onSelectSpeed: (speed: number) => void;
   onToggleVoice: () => void;
@@ -147,11 +151,14 @@ export function ChronicleTicker({
   playSpeed,
   speedOptions,
   voiceEnabled,
+  narrationDepth = 'story',
+  onToggleNarrationDepth,
   syncCardDuringPlay = true,
   narrationStatus = 'idle',
   narrationSubtitle = null,
   narrationBeats = null,
   activeBeatIndex = 0,
+  chapterLabel = null,
   tickerSpokenText = null,
   onSelectSpeed,
   onToggleVoice,
@@ -169,6 +176,7 @@ export function ChronicleTicker({
   const [isResizing, setIsResizing] = useState(false);
   const speedRef = useRef<HTMLDivElement | null>(null);
   const cardRef = useRef<HTMLDivElement | null>(null);
+  const activeBeatRef = useRef<HTMLSpanElement | null>(null);
   const dragRef = useRef<{
     pointerId: number;
     startX: number;
@@ -432,6 +440,11 @@ export function ChronicleTicker({
     });
   };
 
+  useEffect(() => {
+    if (!visible || compact) return;
+    activeBeatRef.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }, [activeBeatIndex, narrationBeats, visible, compact]);
+
   if (!visible) return null;
 
   const activeMode = cinemaMode || isPlaying;
@@ -443,6 +456,7 @@ export function ChronicleTicker({
 
   const parentHeight = (cardRef.current?.offsetParent as HTMLElement | null)?.clientHeight ?? 0;
   const openSpeedUpward = Boolean(pos && parentHeight > 0 && pos.y > parentHeight * 0.55);
+  const maxHeightClass = !compact && (!size || size.height === null) ? ' max-h-[48vh]' : '';
 
   return (
     <div
@@ -451,14 +465,14 @@ export function ChronicleTicker({
         pos
           ? `pointer-events-auto absolute z-30 flex flex-col rounded-2xl border px-3.5 py-2.5 shadow-xl backdrop-blur-md max-w-[calc(100%-16px)] ${
               rightDrawerVisible ? 'lg:max-w-[calc(100%-450px)]' : ''
-            }`
+            }${maxHeightClass}`
           : rightDrawerVisible
             ? `atlas-ticker-enter pointer-events-auto absolute left-3 md:left-16 ${
                 size ? '' : 'right-3 lg:right-auto lg:w-[min(500px,calc(100%-504px))]'
-              } lg:left-16 max-w-full top-3 z-30 flex flex-col rounded-2xl border px-3.5 py-2.5 shadow-xl backdrop-blur-md`
+              } lg:left-16 max-w-full top-3 z-30 flex flex-col rounded-2xl border px-3.5 py-2.5 shadow-xl backdrop-blur-md${maxHeightClass}`
             : `atlas-ticker-enter pointer-events-auto absolute left-3 md:left-16 ${
                 size ? '' : 'right-3 lg:right-auto lg:w-[540px]'
-              } lg:left-1/2 lg:-translate-x-1/2 max-w-full top-3 z-30 flex flex-col rounded-2xl border px-3.5 py-2.5 shadow-xl backdrop-blur-md`
+              } lg:left-1/2 lg:-translate-x-1/2 max-w-full top-3 z-30 flex flex-col rounded-2xl border px-3.5 py-2.5 shadow-xl backdrop-blur-md${maxHeightClass}`
       }
       style={{
         ...(pos
@@ -599,6 +613,28 @@ export function ChronicleTicker({
             </button>
           )}
 
+          {activeMode && onToggleNarrationDepth && (
+            <button
+              type="button"
+              onClick={onToggleNarrationDepth}
+              className="inline-flex items-center gap-1 rounded-lg border px-1.5 py-0.5 text-[10px] font-semibold hover:opacity-80 cursor-pointer"
+              style={{
+                backgroundColor:
+                  narrationDepth === 'story' ? `${accent}1E` : 'var(--bg-surface)',
+                borderColor: narrationDepth === 'story' ? accent : 'var(--border-subtle)',
+                color: narrationDepth === 'story' ? accent : 'var(--text-muted)',
+              }}
+              title={
+                narrationDepth === 'story'
+                  ? '深度听书模式：含年代过渡与事件完整前因后果，点击切回精简快报'
+                  : '精简快报模式：点击开启深度听书模式'
+              }
+            >
+              <BookOpen className="h-3 w-3" />
+              <span>{narrationDepth === 'story' ? '深度听书' : '精简'}</span>
+            </button>
+          )}
+
           {isPlaying && !cinemaMode && onToggleSyncCard && (
             <button
               type="button"
@@ -664,6 +700,20 @@ export function ChronicleTicker({
 
       {!compact && (
         <div className="atlas-scroll mt-1.5 flex-1 min-h-0 overflow-y-auto pr-0.5">
+          {chapterLabel && (
+            <div
+              className="mb-1.5 inline-flex items-center gap-1.5 rounded-lg border px-2 py-0.5 text-[10.5px] font-bold"
+              style={{
+                backgroundColor: `${accent}18`,
+                borderColor: `${accent}55`,
+                color: accent,
+              }}
+            >
+              <BookOpen className="h-3 w-3 shrink-0" />
+              <span>{chapterLabel}</span>
+            </div>
+          )}
+
           {event ? (
             <button
               type="button"
@@ -678,39 +728,43 @@ export function ChronicleTicker({
                   {REGION_META[event.region].label}
                 </span>
               </div>
-              <p className="mt-0.5 line-clamp-1 text-[11px]" style={{ color: 'var(--text-secondary)' }}>
+              <p className="mt-0.5 line-clamp-2 text-[11px]" style={{ color: 'var(--text-secondary)' }}>
                 {event.card.summary}
               </p>
             </button>
           ) : (
-            <p className="line-clamp-1 text-[11px]" style={{ color: 'var(--text-secondary)' }}>
+            <p className="text-[11px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
               {currentSubPeriod.themeSummary}
             </p>
           )}
 
-          {isPlaying && !cinemaMode && voiceEnabled && tickerSpokenText && (
-            <div
-              className="mt-2 flex items-start gap-2 rounded-xl border px-2.5 py-1.5 text-[11px] leading-relaxed"
-              style={{
-                backgroundColor: 'var(--bg-elevated)',
-                borderColor: 'var(--border-subtle)',
-                color: 'var(--text-primary)',
-              }}
-            >
-              <span
-                className="mt-1 inline-flex items-end gap-[2px] h-2.5 shrink-0"
-                style={{ color: accent }}
-                aria-hidden="true"
+          {isPlaying &&
+            !cinemaMode &&
+            voiceEnabled &&
+            tickerSpokenText &&
+            (!narrationBeats || narrationBeats.length === 0) && (
+              <div
+                className="mt-2 flex items-start gap-2 rounded-xl border px-2.5 py-1.5 text-[11px] leading-relaxed"
+                style={{
+                  backgroundColor: 'var(--bg-elevated)',
+                  borderColor: 'var(--border-subtle)',
+                  color: 'var(--text-primary)',
+                }}
               >
-                <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar" />
-                <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar atlas-eq-bar-2" />
-                <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar atlas-eq-bar-3" />
-              </span>
-              <span className="line-clamp-2">{tickerSpokenText}</span>
-            </div>
-          )}
+                <span
+                  className="mt-1 inline-flex items-end gap-[2px] h-2.5 shrink-0"
+                  style={{ color: accent }}
+                  aria-hidden="true"
+                >
+                  <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar" />
+                  <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar atlas-eq-bar-2" />
+                  <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar atlas-eq-bar-3" />
+                </span>
+                <span>{tickerSpokenText}</span>
+              </div>
+            )}
 
-          {cinemaMode && voiceEnabled && ((narrationBeats && narrationBeats.length > 0) || narrationSubtitle) && (
+          {activeMode && voiceEnabled && ((narrationBeats && narrationBeats.length > 0) || narrationSubtitle) && (
             <div
               className="mt-2 rounded-xl border px-2.5 py-2 text-[11px] leading-relaxed space-y-1.5"
               style={{
@@ -728,7 +782,7 @@ export function ChronicleTicker({
                         <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar atlas-eq-bar-2" />
                         <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar atlas-eq-bar-3" />
                       </span>
-                      <span>纪录片分镜演播</span>
+                      <span>{chapterLabel ? '年代脉络演播' : '深度听书 · 分幕演播'}</span>
                     </span>
                     {narrationBeats.map((b, idx) => {
                       const isAct = idx === activeBeatIndex;
@@ -755,10 +809,11 @@ export function ChronicleTicker({
                       return (
                         <span
                           key={`n-${idx}`}
+                          ref={isAct ? activeBeatRef : undefined}
                           className={
                             isAct
                               ? 'rounded-sm px-0.5 py-[1px] font-medium transition-colors'
-                              : 'opacity-60 transition-opacity'
+                              : 'opacity-65 transition-opacity'
                           }
                           style={
                             isAct

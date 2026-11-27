@@ -226,7 +226,7 @@ export function sanitizeDocumentaryPlan(
 ): DocumentaryPlan | null {
   if (!raw || typeof raw !== 'object') return null;
   const obj = raw as Record<string, unknown>;
-  const rawBeats = Array.isArray(obj.beats) ? obj.beats.slice(0, 4) : [];
+  const rawBeats = Array.isArray(obj.beats) ? obj.beats.slice(0, 5) : [];
   const beats: DocumentaryBeat[] = [];
   const steps: AiStoryboardStep[] = [];
 
@@ -239,7 +239,7 @@ export function sanitizeDocumentaryPlan(
       .replace(/[*#`>\[\]]/g, '')
       .replace(/\s+/g, ' ')
       .trim()
-      .slice(0, 110);
+      .slice(0, 420);
     if (!narration) continue;
 
     const center = sanitizeCoords(b.center) || fallbackCoords || [35, 25];

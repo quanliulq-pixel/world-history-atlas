@@ -637,7 +637,7 @@ export function splitTextIntoSpeechChunks(
   firstMax = 78,
   nextMax = 145,
 ): string[] {
-  const cleaned = cleanSpeechText(rawText).slice(0, 720);
+  const cleaned = cleanSpeechText(rawText).slice(0, 4000);
   if (!cleaned) return [];
 
   const sentences = cleaned
@@ -645,13 +645,34 @@ export function splitTextIntoSpeechChunks(
     .map((s) => s.trim())
     .filter(Boolean);
 
-  if (sentences.length <= 1) {
+  if (sentences.length <= 1 && cleaned.length <= nextMax) {
     return [cleaned];
+  }
+
+  const expanded: string[] = [];
+  for (const s of sentences.length > 0 ? sentences : [cleaned]) {
+    if (s.length <= nextMax) {
+      expanded.push(s);
+    } else {
+      const subParts = s
+        .split(/(?<=[，、：])/)
+        .map((p) => p.trim())
+        .filter(Boolean);
+      for (const p of subParts.length > 0 ? subParts : [s]) {
+        if (p.length <= nextMax) {
+          expanded.push(p);
+        } else {
+          for (let i = 0; i < p.length; i += nextMax) {
+            expanded.push(p.slice(i, i + nextMax));
+          }
+        }
+      }
+    }
   }
 
   const chunks: string[] = [];
   let buf = '';
-  for (const s of sentences) {
+  for (const s of expanded) {
     const limit = chunks.length === 0 ? firstMax : nextMax;
     if (!buf) {
       buf = s;
@@ -676,7 +697,7 @@ function base64WavToBlobUrl(b64: string): string {
   return URL.createObjectURL(blob);
 }
 
-const DOC_PLAN_CACHE_KEY = 'world-history-atlas:ai-doc-plans:v1';
+const DOC_PLAN_CACHE_KEY = 'world-history-atlas:ai-doc-plans:v2';
 const docPlanMemoryCache = new Map<string, AiDocumentaryPlan>();
 
 export function getCachedDocumentaryPlan(cacheKey: string): AiDocumentaryPlan | null {
@@ -708,6 +729,11 @@ export async function generateDocumentaryPlan(params: {
   economy?: string;
   culture?: string;
   consequence?: string;
+  causesText?: string;
+  effectsText?: string;
+  keyFiguresText?: string;
+  debate?: string;
+  depth?: 'story' | 'concise';
   signal?: AbortSignal;
 }): Promise<AiDocumentaryPlan> {
   const memHit = docPlanMemoryCache.get(params.cacheKey);
@@ -731,6 +757,7 @@ export async function generateDocumentaryPlan(params: {
     signal: params.signal,
     body: {
       withStoryboard: true,
+      depth: params.depth ?? 'story',
       title: params.title,
       year: params.year,
       yearDisplay: params.yearDisplay,
@@ -744,6 +771,10 @@ export async function generateDocumentaryPlan(params: {
       economy: params.economy,
       culture: params.culture,
       consequence: params.consequence,
+      causesText: params.causesText,
+      effectsText: params.effectsText,
+      keyFiguresText: params.keyFiguresText,
+      debate: params.debate,
     },
   });
 
@@ -879,66 +910,91 @@ export function stopActiveNarration(notifyListeners = true): void {
   }
 }
 
-export function speakWithBrowserSpeech(
+export async function speakWithBrowserSpeech(
   text: string,
   existingToken?: number,
   onProgress?: (ratio: number) => void,
   playbackRate?: number,
 ): Promise<void> {
-  return new Promise((resolve) => {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
-      globalThis.setTimeout(resolve, Math.min(4500, Math.max(1800, text.length * 45)));
-      return;
-    }
-    const token = existingToken !== undefined ? existingToken : ++activePlaybackToken;
-    try {
-      window.speechSynthesis.cancel();
-      const utter = new SpeechSynthesisUtterance(text);
-      utter.lang = 'zh-CN';
-      utter.rate = Math.max(0.75, Math.min(1.85, playbackRate ?? activeNarrationPlaybackRate));
-      const voices = window.speechSynthesis.getVoices();
-      const zhVoice =
-        voices.find((v) => v.lang.startsWith('zh') && v.localService) ||
-        voices.find((v) => v.lang.startsWith('zh'));
-      if (zhVoice) utter.voice = zhVoice;
+  const cleaned = cleanSpeechText(text);
+  if (!cleaned) return;
 
-      let settled = false;
-      const finish = () => {
-        if (settled) return;
-        settled = true;
-        utter.onboundary = null;
-        if (cancelPendingWait === finish) cancelPendingWait = null;
-        setAmbientVoiceDucking(false);
-        resolve();
-      };
-      cancelPendingWait = finish;
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+    await new Promise<void>((resolve) => {
+      globalThis.setTimeout(resolve, Math.min(18000, Math.max(2200, cleaned.length * 65)));
+    });
+    return;
+  }
 
-      const maxTimeout = window.setTimeout(finish, Math.max(8000, text.length * 180));
-      utter.onboundary = (ev) => {
-        if (settled || token !== activePlaybackToken) return;
-        if (typeof ev.charIndex === 'number' && text.length > 0) {
-          onProgress?.(Math.max(0, Math.min(1, ev.charIndex / text.length)));
+  const segments = splitTextIntoSpeechChunks(cleaned, 130, 140);
+  if (segments.length === 0) return;
+
+  const token = existingToken !== undefined ? existingToken : ++activePlaybackToken;
+  const totalChars = Math.max(
+    1,
+    segments.reduce((sum, s) => sum + s.length, 0),
+  );
+
+  try {
+    window.speechSynthesis.cancel();
+    const voices = window.speechSynthesis.getVoices();
+    const zhVoice =
+      voices.find((v) => /Xiaoxiao|Yunxi|Yunjian|Google 普通话/i.test(v.name)) ||
+      voices.find((v) => v.lang.startsWith('zh') && v.localService) ||
+      voices.find((v) => v.lang.startsWith('zh'));
+
+    setAmbientVoiceDucking(true);
+    let spokenChars = 0;
+
+    for (const seg of segments) {
+      if (token !== activePlaybackToken) break;
+      await new Promise<void>((resolve) => {
+        if (token !== activePlaybackToken) {
+          resolve();
+          return;
         }
-      };
-      utter.onend = () => {
-        window.clearTimeout(maxTimeout);
-        finish();
-      };
-      utter.onerror = () => {
-        window.clearTimeout(maxTimeout);
-        finish();
-      };
+        const utter = new SpeechSynthesisUtterance(seg);
+        utter.lang = 'zh-CN';
+        utter.rate = Math.max(0.75, Math.min(1.85, playbackRate ?? activeNarrationPlaybackRate));
+        if (zhVoice) utter.voice = zhVoice;
 
-      if (token !== activePlaybackToken) {
-        finish();
-        return;
+        let settled = false;
+        let maxTimeout = 0;
+        const finish = () => {
+          if (settled) return;
+          settled = true;
+          window.clearTimeout(maxTimeout);
+          utter.onboundary = null;
+          utter.onend = null;
+          utter.onerror = null;
+          if (cancelPendingWait === finish) cancelPendingWait = null;
+          resolve();
+        };
+        cancelPendingWait = finish;
+
+        maxTimeout = window.setTimeout(finish, Math.max(12000, seg.length * 260));
+        utter.onboundary = (ev) => {
+          if (settled || token !== activePlaybackToken) return;
+          if (typeof ev.charIndex === 'number' && seg.length > 0) {
+            const cur = spokenChars + Math.min(seg.length, Math.max(0, ev.charIndex));
+            onProgress?.(Math.max(0, Math.min(1, cur / totalChars)));
+          }
+        };
+        utter.onend = finish;
+        utter.onerror = finish;
+
+        window.speechSynthesis.speak(utter);
+      });
+      spokenChars += seg.length;
+      if (token === activePlaybackToken) {
+        onProgress?.(Math.max(0, Math.min(1, spokenChars / totalChars)));
       }
-      setAmbientVoiceDucking(true);
-      window.speechSynthesis.speak(utter);
-    } catch {
-      resolve();
     }
-  });
+  } catch {
+    // Ignore speech synthesis runtime errors
+  } finally {
+    setAmbientVoiceDucking(false);
+  }
 }
 
 async function playClipRespectingToken(
@@ -1206,7 +1262,7 @@ export async function playTextPipelined(params: {
   const controller = new AbortController();
   activeTtsController = controller;
   const prefs = params.voicePrefs || getVoicePrefs();
-  const cleanText = cleanSpeechText(params.text).slice(0, 720);
+  const cleanText = cleanSpeechText(params.text).slice(0, 4000);
   if (!cleanText) {
     params.onStartAudio?.();
     return;

@@ -47,6 +47,7 @@ import type {
   ResolvedCountryEvolution,
   SnapshotMeta,
   Storyline,
+  SubPeriod,
 } from './types/history';
 import {
   AiClientError,
@@ -70,6 +71,16 @@ import {
 } from './utils/aiClient';
 import { getPreGeneratedAudio, resolveAudioFileUrl } from './utils/mediaAssets';
 import { isAmbientEnabled, setAmbientEnabled, setAmbientEra } from './utils/ambientBgm';
+import {
+  buildDeepEventStoryPlan,
+  buildDeepFigureStoryPlan,
+  buildEraBridgePlan,
+  buildEventCausalContext,
+  buildSubPeriodBridgePlan,
+  getStoredNarrationDepth,
+  saveStoredNarrationDepth,
+  type NarrationDepth,
+} from './utils/chronicleStory';
 import { buildDocumentarySpeechChunks } from './utils/speechSync';
 import {
   loadManifest,
@@ -125,6 +136,63 @@ function buildLocalFocusStoryboard(
       flows: [],
     })),
   };
+}
+
+async function playPlanWithFallback(params: {
+  cachePrefix: string;
+  plan: AiDocumentaryPlan;
+  onStartAudio?: (mode: 'gemini' | 'browser') => void;
+  onBeatStart?: (beatIdx: number) => void;
+}): Promise<'gemini' | 'browser'> {
+  const chunks = buildDocumentarySpeechChunks(params.plan.beats);
+  const prefs = getVoicePrefs();
+  const canTryRemote = prefs.engine !== 'browser' && Boolean(getStoredPasscode());
+  let started = false;
+  let lastBeat = -1;
+
+  const emitChunk = (chunk: { sceneIndex?: number }) => {
+    const bIdx = chunk.sceneIndex ?? 0;
+    if (bIdx !== lastBeat) {
+      lastBeat = bIdx;
+      params.onBeatStart?.(bIdx);
+    }
+  };
+
+  if (canTryRemote) {
+    try {
+      await playSpeechChunks({
+        cachePrefix: params.cachePrefix,
+        chunks,
+        voicePrefs: prefs,
+        onStartAudio: () => {
+          if (started) return;
+          started = true;
+          params.onStartAudio?.('gemini');
+        },
+        onChunkStart: emitChunk,
+      });
+      return 'gemini';
+    } catch (err) {
+      if (err instanceof AiClientError && err.code === 'aborted') {
+        throw err;
+      }
+      lastBeat = -1;
+      started = false;
+    }
+  }
+
+  await playSpeechChunks({
+    cachePrefix: params.cachePrefix,
+    chunks,
+    voicePrefs: { ...prefs, engine: 'browser' },
+    onStartAudio: () => {
+      if (started) return;
+      started = true;
+      params.onStartAudio?.('browser');
+    },
+    onChunkStart: emitChunk,
+  });
+  return 'browser';
 }
 
 export function App() {
@@ -185,19 +253,26 @@ export function App() {
   const [aiUnlocked, setAiUnlocked] = useState(() => Boolean(getStoredPasscode()));
   const [cinemaVoiceEnabled, setCinemaVoiceEnabled] = useState(true);
   const [timelineVoiceEnabled, setTimelineVoiceEnabled] = useState(true);
+  const [narrationDepth, setNarrationDepth] = useState<NarrationDepth>(() =>
+    getStoredNarrationDepth(),
+  );
   const [syncCardDuringPlay, setSyncCardDuringPlay] = useState(true);
   const [ambientEnabled, setAmbientEnabledState] = useState(() => isAmbientEnabled());
   const [storyVoiceEnabled, setStoryVoiceEnabled] = useState(true);
   const [tickerNarrationStatus, setTickerNarrationStatus] = useState<
-    'idle' | 'playing' | 'browser'
+    'idle' | 'loading' | 'playing' | 'browser'
   >('idle');
   const [tickerSpokenText, setTickerSpokenText] = useState<string | null>(null);
+  const [tickerBeats, setTickerBeats] = useState<AiDocumentaryBeat[] | null>(null);
+  const [tickerActiveBeatIdx, setTickerActiveBeatIdx] = useState(0);
+  const [tickerChapterLabel, setTickerChapterLabel] = useState<string | null>(null);
   const [cinemaNarrationStatus, setCinemaNarrationStatus] = useState<
     'idle' | 'loading' | 'playing' | 'browser'
   >('idle');
   const [cinemaSubtitle, setCinemaSubtitle] = useState<string | null>(null);
   const [cinemaBeats, setCinemaBeats] = useState<AiDocumentaryBeat[] | null>(null);
   const [cinemaActiveBeatIdx, setCinemaActiveBeatIdx] = useState(0);
+  const [cinemaChapterLabel, setCinemaChapterLabel] = useState<string | null>(null);
   const [cinemaScene, setCinemaScene] = useState<AiStoryboardStep | null>(null);
   const [cardNarratingId, setCardNarratingId] = useState<string | null>(null);
   const [cardNarrationLoadingId, setCardNarrationLoadingId] = useState<string | null>(null);
@@ -309,6 +384,15 @@ export function App() {
   cinemaVoiceEnabledRef.current = cinemaVoiceEnabled;
   const timelineVoiceEnabledRef = useRef(timelineVoiceEnabled);
   timelineVoiceEnabledRef.current = timelineVoiceEnabled;
+  const narrationDepthRef = useRef(narrationDepth);
+  narrationDepthRef.current = narrationDepth;
+  const handleToggleNarrationDepth = useCallback(() => {
+    setNarrationDepth((prev) => {
+      const next: NarrationDepth = prev === 'story' ? 'concise' : 'story';
+      saveStoredNarrationDepth(next);
+      return next;
+    });
+  }, []);
   const syncCardDuringPlayRef = useRef(syncCardDuringPlay);
   syncCardDuringPlayRef.current = syncCardDuringPlay;
   const countrySpeedRef = useRef(countrySpeed);
@@ -348,6 +432,7 @@ export function App() {
       : yearToProgress(currentYearRef.current);
     let lastCrossYear = currentYearRef.current;
     let lastSpokenEraId = currentEraRef.current.id;
+    let lastSpokenSubPeriodId = getSubPeriodForYear(currentYearRef.current).id;
     let lastSpokenEventId: string | null = null;
     let voiceHoldActive = false;
 
@@ -357,6 +442,8 @@ export function App() {
       fallbackScript: string;
     }) => {
       voiceHoldActive = true;
+      setTickerChapterLabel(null);
+      setTickerBeats(null);
       setTickerSpokenText(opts.fallbackScript);
       void (async () => {
         try {
@@ -394,12 +481,85 @@ export function App() {
       })();
     };
 
+    const triggerTickerStorySequence = (
+      steps: Array<{
+        cacheKey: string;
+        chapterLabel: string | null;
+        plan: AiDocumentaryPlan;
+        eventId?: string | null;
+      }>,
+    ) => {
+      voiceHoldActive = true;
+      void (async () => {
+        try {
+          for (const step of steps) {
+            if (cancelled) return;
+            if (step.eventId !== undefined) {
+              setTickerEventId(step.eventId);
+            }
+            setTickerVisible(true);
+            setTickerChapterLabel(step.chapterLabel);
+            setTickerBeats(step.plan.beats);
+            setTickerActiveBeatIdx(0);
+            setTickerSpokenText(step.plan.beats[0]?.narration || step.plan.script);
+            setTickerNarrationStatus('loading');
+
+            await playPlanWithFallback({
+              cachePrefix: step.cacheKey,
+              plan: step.plan,
+              onStartAudio: (mode) => {
+                if (!cancelled) {
+                  setTickerNarrationStatus(mode === 'gemini' ? 'playing' : 'browser');
+                }
+              },
+              onBeatStart: (beatIdx) => {
+                if (cancelled) return;
+                setTickerActiveBeatIdx(beatIdx);
+                setTickerSpokenText(step.plan.beats[beatIdx]?.narration || step.plan.script);
+              },
+            });
+          }
+        } catch {
+          // Ignore interruption or audio failure and resume timeline
+        }
+        if (cancelled) return;
+        const pauseGapMs = Math.round(360 / Math.max(0.5, playSpeedRef.current));
+        resumeTimerId = window.setTimeout(() => {
+          if (cancelled) return;
+          voiceHoldActive = false;
+          setTickerSpokenText(null);
+          setTickerBeats(null);
+          setTickerChapterLabel(null);
+          setTickerNarrationStatus('idle');
+          lastTime = performance.now();
+        }, pauseGapMs);
+      })();
+    };
+
     if (timelineVoiceEnabledRef.current) {
       const startEra = currentEraRef.current;
-      triggerTickerNarration({
-        cacheKey: `ticker:era:${startEra.id}`,
-        fallbackScript: `进入${startEra.name}。${startEra.overview.geopolitics}`,
-      });
+      const startSub = getSubPeriodForYear(currentYearRef.current);
+      if (narrationDepthRef.current === 'story') {
+        triggerTickerStorySequence([
+          {
+            cacheKey: `story:era:${startEra.id}`,
+            chapterLabel: `时代卷首 · ${startEra.name}`,
+            plan: buildEraBridgePlan(startEra),
+            eventId: null,
+          },
+          {
+            cacheKey: `story:sp:${startSub.id}`,
+            chapterLabel: `年代脉络 · ${startSub.name}`,
+            plan: buildSubPeriodBridgePlan(startEra, startSub),
+            eventId: null,
+          },
+        ]);
+      } else {
+        triggerTickerNarration({
+          cacheKey: `ticker:era:${startEra.id}`,
+          fallbackScript: `进入${startEra.name}。${startEra.overview.geopolitics}`,
+        });
+      }
     }
 
     const tick = (now: number) => {
@@ -407,6 +567,8 @@ export function App() {
       if (!timelineVoiceEnabledRef.current && voiceHoldActive) {
         voiceHoldActive = false;
         setTickerSpokenText(null);
+        setTickerBeats(null);
+        setTickerChapterLabel(null);
         setTickerNarrationStatus('idle');
       }
       if (voiceHoldActive) {
@@ -433,8 +595,16 @@ export function App() {
         : progressToYear(nextProgress);
 
       if (nextYear !== lastCrossYear) {
-        const minImportance =
-          playSpeedRef.current >= 2 ? 3 : playSpeedRef.current >= 1.5 ? 2 : 1;
+        const isStoryMode = narrationDepthRef.current === 'story';
+        const minImportance = isStoryMode
+          ? playSpeedRef.current >= 2.5
+            ? 3
+            : 1
+          : playSpeedRef.current >= 2
+            ? 3
+            : playSpeedRef.current >= 1.5
+              ? 2
+              : 1;
         let bestCrossed: HistoryEvent | null = null;
         let bestVoiceEvent: HistoryEvent | null = null;
         for (const ev of dimensionFilteredEvents) {
@@ -464,13 +634,49 @@ export function App() {
         }
 
         const nextEra = getEraForYear(nextYear);
+        const nextSub = getSubPeriodForYear(nextYear);
         const eraChanged = nextEra.id !== lastSpokenEraId;
-        if (eraChanged) {
-          lastSpokenEraId = nextEra.id;
-        }
+        const subChanged = nextSub.id !== lastSpokenSubPeriodId;
+        if (eraChanged) lastSpokenEraId = nextEra.id;
+        if (subChanged) lastSpokenSubPeriodId = nextSub.id;
 
         if (timelineVoiceEnabledRef.current && !voiceHoldActive) {
-          if (bestVoiceEvent && bestVoiceEvent.id !== lastSpokenEventId) {
+          if (isStoryMode) {
+            const seq: Array<{
+              cacheKey: string;
+              chapterLabel: string | null;
+              plan: AiDocumentaryPlan;
+              eventId?: string | null;
+            }> = [];
+            if (eraChanged) {
+              seq.push({
+                cacheKey: `story:era:${nextEra.id}`,
+                chapterLabel: `时代转折 · ${nextEra.name}`,
+                plan: buildEraBridgePlan(nextEra),
+                eventId: null,
+              });
+            }
+            if (subChanged) {
+              seq.push({
+                cacheKey: `story:sp:${nextSub.id}`,
+                chapterLabel: `年代脉络 · ${nextSub.name}`,
+                plan: buildSubPeriodBridgePlan(nextEra, nextSub),
+                eventId: null,
+              });
+            }
+            if (bestVoiceEvent && bestVoiceEvent.id !== lastSpokenEventId) {
+              lastSpokenEventId = bestVoiceEvent.id;
+              seq.push({
+                cacheKey: `story:ev:${bestVoiceEvent.id}`,
+                chapterLabel: null,
+                plan: buildDeepEventStoryPlan(bestVoiceEvent, nextEra, nextSub),
+                eventId: bestVoiceEvent.id,
+              });
+            }
+            if (seq.length > 0) {
+              triggerTickerStorySequence(seq);
+            }
+          } else if (bestVoiceEvent && bestVoiceEvent.id !== lastSpokenEventId) {
             lastSpokenEventId = bestVoiceEvent.id;
             triggerTickerNarration({
               cacheKey: `ticker:ev:${bestVoiceEvent.id}`,
@@ -499,6 +705,8 @@ export function App() {
       window.clearTimeout(resumeTimerId);
       stopActiveNarration();
       setTickerSpokenText(null);
+      setTickerBeats(null);
+      setTickerChapterLabel(null);
       setTickerNarrationStatus('idle');
     };
   }, [isPlaying, cinemaMode, timelineZoom, dimensionFilteredEvents]);
@@ -591,12 +799,13 @@ export function App() {
     [],
   );
 
-  // Cinema Documentary Mode: smooth year progression + tilted camera flight + 3-beat documentary choreography
+  // Cinema Documentary Mode: smooth year progression + tilted camera flight + deep/concise choreography
   useEffect(() => {
     if (!cinemaMode) {
       setCinemaNarrationStatus('idle');
       setCinemaSubtitle(null);
       setCinemaBeats(null);
+      setCinemaChapterLabel(null);
       setCinemaScene(null);
       return;
     }
@@ -604,9 +813,10 @@ export function App() {
     let rafId = 0;
     let timerId = 0;
 
+    const isStoryMode = narrationDepth === 'story';
     const scopedEra = timelineZoom === 'era' ? currentEraRef.current : null;
     const pool = dimensionFilteredEvents.filter((ev) =>
-      scopedEra ? ev.eraId === scopedEra.id : ev.importance === 3,
+      scopedEra ? ev.eraId === scopedEra.id : isStoryMode ? true : ev.importance === 3,
     );
     const milestones =
       pool.length >= 2
@@ -653,7 +863,41 @@ export function App() {
         timerId = window.setTimeout(resolve, ms);
       });
 
+    const playCinemaPlan = async (cachePrefix: string, plan: AiDocumentaryPlan) => {
+      setCinemaBeats(plan.beats);
+      setCinemaActiveBeatIdx(0);
+      setCinemaSubtitle(plan.beats[0]?.narration || plan.script);
+      await playPlanWithFallback({
+        cachePrefix,
+        plan,
+        onStartAudio: (mode) => {
+          if (!cancelled) {
+            setCinemaNarrationStatus(mode === 'gemini' ? 'playing' : 'browser');
+          }
+        },
+        onBeatStart: (beatIdx) => {
+          if (cancelled) return;
+          setCinemaActiveBeatIdx(beatIdx);
+          setCinemaSubtitle(plan.beats[beatIdx]?.narration || plan.script);
+          const step = plan.storyboard.steps[beatIdx];
+          if (step) {
+            setCinemaScene(step);
+            setCurrentYear(step.year);
+            flyToLocation(step.center, step.zoom, {
+              exactZoom: true,
+              pitch: step.pitch ?? 22,
+              bearing: step.bearing ?? 0,
+              duration: 1050,
+            });
+          }
+        },
+      });
+    };
+
     (async () => {
+      let lastBridgeEraId: string | null = null;
+      let lastBridgeSubId: string | null = null;
+
       for (let i = idx; i < milestones.length && !cancelled; i++) {
         const ev = milestones[i];
         const speed = Math.max(0.5, playSpeedRef.current);
@@ -664,7 +908,46 @@ export function App() {
         stopActiveNarration();
         setCinemaScene(null);
         setCinemaBeats(null);
+        setCinemaChapterLabel(null);
         setCinemaActiveBeatIdx(0);
+        setTickerVisible(true);
+
+        if (isStoryMode && cinemaVoiceEnabledRef.current) {
+          if (evEra.id !== lastBridgeEraId) {
+            lastBridgeEraId = evEra.id;
+            const eraBridgePlan = buildEraBridgePlan(evEra);
+            setTickerEventId(null);
+            setCinemaChapterLabel(`时代卷首 · ${evEra.name}`);
+            setCurrentYear(Math.max(evEra.startYear, Math.min(ev.year, currentYearRef.current)));
+            try {
+              await playCinemaPlan(`story:era:${evEra.id}`, eraBridgePlan);
+            } catch {
+              // Ignore interruption
+            }
+            if (cancelled) break;
+            setCinemaScene(null);
+            await sleep(420);
+          }
+
+          if (evSub.id !== lastBridgeSubId && !cancelled) {
+            lastBridgeSubId = evSub.id;
+            const subBridgePlan = buildSubPeriodBridgePlan(evEra, evSub);
+            setTickerEventId(null);
+            setCinemaChapterLabel(`年代脉络 · ${evSub.name}`);
+            setCurrentYear(Math.max(evSub.startYear, Math.min(ev.year, currentYearRef.current)));
+            try {
+              await playCinemaPlan(`story:sp:${evSub.id}`, subBridgePlan);
+            } catch {
+              // Ignore interruption
+            }
+            if (cancelled) break;
+            setCinemaScene(null);
+            await sleep(420);
+          }
+        }
+
+        if (cancelled) break;
+        setCinemaChapterLabel(null);
         setSelectedFigureId(null);
         setSelectedEventId(ev.id);
         setFocusRouteId(ev.routeIds?.[0] || null);
@@ -681,55 +964,91 @@ export function App() {
           duration: travelMs,
         });
 
-        // Pre-fetch 3-beat documentary plan in parallel with camera flight when AI voice is enabled
         const docPromise = cinemaVoiceEnabledRef.current
           ? (async () => {
-            const staticEntry =
-              getVoicePrefs().engine !== 'browser'
-                ? await getPreGeneratedAudio(`ev:${ev.id}`)
-                : null;
-            if (staticEntry?.beats?.length) {
-              const cachedPlan = getCachedDocumentaryPlan(`ev:${ev.id}`);
-              const beats = staticEntry.beats.map((b) => ({
-                title: b.title,
-                narration: b.narration,
-              }));
-              const plan: AiDocumentaryPlan = cachedPlan ?? {
-                script: staticEntry.script,
-                beats,
-                storyboard: buildLocalFocusStoryboard(ev.title, ev.year, ev.coords, beats),
-              };
-              return {
-                plan,
-                staticAudioUrls: staticEntry.beats.map((b) => resolveAudioFileUrl(b.file)),
-              };
-            }
-            setCinemaNarrationStatus('loading');
-            setCinemaSubtitle(`${ev.title} — 正在撰写纪录片脚本并编排地图动画...`);
-            try {
-              const plan = await generateDocumentaryPlan({
-                cacheKey: `ev:${ev.id}`,
-                title: ev.title,
-                year: ev.year,
-                yearDisplay: ev.dateDisplay,
-                coords: ev.coords,
-                eraName: evEra.name,
-                subPeriodName: evSub.name,
-                regionLabel: REGION_META[ev.region].label,
-                summary: ev.card.summary,
-                geography: ev.card.geography,
-                politics: ev.card.politics,
-                economy: ev.card.economy,
-                culture: ev.card.culture,
-                consequence: ev.card.consequence,
-              });
-              return { plan, staticAudioUrls: undefined };
-            } catch {
-              return {
-                fallbackText: `${ev.dateDisplay}，${ev.title}。${ev.card.summary}`,
-              };
-            }
-          })()
+              if (isStoryMode) {
+                const localPlan = buildDeepEventStoryPlan(ev, evEra, evSub);
+                if (getVoicePrefs().engine !== 'browser' && Boolean(getStoredPasscode())) {
+                  try {
+                    setCinemaNarrationStatus('loading');
+                    setCinemaSubtitle(`${ev.title} — 正在撰写长篇听书脚本并编排因果地图动画...`);
+                    const causal = buildEventCausalContext(ev);
+                    const aiPlan = await generateDocumentaryPlan({
+                      cacheKey: `ev:${ev.id}:story`,
+                      depth: 'story',
+                      title: ev.title,
+                      year: ev.year,
+                      yearDisplay: ev.dateDisplay,
+                      coords: ev.coords,
+                      eraName: evEra.name,
+                      subPeriodName: evSub.name,
+                      regionLabel: REGION_META[ev.region].label,
+                      summary: ev.card.summary,
+                      geography: ev.card.geography,
+                      politics: ev.card.politics,
+                      economy: ev.card.economy,
+                      culture: ev.card.culture,
+                      consequence: ev.card.consequence,
+                      causesText: causal.causesText,
+                      effectsText: causal.effectsText,
+                      keyFiguresText: causal.keyFiguresText,
+                      debate: ev.card.debate,
+                    });
+                    return { plan: aiPlan, staticAudioUrls: undefined };
+                  } catch {
+                    return { plan: localPlan, staticAudioUrls: undefined };
+                  }
+                }
+                return { plan: localPlan, staticAudioUrls: undefined };
+              }
+
+              const staticEntry =
+                getVoicePrefs().engine !== 'browser'
+                  ? await getPreGeneratedAudio(`ev:${ev.id}`)
+                  : null;
+              if (staticEntry?.beats?.length) {
+                const cachedPlan = getCachedDocumentaryPlan(`ev:${ev.id}`);
+                const beats = staticEntry.beats.map((b) => ({
+                  title: b.title,
+                  narration: b.narration,
+                }));
+                const plan: AiDocumentaryPlan = cachedPlan ?? {
+                  script: staticEntry.script,
+                  beats,
+                  storyboard: buildLocalFocusStoryboard(ev.title, ev.year, ev.coords, beats),
+                };
+                return {
+                  plan,
+                  staticAudioUrls: staticEntry.beats.map((b) => resolveAudioFileUrl(b.file)),
+                };
+              }
+              setCinemaNarrationStatus('loading');
+              setCinemaSubtitle(`${ev.title} — 正在撰写纪录片脚本并编排地图动画...`);
+              try {
+                const plan = await generateDocumentaryPlan({
+                  cacheKey: `ev:${ev.id}:concise`,
+                  depth: 'concise',
+                  title: ev.title,
+                  year: ev.year,
+                  yearDisplay: ev.dateDisplay,
+                  coords: ev.coords,
+                  eraName: evEra.name,
+                  subPeriodName: evSub.name,
+                  regionLabel: REGION_META[ev.region].label,
+                  summary: ev.card.summary,
+                  geography: ev.card.geography,
+                  politics: ev.card.politics,
+                  economy: ev.card.economy,
+                  culture: ev.card.culture,
+                  consequence: ev.card.consequence,
+                });
+                return { plan, staticAudioUrls: undefined };
+              } catch {
+                return {
+                  fallbackText: `${ev.dateDisplay}，${ev.title}。${ev.card.summary}`,
+                };
+              }
+            })()
           : null;
 
         await animateYearTo(currentYearRef.current, ev.year, travelMs);
@@ -746,14 +1065,14 @@ export function App() {
             await speakWithBrowserSpeech(fallbackText);
           } else if ('plan' in result && result.plan) {
             const { plan, staticAudioUrls } = result;
-            setCinemaBeats(plan.beats);
-            setCinemaActiveBeatIdx(0);
-            setCinemaSubtitle(plan.script);
-            try {
-              if (staticAudioUrls && staticAudioUrls.length === plan.beats.length) {
+            if (staticAudioUrls && staticAudioUrls.length === plan.beats.length) {
+              setCinemaBeats(plan.beats);
+              setCinemaActiveBeatIdx(0);
+              setCinemaSubtitle(plan.script);
+              try {
                 await playStaticAudioBeats({
-                  beats: plan.beats.map((b, idx) => ({
-                    audioUrl: staticAudioUrls[idx],
+                  beats: plan.beats.map((b, beatIdx) => ({
+                    audioUrl: staticAudioUrls[beatIdx],
                     narration: b.narration,
                   })),
                   onStartAudio: () => {
@@ -775,42 +1094,19 @@ export function App() {
                     }
                   },
                 });
-              } else {
-                const docChunks = buildDocumentarySpeechChunks(plan.beats);
-                await playSpeechChunks({
-                  cachePrefix: `doc:ev:${ev.id}`,
-                  chunks: docChunks,
-                  onStartAudio: () => {
-                    if (!cancelled) setCinemaNarrationStatus('playing');
-                  },
-                  onChunkStart: (chunk) => {
-                    if (cancelled) return;
-                    const beatIdx = chunk.sceneIndex ?? 0;
-                    setCinemaActiveBeatIdx(beatIdx);
-                    const step = plan.storyboard.steps[beatIdx];
-                    if (step) {
-                      setCinemaScene(step);
-                      setCurrentYear(step.year);
-                      flyToLocation(step.center, step.zoom, {
-                        exactZoom: true,
-                        pitch: step.pitch ?? 24,
-                        bearing: step.bearing ?? 0,
-                        duration: 1050,
-                      });
-                    }
-                  },
-                });
+              } catch {
+                if (!cancelled) {
+                  await playCinemaPlan(`story:ev:${ev.id}`, plan);
+                }
               }
-            } catch {
-              if (!cancelled) {
-                setCinemaNarrationStatus('browser');
-                await speakWithBrowserSpeech(plan.script);
-              }
+            } else {
+              await playCinemaPlan(`${isStoryMode ? 'story' : 'doc'}:ev:${ev.id}`, plan);
             }
           }
           if (cancelled) break;
           setCinemaScene(null);
           setCinemaBeats(null);
+          setCinemaChapterLabel(null);
           await sleep(650);
         } else {
           setCinemaNarrationStatus('idle');
@@ -825,6 +1121,7 @@ export function App() {
         setCinemaNarrationStatus('idle');
         setCinemaSubtitle(null);
         setCinemaBeats(null);
+        setCinemaChapterLabel(null);
         setCinemaScene(null);
         setCinemaMode(false);
         setRecentTriggerEventId(null);
@@ -843,8 +1140,9 @@ export function App() {
       setCinemaNarrationStatus('idle');
       setCinemaScene(null);
       setCinemaBeats(null);
+      setCinemaChapterLabel(null);
     };
-  }, [cinemaMode, timelineZoom, dimensionFilteredEvents, flyToLocation]);
+  }, [cinemaMode, timelineZoom, narrationDepth, dimensionFilteredEvents, flyToLocation]);
 
   const stopAiNarrationAndStage = useCallback((clearStage = true, closeStudio = false) => {
     cardNarrationRunIdRef.current += 1;
@@ -1248,10 +1546,17 @@ export function App() {
       economy?: string;
       culture?: string;
       consequence?: string;
+      causesText?: string;
+      effectsText?: string;
+      keyFiguresText?: string;
+      debate?: string;
+      localStoryPlan?: AiDocumentaryPlan;
+      skipRemote?: boolean;
       loadingMessage: string;
       fallbackText: string;
     }) => {
       const runId = ++cardNarrationRunIdRef.current;
+      const isStoryMode = narrationDepthRef.current === 'story';
       setCinemaMode(false);
       stopActiveNarration();
       setCardNarrationLoadingId(params.itemId);
@@ -1260,6 +1565,71 @@ export function App() {
       setCardActiveBeatIdx(0);
       setCardNarrationSubtitle(params.loadingMessage);
       try {
+        if (isStoryMode && params.localStoryPlan) {
+          let plan = params.localStoryPlan;
+          if (
+            !params.skipRemote &&
+            getVoicePrefs().engine !== 'browser' &&
+            Boolean(getStoredPasscode())
+          ) {
+            try {
+              plan = await generateDocumentaryPlan({
+                cacheKey: `${params.cacheKey}:story`,
+                depth: 'story',
+                title: params.title,
+                year: params.year,
+                yearDisplay: params.yearDisplay,
+                coords: params.coords,
+                eraName: params.eraName,
+                subPeriodName: params.subPeriodName,
+                regionLabel: params.regionLabel,
+                summary: params.summary,
+                geography: params.geography,
+                politics: params.politics,
+                economy: params.economy,
+                culture: params.culture,
+                consequence: params.consequence,
+                causesText: params.causesText,
+                effectsText: params.effectsText,
+                keyFiguresText: params.keyFiguresText,
+                debate: params.debate,
+              });
+            } catch {
+              plan = params.localStoryPlan;
+            }
+          }
+          if (cardNarrationRunIdRef.current !== runId) return;
+
+          cardDocContextRef.current = {
+            itemId: params.itemId,
+            cacheKey: `${params.cacheKey}:story`,
+            plan,
+          };
+          setCardNarrationBeats(plan.beats);
+          setCardActiveBeatIdx(0);
+          setCardNarrationSubtitle(plan.script);
+          setActiveStoryboard(plan.storyboard);
+          setStoryboardStepIdx(0);
+          setStoryboardPlaying(false);
+          setStoryboardVoiceSynced(true);
+
+          await playPlanWithFallback({
+            cachePrefix: `story:${params.cacheKey}`,
+            plan,
+            onStartAudio: () => {
+              if (cardNarrationRunIdRef.current === runId) {
+                setCardNarrationLoadingId(null);
+              }
+            },
+            onBeatStart: (beatIdx) => {
+              if (cardNarrationRunIdRef.current !== runId) return;
+              setCardActiveBeatIdx(beatIdx);
+              setStoryboardStepIdx(beatIdx);
+            },
+          });
+          return;
+        }
+
         const staticEntry =
           getVoicePrefs().engine !== 'browser'
             ? await getPreGeneratedAudio(params.cacheKey)
@@ -1312,7 +1682,8 @@ export function App() {
         }
 
         const plan = await generateDocumentaryPlan({
-          cacheKey: params.cacheKey,
+          cacheKey: `${params.cacheKey}:concise`,
+          depth: 'concise',
           title: params.title,
           year: params.year,
           yearDisplay: params.yearDisplay,
@@ -1341,18 +1712,16 @@ export function App() {
         setStoryboardPlaying(false);
         setStoryboardVoiceSynced(true);
 
-        const chunks = buildDocumentarySpeechChunks(plan.beats);
-        await playSpeechChunks({
+        await playPlanWithFallback({
           cachePrefix: `doc:${params.cacheKey}`,
-          chunks,
+          plan,
           onStartAudio: () => {
             if (cardNarrationRunIdRef.current === runId) {
               setCardNarrationLoadingId(null);
             }
           },
-          onChunkStart: (chunk) => {
+          onBeatStart: (beatIdx) => {
             if (cardNarrationRunIdRef.current !== runId) return;
-            const beatIdx = chunk.sceneIndex ?? 0;
             setCardActiveBeatIdx(beatIdx);
             setStoryboardStepIdx(beatIdx);
           },
@@ -1364,6 +1733,7 @@ export function App() {
           return;
         }
         if (
+          !isStoryMode &&
           err instanceof AiClientError &&
           (err.code === 'passcode_invalid' ||
             err.code === 'passcode_unconfigured' ||
@@ -1400,8 +1770,8 @@ export function App() {
     }
 
     const runId = ++cardNarrationRunIdRef.current;
-    const chunks = buildDocumentarySpeechChunks(ctx.plan.beats).slice(beatIdx);
-    if (chunks.length === 0) return;
+    const sliceBeats = ctx.plan.beats.slice(beatIdx);
+    if (sliceBeats.length === 0) return;
 
     setCinemaMode(false);
     stopActiveNarration();
@@ -1437,17 +1807,21 @@ export function App() {
         return;
       }
 
-      await playSpeechChunks({
-        cachePrefix: `doc:${ctx.cacheKey}`,
-        chunks,
+      const subPlan: AiDocumentaryPlan = {
+        ...ctx.plan,
+        beats: sliceBeats,
+      };
+      await playPlanWithFallback({
+        cachePrefix: `doc:${ctx.cacheKey}:b${beatIdx}`,
+        plan: subPlan,
         onStartAudio: () => {
           if (cardNarrationRunIdRef.current === runId) {
             setCardNarrationLoadingId(null);
           }
         },
-        onChunkStart: (chunk) => {
+        onBeatStart: (relIdx) => {
           if (cardNarrationRunIdRef.current !== runId) return;
-          const bIdx = chunk.sceneIndex ?? beatIdx;
+          const bIdx = beatIdx + relIdx;
           setCardActiveBeatIdx(bIdx);
           setStoryboardStepIdx(bIdx);
         },
@@ -1470,6 +1844,8 @@ export function App() {
     async (ev: HistoryEvent) => {
       const evEra = getEraForYear(ev.year);
       const evSub = getSubPeriodForYear(ev.year);
+      const causal = buildEventCausalContext(ev);
+      const localStoryPlan = buildDeepEventStoryPlan(ev, evEra, evSub);
       await runCardDocumentaryNarration({
         itemId: ev.id,
         cacheKey: `ev:${ev.id}`,
@@ -1486,8 +1862,13 @@ export function App() {
         economy: ev.card.economy,
         culture: ev.card.culture,
         consequence: ev.card.consequence,
-        loadingMessage: '正在撰写纪录片分镜与 AI 历史旁白...',
-        fallbackText: `${ev.dateDisplay}，${ev.title}。${ev.card.summary}`,
+        causesText: causal.causesText,
+        effectsText: causal.effectsText,
+        keyFiguresText: causal.keyFiguresText,
+        debate: ev.card.debate,
+        localStoryPlan,
+        loadingMessage: '正在撰写长篇听书脚本与因果同步地图...',
+        fallbackText: localStoryPlan.script,
       });
     },
     [runCardDocumentaryNarration],
@@ -1496,6 +1877,7 @@ export function App() {
   const handleNarrateFigure = useCallback(
     async (fig: HistoricalFigure) => {
       const figEra = getEraForYear(fig.activeYear);
+      const localStoryPlan = buildDeepFigureStoryPlan(fig, figEra);
       await runCardDocumentaryNarration({
         itemId: fig.id,
         cacheKey: `fig:${fig.id}`,
@@ -1510,8 +1892,40 @@ export function App() {
         politics: fig.card.eraContext,
         economy: fig.card.coreContributions,
         consequence: fig.card.historicalImpact,
-        loadingMessage: '正在撰写人物纪录片分镜与语音简介...',
-        fallbackText: `${fig.name}，${fig.title}。${fig.card.oneLiner}`,
+        localStoryPlan,
+        loadingMessage: '正在撰写人物长篇传记解说与分镜...',
+        fallbackText: localStoryPlan.script,
+      });
+    },
+    [runCardDocumentaryNarration],
+  );
+
+  const handleNarratePeriod = useCallback(
+    async (era: Era, subPeriod: SubPeriod) => {
+      const eraPlan = buildEraBridgePlan(era);
+      const spPlan = buildSubPeriodBridgePlan(era, subPeriod);
+      const combinedPlan: AiDocumentaryPlan = {
+        script: `${eraPlan.script}\n\n${spPlan.script}`,
+        beats: [...eraPlan.beats, ...spPlan.beats],
+        storyboard: {
+          title: `${era.name} · ${subPeriod.name}`,
+          steps: [...eraPlan.storyboard.steps, ...spPlan.storyboard.steps],
+        },
+      };
+      await runCardDocumentaryNarration({
+        itemId: `period:${subPeriod.id}`,
+        cacheKey: `period:${subPeriod.id}`,
+        title: `${era.name} · ${subPeriod.name}`,
+        year: subPeriod.startYear,
+        yearDisplay: `${subPeriod.startYear} — ${subPeriod.endYear}`,
+        coords: spPlan.storyboard.steps[0]?.center ?? [42, 28],
+        eraName: era.name,
+        subPeriodName: subPeriod.name,
+        summary: subPeriod.themeSummary,
+        localStoryPlan: combinedPlan,
+        skipRemote: true,
+        loadingMessage: '正在加载时代演进脉络听书章节...',
+        fallbackText: combinedPlan.script,
       });
     },
     [runCardDocumentaryNarration],
@@ -2015,11 +2429,14 @@ export function App() {
                 playSpeed={playSpeed}
                 speedOptions={PLAY_SPEEDS}
                 voiceEnabled={cinemaMode ? cinemaVoiceEnabled : timelineVoiceEnabled}
+                narrationDepth={narrationDepth}
+                onToggleNarrationDepth={handleToggleNarrationDepth}
                 syncCardDuringPlay={syncCardDuringPlay}
                 narrationStatus={cinemaMode ? cinemaNarrationStatus : tickerNarrationStatus}
-                narrationSubtitle={cinemaSubtitle}
-                narrationBeats={cinemaBeats}
-                activeBeatIndex={cinemaActiveBeatIdx}
+                narrationSubtitle={cinemaMode ? cinemaSubtitle : null}
+                narrationBeats={cinemaMode ? cinemaBeats : tickerBeats}
+                activeBeatIndex={cinemaMode ? cinemaActiveBeatIdx : tickerActiveBeatIdx}
+                chapterLabel={cinemaMode ? cinemaChapterLabel : tickerChapterLabel}
                 tickerSpokenText={tickerSpokenText}
                 onSelectSpeed={setPlaySpeed}
                 onToggleVoice={() => {
@@ -2030,6 +2447,7 @@ export function App() {
                         stopActiveNarration();
                         setCinemaNarrationStatus('idle');
                         setCinemaBeats(null);
+                        setCinemaChapterLabel(null);
                         setCinemaScene(null);
                       }
                       return next;
@@ -2041,6 +2459,8 @@ export function App() {
                         stopActiveNarration();
                         setTickerNarrationStatus('idle');
                         setTickerSpokenText(null);
+                        setTickerBeats(null);
+                        setTickerChapterLabel(null);
                       }
                       return next;
                     });
@@ -2054,7 +2474,10 @@ export function App() {
                   setCinemaMode(false);
                   setRecentTriggerEventId(null);
                   setCinemaBeats(null);
+                  setCinemaChapterLabel(null);
                   setCinemaScene(null);
+                  setTickerBeats(null);
+                  setTickerChapterLabel(null);
                   stopActiveNarration();
                 }}
                 onDismiss={() => setTickerVisible(false)}
@@ -2162,6 +2585,8 @@ export function App() {
                 }
                 onNarrateEvent={(ev) => void handleNarrateEvent(ev)}
                 onNarrateFigure={(fig) => void handleNarrateFigure(fig)}
+                onNarratePeriod={(era, subPeriod) => void handleNarratePeriod(era, subPeriod)}
+                narrationDepth={narrationDepth}
                 narratingItemId={cardNarratingId}
                 narrationLoadingId={cardNarrationLoadingId}
                 narrationSubtitle={cardNarrationSubtitle}

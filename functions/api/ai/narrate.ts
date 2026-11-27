@@ -22,6 +22,7 @@ import {
 interface NarrateRequestBody {
   mode?: 'script-and-audio' | 'audio-only';
   withStoryboard?: boolean;
+  depth?: 'story' | 'concise';
   script?: string;
   voiceName?: string;
   preferBrowserTts?: boolean;
@@ -38,6 +39,10 @@ interface NarrateRequestBody {
   economy?: string;
   culture?: string;
   consequence?: string;
+  causesText?: string;
+  effectsText?: string;
+  keyFiguresText?: string;
+  debate?: string;
 }
 
 export const onRequestPost = async (context: PagesCtx): Promise<Response> => {
@@ -56,13 +61,14 @@ export const onRequestPost = async (context: PagesCtx): Promise<Response> => {
   const ttsModel = context.env.GEMINI_TTS_MODEL?.trim() || DEFAULT_TTS_MODEL;
   const voice = sanitizeVoiceName(body.voiceName);
   const usage: GeminiUsage = { promptTokens: 0, outputTokens: 0, ttsRequested: false };
+  const isStoryDepth = body.depth !== 'concise';
 
-  let script = (body.script || '').trim().slice(0, 600);
+  let script = (body.script || '').trim().slice(0, 1200);
 
   try {
     if (!script && body.withStoryboard) {
       const title = (body.title || '').trim().slice(0, 120);
-      const summary = (body.summary || '').trim().slice(0, 400);
+      const summary = (body.summary || '').trim().slice(0, 800);
       if (!title || !summary) {
         return jsonResponse({ error: '缺少解说标题或摘要内容' }, 400);
       }
@@ -72,17 +78,29 @@ export const onRequestPost = async (context: PagesCtx): Promise<Response> => {
         ? Math.max(-3000, Math.min(2025, Math.round(Number(body.year))))
         : 1492;
 
-      const systemInstruction = [
-        '你是 BBC / Vox 风格的历史纪录片导演与撰稿人，负责为《世界通史时空图谱》制作“旁白与左侧动态地图同步分镜”（恰好 3 幕 beats）。',
-        '严格遵守以下创作与空间同步原则：',
-        '1. `beats` 必须恰好为 3 幕（第 1 幕：核心地理舞台与制度/起源；第 2 幕：关键商贸、传播、军事或技术流向动态；第 3 幕：历史转折、衰退/变迁或深远辐射后果）。',
-        '2. 每幕 `narration`（36-58 字纯中文纪录片口播散文，禁止 Markdown 星号、括号注释或舞台提示）写完后，立刻为其配置精准贴合该句字面内容的 `center`、`zoom`、`bearing`（-24 到 24 度轻微运镜偏航）、`pitch`（16 到 32 度三维俯仰）、`zones`、`spots`、`flows`：',
-        '   - **禁止画面空洞或与旁白无关**：旁白提到哪条河流、海域、都城、关隘、矿山或航线，地图的 `spots`、`zones` 和 `flows` 就必须用真实 `[经度, 纬度]` 标出对应位置与流向箭头！',
-        '   - 第 1 幕优先拉近核心区域（`zoom 3.3-4.6`），配 1 个地理/文明影响光圈 `zones`（`radiusKm: 180-950`）、2 个带 `icon`（`city|landmark|port|trade|military|culture|climate|ruler`）的关键 `spots`，以及 1 条内部联动流向 `flows`。',
-        '   - 第 2 幕配合跨区往来、远征或传播，配置 1-2 条明确有起止方向和简短中文 `label`（8字以内）的 `flows`（`kind: trade|diffusion|military|voyage|influence`，仅互惠贸易用 `bidirectional: true`）。',
-        '   - 第 3 幕体现结构转变、气候/危机或制度遗产辐射，可用对比色彩（如 `#E11D48` 危机/迁徙、`#10B981` 生态/经济、`#8B5CF6` 文化扩散、`#D97706` 帝国枢纽）的 `zones` 与扩散 `flows`。',
-        '3. 3 幕年份 `year` 可小幅推进或聚焦核心年份（如起源年 → 鼎盛/高潮年 → 衰落/深远影响年）。',
-      ].join('\n');
+      const systemInstruction = isStoryDepth
+        ? [
+            '你是《人类群星闪耀时》与 BBC/NHK 风格的历史长篇有声纪实撰稿人与导演，负责为《世界通史时空图谱》制作“听书级深度叙事与地图同步分镜”（恰好 4 幕 beats，总字数约 550–800 字，不追求简短，务必讲深讲透来龙去脉）。',
+            '严格遵守以下创作与空间同步原则：',
+            '1. `beats` 必须恰好为 4 幕，每幕 `narration` 写 125–195 字纯中文听书旁白（禁止 Markdown 星号、括号舞台提示）：',
+            '   - 第 1 幕（前因缘起与地理舞台）：交待它从前面哪些历史事件与社会积弊酝酿而来，以及河流、海峡、气候或地理格局如何设定舞台。',
+            '   - 第 2 幕（权力博弈、关键人物与制度转折）：具体展开各方势力诉求、核心人物的处境与抉择、具体政策或军事转折。',
+            '   - 第 3 幕（经济、贸易与技术推手）：剖析财政税赋、白银/粮食/能源或技术传播路线如何在底层推动事态发酵。',
+            '   - 第 4 幕（文明震荡、学界视角与连锁后效）：讲清文化观念转变、长期历史代价，以及它直接引爆了之后哪些重大历史连锁反应。',
+            '2. 每幕旁白配精准贴合字面内容的 `center`、`zoom`、`bearing`（-24 到 24 度）、`pitch`（16 到 32 度）、`zones`、`spots`、`flows`（用真实 `[经度, 纬度]` 标出前因起源、商道传播或连锁去向）。',
+            '3. 4 幕年份 `year` 应呈现“前因铺垫年 → 爆发高潮年 → 扩散展开年 → 深远影响年”的真实时间推演。',
+          ].join('\n')
+        : [
+            '你是 BBC / Vox 风格的历史纪录片导演与撰稿人，负责为《世界通史时空图谱》制作“旁白与左侧动态地图同步分镜”（恰好 3 幕 beats）。',
+            '严格遵守以下创作与空间同步原则：',
+            '1. `beats` 必须恰好为 3 幕（第 1 幕：核心地理舞台与制度/起源；第 2 幕：关键商贸、传播、军事或技术流向动态；第 3 幕：历史转折、衰退/变迁或深远辐射后果）。',
+            '2. 每幕 `narration`（36-58 字纯中文纪录片口播散文，禁止 Markdown 星号、括号注释或舞台提示）写完后，立刻为其配置精准贴合该句字面内容的 `center`、`zoom`、`bearing`（-24 到 24 度轻微运镜偏航）、`pitch`（16 到 32 度三维俯仰）、`zones`、`spots`、`flows`：',
+            '   - **禁止画面空洞或与旁白无关**：旁白提到哪条河流、海域、都城、关隘、矿山或航线，地图的 `spots`、`zones` 和 `flows` 就必须用真实 `[经度, 纬度]` 标出对应位置与流向箭头！',
+            '   - 第 1 幕优先拉近核心区域（`zoom 3.3-4.6`），配 1 个地理/文明影响光圈 `zones`（`radiusKm: 180-950`）、2 个带 `icon`（`city|landmark|port|trade|military|culture|climate|ruler`）的关键 `spots`，以及 1 条内部联动流向 `flows`。',
+            '   - 第 2 幕配合跨区往来、远征或传播，配置 1-2 条明确有起止方向和简短中文 `label`（8字以内）的 `flows`（`kind: trade|diffusion|military|voyage|influence`，仅互惠贸易用 `bidirectional: true`）。',
+            '   - 第 3 幕体现结构转变、气候/危机或制度遗产辐射，可用对比色彩（如 `#E11D48` 危机/迁徙、`#10B981` 生态/经济、`#8B5CF6` 文化扩散、`#D97706` 帝国枢纽）的 `zones` 与扩散 `flows`。',
+            '3. 3 幕年份 `year` 可小幅推进或聚焦核心年份（如起源年 → 鼎盛/高潮年 → 衰落/深远影响年）。',
+          ].join('\n');
 
       const prompt = [
         `条目：《${title}》`,
@@ -91,11 +109,15 @@ export const onRequestPost = async (context: PagesCtx): Promise<Response> => {
         body.eraName ? `时代：${body.eraName}${body.subPeriodName ? ` · ${body.subPeriodName}` : ''}` : '',
         body.regionLabel ? `区域：${body.regionLabel}` : '',
         `核心摘要：${summary}`,
-        body.geography ? `地缘与自然条件：${body.geography.slice(0, 220)}` : '',
-        body.politics ? `政治与制度：${body.politics.slice(0, 180)}` : '',
-        body.economy ? `经济与贸易：${body.economy.slice(0, 180)}` : '',
-        body.culture ? `文化与思想：${body.culture.slice(0, 160)}` : '',
-        body.consequence ? `历史后果：${body.consequence.slice(0, 180)}` : '',
+        body.causesText ? `前因渊源：${body.causesText.slice(0, 320)}` : '',
+        body.geography ? `地缘与自然条件：${body.geography.slice(0, 360)}` : '',
+        body.politics ? `政治与制度：${body.politics.slice(0, 360)}` : '',
+        body.keyFiguresText ? `核心人物：${body.keyFiguresText.slice(0, 260)}` : '',
+        body.economy ? `经济与贸易：${body.economy.slice(0, 360)}` : '',
+        body.culture ? `文化与思想：${body.culture.slice(0, 340)}` : '',
+        body.consequence ? `历史后果：${body.consequence.slice(0, 360)}` : '',
+        body.debate ? `史学争鸣：${body.debate.slice(0, 260)}` : '',
+        body.effectsText ? `后续连锁事件：${body.effectsText.slice(0, 320)}` : '',
       ]
         .filter(Boolean)
         .join('\n');
@@ -104,7 +126,7 @@ export const onRequestPost = async (context: PagesCtx): Promise<Response> => {
         systemInstruction,
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         temperature: 0.6,
-        maxOutputTokens: 2600,
+        maxOutputTokens: isStoryDepth ? 4200 : 2600,
         responseMimeType: 'application/json',
         responseSchema: DOCUMENTARY_NARRATION_SCHEMA,
       });
@@ -176,13 +198,14 @@ export const onRequestPost = async (context: PagesCtx): Promise<Response> => {
 
     if (!script) {
       const title = (body.title || '').trim().slice(0, 120);
-      const summary = (body.summary || '').trim().slice(0, 400);
+      const summary = (body.summary || '').trim().slice(0, 800);
       if (!title || !summary) {
         return jsonResponse({ error: '缺少解说标题或摘要内容' }, 400);
       }
 
-      const systemInstruction =
-        '你是历史纪录片《世界通史时空图谱》的金牌撰稿人。请撰写一段适合口播朗读的中文历史解说词：像 BBC/CCTV 纪录片旁白一样沉稳、有画面感，能用一两句话点出背后的政治、经济或文明转折。严格限制 90-135 字，纯中文散文口播稿，绝对禁止出现 Markdown 星号、括号注释、舞台提示词或换行分段标题。';
+      const systemInstruction = isStoryDepth
+        ? '你是《人类群星闪耀时》风格的历史听书首席撰稿人。请撰写一段适合慢听品读的中文历史长篇解说词：务必讲清楚前因渊源、关键人物与权力博弈、经济与技术推手以及后续历史连锁反应，生动有画面感。篇幅控制在 320-500 字，纯中文散文口播稿，禁止 Markdown 星号、括号舞台提示或分段小标题。'
+        : '你是历史纪录片《世界通史时空图谱》的金牌撰稿人。请撰写一段适合口播朗读的中文历史解说词：像 BBC/CCTV 纪录片旁白一样沉稳、有画面感，能用一两句话点出背后的政治、经济或文明转折。严格限制 90-135 字，纯中文散文口播稿，绝对禁止出现 Markdown 星号、括号注释、舞台提示词或换行分段标题。';
 
       const prompt = [
         `条目：《${title}》`,
@@ -190,10 +213,15 @@ export const onRequestPost = async (context: PagesCtx): Promise<Response> => {
         body.eraName ? `时代：${body.eraName}${body.subPeriodName ? ` · ${body.subPeriodName}` : ''}` : '',
         body.regionLabel ? `区域：${body.regionLabel}` : '',
         `核心摘要：${summary}`,
-        body.politics ? `政治维度：${body.politics.slice(0, 160)}` : '',
-        body.economy ? `经济维度：${body.economy.slice(0, 160)}` : '',
-        body.culture ? `文化维度：${body.culture.slice(0, 140)}` : '',
-        body.consequence ? `历史后果：${body.consequence.slice(0, 160)}` : '',
+        body.causesText ? `前因渊源：${body.causesText.slice(0, 320)}` : '',
+        body.geography ? `地理条件：${body.geography.slice(0, 240)}` : '',
+        body.politics ? `政治维度：${body.politics.slice(0, 260)}` : '',
+        body.keyFiguresText ? `核心人物：${body.keyFiguresText.slice(0, 220)}` : '',
+        body.economy ? `经济维度：${body.economy.slice(0, 260)}` : '',
+        body.culture ? `文化维度：${body.culture.slice(0, 240)}` : '',
+        body.consequence ? `历史后果：${body.consequence.slice(0, 260)}` : '',
+        body.debate ? `史学争鸣：${body.debate.slice(0, 220)}` : '',
+        body.effectsText ? `后续连锁：${body.effectsText.slice(0, 320)}` : '',
       ]
         .filter(Boolean)
         .join('\n');
@@ -202,7 +230,7 @@ export const onRequestPost = async (context: PagesCtx): Promise<Response> => {
         systemInstruction,
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         temperature: 0.6,
-        maxOutputTokens: 1000,
+        maxOutputTokens: isStoryDepth ? 1800 : 1000,
       });
 
       script = textRes.text.replace(/[*#`>\[\]]/g, '').replace(/\s+/g, ' ').trim();

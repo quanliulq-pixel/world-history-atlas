@@ -1,6 +1,7 @@
 import {
   ArrowLeft,
   ArrowRight,
+  BookOpen,
   Calendar,
   ChevronDown,
   ChevronUp,
@@ -22,12 +23,17 @@ import {
   X,
   Zap,
 } from 'lucide-react';
+import {
+  ERA_CHRONICLE_BRIDGES,
+  SUBPERIOD_CHRONICLE_NARRATIVES,
+} from '../data/chronicleChapters';
 import { DIMENSION_META, FIGURE_ROLE_META, REGION_META } from '../data/eras';
 import { EVENT_MAP } from '../data/events';
 import { findFigureByName, getContemporaryFigures } from '../data/figures';
 import { HISTORICAL_ROUTES } from '../data/routes';
 import type { Era, HistoricalFigure, HistoryEvent, SubPeriod, ThemeMode } from '../types/history';
 import type { AiDocumentaryBeat } from '../utils/aiClient';
+import type { NarrationDepth } from '../utils/chronicleStory';
 import { formatYear } from '../utils/timeline';
 import { MuseumBanner, MuseumPortrait } from './MuseumArtwork';
 
@@ -57,6 +63,8 @@ interface EventCardPanelProps {
   onCompareTopic?: (subject: string) => void;
   onNarrateEvent?: (ev: HistoryEvent) => void;
   onNarrateFigure?: (fig: HistoricalFigure) => void;
+  onNarratePeriod?: (era: Era, subPeriod: SubPeriod) => void;
+  narrationDepth?: NarrationDepth;
   narratingItemId?: string | null;
   narrationLoadingId?: string | null;
   narrationSubtitle?: string | null;
@@ -97,6 +105,8 @@ export function EventCardPanel({
   onCompareTopic,
   onNarrateEvent,
   onNarrateFigure,
+  onNarratePeriod,
+  narrationDepth = 'story',
   narratingItemId,
   narrationLoadingId,
   narrationSubtitle,
@@ -392,7 +402,7 @@ export function EventCardPanel({
                   ) : (
                     <>
                       <Volume2 className="h-3 w-3" />
-                      <span>AI 语音解说</span>
+                      <span>{narrationDepth === 'story' ? '深度听书解说' : 'AI 语音解说'}</span>
                     </>
                   )}
                 </button>
@@ -812,7 +822,7 @@ export function EventCardPanel({
                   ) : (
                     <>
                       <Volume2 className="h-3 w-3" />
-                      <span>AI 语音介绍</span>
+                      <span>{narrationDepth === 'story' ? '深度传记解说' : 'AI 语音介绍'}</span>
                     </>
                   )}
                 </button>
@@ -982,100 +992,205 @@ export function EventCardPanel({
     );
   };
 
-  const renderEraOverview = () => (
-    <div className="space-y-3 pb-6">
-      <div className="flex items-start justify-between gap-2">
-        <div>
-          <div className="text-[11px] font-semibold" style={{ color: currentEra.accentColor }}>
-            {formatYear(currentEra.startYear)} — {formatYear(currentEra.endYear)}
+  const renderEraOverview = () => {
+    const spBridge = SUBPERIOD_CHRONICLE_NARRATIVES[currentSubPeriod.id];
+    const eraBridge = ERA_CHRONICLE_BRIDGES[currentEra.id];
+    const periodItemId = `period:${currentSubPeriod.id}`;
+    const isNarratingPeriod = narratingItemId === periodItemId;
+    const isLoadingPeriod = narrationLoadingId === periodItemId;
+
+    return (
+      <div className="space-y-3 pb-6">
+        <div className="flex items-start justify-between gap-2">
+          <div>
+            <div className="text-[11px] font-semibold" style={{ color: currentEra.accentColor }}>
+              {formatYear(currentEra.startYear)} — {formatYear(currentEra.endYear)}
+            </div>
+            <h2 className="text-base font-bold mt-0.5">{currentEra.name}</h2>
           </div>
-          <h2 className="text-base font-bold mt-0.5">{currentEra.name}</h2>
+          <span
+            className="shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium"
+            style={{ backgroundColor: 'var(--bg-muted)', color: 'var(--text-secondary)' }}
+          >
+            当期 {activeEvents.length} 件大事
+          </span>
         </div>
-        <span
-          className="shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium"
-          style={{ backgroundColor: 'var(--bg-muted)', color: 'var(--text-secondary)' }}
-        >
-          当期 {activeEvents.length} 件大事
-        </span>
-      </div>
 
-      {/* Progressive Museum Era Artwork */}
-      <MuseumBanner
-        kind="era"
-        id={currentEra.id}
-        alt={currentEra.name}
-        caption={`${formatYear(currentEra.startYear)} — ${formatYear(currentEra.endYear)}`}
-        accentColor={currentEra.accentColor}
-        theme={theme}
-        isNarrating={Boolean(cinemaNarratingEventId)}
-        activeBeatIndex={cinemaActiveBeatIndex}
-        totalBeats={cinemaBeats?.length ?? 0}
-        beatTitle={cinemaBeats?.[cinemaActiveBeatIndex]?.title ?? null}
-        activeSubtitle={cinemaSubtitle}
-        dimension="culture"
-      />
+        {/* Progressive Museum Era Artwork */}
+        <MuseumBanner
+          kind="era"
+          id={currentEra.id}
+          alt={currentEra.name}
+          caption={`${formatYear(currentEra.startYear)} — ${formatYear(currentEra.endYear)}`}
+          accentColor={currentEra.accentColor}
+          theme={theme}
+          isNarrating={Boolean(cinemaNarratingEventId) || isNarratingPeriod}
+          activeBeatIndex={isNarratingPeriod ? activeBeatIndex : cinemaActiveBeatIndex}
+          totalBeats={
+            isNarratingPeriod ? (narrationBeats?.length ?? 0) : (cinemaBeats?.length ?? 0)
+          }
+          beatTitle={
+            isNarratingPeriod
+              ? (narrationBeats?.[activeBeatIndex]?.title ?? null)
+              : (cinemaBeats?.[cinemaActiveBeatIndex]?.title ?? null)
+          }
+          activeSubtitle={
+            isNarratingPeriod
+              ? (narrationSubtitle || narrationBeats?.[activeBeatIndex]?.narration || null)
+              : cinemaSubtitle
+          }
+          dimension="culture"
+        />
 
-      {/* Active sub-period context */}
-      <div
-        className="rounded-xl border px-3 py-2 text-xs"
-        style={{
-          backgroundColor: `${currentEra.accentColor}12`,
-          borderColor: `${currentEra.accentColor}44`,
-        }}
-      >
-        <div className="flex items-center justify-between gap-2">
-          <span className="font-bold text-[11px]" style={{ color: currentEra.accentColor }}>
-            细分阶段：{currentSubPeriod.name}
-          </span>
-          <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
-            {formatYear(currentSubPeriod.startYear)} — {formatYear(currentSubPeriod.endYear)}
-          </span>
-        </div>
-        <p className="mt-1 text-[11px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-          {currentSubPeriod.themeSummary}
-        </p>
-      </div>
-
-      {/* Macro era framework */}
-      <div
-        className="rounded-xl border p-2.5 space-y-2 text-xs"
-        style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}
-      >
-        <div>
-          <span className="font-bold" style={{ color: '#B83B3B' }}>
-            地缘格局：
-          </span>
-          <span style={{ color: 'var(--text-secondary)' }}>{currentEra.overview.geopolitics}</span>
-        </div>
-        <div>
-          <span className="font-bold" style={{ color: '#B47417' }}>
-            经济引擎：
-          </span>
-          <span style={{ color: 'var(--text-secondary)' }}>{currentEra.overview.economy}</span>
-        </div>
-        <div>
-          <span className="font-bold" style={{ color: '#734B9B' }}>
-            文化范式：
-          </span>
-          <span style={{ color: 'var(--text-secondary)' }}>{currentEra.overview.culture}</span>
-        </div>
-      </div>
-
-      {onAskAiAboutEra && (
-        <button
-          type="button"
-          onClick={() => onAskAiAboutEra(currentEra, currentSubPeriod)}
-          className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-semibold transition hover:opacity-90 cursor-pointer"
+        {/* Active sub-period detailed bridge & audiobook reader */}
+        <div
+          className="rounded-xl border px-3 py-2.5 text-xs space-y-2"
           style={{
-            backgroundColor: 'rgba(140, 45, 45, 0.10)',
-            borderColor: 'rgba(140, 45, 45, 0.35)',
-            color: 'var(--accent-primary)',
+            backgroundColor: `${currentEra.accentColor}12`,
+            borderColor: `${currentEra.accentColor}44`,
           }}
         >
-          <Sparkles className="h-3.5 w-3.5" />
-          <span>AI 导师精讲本时代（配地图动画）</span>
-        </button>
-      )}
+          <div className="flex items-center justify-between gap-2">
+            <span className="font-bold text-[11.5px]" style={{ color: currentEra.accentColor }}>
+              细分阶段：{currentSubPeriod.name}
+            </span>
+            <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
+              {formatYear(currentSubPeriod.startYear)} — {formatYear(currentSubPeriod.endYear)}
+            </span>
+          </div>
+          <p className="text-[11px] leading-relaxed font-medium" style={{ color: 'var(--text-primary)' }}>
+            {currentSubPeriod.themeSummary}
+          </p>
+          {spBridge && (
+            <div className="space-y-1.5 pt-1 border-t text-[11px] leading-relaxed" style={{ borderColor: `${currentEra.accentColor}2A`, color: 'var(--text-secondary)' }}>
+              <div>
+                <span className="font-bold" style={{ color: currentEra.accentColor }}>
+                  承前启后：
+                </span>
+                {spBridge.bridgeFromBefore}
+              </div>
+              <div>
+                <span className="font-bold" style={{ color: 'var(--text-primary)' }}>
+                  同期全球：
+                </span>
+                {spBridge.eraCrossSection}
+              </div>
+              <div>
+                <span className="font-bold" style={{ color: 'var(--text-primary)' }}>
+                  底层动因：
+                </span>
+                {spBridge.deepDrivers}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Period audiobook button + AI tutor strip */}
+        {(onNarratePeriod || onAskAiAboutEra) && (
+          <div className="space-y-1.5">
+            <div className="flex flex-wrap items-center gap-1.5">
+              {onNarratePeriod && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    isNarratingPeriod
+                      ? onStopNarration?.()
+                      : onNarratePeriod(currentEra, currentSubPeriod)
+                  }
+                  disabled={isLoadingPeriod}
+                  className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-semibold transition hover:opacity-90 disabled:opacity-60 cursor-pointer"
+                  style={{
+                    backgroundColor: isNarratingPeriod
+                      ? currentEra.accentColor
+                      : `${currentEra.accentColor}1A`,
+                    borderColor: isNarratingPeriod
+                      ? currentEra.accentColor
+                      : `${currentEra.accentColor}55`,
+                    color: isNarratingPeriod ? '#FFFFFF' : currentEra.accentColor,
+                  }}
+                >
+                  {isLoadingPeriod ? (
+                    <>
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      <span>准备有声章节...</span>
+                    </>
+                  ) : isNarratingPeriod ? (
+                    <>
+                      <Square className="h-3 w-3" />
+                      <span>停止时代听书</span>
+                    </>
+                  ) : (
+                    <>
+                      <BookOpen className="h-3.5 w-3.5" />
+                      <span>听书朗读本阶段全脉络</span>
+                    </>
+                  )}
+                </button>
+              )}
+
+              {onAskAiAboutEra && (
+                <button
+                  type="button"
+                  onClick={() => onAskAiAboutEra(currentEra, currentSubPeriod)}
+                  className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-semibold transition hover:opacity-90 cursor-pointer"
+                  style={{
+                    backgroundColor: 'rgba(140, 45, 45, 0.10)',
+                    borderColor: 'rgba(140, 45, 45, 0.35)',
+                    color: 'var(--accent-primary)',
+                  }}
+                >
+                  <Sparkles className="h-3.5 w-3.5" />
+                  <span>AI 导师深讲（配地图动画）</span>
+                </button>
+              )}
+            </div>
+
+            {renderNarrationBox(periodItemId)}
+          </div>
+        )}
+
+        {/* Macro era framework & historical transition */}
+        <div
+          className="rounded-xl border p-2.5 space-y-2 text-xs leading-relaxed"
+          style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}
+        >
+          {eraBridge && (
+            <div className="pb-1.5 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
+              <span className="font-bold" style={{ color: currentEra.accentColor }}>
+                时代转折由来：
+              </span>
+              <span style={{ color: 'var(--text-secondary)' }}>{eraBridge.transitionFromPrev}</span>
+            </div>
+          )}
+          <div>
+            <span className="font-bold" style={{ color: '#B83B3B' }}>
+              地缘格局：
+            </span>
+            <span style={{ color: 'var(--text-secondary)' }}>{currentEra.overview.geopolitics}</span>
+          </div>
+          <div>
+            <span className="font-bold" style={{ color: '#B47417' }}>
+              经济引擎：
+            </span>
+            <span style={{ color: 'var(--text-secondary)' }}>{currentEra.overview.economy}</span>
+          </div>
+          <div>
+            <span className="font-bold" style={{ color: '#734B9B' }}>
+              文化范式：
+            </span>
+            <span style={{ color: 'var(--text-secondary)' }}>{currentEra.overview.culture}</span>
+          </div>
+          {eraBridge && (
+            <div className="pt-1 border-t" style={{ borderColor: 'var(--border-subtle)' }}>
+              <span className="font-bold" style={{ color: '#296B9E' }}>
+                宏观演进与伏笔：
+              </span>
+              <span style={{ color: 'var(--text-secondary)' }}>
+                {eraBridge.macroArc} {eraBridge.foreshadowing}
+              </span>
+            </div>
+          )}
+        </div>
 
       {/* Active historical figures */}
       {activeFigures.length > 0 && (
@@ -1164,7 +1279,8 @@ export function EventCardPanel({
         )}
       </div>
     </div>
-  );
+    );
+  };
 
   const mobileHeightClass =
     sheetState === 'full' ? 'h-[80%]' : sheetState === 'half' ? 'h-[46%]' : 'h-12';

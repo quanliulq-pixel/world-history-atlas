@@ -1,15 +1,9 @@
-export interface StudyKvNamespace {
-  get(key: string): Promise<string | null>;
-  put(key: string, value: string): Promise<void>;
-}
-
 export interface AiEnv {
   GEMINI_API_KEY?: string;
   AI_ACCESS_PASSCODE?: string;
   AI_ALLOW_PUBLIC?: string;
   GEMINI_TEXT_MODEL?: string;
   GEMINI_TTS_MODEL?: string;
-  STUDY_KV?: StudyKvNamespace;
 }
 
 export interface PagesCtx {
@@ -97,7 +91,7 @@ export function authorizeAiRequest(
       response: jsonResponse(
         {
           code: 'passcode_invalid',
-          error: '个人学习口令不正确，请重新输入',
+          error: '个人访问口令不正确，请重新输入',
         },
         401,
       ),
@@ -105,40 +99,6 @@ export function authorizeAiRequest(
   }
 
   return { ok: true, apiKey };
-}
-
-export function authorizePasscodeOnly(
-  request: Request,
-  env: AiEnv,
-): { ok: true } | { ok: false; response: Response } {
-  const expectedPasscode = env.AI_ACCESS_PASSCODE?.trim() || '';
-  if (!expectedPasscode) {
-    if (env.AI_ALLOW_PUBLIC === 'true') return { ok: true };
-    return {
-      ok: false,
-      response: jsonResponse(
-        {
-          code: 'passcode_unconfigured',
-          error: '尚未配置 AI_ACCESS_PASSCODE 口令，云端同步暂不可用',
-        },
-        403,
-      ),
-    };
-  }
-  const provided = request.headers.get('X-Atlas-Passcode')?.trim() || '';
-  if (!provided || !constantTimeEqual(provided, expectedPasscode)) {
-    return {
-      ok: false,
-      response: jsonResponse(
-        {
-          code: 'passcode_invalid',
-          error: '请先输入正确的学习口令以启用跨设备云同步',
-        },
-        401,
-      ),
-    };
-  }
-  return { ok: true };
 }
 
 export function checkRateLimit(request: Request, maxPerMinute = 24): boolean {

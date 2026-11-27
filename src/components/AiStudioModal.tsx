@@ -1,8 +1,6 @@
 import {
   AlertCircle,
   Bot,
-  BrainCircuit,
-  CheckCircle2,
   Coins,
   Film,
   GitCompareArrows,
@@ -21,7 +19,6 @@ import {
   Unlock,
   Volume2,
   X,
-  XCircle,
 } from 'lucide-react';
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { COUNTRY_PROFILES } from '../data/countries';
@@ -34,11 +31,9 @@ import {
   askAiTutor,
   compareWithAi,
   fetchAiStatus,
-  generateQuizWithAi,
   getAiUsage,
   getStoredPasscode,
   getVoicePrefs,
-  gradeFeynmanWithAi,
   listCachedComparisons,
   playSpeechChunks,
   saveVoicePrefs,
@@ -48,9 +43,6 @@ import {
   verifyAiPasscode,
   type AiChatMessage,
   type AiComparisonResult,
-  type AiQuizGrade,
-  type AiQuizPayload,
-  type AiQuizSourceItem,
   type AiStatus,
   type AiStoryboard,
   type AiTutorContext,
@@ -67,7 +59,7 @@ import {
 } from '../utils/speechSync';
 import { formatYear } from '../utils/timeline';
 
-export type AiStudioTab = 'tutor' | 'compare' | 'quiz';
+export type AiStudioTab = 'tutor' | 'compare';
 
 export interface AiStudioIntent {
   tab: AiStudioTab;
@@ -75,7 +67,6 @@ export interface AiStudioIntent {
   autoSend?: boolean;
   compareSubjectA?: string;
   compareSubjectB?: string;
-  quizScope?: 'context' | 'era' | 'mastered';
   nonce: number;
 }
 
@@ -83,7 +74,6 @@ interface AiStudioModalProps {
   open: boolean;
   theme: ThemeMode;
   context: AiTutorContext;
-  masteredIds: Set<string>;
   eraId: string;
   intent: AiStudioIntent | null;
   hasActiveStoryboard?: boolean;
@@ -467,7 +457,6 @@ export function AiStudioModal({
   open,
   theme,
   context,
-  masteredIds,
   eraId,
   intent,
   hasActiveStoryboard = false,
@@ -544,16 +533,6 @@ export function AiStudioModal({
     () => (compareResult ? buildCompareSpeechPlan(compareResult, compareStoryboard) : null),
     [compareResult, compareStoryboard],
   );
-
-  // Tab 3: Quiz
-  const [quizScope, setQuizScope] = useState<'context' | 'era' | 'mastered'>('era');
-  const [quiz, setQuiz] = useState<AiQuizPayload | null>(null);
-  const [quizLoading, setQuizLoading] = useState(false);
-  const [quizError, setQuizError] = useState<string | null>(null);
-  const [selectedChoices, setSelectedChoices] = useState<Record<string, number>>({});
-  const [feynmanText, setFeynmanText] = useState('');
-  const [grade, setGrade] = useState<AiQuizGrade | null>(null);
-  const [grading, setGrading] = useState(false);
 
   const datalistSuggestions = useMemo(() => {
     const names = new Set<string>();
@@ -678,7 +657,7 @@ export function AiStudioModal({
     e.preventDefault();
     const trimmed = passcodeInput.trim();
     if (!trimmed) {
-      setPasscodeError('请输入您设定的个人学习口令');
+      setPasscodeError('请输入您设定的个人访问口令');
       return;
     }
     setVerifyingPasscode(true);
@@ -771,8 +750,6 @@ export function AiStudioModal({
     } else if (intent.tab === 'compare') {
       if (intent.compareSubjectA) setSubjectA(intent.compareSubjectA);
       if (intent.compareSubjectB) setSubjectB(intent.compareSubjectB);
-    } else if (intent.tab === 'quiz' && intent.quizScope) {
-      setQuizScope(intent.quizScope);
     }
   }, [intent?.nonce, open]);
 
@@ -960,113 +937,6 @@ export function AiStudioModal({
       chunks,
       storyboard: compareStoryboard,
     });
-  };
-
-  const buildQuizSourceItems = (): { label: string; items: AiQuizSourceItem[] } => {
-    if (quizScope === 'context') {
-      if (context.event) {
-        return {
-          label: `聚焦事件：${context.event.title}`,
-          items: [
-            {
-              title: context.event.title,
-              yearDisplay: context.event.dateDisplay,
-              summary: context.event.summary,
-              politics: context.event.politics,
-              economy: context.event.economy,
-              culture: context.event.culture,
-            },
-          ],
-        };
-      }
-      if (context.country) {
-        return {
-          label: `聚焦国家：${context.country.name}`,
-          items: [
-            {
-              title: context.country.name,
-              yearDisplay: formatYear(context.currentYear),
-              summary: context.country.tagline,
-              politics: context.country.politics,
-              economy: context.country.economy,
-              culture: context.country.culture,
-            },
-          ],
-        };
-      }
-    }
-
-    if (quizScope === 'mastered') {
-      const masteredEvents = ALL_EVENTS.filter((e) => masteredIds.has(e.id));
-      if (masteredEvents.length > 0) {
-        const picked = [...masteredEvents].sort(() => Math.random() - 0.5).slice(0, 6);
-        return {
-          label: `已掌握卡片复习（${masteredEvents.length} 项）`,
-          items: picked.map((e) => ({
-            title: e.title,
-            yearDisplay: e.dateDisplay,
-            summary: e.card.summary,
-            politics: e.card.politics,
-            economy: e.card.economy,
-            culture: e.card.culture,
-          })),
-        };
-      }
-    }
-
-    const eraEvents = ALL_EVENTS.filter((e) => e.eraId === eraId);
-    const pool = eraEvents.length > 0 ? eraEvents : ALL_EVENTS;
-    const picked = [...pool].sort(() => Math.random() - 0.5).slice(0, 6);
-    return {
-      label: context.eraName ? `${context.eraName}精测` : '世界通史精测',
-      items: picked.map((e) => ({
-        title: e.title,
-        yearDisplay: e.dateDisplay,
-        summary: e.card.summary,
-        politics: e.card.politics,
-        economy: e.card.economy,
-        culture: e.card.culture,
-      })),
-    };
-  };
-
-  const handleGenerateQuiz = async () => {
-    if (quizLoading) return;
-    setQuizError(null);
-    setGrade(null);
-    setSelectedChoices({});
-    setFeynmanText('');
-    setQuizLoading(true);
-    try {
-      const { label, items } = buildQuizSourceItems();
-      const generated = await generateQuizWithAi({ scopeLabel: label, items });
-      setQuiz(generated);
-      setUsage(getAiUsage());
-    } catch (err) {
-      handleApiError(err, setQuizError);
-    } finally {
-      setQuizLoading(false);
-    }
-  };
-
-  const handleGradeFeynman = async () => {
-    if (!quiz || !feynmanText.trim() || grading) return;
-    setQuizError(null);
-    setGrading(true);
-    try {
-      const g = await gradeFeynmanWithAi({
-        prompt: quiz.feynman.prompt,
-        keyPoints: quiz.feynman.keyPoints,
-        modelAnswer: quiz.feynman.modelAnswer,
-        userAnswer: feynmanText.trim(),
-      });
-      setGrade(g);
-      setUsage(getAiUsage());
-    } catch (err) {
-      handleApiError(err, setQuizError);
-    } finally {
-      setGrading(false);
-    }
   };
 
   const updateVoicePrefs = (patch: Partial<AiVoicePrefs>) => {
@@ -1272,7 +1142,7 @@ export function AiStudioModal({
                     borderColor: unlocked ? 'rgba(16, 185, 129, 0.45)' : 'var(--border-subtle)',
                     color: unlocked ? '#059669' : 'var(--text-muted)',
                   }}
-                  title="点击切换/管理个人学习口令"
+                  title="点击切换/管理个人访问口令"
                 >
                   {unlocked ? <Unlock className="h-2.5 w-2.5" /> : <Lock className="h-2.5 w-2.5" />}
                   <span>{unlocked ? '已解锁' : '需口令'}</span>
@@ -1471,7 +1341,7 @@ export function AiStudioModal({
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-1.5 text-xs font-bold">
                     <KeyRound className="h-3.5 w-3.5" style={{ color: 'var(--accent-primary)' }} />
-                    <span>{unlocked ? '更新或锁定个人口令' : '输入个人学习口令解锁 AI'}</span>
+                    <span>{unlocked ? '更新或锁定个人口令' : '输入个人访问口令解锁 AI'}</span>
                   </div>
                   {unlocked && (
                     <button
@@ -1526,16 +1396,15 @@ export function AiStudioModal({
           </div>
         )}
 
-        {/* 3-Tab Switcher */}
+        {/* 2-Tab Switcher */}
         <div
-          className="grid grid-cols-3 gap-1 border-b p-2 shrink-0"
+          className="grid grid-cols-2 gap-1 border-b p-2 shrink-0"
           style={{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-elevated)' }}
         >
           {(
             [
               { id: 'tutor', label: 'AI 导师', icon: <Bot className="h-3.5 w-3.5" /> },
               { id: 'compare', label: '跨代对比', icon: <GitCompareArrows className="h-3.5 w-3.5" /> },
-              { id: 'quiz', label: '因果自测', icon: <BrainCircuit className="h-3.5 w-3.5" /> },
             ] as { id: AiStudioTab; label: string; icon: React.ReactNode }[]
           ).map((t) => {
             const active = tab === t.id;
@@ -2203,242 +2072,6 @@ export function AiStudioModal({
                     </div>
                   </button>
                 ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {tab === 'quiz' && (
-          <div className="atlas-scroll flex-1 overflow-y-auto p-3.5 space-y-3.5">
-            <div
-              className="rounded-xl border p-3 space-y-2.5"
-              style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}
-            >
-              <div className="text-xs font-bold">选择自测范围（专注因果与机制，不考死记年份）</div>
-              <div className="grid grid-cols-3 gap-1.5 text-[11px]">
-                {(
-                  [
-                    { id: 'context', label: '当前卡片' },
-                    { id: 'era', label: '本时代精测' },
-                    { id: 'mastered', label: `已掌握 (${masteredIds.size})` },
-                  ] as { id: 'context' | 'era' | 'mastered'; label: string }[]
-                ).map((s) => (
-                  <button
-                    key={s.id}
-                    type="button"
-                    onClick={() => setQuizScope(s.id)}
-                    className="rounded-lg border px-2 py-1.5 font-medium cursor-pointer"
-                    style={{
-                      backgroundColor:
-                        quizScope === s.id ? 'var(--accent-primary)' : 'var(--bg-surface)',
-                      borderColor:
-                        quizScope === s.id ? 'var(--accent-primary)' : 'var(--border-subtle)',
-                      color: quizScope === s.id ? '#FFFFFF' : 'var(--text-secondary)',
-                    }}
-                  >
-                    {s.label}
-                  </button>
-                ))}
-              </div>
-
-              <button
-                type="button"
-                disabled={quizLoading}
-                onClick={() => void handleGenerateQuiz()}
-                className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl py-2 text-xs font-semibold text-white transition hover:opacity-90 disabled:opacity-50 cursor-pointer"
-                style={{ backgroundColor: 'var(--accent-primary)' }}
-              >
-                {quizLoading ? (
-                  <>
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                    <span>AI 导师正在命题...</span>
-                  </>
-                ) : (
-                  <>
-                    <BrainCircuit className="h-3.5 w-3.5" />
-                    <span>{quiz ? '换一组因果测试题' : '生成 3 题深度因果自测'}</span>
-                  </>
-                )}
-              </button>
-            </div>
-
-            {quizError && (
-              <div
-                className="rounded-xl border px-3 py-2 text-xs"
-                style={{
-                  backgroundColor: 'rgba(184, 59, 59, 0.08)',
-                  borderColor: 'rgba(184, 59, 59, 0.35)',
-                  color: '#B83B3B',
-                }}
-              >
-                {quizError}
-              </div>
-            )}
-
-            {quiz && (
-              <div className="space-y-3">
-                <div className="text-xs font-bold" style={{ color: 'var(--accent-primary)' }}>
-                  {quiz.quizTitle}
-                </div>
-
-                {quiz.mcqs.map((q, qIdx) => {
-                  const chosen = selectedChoices[q.id];
-                  const answered = chosen !== undefined;
-                  return (
-                    <div
-                      key={q.id}
-                      className="rounded-xl border p-3 space-y-2"
-                      style={{
-                        backgroundColor: 'var(--bg-elevated)',
-                        borderColor: 'var(--border-subtle)',
-                      }}
-                    >
-                      <div className="text-xs font-semibold leading-relaxed">
-                        {qIdx + 1}. {q.question}
-                      </div>
-
-                      <div className="space-y-1.5">
-                        {q.options.map((opt, optIdx) => {
-                          const isSelected = chosen === optIdx;
-                          const isCorrect = q.correctIndex === optIdx;
-                          let bg = 'var(--bg-surface)';
-                          let border = 'var(--border-subtle)';
-                          if (answered) {
-                            if (isCorrect) {
-                              bg = 'rgba(16, 185, 129, 0.14)';
-                              border = '#10B981';
-                            } else if (isSelected) {
-                              bg = 'rgba(184, 59, 59, 0.14)';
-                              border = '#B83B3B';
-                            }
-                          }
-                          return (
-                            <button
-                              key={optIdx}
-                              type="button"
-                              disabled={answered}
-                              onClick={() =>
-                                setSelectedChoices((prev) => ({ ...prev, [q.id]: optIdx }))
-                              }
-                              className="w-full flex items-center justify-between gap-2 rounded-lg border px-2.5 py-2 text-left text-xs transition cursor-pointer disabled:cursor-default"
-                              style={{ backgroundColor: bg, borderColor: border }}
-                            >
-                              <span>{opt}</span>
-                              {answered && isCorrect && (
-                                <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
-                              )}
-                              {answered && isSelected && !isCorrect && (
-                                <XCircle className="h-3.5 w-3.5 shrink-0 text-rose-500" />
-                              )}
-                            </button>
-                          );
-                        })}
-                      </div>
-
-                      {answered && (
-                        <div
-                          className="rounded-lg p-2.5 text-[11px] leading-relaxed"
-                          style={{
-                            backgroundColor: 'var(--bg-muted)',
-                            color: 'var(--text-secondary)',
-                          }}
-                        >
-                          <strong style={{ color: 'var(--text-primary)' }}>原理解析：</strong>
-                          {q.explanation}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-
-                {/* Feynman Open Explanation Question */}
-                <div
-                  className="rounded-xl border p-3 space-y-2.5"
-                  style={{
-                    backgroundColor: 'var(--bg-elevated)',
-                    borderColor: 'var(--border-strong)',
-                  }}
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-[11px] font-bold" style={{ color: 'var(--accent-gold)' }}>
-                      第 3 题 · 费曼口语复述题
-                    </span>
-                    <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
-                      关联：{quiz.feynman.relatedTitle}
-                    </span>
-                  </div>
-                  <p className="text-xs font-semibold leading-relaxed">{quiz.feynman.prompt}</p>
-
-                  <textarea
-                    value={feynmanText}
-                    onChange={(e) => setFeynmanText(e.target.value)}
-                    rows={3}
-                    placeholder="用自己的话简述背后的因果或制度逻辑，不用背年份..."
-                    className="w-full rounded-xl border p-2.5 text-xs focus:outline-none"
-                    style={{
-                      backgroundColor: 'var(--bg-surface)',
-                      borderColor: 'var(--border-subtle)',
-                      color: 'var(--text-primary)',
-                    }}
-                  />
-
-                  <button
-                    type="button"
-                    disabled={grading || !feynmanText.trim()}
-                    onClick={() => void handleGradeFeynman()}
-                    className="inline-flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-semibold text-white transition hover:opacity-90 disabled:opacity-45 cursor-pointer"
-                    style={{ backgroundColor: '#B47417' }}
-                  >
-                    {grading ? (
-                      <>
-                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                        <span>导师阅卷中...</span>
-                      </>
-                    ) : (
-                      <span>提交 AI 导师点评</span>
-                    )}
-                  </button>
-
-                  {grade && (
-                    <div
-                      className="rounded-xl border p-3 space-y-2 text-xs"
-                      style={{
-                        backgroundColor: 'var(--bg-surface)',
-                        borderColor: 'rgba(180, 116, 23, 0.35)',
-                      }}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold" style={{ color: 'var(--accent-gold)' }}>
-                          理解力评分：{grade.score} / 100
-                        </span>
-                      </div>
-                      <p style={{ color: 'var(--text-primary)' }}>
-                        <strong>亮点：</strong>
-                        {grade.praise}
-                      </p>
-                      {grade.missingAngles.length > 0 && (
-                        <div style={{ color: 'var(--text-secondary)' }}>
-                          <strong>可补充视角：</strong>
-                          {grade.missingAngles.map((a, idx) => (
-                            <span key={idx} className="block">
-                              • {a}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                      <div
-                        className="rounded-lg p-2 text-[11px]"
-                        style={{
-                          backgroundColor: 'var(--bg-muted)',
-                          color: 'var(--text-secondary)',
-                        }}
-                      >
-                        <strong style={{ color: 'var(--text-primary)' }}>导师精讲：</strong>
-                        {grade.refinedSynthesis}
-                      </div>
-                    </div>
-                  )}
-                </div>
               </div>
             )}
           </div>

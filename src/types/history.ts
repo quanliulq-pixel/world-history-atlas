@@ -128,12 +128,6 @@ export interface SnapshotLabel {
   a: number;
 }
 
-export interface UserStudyData {
-  masteredIds: string[];
-  bookmarkedIds: string[];
-  notes: Record<string, string>;
-}
-
 export type ThemeMode = 'parchment' | 'obsidian';
 export type ProjectionMode = 'mercator' | 'globe';
 

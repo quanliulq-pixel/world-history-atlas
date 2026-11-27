@@ -58,8 +58,6 @@ interface WorldMapProps {
   selectedEvent: HistoryEvent | null;
   selectedFigure: HistoricalFigure | null;
   recentTriggerEventId: string | null;
-  masteredIds: Set<string>;
-  bookmarkedIds: Set<string>;
   activeRoutes: HistoricalRoute[];
   focusRouteId: string | null;
   showRelief?: boolean;
@@ -195,8 +193,6 @@ export function WorldMap({
   selectedEvent,
   selectedFigure,
   recentTriggerEventId,
-  masteredIds,
-  bookmarkedIds,
   activeRoutes,
   focusRouteId,
   showRelief = true,
@@ -2262,8 +2258,6 @@ export function WorldMap({
       const { event, active, opacity } = item;
       const isSelected = selectedEvent?.id === event.id;
       const isTriggered = recentTriggerEventId === event.id;
-      const isMastered = masteredIds.has(event.id);
-      const isBookmarked = bookmarkedIds.has(event.id);
       const dim = DIMENSION_META[event.primaryDimension];
       const pinColor = theme === 'obsidian' ? dim.darkColor : dim.color;
 
@@ -2315,15 +2309,7 @@ export function WorldMap({
               ? `<span class="atlas-beacon absolute left-1/2 top-1/2 rounded-full pointer-events-none" style="width:26px;height:26px;border:2px solid ${pinColor};background:${pinColor}33;"></span>`
               : ''
         }
-        <span class="relative block rounded-full transition-transform duration-150 group-hover:scale-125" style="width:${sizePx}px;height:${sizePx}px;background:${pinColor};border:2.2px solid ${borderColor};box-shadow:0 2px 8px rgba(0,0,0,0.32);">
-          ${
-            isMastered
-              ? `<span style="position:absolute;right:-4px;top:-4px;width:8px;height:8px;border-radius:9999px;background:#10B981;border:1.5px solid #fff;"></span>`
-              : isBookmarked
-                ? `<span style="position:absolute;right:-4px;top:-4px;width:8px;height:8px;border-radius:9999px;background:#F59E0B;border:1.5px solid #fff;"></span>`
-                : ''
-          }
-        </span>
+        <span class="relative block rounded-full transition-transform duration-150 group-hover:scale-125" style="width:${sizePx}px;height:${sizePx}px;background:${pinColor};border:2.2px solid ${borderColor};box-shadow:0 2px 8px rgba(0,0,0,0.32);"></span>
         <span class="pointer-events-none absolute left-1/2 top-full mt-0.5 -translate-x-1/2 whitespace-nowrap rounded px-1.5 py-0.5 text-[11px] shadow-sm transition-opacity ${
           isSelected
             ? 'opacity-100 font-semibold max-w-[210px] sm:max-w-none truncate'
@@ -2340,8 +2326,6 @@ export function WorldMap({
     events,
     selectedEvent,
     recentTriggerEventId,
-    masteredIds,
-    bookmarkedIds,
     theme,
     aiScene,
     mapReady,
@@ -2366,8 +2350,6 @@ export function WorldMap({
     for (const item of figures) {
       const { figure, active, opacity } = item;
       const isSelected = selectedFigure?.id === figure.id;
-      const isMastered = masteredIds.has(figure.id);
-      const isBookmarked = bookmarkedIds.has(figure.id);
       const roleMeta = FIGURE_ROLE_META[figure.role];
       const roleColor = theme === 'obsidian' ? roleMeta.darkColor : roleMeta.color;
 
@@ -2427,13 +2409,6 @@ export function WorldMap({
         }
         <span class="relative flex items-center justify-center rounded-md font-bold text-white transition-transform duration-150 group-hover:scale-125" style="width:${sizePx}px;height:${sizePx}px;font-size:${fontSizePx}px;background:${roleColor};border:1.8px solid ${borderColor};box-shadow:0 2px 7px rgba(0,0,0,0.34);">
           ${figure.monogram}
-          ${
-            isMastered
-              ? `<span style="position:absolute;right:-4px;top:-4px;width:8px;height:8px;border-radius:9999px;background:#10B981;border:1.5px solid #fff;"></span>`
-              : isBookmarked
-                ? `<span style="position:absolute;right:-4px;top:-4px;width:8px;height:8px;border-radius:9999px;background:#F59E0B;border:1.5px solid #fff;"></span>`
-                : ''
-          }
         </span>
         <span class="pointer-events-none absolute left-1/2 top-full mt-0.5 -translate-x-1/2 whitespace-nowrap rounded px-1.5 py-0.5 text-[11px] shadow-sm transition-opacity ${
           isSelected
@@ -2447,7 +2422,7 @@ export function WorldMap({
       `;
     }
     syncGlobeMarkerVisibility(map);
-  }, [figures, events, selectedFigure, masteredIds, bookmarkedIds, theme, aiScene, mapReady, syncGlobeMarkerVisibility]);
+  }, [figures, events, selectedFigure, theme, aiScene, mapReady, syncGlobeMarkerVisibility]);
 
   return (
     <div className="relative z-0 isolate h-full w-full select-none">

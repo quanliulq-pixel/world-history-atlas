@@ -1,9 +1,7 @@
 import {
   ArrowLeft,
   ArrowRight,
-  Bookmark,
   Calendar,
-  CheckCircle2,
   ChevronDown,
   ChevronUp,
   Coins,
@@ -13,7 +11,6 @@ import {
   Loader2,
   MapPin,
   Mountain,
-  NotebookPen,
   Quote,
   Route as RouteIcon,
   Scale,
@@ -25,7 +22,6 @@ import {
   X,
   Zap,
 } from 'lucide-react';
-import { useState } from 'react';
 import { DIMENSION_META, FIGURE_ROLE_META, REGION_META } from '../data/eras';
 import { EVENT_MAP } from '../data/events';
 import { findFigureByName, getContemporaryFigures } from '../data/figures';
@@ -45,9 +41,6 @@ interface EventCardPanelProps {
   selectedFigure: HistoricalFigure | null;
   activeEvents: HistoryEvent[];
   activeFigures: HistoricalFigure[];
-  masteredIds: Set<string>;
-  bookmarkedIds: Set<string>;
-  notes: Record<string, string>;
   theme: ThemeMode;
   sheetState: SheetState;
   desktopCollapsed: boolean;
@@ -57,9 +50,6 @@ interface EventCardPanelProps {
   onSelectFigure: (fig: HistoricalFigure) => void;
   onCloseEvent: () => void;
   onCloseFigure: () => void;
-  onToggleMastered: (id: string) => void;
-  onToggleBookmark: (id: string) => void;
-  onUpdateNote: (id: string, text: string) => void;
   onFocusRoute: (routeId: string) => void;
   onAskAiAboutEvent?: (ev: HistoryEvent) => void;
   onAskAiAboutFigure?: (fig: HistoricalFigure) => void;
@@ -87,9 +77,6 @@ export function EventCardPanel({
   selectedFigure,
   activeEvents,
   activeFigures,
-  masteredIds,
-  bookmarkedIds,
-  notes,
   theme,
   sheetState,
   desktopCollapsed,
@@ -99,9 +86,6 @@ export function EventCardPanel({
   onSelectFigure,
   onCloseEvent,
   onCloseFigure,
-  onToggleMastered,
-  onToggleBookmark,
-  onUpdateNote,
   onFocusRoute,
   onAskAiAboutEvent,
   onAskAiAboutFigure,
@@ -118,8 +102,6 @@ export function EventCardPanel({
   onStopNarration,
   suppressDesktop = false,
 }: EventCardPanelProps) {
-  const [noteOpen, setNoteOpen] = useState(false);
-
   const renderNarrationBox = (itemId: string) => {
     if (narratingItemId !== itemId) return null;
     if (!narrationSubtitle && (!narrationBeats || narrationBeats.length === 0)) return null;
@@ -217,87 +199,22 @@ export function EventCardPanel({
     else onChangeSheetState('peek');
   };
 
-  const renderStatusActions = (itemId: string) => {
-    const isMastered = masteredIds.has(itemId);
-    const isBookmarked = bookmarkedIds.has(itemId);
-    return (
-      <div className="flex items-center gap-1.5">
-        <button
-          type="button"
-          onClick={() => onToggleMastered(itemId)}
-          className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-medium border transition cursor-pointer"
-          style={{
-            backgroundColor: isMastered ? 'rgba(16, 185, 129, 0.14)' : 'var(--bg-surface)',
-            borderColor: isMastered ? '#10B981' : 'var(--border-subtle)',
-            color: isMastered ? '#059669' : 'var(--text-secondary)',
-          }}
-        >
-          <CheckCircle2 className="h-3.5 w-3.5" />
-          <span>{isMastered ? '已掌握' : '标记掌握'}</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => onToggleBookmark(itemId)}
-          className="inline-flex items-center justify-center rounded-lg p-1.5 border transition cursor-pointer"
-          style={{
-            backgroundColor: isBookmarked ? 'rgba(245, 158, 11, 0.14)' : 'var(--bg-surface)',
-            borderColor: isBookmarked ? '#F59E0B' : 'var(--border-subtle)',
-            color: isBookmarked ? '#D97706' : 'var(--text-muted)',
-          }}
-          aria-label="收藏"
-          title={isBookmarked ? '取消收藏' : '收藏卡片'}
-        >
-          <Bookmark className="h-3.5 w-3.5" fill={isBookmarked ? 'currentColor' : 'none'} />
-        </button>
-      </div>
-    );
-  };
-
-  const renderStudyFooter = (itemId: string, wikiUrl: string) => {
-    const noteValue = notes[itemId] || '';
+  const renderReferenceFooter = (wikiUrl: string) => {
     return (
       <div
-        className="rounded-xl border p-2.5 space-y-2"
+        className="flex items-center justify-end rounded-xl border px-3 py-2"
         style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}
       >
-        <div className="flex items-center justify-between">
-          <button
-            type="button"
-            onClick={() => setNoteOpen((o) => !o)}
-            className="inline-flex items-center gap-1.5 text-xs font-medium cursor-pointer"
-            style={{ color: 'var(--text-primary)' }}
-          >
-            <NotebookPen className="h-3.5 w-3.5" style={{ color: 'var(--accent-gold)' }} />
-            <span>{noteValue ? '个人笔记（已记录）' : '添加个人学习笔记'}</span>
-          </button>
-
-          <a
-            href={wikiUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-[11px] font-medium hover:underline"
-            style={{ color: 'var(--accent-primary)' }}
-          >
-            <span>维基百科</span>
-            <ExternalLink className="h-3 w-3" />
-          </a>
-        </div>
-
-        {(noteOpen || noteValue.length > 0) && (
-          <textarea
-            value={noteValue}
-            onChange={(e) => onUpdateNote(itemId, e.target.value)}
-            placeholder="随手记下引发的思考、制度规律或人物对比感悟（自动保存至本机浏览器）..."
-            rows={3}
-            className="w-full rounded-lg border p-2 text-xs focus:outline-none"
-            style={{
-              backgroundColor: 'var(--bg-surface)',
-              borderColor: 'var(--border-subtle)',
-              color: 'var(--text-primary)',
-            }}
-          />
-        )}
+        <a
+          href={wikiUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1 text-[11px] font-medium hover:underline"
+          style={{ color: 'var(--accent-primary)' }}
+        >
+          <span>维基百科词条参考</span>
+          <ExternalLink className="h-3 w-3" />
+        </a>
       </div>
     );
   };
@@ -351,7 +268,6 @@ export function EventCardPanel({
               <MapPin className="h-3.5 w-3.5" />
               {ev.locationName}
             </span>
-            {renderStatusActions(ev.id)}
           </div>
         </div>
 
@@ -687,8 +603,8 @@ export function EventCardPanel({
           </div>
         )}
 
-        {/* Personal Notes & External Link */}
-        {renderStudyFooter(ev.id, ev.wikiUrl)}
+        {/* External Reference Link */}
+        {renderReferenceFooter(ev.wikiUrl)}
       </div>
     );
   };
@@ -767,7 +683,6 @@ export function EventCardPanel({
               <MapPin className="h-3.5 w-3.5" />
               {fig.locationName}
             </span>
-            {renderStatusActions(fig.id)}
           </div>
         </div>
 
@@ -1026,7 +941,7 @@ export function EventCardPanel({
           </div>
         )}
 
-        {renderStudyFooter(fig.id, fig.wikiUrl)}
+        {renderReferenceFooter(fig.wikiUrl)}
       </div>
     );
   };
@@ -1130,7 +1045,6 @@ export function EventCardPanel({
             {activeFigures.map((fig) => {
               const roleMeta = FIGURE_ROLE_META[fig.role];
               const roleColor = theme === 'obsidian' ? roleMeta.darkColor : roleMeta.color;
-              const isMastered = masteredIds.has(fig.id);
               return (
                 <button
                   key={fig.id}
@@ -1149,7 +1063,6 @@ export function EventCardPanel({
                     {fig.monogram}
                   </span>
                   <span className="font-semibold">{fig.name}</span>
-                  {isMastered && <CheckCircle2 className="h-3 w-3 shrink-0 text-emerald-500" />}
                 </button>
               );
             })}
@@ -1177,7 +1090,6 @@ export function EventCardPanel({
           activeEvents.map((ev) => {
             const dim = DIMENSION_META[ev.primaryDimension];
             const dotColor = theme === 'obsidian' ? dim.darkColor : dim.color;
-            const isMastered = masteredIds.has(ev.id);
             return (
               <button
                 key={ev.id}
@@ -1198,7 +1110,6 @@ export function EventCardPanel({
                     <span className="text-[11px] font-medium" style={{ color: 'var(--text-muted)' }}>
                       {ev.dateDisplay} · {REGION_META[ev.region].label}
                     </span>
-                    {isMastered && <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-500" />}
                   </div>
                   <div className="font-semibold text-xs md:text-[13px] mt-0.5">{ev.title}</div>
                   <div className="text-[11px] line-clamp-1 mt-0.5" style={{ color: 'var(--text-secondary)' }}>
@@ -1249,7 +1160,7 @@ export function EventCardPanel({
                 className="flex items-center justify-between px-4 py-2 border-b text-[11px]"
                 style={{ borderColor: 'var(--border-subtle)', color: 'var(--text-muted)' }}
               >
-                <span>学习卡片面板</span>
+                <span>史事详卡面板</span>
                 <button
                   type="button"
                   onClick={onToggleDesktopCollapse}

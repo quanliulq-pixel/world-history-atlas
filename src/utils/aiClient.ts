@@ -184,42 +184,6 @@ export interface AiPolityCard {
   keyFigures: string[];
 }
 
-export interface AiQuizSourceItem {
-  title: string;
-  yearDisplay: string;
-  summary: string;
-  politics?: string;
-  economy?: string;
-  culture?: string;
-}
-
-export interface AiQuizMcq {
-  id: string;
-  question: string;
-  options: string[];
-  correctIndex: number;
-  explanation: string;
-  relatedTitle: string;
-}
-
-export interface AiQuizPayload {
-  quizTitle: string;
-  mcqs: AiQuizMcq[];
-  feynman: {
-    prompt: string;
-    keyPoints: string[];
-    modelAnswer: string;
-    relatedTitle: string;
-  };
-}
-
-export interface AiQuizGrade {
-  score: number;
-  praise: string;
-  missingAngles: string[];
-  refinedSynthesis: string;
-}
-
 export interface AiNarrationResult {
   script: string;
   audioBlobUrl: string | null;
@@ -606,40 +570,6 @@ export async function generatePolityCardWithAi(params: {
 
   saveCachedPolityCard(params.cacheKey, params.zhName, res.card);
   return { card: res.card, cached: false };
-}
-
-export async function generateQuizWithAi(params: {
-  scopeLabel: string;
-  items: AiQuizSourceItem[];
-}): Promise<AiQuizPayload> {
-  const res = await apiJson<{ quiz: AiQuizPayload; usage?: AiUsageMeta }>('/api/ai/quiz', {
-    method: 'POST',
-    body: {
-      action: 'generate',
-      scopeLabel: params.scopeLabel,
-      items: params.items,
-    },
-  });
-  return res.quiz;
-}
-
-export async function gradeFeynmanWithAi(params: {
-  prompt: string;
-  keyPoints: string[];
-  modelAnswer: string;
-  userAnswer: string;
-}): Promise<AiQuizGrade> {
-  const res = await apiJson<{ grade: AiQuizGrade; usage?: AiUsageMeta }>('/api/ai/quiz', {
-    method: 'POST',
-    body: {
-      action: 'grade',
-      prompt: params.prompt,
-      keyPoints: params.keyPoints,
-      modelAnswer: params.modelAnswer,
-      userAnswer: params.userAnswer,
-    },
-  });
-  return res.grade;
 }
 
 // ---------- In-Memory Audio Cache & Unified Narration Playback ----------

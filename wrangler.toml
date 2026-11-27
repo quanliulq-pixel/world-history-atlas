@@ -1,7 +1,3 @@
 name = "world-history-atlas"
 pages_build_output_dir = "dist"
 compatibility_date = "2025-04-01"
-
-[[kv_namespaces]]
-binding = "STUDY_KV"
-id = "285b943c7de6413ebdc389609233cc3c"

@@ -207,7 +207,7 @@ export function CountryEvolutionHeader({
               borderColor: 'rgba(180, 116, 23, 0.45)',
               color: theme === 'obsidian' ? '#E5A94C' : '#9B5E0B',
             }}
-            title="打开 AI 史学导师、跨代对比与因果自测"
+            title="打开 AI 史学导师与跨代对比"
           >
             <Sparkles className="h-3.5 w-3.5" />
             <span className="hidden sm:inline">AI 导师</span>

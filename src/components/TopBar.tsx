@@ -2,7 +2,6 @@ import {
   BookOpen,
   Columns2,
   Compass,
-  Gamepad2,
   Globe,
   Landmark,
   Layers,
@@ -15,7 +14,6 @@ import {
   Sparkles,
   Sun,
   TrendingUp,
-  Trophy,
   UserRound,
 } from 'lucide-react';
 import { DIMENSION_META } from '../data/eras';
@@ -35,8 +33,6 @@ interface TopBarProps {
   showLandmarks: boolean;
   projection: ProjectionMode;
   theme: ThemeMode;
-  masteredCount: number;
-  totalEventsCount: number;
   onToggleDimension: (dim: Dimension | 'all') => void;
   onToggleShowAllEras: () => void;
   onToggleRoutes: () => void;
@@ -49,7 +45,6 @@ interface TopBarProps {
   onOpenEconomicAtlas: () => void;
   onOpenStorylines: () => void;
   onOpenCausalGraph: () => void;
-  onOpenChronoGame: () => void;
   timeSwipeOpen: boolean;
   onToggleTimeSwipe: () => void;
   onOpenSearch: () => void;
@@ -72,8 +67,6 @@ export function TopBar({
   showLandmarks,
   projection,
   theme,
-  masteredCount,
-  totalEventsCount,
   onToggleDimension,
   onToggleShowAllEras,
   onToggleRoutes,
@@ -86,7 +79,6 @@ export function TopBar({
   onOpenEconomicAtlas,
   onOpenStorylines,
   onOpenCausalGraph,
-  onOpenChronoGame,
   timeSwipeOpen,
   onToggleTimeSwipe,
   onOpenSearch,
@@ -154,7 +146,7 @@ export function TopBar({
               borderColor: aiUnlocked ? '#B47417' : 'var(--border-strong)',
               color: theme === 'obsidian' ? '#E5A94C' : '#9B5E0B',
             }}
-            title="打开 Gemini AI 史学导师、跨代对比与因果自测"
+            title="打开 Gemini AI 史学导师与跨代对比"
           >
             <Sparkles className="h-3.5 w-3.5" />
             <span className="hidden md:inline">AI 导师</span>
@@ -221,21 +213,6 @@ export function TopBar({
 
           <button
             type="button"
-            onClick={onOpenChronoGame}
-            className="inline-flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-medium border transition hover:opacity-90 cursor-pointer"
-            style={{
-              backgroundColor: 'var(--bg-surface)',
-              borderColor: 'var(--border-subtle)',
-              color: 'var(--text-primary)',
-            }}
-            title="看历史油画猜地点与年代小游戏"
-          >
-            <Gamepad2 className="h-3.5 w-3.5" style={{ color: '#059669' }} />
-            <span className="hidden xl:inline">猜时空</span>
-          </button>
-
-          <button
-            type="button"
             onClick={onOpenSearch}
             className="inline-flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-medium border transition hover:opacity-90 cursor-pointer"
             style={{
@@ -243,17 +220,10 @@ export function TopBar({
               borderColor: 'var(--border-subtle)',
               color: 'var(--text-primary)',
             }}
-            title="搜索与学习进度"
+            title="检索历史事件与人物"
           >
             <Search className="h-3.5 w-3.5" />
             <span className="hidden lg:inline">检索</span>
-            <span
-              className="hidden sm:inline-flex items-center gap-0.5 rounded px-1 py-0.2 text-[10px] font-semibold"
-              style={{ backgroundColor: 'var(--bg-muted)', color: 'var(--text-secondary)' }}
-            >
-              <Trophy className="h-2.5 w-2.5" />
-              {masteredCount}/{totalEventsCount}
-            </span>
           </button>
 
           <button

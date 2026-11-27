@@ -11,7 +11,6 @@ import {
 } from './components/CountryEvolutionView';
 import { EconomicAtlasModal } from './components/EconomicAtlasModal';
 import { EventCardPanel } from './components/EventCardPanel';
-import { GeoChronoGameModal } from './components/GeoChronoGameModal';
 import { SearchAndProgressModal } from './components/SearchAndProgressModal';
 import { StorylinePickerModal, StorylinePlayerBar } from './components/StorylineOverlay';
 import { TimeSwipeOverlay } from './components/TimeSwipeOverlay';
@@ -129,16 +128,8 @@ function buildLocalFocusStoryboard(
 
 export function App() {
   const {
-    studyData,
     theme,
     projection,
-    toggleMastered,
-    toggleBookmark,
-    setNote,
-    exportJson,
-    importJson,
-    replaceStudyData,
-    exportMarkdown,
     toggleTheme,
     toggleProjection,
   } = useStudyStore();
@@ -183,7 +174,6 @@ export function App() {
   const [storyPickerOpen, setStoryPickerOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [timeSwipeOpen, setTimeSwipeOpen] = useState(false);
-  const [chronoGameOpen, setChronoGameOpen] = useState(false);
   const [causalGraphOpen, setCausalGraphOpen] = useState(false);
   const [mainMapInstance, setMainMapInstance] = useState<maplibregl.Map | null>(null);
 
@@ -579,9 +569,6 @@ export function App() {
       return dimMatches && timeMatches;
     });
   }, [showRoutes, activeStoryline, storyStepIdx, focusRouteId, selectedDimensions, currentYear]);
-
-  const masteredSet = useMemo(() => new Set(studyData.masteredIds), [studyData.masteredIds]);
-  const bookmarkedSet = useMemo(() => new Set(studyData.bookmarkedIds), [studyData.bookmarkedIds]);
 
   const flyToLocation = useCallback(
     (
@@ -1759,7 +1746,7 @@ export function App() {
   // Global keyboard shortcuts (Space play/pause, Left/Right step milestone, [/] speed, M voice, B BGM)
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
-      if (aiOpen || pulseOpen || storyPickerOpen || searchOpen || chronoGameOpen || causalGraphOpen) {
+      if (aiOpen || pulseOpen || economicAtlasOpen || storyPickerOpen || searchOpen || causalGraphOpen) {
         return;
       }
       const tag = (e.target as HTMLElement | null)?.tagName;
@@ -1822,7 +1809,6 @@ export function App() {
     economicAtlasOpen,
     storyPickerOpen,
     searchOpen,
-    chronoGameOpen,
     causalGraphOpen,
     activeCountry,
     cinemaMode,
@@ -1881,8 +1867,6 @@ export function App() {
           showLandmarks={showLandmarks}
           projection={projection}
           theme={theme}
-          masteredCount={studyData.masteredIds.length}
-          totalEventsCount={ALL_EVENTS.length + ALL_FIGURES.length}
           onToggleDimension={handleToggleDimension}
           onToggleShowAllEras={() => setShowAllEras((v) => !v)}
           onToggleRoutes={() => setShowRoutes((v) => !v)}
@@ -1906,10 +1890,6 @@ export function App() {
           onOpenCausalGraph={() => {
             stopAiNarrationAndStage(true, true);
             setCausalGraphOpen(true);
-          }}
-          onOpenChronoGame={() => {
-            stopAiNarrationAndStage(true, true);
-            setChronoGameOpen(true);
           }}
           timeSwipeOpen={timeSwipeOpen}
           onToggleTimeSwipe={() => {
@@ -1948,8 +1928,6 @@ export function App() {
             selectedEvent={selectedEvent}
             selectedFigure={selectedFigure}
             recentTriggerEventId={recentTriggerEventId}
-            masteredIds={masteredSet}
-            bookmarkedIds={bookmarkedSet}
             activeRoutes={activeRoutes}
             focusRouteId={focusRouteId}
             showRelief={showRelief}
@@ -2129,9 +2107,6 @@ export function App() {
                 selectedFigure={selectedFigure}
                 activeEvents={activeWindowEvents}
                 activeFigures={activeWindowFigures}
-                masteredIds={masteredSet}
-                bookmarkedIds={bookmarkedSet}
-                notes={studyData.notes}
                 theme={theme}
                 sheetState={sheetState}
                 desktopCollapsed={desktopCollapsed}
@@ -2146,9 +2121,6 @@ export function App() {
                 onCloseFigure={() => {
                   setSelectedFigureId(null);
                 }}
-                onToggleMastered={toggleMastered}
-                onToggleBookmark={toggleBookmark}
-                onUpdateNote={setNote}
                 onFocusRoute={(routeId) => {
                   setShowRoutes(true);
                   setFocusRouteId((cur) => (cur === routeId ? null : routeId));
@@ -2396,25 +2368,9 @@ export function App() {
       <SearchAndProgressModal
         open={searchOpen}
         theme={theme}
-        masteredIds={masteredSet}
-        bookmarkedIds={bookmarkedSet}
-        notes={studyData.notes}
         onClose={() => setSearchOpen(false)}
         onSelectEvent={(ev) => handleSelectEvent(ev)}
         onSelectFigure={(fig) => handleSelectFigure(fig)}
-        onExportJson={exportJson}
-        onExportMarkdown={exportMarkdown}
-        onImportJson={importJson}
-        onReplaceStudyData={replaceStudyData}
-        onRequireAiUnlock={() => openAiWithIntent({ tab: 'tutor' })}
-      />
-
-      <GeoChronoGameModal
-        open={chronoGameOpen}
-        theme={theme}
-        physical={physical}
-        onClose={() => setChronoGameOpen(false)}
-        onJumpToEvent={(ev) => handleSelectEvent(ev)}
       />
 
       <CausalGraphModal
@@ -2429,7 +2385,6 @@ export function App() {
         open={aiOpen}
         theme={theme}
         context={aiContext}
-        masteredIds={masteredSet}
         eraId={currentEra.id}
         intent={aiIntent}
         hasActiveStoryboard={Boolean(activeStoryboard)}

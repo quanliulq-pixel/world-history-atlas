@@ -56,8 +56,13 @@ function findManifestDir(rootDir) {
 }
 
 function detectPackType(manifestJson, forcedType) {
-  if (forcedType === 'illustrations' || forcedType === 'audio') return forcedType;
+  if (forcedType === 'illustrations' || forcedType === 'audio' || forcedType === 'videos') {
+    return forcedType;
+  }
   const items = Object.values(manifestJson?.items || {});
+  if (items.some((x) => /\.(mp4|webm|mov)$/i.test(x?.file || ''))) {
+    return 'videos';
+  }
   if (
     items.some(
       (x) =>
@@ -75,14 +80,14 @@ function detectPackType(manifestJson, forcedType) {
   }
   if (manifestJson?.engine) return 'audio';
   if (manifestJson?.model) return 'illustrations';
-  throw new Error('Could not auto-detect pack type. Pass --type illustrations or --type audio.');
+  throw new Error('Could not auto-detect pack type. Pass --type illustrations|audio|videos.');
 }
 
 function collectFiles(manifestJson, packType) {
   const relFiles = new Set();
   for (const entry of Object.values(manifestJson?.items || {})) {
     if (!entry || typeof entry !== 'object') continue;
-    if (packType === 'illustrations' && entry.file) {
+    if ((packType === 'illustrations' || packType === 'videos') && entry.file) {
       relFiles.add(String(entry.file).replace(/^\/+/, ''));
     } else if (packType === 'audio') {
       if (entry.file) relFiles.add(String(entry.file).replace(/^\/+/, ''));

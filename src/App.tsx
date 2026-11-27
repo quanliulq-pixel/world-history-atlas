@@ -2170,6 +2170,14 @@ export function App() {
                   void handleSelectCardNarrationBeat(idx);
                 }}
                 onStopNarration={handleStopCardNarration}
+                cinemaNarratingEventId={
+                  cinemaMode && (cinemaNarrationStatus !== 'idle' || Boolean(cinemaSubtitle))
+                    ? tickerEventId
+                    : null
+                }
+                cinemaBeats={cinemaBeats}
+                cinemaActiveBeatIndex={cinemaActiveBeatIdx}
+                cinemaSubtitle={cinemaSubtitle}
                 suppressDesktop={aiOpen}
               />
 

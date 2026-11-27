@@ -910,6 +910,10 @@ export function CountryEvolutionPanel({
               caption={`${country.name} · ${country.enName}`}
               accentColor={country.accentColor}
               theme={theme}
+              isNarrating={Boolean(narratingStageId)}
+              activeBeatIndex={Math.max(0, activeStageIdx) % 3}
+              beatTitle={country.stages[activeStageIdx]?.name ?? null}
+              dimension="politics"
             />
 
             {/* Intro Header */}

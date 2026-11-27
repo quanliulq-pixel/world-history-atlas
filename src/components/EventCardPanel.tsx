@@ -64,6 +64,10 @@ interface EventCardPanelProps {
   activeBeatIndex?: number;
   onSelectNarrationBeat?: (idx: number) => void;
   onStopNarration?: () => void;
+  cinemaNarratingEventId?: string | null;
+  cinemaBeats?: AiDocumentaryBeat[] | null;
+  cinemaActiveBeatIndex?: number;
+  cinemaSubtitle?: string | null;
   suppressDesktop?: boolean;
 }
 
@@ -100,6 +104,10 @@ export function EventCardPanel({
   activeBeatIndex = 0,
   onSelectNarrationBeat,
   onStopNarration,
+  cinemaNarratingEventId = null,
+  cinemaBeats = null,
+  cinemaActiveBeatIndex = 0,
+  cinemaSubtitle = null,
   suppressDesktop = false,
 }: EventCardPanelProps) {
   const renderNarrationBox = (itemId: string) => {
@@ -271,15 +279,43 @@ export function EventCardPanel({
           </div>
         </div>
 
-        {/* Progressive Museum Event Artwork */}
-        <MuseumBanner
-          kind="event"
-          id={ev.id}
-          alt={ev.title}
-          caption={`${ev.dateDisplay} · ${ev.locationName}`}
-          accentColor={dimColor}
-          theme={theme}
-        />
+        {/* Progressive Museum Event Artwork + 3-Act Motion / Video Stage */}
+        {(() => {
+          const isCardNarrating = narratingItemId === ev.id;
+          const isCinemaNarrating = cinemaNarratingEventId === ev.id;
+          const isBannerNarrating = isCardNarrating || isCinemaNarrating;
+          const beatsForBanner = isCardNarrating
+            ? narrationBeats
+            : isCinemaNarrating
+              ? cinemaBeats
+              : null;
+          const beatIdxForBanner = isCardNarrating
+            ? activeBeatIndex
+            : isCinemaNarrating
+              ? cinemaActiveBeatIndex
+              : 0;
+          const subtitleForBanner = isCardNarrating
+            ? narrationSubtitle || beatsForBanner?.[beatIdxForBanner]?.narration || null
+            : isCinemaNarrating
+              ? cinemaSubtitle || beatsForBanner?.[beatIdxForBanner]?.narration || null
+              : null;
+          return (
+            <MuseumBanner
+              kind="event"
+              id={ev.id}
+              alt={ev.title}
+              caption={`${ev.dateDisplay} · ${ev.locationName}`}
+              accentColor={dimColor}
+              theme={theme}
+              isNarrating={isBannerNarrating}
+              activeBeatIndex={beatIdxForBanner}
+              totalBeats={beatsForBanner?.length ?? 0}
+              beatTitle={beatsForBanner?.[beatIdxForBanner]?.title ?? null}
+              activeSubtitle={subtitleForBanner}
+              dimension={ev.primaryDimension}
+            />
+          );
+        })()}
 
         {/* Summary Callout */}
         <div
@@ -971,6 +1007,12 @@ export function EventCardPanel({
         caption={`${formatYear(currentEra.startYear)} — ${formatYear(currentEra.endYear)}`}
         accentColor={currentEra.accentColor}
         theme={theme}
+        isNarrating={Boolean(cinemaNarratingEventId)}
+        activeBeatIndex={cinemaActiveBeatIndex}
+        totalBeats={cinemaBeats?.length ?? 0}
+        beatTitle={cinemaBeats?.[cinemaActiveBeatIndex]?.title ?? null}
+        activeSubtitle={cinemaSubtitle}
+        dimension="culture"
       />
 
       {/* Active sub-period context */}

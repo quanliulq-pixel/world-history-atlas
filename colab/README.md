@@ -58,7 +58,17 @@ npm.cmd run media:extras-scripts
 
 ---
 
-## 4. 进阶：把 `public/media/` 迁移到免费 Cloudflare R2 对象存储（10 GB 免费）
+## 4. 图生视频工坊（LTX-Video 动态史画视频包）
+
+- **一键打开**：[打开图生视频 Notebook (L4 / A100 GPU)](https://colab.research.google.com/github/quanliulq-pixel/world-history-atlas/blob/main/colab/generate_atlas_videos.ipynb)
+- 使用现有 `public/media/illustrations/` 静态油画作首帧生成 5 秒循环 MP4 短视频；合入命令：
+  ```powershell
+  npm.cmd run media:import -- C:\Users\lq\Downloads\atlas-videos-pack.zip --type videos
+  ```
+
+---
+
+## 5. 进阶：把 `public/media/` 迁移到免费 Cloudflare R2 对象存储（10 GB 免费）
 
 当媒体资源体积继续增长时，可将 `public/media/` 全量托管到 Cloudflare R2，让 Git 仓库保持轻量：
 1. 登录 Cloudflare Dashboard 开启 **R2 Object Storage**（首次需点一次开通，10 GB/月与出站零费用），创建存储桶 `world-history-atlas-media` 并开启公共访问域名（如 `https://pub-xxx.r2.dev`）。

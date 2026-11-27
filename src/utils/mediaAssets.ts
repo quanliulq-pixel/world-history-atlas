@@ -17,6 +17,22 @@ export interface IllustrationManifest {
   items: Record<string, IllustrationEntry>;
 }
 
+export interface VideoEntry {
+  file: string;
+  durationSec?: number;
+  width?: number;
+  height?: number;
+  model?: string;
+  caption?: string;
+}
+
+export interface VideoManifest {
+  version: number;
+  generatedAt?: string;
+  model?: string;
+  items: Record<string, VideoEntry>;
+}
+
 export interface PreGeneratedAudioBeat {
   title: string;
   narration: string;
@@ -49,6 +65,9 @@ let illustrationManifestPromise: Promise<IllustrationManifest> | null = null;
 
 let audioManifestCache: AudioManifest | null = null;
 let audioManifestPromise: Promise<AudioManifest> | null = null;
+
+let videoManifestCache: VideoManifest | null = null;
+let videoManifestPromise: Promise<VideoManifest> | null = null;
 
 function buildMediaUrl(subPath: string): string {
   const normalized = subPath.replace(/^\/+/, '');
@@ -167,4 +186,65 @@ export async function getPreGeneratedAudio(
   const hasBeats = Array.isArray(entry.beats) && entry.beats.length > 0;
   if (!hasBeats && !entry.file) return null;
   return entry;
+}
+
+export async function loadVideoManifest(): Promise<VideoManifest> {
+  if (videoManifestCache) return videoManifestCache;
+  if (!videoManifestPromise) {
+    videoManifestPromise = fetch(buildMediaUrl('videos/manifest.json'))
+      .then(async (res) => {
+        if (!res.ok) return { version: 1, items: {} } as VideoManifest;
+        const json = (await res.json()) as Partial<VideoManifest>;
+        return {
+          version: Number(json.version || 1),
+          generatedAt: json.generatedAt,
+          model: json.model,
+          items: json.items && typeof json.items === 'object' ? json.items : {},
+        };
+      })
+      .catch(() => ({ version: 1, items: {} }) as VideoManifest)
+      .then((manifest) => {
+        videoManifestCache = manifest;
+        return manifest;
+      });
+  }
+  return videoManifestPromise;
+}
+
+export function resolveVideoUrl(relFile: string): string {
+  return buildMediaUrl(`videos/${relFile.replace(/^\/+/, '')}`);
+}
+
+export function lookupMotionVideo(
+  manifest: VideoManifest | null,
+  kind: IllustrationKind,
+  id?: string | null,
+): { url: string | null; entry: VideoEntry | null } {
+  if (!manifest || !id) return { url: null, entry: null };
+  const entry = manifest.items[`${kind}:${id}`] ?? manifest.items[id] ?? null;
+  if (!entry || !entry.file) return { url: null, entry: null };
+  return { url: resolveVideoUrl(entry.file), entry };
+}
+
+export function useMotionVideo(
+  kind: IllustrationKind,
+  id?: string | null,
+): { url: string | null; entry: VideoEntry | null } {
+  const [manifest, setManifest] = useState<VideoManifest | null>(() => videoManifestCache);
+
+  useEffect(() => {
+    if (videoManifestCache) {
+      setManifest(videoManifestCache);
+      return;
+    }
+    let cancelled = false;
+    void loadVideoManifest().then((loaded) => {
+      if (!cancelled) setManifest(loaded);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  return lookupMotionVideo(manifest, kind, id);
 }

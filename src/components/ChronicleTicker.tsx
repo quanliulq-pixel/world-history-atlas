@@ -5,7 +5,7 @@ import {
   GripVertical,
   Loader2,
   Maximize2,
-  Minimize2,
+  Minus,
   PanelRight,
   Pause,
   Sparkles,
@@ -279,6 +279,7 @@ export function ChronicleTicker({
     };
   }, [
     visible,
+    compact,
     pos !== null,
     size !== null,
     rightDrawerVisible,
@@ -458,6 +459,108 @@ export function ChronicleTicker({
   const openSpeedUpward = Boolean(pos && parentHeight > 0 && pos.y > parentHeight * 0.55);
   const maxHeightClass = !compact && (!size || size.height === null) ? ' max-h-[48vh]' : '';
 
+  if (compact) {
+    return (
+      <div
+        ref={cardRef}
+        onPointerDown={handleDragPointerDown}
+        onPointerMove={handleDragPointerMove}
+        onPointerUp={handleDragPointerEnd}
+        onPointerCancel={handleDragPointerEnd}
+        onDoubleClick={handleToggleCompact}
+        className={
+          pos
+            ? `pointer-events-auto absolute z-30 inline-flex items-center gap-2 rounded-full border px-3 py-1.5 shadow-xl backdrop-blur-md max-w-[calc(100%-16px)] whitespace-nowrap touch-none select-none ${
+                isDragging ? 'cursor-grabbing' : 'cursor-grab'
+              }`
+            : `atlas-ticker-enter pointer-events-auto absolute left-3 md:left-16 ${
+                rightDrawerVisible ? 'lg:left-16' : 'lg:left-1/2 lg:-translate-x-1/2'
+              } top-3 z-30 inline-flex items-center gap-2 rounded-full border px-3 py-1.5 shadow-xl backdrop-blur-md max-w-[calc(100%-16px)] whitespace-nowrap touch-none select-none ${
+                isDragging ? 'cursor-grabbing' : 'cursor-grab'
+              }`
+        }
+        style={{
+          ...(pos ? { left: `${pos.x}px`, top: `${pos.y}px` } : undefined),
+          backgroundColor:
+            theme === 'obsidian' ? 'rgba(18, 28, 40, 0.94)' : 'rgba(251, 248, 241, 0.96)',
+          borderColor: accent,
+          color: 'var(--text-primary)',
+          userSelect: isDragging ? 'none' : undefined,
+        }}
+        title="按住拖动胶囊位置，双击或点右侧按钮展开"
+      >
+        <GripVertical
+          className="h-3.5 w-3.5 shrink-0 opacity-45 -ml-1"
+          style={{ color: 'var(--text-muted)' }}
+          aria-hidden="true"
+        />
+        <span
+          className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold text-white shrink-0"
+          style={{ backgroundColor: accent }}
+        >
+          {cinemaMode ? <Film className="h-3 w-3" /> : <Sparkles className="h-3 w-3" />}
+          <span>{cinemaMode ? '电影演进' : isPlaying ? '进程实况' : '编年'}</span>
+        </span>
+        <span className="text-xs font-bold tabular-nums shrink-0" style={{ color: accent }}>
+          {formatYear(currentYear)}
+        </span>
+        {activeMode && voiceEnabled && narrationStatus !== 'idle' && (
+          <span
+            className="inline-flex items-end gap-[2px] h-2.5 shrink-0"
+            style={{ color: accent }}
+            aria-hidden="true"
+          >
+            <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar" />
+            <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar atlas-eq-bar-2" />
+            <span className="w-[2px] h-2.5 rounded-full bg-current atlas-eq-bar atlas-eq-bar-3" />
+          </span>
+        )}
+        {activeMode && (
+          <button
+            type="button"
+            onClick={onStopPlayback}
+            className="inline-flex items-center gap-0.5 rounded-full border px-2 py-0.5 text-[10px] font-semibold hover:opacity-80 cursor-pointer shrink-0"
+            style={{
+              backgroundColor: 'var(--bg-surface)',
+              borderColor: 'var(--border-strong)',
+              color: 'var(--text-primary)',
+            }}
+            title="暂停演进"
+          >
+            <Pause className="h-2.5 w-2.5" />
+            <span>暂停</span>
+          </button>
+        )}
+        <button
+          type="button"
+          onClick={handleToggleCompact}
+          className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold hover:opacity-85 cursor-pointer shrink-0"
+          style={{
+            backgroundColor: `${accent}1A`,
+            borderColor: `${accent}55`,
+            color: accent,
+          }}
+          title="展开编年悬浮窗"
+          aria-label="展开编年悬浮窗"
+        >
+          <Maximize2 className="h-3 w-3" />
+          <span>展开</span>
+        </button>
+        {!activeMode && (
+          <button
+            type="button"
+            onClick={onDismiss}
+            className="rounded-full p-0.5 hover:opacity-75 cursor-pointer shrink-0"
+            style={{ color: 'var(--text-muted)' }}
+            aria-label="关闭编年提示"
+          >
+            <X className="h-3 w-3" />
+          </button>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div
       ref={cardRef}
@@ -502,7 +605,7 @@ export function ChronicleTicker({
         onPointerUp={handleDragPointerEnd}
         onPointerCancel={handleDragPointerEnd}
         onDoubleClick={handleResetPos}
-        className={`flex shrink-0 items-center justify-between gap-2 touch-none select-none ${
+        className={`flex shrink-0 flex-wrap items-center justify-between gap-x-2 gap-y-1.5 touch-none select-none ${
           isDragging ? 'cursor-grabbing' : 'cursor-grab'
         }`}
         title="按住拖动位置，拖右下角或边缘缩放，双击恢复默认位置与尺寸"
@@ -657,14 +760,14 @@ export function ChronicleTicker({
             onClick={handleToggleCompact}
             className="rounded-lg border p-1 hover:opacity-80 cursor-pointer"
             style={{
-              backgroundColor: compact ? `${accent}1E` : 'var(--bg-surface)',
-              borderColor: compact ? accent : 'var(--border-subtle)',
-              color: compact ? accent : 'var(--text-muted)',
+              backgroundColor: 'var(--bg-surface)',
+              borderColor: 'var(--border-subtle)',
+              color: 'var(--text-muted)',
             }}
-            title={compact ? '展开编年面板' : '收起为精简栏'}
-            aria-label={compact ? '展开编年面板' : '收起为精简栏'}
+            title="最小化编年悬浮窗"
+            aria-label="最小化编年悬浮窗"
           >
-            {compact ? <Maximize2 className="h-3 w-3" /> : <Minimize2 className="h-3 w-3" />}
+            <Minus className="h-3 w-3" />
           </button>
 
           {activeMode && (

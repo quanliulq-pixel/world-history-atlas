@@ -11,6 +11,8 @@ import {
   Landmark,
   Loader2,
   MapPin,
+  Maximize2,
+  Minus,
   Mountain,
   Quote,
   Route as RouteIcon,
@@ -1291,18 +1293,49 @@ export function EventCardPanel({
       <aside
         className={`pointer-events-none ${suppressDesktop ? 'hidden' : 'hidden lg:flex'} absolute right-3 top-3 bottom-3 z-20 flex-col items-end`}
       >
-        {desktopCollapsed && !selectedEvent && !selectedFigure ? (
+        {desktopCollapsed ? (
           <button
             type="button"
             onClick={onToggleDesktopCollapse}
-            className="pointer-events-auto rounded-xl border px-3 py-2 text-xs font-semibold shadow-lg backdrop-blur-md cursor-pointer"
+            className="pointer-events-auto inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold shadow-xl backdrop-blur-md hover:opacity-90 cursor-pointer max-w-[280px]"
             style={{
-              backgroundColor: 'var(--bg-surface)',
-              borderColor: 'var(--border-strong)',
+              backgroundColor:
+                theme === 'obsidian' ? 'rgba(20, 30, 43, 0.94)' : 'rgba(251, 248, 241, 0.96)',
+              borderColor: selectedEvent
+                ? theme === 'obsidian'
+                  ? DIMENSION_META[selectedEvent.primaryDimension].darkColor
+                  : DIMENSION_META[selectedEvent.primaryDimension].color
+                : selectedFigure
+                  ? theme === 'obsidian'
+                    ? FIGURE_ROLE_META[selectedFigure.role].darkColor
+                    : FIGURE_ROLE_META[selectedFigure.role].color
+                  : currentEra.accentColor,
               color: 'var(--text-primary)',
             }}
+            title="展开右侧详卡面板"
           >
-            展开时代卡片 ({activeEvents.length})
+            <span
+              className="h-2 w-2 rounded-full shrink-0"
+              style={{
+                backgroundColor: selectedEvent
+                  ? theme === 'obsidian'
+                    ? DIMENSION_META[selectedEvent.primaryDimension].darkColor
+                    : DIMENSION_META[selectedEvent.primaryDimension].color
+                  : selectedFigure
+                    ? theme === 'obsidian'
+                      ? FIGURE_ROLE_META[selectedFigure.role].darkColor
+                      : FIGURE_ROLE_META[selectedFigure.role].color
+                    : currentEra.accentColor,
+              }}
+            />
+            <span className="truncate">
+              {selectedEvent
+                ? `展开详卡 · ${selectedEvent.title}`
+                : selectedFigure
+                  ? `展开人物 · ${selectedFigure.name}`
+                  : `展开时代卡片 (${activeEvents.length})`}
+            </span>
+            <Maximize2 className="h-3.5 w-3.5 shrink-0 opacity-80" />
           </button>
         ) : (
           <div
@@ -1313,21 +1346,29 @@ export function EventCardPanel({
               borderColor: 'var(--border-subtle)',
             }}
           >
-            {!selectedEvent && !selectedFigure && (
-              <div
-                className="flex items-center justify-between px-4 py-2 border-b text-[11px]"
-                style={{ borderColor: 'var(--border-subtle)', color: 'var(--text-muted)' }}
+            <div
+              className="flex shrink-0 items-center justify-between px-4 py-2 border-b text-[11px]"
+              style={{ borderColor: 'var(--border-subtle)', color: 'var(--text-muted)' }}
+            >
+              <span className="font-medium">
+                {selectedEvent ? '事件详卡' : selectedFigure ? '人物档案' : '时代概览'}
+              </span>
+              <button
+                type="button"
+                onClick={onToggleDesktopCollapse}
+                className="inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[10.5px] font-medium hover:opacity-80 cursor-pointer"
+                style={{
+                  backgroundColor: 'var(--bg-surface)',
+                  borderColor: 'var(--border-subtle)',
+                  color: 'var(--text-secondary)',
+                }}
+                title="最小化右侧详卡，查看全图"
+                aria-label="最小化右侧详卡"
               >
-                <span>史事详卡面板</span>
-                <button
-                  type="button"
-                  onClick={onToggleDesktopCollapse}
-                  className="hover:opacity-75 cursor-pointer"
-                >
-                  收起看全图
-                </button>
-              </div>
-            )}
+                <Minus className="h-3 w-3" />
+                <span>最小化</span>
+              </button>
+            </div>
             <div className="atlas-scroll flex-1 overflow-y-auto px-4 pt-3.5">
               <div
                 key={selectedEvent?.id || selectedFigure?.id || `${currentEra.id}-${currentSubPeriod.id}`}

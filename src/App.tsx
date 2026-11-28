@@ -627,9 +627,6 @@ export function App() {
           if (syncCardDuringPlayRef.current) {
             setSelectedFigureId(null);
             setSelectedEventId(bestCrossed.id);
-            if (window.innerWidth >= 1024) {
-              setDesktopCollapsed(false);
-            }
           }
         }
 
@@ -954,9 +951,6 @@ export function App() {
         setRecentTriggerEventId(ev.id);
         setTickerVisible(true);
         setTickerEventId(ev.id);
-        if (window.innerWidth >= 1024) {
-          setDesktopCollapsed(false);
-        }
 
         flyToLocation(ev.coords, ev.importance === 3 ? 3.25 : 3.55, {
           pitch: 18,
@@ -2467,7 +2461,7 @@ export function App() {
                   }
                 }}
                 onToggleSyncCard={() => setSyncCardDuringPlay((v) => !v)}
-                rightDrawerVisible={!desktopCollapsed || Boolean(selectedEvent) || Boolean(selectedFigure)}
+                rightDrawerVisible={!desktopCollapsed}
                 onSelectEvent={(ev) => handleSelectEvent(ev)}
                 onStopPlayback={() => {
                   setIsPlaying(false);

@@ -1865,29 +1865,47 @@ export function WorldMap({
     const isDark = theme === 'obsidian';
     const zones = aiScene.zones || [];
 
-    // 1. Place northern-rim zone labels cleanly above geodesic influence circles
-    zones.forEach((zone, idx) => {
-      if (!zone.label) return;
-      const latOffset = (zone.radiusKm / 111.32) * 0.78;
-      const labelCoords: [number, number] = [zone.center[0], Math.min(80, zone.center[1] + latOffset)];
-      const wrap = document.createElement('div');
-      wrap.className = 'pointer-events-none select-none';
-      const badge = document.createElement('div');
-      badge.className =
-        'atlas-flow-badge-enter rounded-full px-2 py-0.5 text-[10px] font-bold shadow-md whitespace-nowrap';
-      badge.style.animationDelay = `${idx * 160}ms`;
-      badge.style.backgroundColor = isDark ? 'rgba(18, 28, 40, 0.90)' : 'rgba(251, 248, 241, 0.92)';
-      badge.style.color = zone.color;
-      badge.style.border = `1px dashed ${zone.color}`;
-      badge.textContent = zone.label;
-      wrap.appendChild(badge);
-      const marker = new maplibregl.Marker({ element: wrap, anchor: 'center' })
-        .setLngLat(labelCoords)
-        .addTo(map);
-      aiZoneMarkersRef.current.set(`zone-${idx}`, { marker, el: wrap, coords: labelCoords });
-    });
+    // Screen-space collision guard & clean label trimming so animation never stacks white boxes
+    const cleanSpotLabel = (raw: string): string => {
+      const stripped = raw
+        .replace(/^(前因|渊源|同代背景|同步|扩散|后效|后续|原因)[:：]\s*/u, '')
+        .trim();
+      return stripped.length > 11 ? `${stripped.slice(0, 10)}…` : stripped;
+    };
 
-    // 2. Build staggered icon hotspots with anti-overlap label alternating
+    const placedRects: Array<{ x1: number; y1: number; x2: number; y2: number }> = [];
+    const canPlaceLabelAt = (coords: [number, number], w: number, h: number): boolean => {
+      try {
+        const pt = map.project(coords);
+        const container = map.getContainer();
+        const cw = container.clientWidth || 1000;
+        const ch = container.clientHeight || 640;
+        if (pt.x < 16 || pt.x > cw - 16 || pt.y < 16 || pt.y > ch - 16) return false;
+        // Top-left zoom controls safe zone & bottom subtitle ribbon safe zone
+        if (pt.x < 78 && pt.y < 114) return false;
+        if (pt.y > ch - 122) return false;
+
+        const rect = {
+          x1: pt.x - w / 2,
+          y1: pt.y - h / 2,
+          x2: pt.x + w / 2,
+          y2: pt.y + h / 2,
+        };
+        for (const r of placedRects) {
+          if (rect.x1 < r.x2 && rect.x2 > r.x1 && rect.y1 < r.y2 && rect.y2 > r.y1) {
+            return false;
+          }
+        }
+        placedRects.push(rect);
+        return true;
+      } catch {
+        return false;
+      }
+    };
+
+    // 1. Keep geodesic influence zone polygon fills subtle without floating DOM text pills
+
+    // 2. Build staggered icon hotspots with screen-space collision-avoidant compact labels
     aiScene.spots.forEach((spot, idx) => {
       const placeAbove = aiScene.spots.some(
         (prev, pIdx) =>
@@ -1899,7 +1917,7 @@ export function WorldMap({
       wrap.className = 'pointer-events-none relative flex items-center justify-center select-none';
       wrap.style.width = '40px';
       wrap.style.height = '40px';
-      wrap.style.zIndex = '38';
+      wrap.style.zIndex = idx === 0 ? '39' : '37';
 
       const anim = document.createElement('div');
       anim.className = 'atlas-spot-enter relative flex items-center justify-center';
@@ -1909,48 +1927,72 @@ export function WorldMap({
 
       const sw1 = document.createElement('span');
       sw1.className = 'atlas-shockwave absolute left-1/2 top-1/2 rounded-full';
-      sw1.style.width = '30px';
-      sw1.style.height = '30px';
+      sw1.style.width = idx === 0 ? '30px' : '24px';
+      sw1.style.height = idx === 0 ? '30px' : '24px';
       sw1.style.border = `2.2px solid ${spot.color}`;
       sw1.style.background = `${spot.color}28`;
 
       const sw2 = document.createElement('span');
       sw2.className = 'atlas-shockwave-delayed absolute left-1/2 top-1/2 rounded-full';
-      sw2.style.width = '30px';
-      sw2.style.height = '30px';
+      sw2.style.width = idx === 0 ? '30px' : '24px';
+      sw2.style.height = idx === 0 ? '30px' : '24px';
       sw2.style.border = `1.8px solid ${spot.color}`;
 
+      const dotSize = idx === 0 ? '22px' : '18px';
       const dot = document.createElement('span');
       dot.className = 'relative flex items-center justify-center rounded-full shadow-lg';
-      dot.style.width = '22px';
-      dot.style.height = '22px';
+      dot.style.width = dotSize;
+      dot.style.height = dotSize;
       dot.style.backgroundColor = spot.color;
       dot.style.border = '2px solid #FFFFFF';
       dot.innerHTML = createSpotIconSvg(spot.icon);
 
-      const pill = document.createElement('div');
-      pill.className = `absolute left-1/2 ${
-        placeAbove ? 'bottom-full mb-1' : 'top-full mt-1'
-      } -translate-x-1/2 whitespace-nowrap rounded-lg px-2 py-0.5 text-[11px] font-bold shadow-md`;
-      pill.style.backgroundColor = isDark ? 'rgba(18, 28, 40, 0.94)' : 'rgba(251, 248, 241, 0.95)';
-      pill.style.color = isDark ? '#EEF2F7' : '#1F1A14';
-      pill.style.border = `1.5px solid ${spot.color}`;
+      const cleanedLabel = cleanSpotLabel(spot.label);
+      const showPill =
+        idx === 0
+          ? canPlaceLabelAt(spot.coords, 144, 32) || true
+          : idx <= 2 && canPlaceLabelAt(spot.coords, 126, 30);
 
-      const titleSpan = document.createElement('span');
-      titleSpan.textContent = spot.label;
-      pill.appendChild(titleSpan);
+      if (showPill) {
+        if (idx === 0 && placedRects.length === 0) {
+          try {
+            const pt = map.project(spot.coords);
+            placedRects.push({ x1: pt.x - 72, y1: pt.y - 16, x2: pt.x + 72, y2: pt.y + 16 });
+          } catch {
+            // Ignore projection unavailability
+          }
+        }
+        const pill = document.createElement('div');
+        pill.className = `absolute left-1/2 ${
+          placeAbove ? 'bottom-full mb-1' : 'top-full mt-1'
+        } -translate-x-1/2 whitespace-nowrap rounded-lg px-2 py-0.5 text-[10.5px] font-bold shadow-md`;
+        pill.style.backgroundColor = isDark ? 'rgba(18, 28, 40, 0.90)' : 'rgba(251, 248, 241, 0.90)';
+        pill.style.color = isDark ? '#EEF2F7' : '#1F1A14';
+        pill.style.border = `1.5px solid ${spot.color}`;
 
-      if (spot.sublabel && spot.sublabel.trim() !== spot.label.trim()) {
-        const sub = document.createElement('span');
-        sub.style.marginLeft = '4px';
-        sub.style.fontSize = '10px';
-        sub.style.fontWeight = '500';
-        sub.style.opacity = '0.78';
-        sub.textContent = `· ${spot.sublabel}`;
-        pill.appendChild(sub);
+        const titleSpan = document.createElement('span');
+        titleSpan.textContent = cleanedLabel;
+        pill.appendChild(titleSpan);
+
+        if (
+          cleanedLabel.length <= 7 &&
+          spot.sublabel &&
+          spot.sublabel.trim() !== spot.label.trim()
+        ) {
+          const sub = document.createElement('span');
+          sub.style.marginLeft = '4px';
+          sub.style.fontSize = '9.5px';
+          sub.style.fontWeight = '500';
+          sub.style.opacity = '0.78';
+          sub.textContent = `· ${spot.sublabel.slice(0, 10)}`;
+          pill.appendChild(sub);
+        }
+
+        anim.append(sw1, sw2, dot, pill);
+      } else {
+        anim.append(sw1, sw2, dot);
       }
 
-      anim.append(sw1, sw2, dot, pill);
       wrap.appendChild(anim);
       const marker = new maplibregl.Marker({ element: wrap, anchor: 'center' })
         .setLngLat(spot.coords)
@@ -2004,11 +2046,11 @@ export function WorldMap({
       }
       flowArrows.set(meta.id, { fwd: fwdMarker, rev: revMarker });
 
-      if (!meta.flow.label) return;
+      if (!meta.flow.label || !canPlaceLabelAt(meta.midpoint, 118, 28)) return;
       const badge = document.createElement('div');
       badge.className =
         'pointer-events-none inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-bold shadow-md transition-opacity duration-200';
-      badge.style.backgroundColor = isDark ? 'rgba(18, 28, 40, 0.92)' : 'rgba(255, 252, 245, 0.94)';
+      badge.style.backgroundColor = isDark ? 'rgba(18, 28, 40, 0.90)' : 'rgba(255, 252, 245, 0.90)';
       badge.style.color = isDark ? '#F1F5F9' : '#1F1A14';
       badge.style.border = `1.2px solid ${meta.flow.color}`;
 
@@ -2019,7 +2061,7 @@ export function WorldMap({
       tag.textContent = FLOW_KIND_TAG[meta.flow.kind] || '脉';
 
       const txt = document.createElement('span');
-      txt.textContent = meta.flow.label;
+      txt.textContent = cleanSpotLabel(meta.flow.label).slice(0, 9);
 
       badge.append(tag, txt);
       const marker = new maplibregl.Marker({ element: badge, anchor: 'center' })
@@ -2252,7 +2294,7 @@ export function WorldMap({
       : aiStageOpenRef.current && isDesktop
         ? { top: 52, bottom: 215, left: 28, right: 492 }
         : cinemaTickerVisibleRef.current && isDesktop
-          ? { top: 136, bottom: 112, left: 28, right: rightPad }
+          ? { top: 36, bottom: 112, left: 28, right: rightPad }
           : isDesktop
             ? { top: 28, bottom: 32, left: 24, right: rightPad }
             : { top: 24, bottom: 220, left: 16, right: 16 };
@@ -2388,7 +2430,7 @@ export function WorldMap({
 
       entry.coords = event.coords;
       const btn = entry.el;
-      btn.style.opacity = String(isSelected || isTriggered ? 1 : opacity * (aiScene ? 0.42 : 1));
+      btn.style.opacity = String(isSelected || isTriggered ? 1 : opacity * (aiScene ? 0.24 : 1));
       btn.style.zIndex = hasOverlappingAiSpot
         ? '18'
         : isSelected || isTriggered
@@ -2497,7 +2539,7 @@ export function WorldMap({
       entry.marker.setOffset(overlapsEvent ? [16, -14] : [0, 0]);
 
       const btn = entry.el;
-      btn.style.opacity = String(isSelected ? 1 : opacity * (aiScene ? 0.42 : 1));
+      btn.style.opacity = String(isSelected ? 1 : opacity * (aiScene ? 0.24 : 1));
       btn.style.zIndex = isSelected ? '36' : active ? (figure.importance === 3 ? '21' : '14') : '6';
 
       const sizePx = isSelected ? 26 : figure.importance === 3 ? 21 : 18;
@@ -2547,8 +2589,8 @@ export function WorldMap({
         narrationConceptKind={narrationConceptKind}
       />
 
-      {/* Hovered polity tooltip on desktop */}
-      {hoveredPolity && (
+      {/* Hovered polity tooltip on desktop (hidden while playback animation runs) */}
+      {hoveredPolity && !isPlaying && !cinemaMode && (
         <div
           className="pointer-events-none absolute z-20 hidden md:block rounded-lg px-2.5 py-1.5 text-xs shadow-md backdrop-blur-sm"
           style={{

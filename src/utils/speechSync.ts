@@ -591,7 +591,7 @@ export function buildDocumentarySpeechChunks(
   beats: Array<{ title: string; narration: string }>,
 ): SpeechChunk[] {
   const chunks: SpeechChunk[] = [];
-  const maxSegLen = 150;
+  const maxSegLen = 86;
   for (let idx = 0; idx < beats.length; idx++) {
     const speechText = cleanSpeechText(beats[idx].narration);
     if (!speechText) continue;

@@ -63,7 +63,7 @@ export const onRequestPost = async (context: PagesCtx): Promise<Response> => {
   const usage: GeminiUsage = { promptTokens: 0, outputTokens: 0, ttsRequested: false };
   const isStoryDepth = body.depth !== 'concise';
 
-  let script = (body.script || '').trim().slice(0, 1200);
+  let script = (body.script || '').trim().slice(0, 2400);
 
   try {
     if (!script && body.withStoryboard) {
@@ -80,14 +80,15 @@ export const onRequestPost = async (context: PagesCtx): Promise<Response> => {
 
       const systemInstruction = isStoryDepth
         ? [
-            '你是《人类群星闪耀时》与 BBC/NHK 风格的历史长篇有声纪实撰稿人与导演，负责为《世界通史时空图谱》制作“听书级深度叙事与地图同步分镜”（恰好 4 幕 beats，总字数约 550–800 字，不追求简短，务必讲深讲透来龙去脉）。',
+            '你是《明朝那些事儿》与 BBC/NHK 纪实大片融合风格的历史长篇评书作者与导演，为《世界通史时空图谱》制作“有声连载评书与地图同步分镜”（恰好 4 幕 beats，总字数 850–1250 字，不求精简，要像在茶馆或广播里讲故事一样把前因后果和人物心理讲透）。',
             '严格遵守以下创作与空间同步原则：',
-            '1. `beats` 必须恰好为 4 幕，每幕 `narration` 写 125–195 字纯中文听书旁白（禁止 Markdown 星号、括号舞台提示）：',
-            '   - 第 1 幕（前因缘起与地理舞台）：交待它从前面哪些历史事件与社会积弊酝酿而来，以及河流、海峡、气候或地理格局如何设定舞台。',
-            '   - 第 2 幕（权力博弈、关键人物与制度转折）：具体展开各方势力诉求、核心人物的处境与抉择、具体政策或军事转折。',
-            '   - 第 3 幕（经济、贸易与技术推手）：剖析财政税赋、白银/粮食/能源或技术传播路线如何在底层推动事态发酵。',
-            '   - 第 4 幕（文明震荡、学界视角与连锁后效）：讲清文化观念转变、长期历史代价，以及它直接引爆了之后哪些重大历史连锁反应。',
-            '2. 每幕旁白配精准贴合字面内容的 `center`、`zoom`、`bearing`（-24 到 24 度）、`pitch`（16 到 32 度）、`zones`、`spots`、`flows`（用真实 `[经度, 纬度]` 标出前因起源、商道传播或连锁去向）。',
+            '1. `beats` 必须恰好为 4 幕，每幕 `narration` 写 200–320 字纯口语中文（严禁出现星号、井号、括号舞台提示或小标题）：',
+            '   - 叙事口吻：开场先用生活化场景或人物困境抓住耳朵，适当穿插通俗现代类比、冷幽默点评，把各路人物“当时到底在盘算什么、为什么非走这一步不可”演出来。',
+            '   - 第 1 幕（山雨欲来与地理舞台）：交待它从前面哪些历史积弊与前因酝酿而来，山川河流、气候或资源卡脖子怎样把各方逼到台前。',
+            '   - 第 2 幕（权谋交锋与关键抉择）：细讲核心人物的处境、对手的算计、制度碰撞或战场险局，不要只报结果，要讲清博弈过程。',
+            '   - 第 3 幕（账本里的底层推手）：说白了打仗和改制背后都是钱粮、税收、矿路或技术传播在推着走，用大白话算清这笔政经大账。',
+            '   - 第 4 幕（结局回响与后世伏笔）：交代当场人物的收场、普通人生活怎么被改写，并留出钩子指向它之后引爆的连锁历史大事件。',
+            '2. 每幕旁白配精准贴合字面内容的 `center`、`zoom`、`bearing`（-24 到 24 度）、`pitch`（16 到 32 度）、`zones`、`spots`、`flows`（用真实 `[经度, 纬度]` 标出，标签简短控制在 8 字以内）。',
             '3. 4 幕年份 `year` 应呈现“前因铺垫年 → 爆发高潮年 → 扩散展开年 → 深远影响年”的真实时间推演。',
           ].join('\n')
         : [
@@ -125,8 +126,8 @@ export const onRequestPost = async (context: PagesCtx): Promise<Response> => {
       const textRes = await callGeminiText(auth.apiKey, textModel, {
         systemInstruction,
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
-        temperature: 0.6,
-        maxOutputTokens: isStoryDepth ? 4200 : 2600,
+        temperature: 0.65,
+        maxOutputTokens: isStoryDepth ? 5600 : 2600,
         responseMimeType: 'application/json',
         responseSchema: DOCUMENTARY_NARRATION_SCHEMA,
       });
@@ -204,7 +205,7 @@ export const onRequestPost = async (context: PagesCtx): Promise<Response> => {
       }
 
       const systemInstruction = isStoryDepth
-        ? '你是《人类群星闪耀时》风格的历史听书首席撰稿人。请撰写一段适合慢听品读的中文历史长篇解说词：务必讲清楚前因渊源、关键人物与权力博弈、经济与技术推手以及后续历史连锁反应，生动有画面感。篇幅控制在 320-500 字，纯中文散文口播稿，禁止 Markdown 星号、括号舞台提示或分段小标题。'
+        ? '你是《明朝那些事儿》风格的历史长篇评书首席撰稿人。请撰写一段适合边看地图边听书的中文历史长篇解说词：务必从人物当时的处境与心理盘算切入，穿插通俗生活化类比与恰到好处的冷幽默，讲清楚前因渊源、权谋制度博弈、财政经济与技术推手以及后续历史连锁反应。篇幅控制在 550-850 字，纯口语中文散文，绝对禁止 Markdown 星号、井号、括号舞台提示或分段小标题。'
         : '你是历史纪录片《世界通史时空图谱》的金牌撰稿人。请撰写一段适合口播朗读的中文历史解说词：像 BBC/CCTV 纪录片旁白一样沉稳、有画面感，能用一两句话点出背后的政治、经济或文明转折。严格限制 90-135 字，纯中文散文口播稿，绝对禁止出现 Markdown 星号、括号注释、舞台提示词或换行分段标题。';
 
       const prompt = [
@@ -229,8 +230,8 @@ export const onRequestPost = async (context: PagesCtx): Promise<Response> => {
       const textRes = await callGeminiText(auth.apiKey, textModel, {
         systemInstruction,
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
-        temperature: 0.6,
-        maxOutputTokens: isStoryDepth ? 1800 : 1000,
+        temperature: 0.65,
+        maxOutputTokens: isStoryDepth ? 2400 : 1000,
       });
 
       script = textRes.text.replace(/[*#`>\[\]]/g, '').replace(/\s+/g, ' ').trim();

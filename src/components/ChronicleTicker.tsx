@@ -19,10 +19,10 @@ import type { Era, HistoryEvent, SubPeriod, ThemeMode } from '../types/history';
 import type { AiDocumentaryBeat } from '../utils/aiClient';
 import { formatYear } from '../utils/timeline';
 
-const TICKER_POS_KEY = 'world-history-atlas:ticker-pos:v1';
-const TICKER_SIZE_KEY = 'world-history-atlas:ticker-size:v1';
-const TICKER_COMPACT_KEY = 'world-history-atlas:ticker-compact:v1';
-const MIN_TICKER_WIDTH = 300;
+const TICKER_POS_KEY = 'world-history-atlas:ticker-pos:v2';
+const TICKER_SIZE_KEY = 'world-history-atlas:ticker-size:v2';
+const TICKER_COMPACT_KEY = 'world-history-atlas:ticker-compact:v2';
+const MIN_TICKER_WIDTH = 340;
 const MIN_TICKER_HEIGHT = 104;
 
 interface TickerPos {
@@ -94,16 +94,15 @@ function saveStoredTickerSize(size: TickerSize | null): void {
 
 function readStoredTickerCompact(): boolean {
   try {
-    return localStorage.getItem(TICKER_COMPACT_KEY) === '1';
+    return localStorage.getItem(TICKER_COMPACT_KEY) !== '0';
   } catch {
-    return false;
+    return true;
   }
 }
 
 function saveStoredTickerCompact(compact: boolean): void {
   try {
-    if (!compact) localStorage.removeItem(TICKER_COMPACT_KEY);
-    else localStorage.setItem(TICKER_COMPACT_KEY, '1');
+    localStorage.setItem(TICKER_COMPACT_KEY, compact ? '1' : '0');
   } catch {
     // Ignore storage errors
   }
@@ -470,12 +469,12 @@ export function ChronicleTicker({
         onDoubleClick={handleToggleCompact}
         className={
           pos
-            ? `pointer-events-auto absolute z-30 inline-flex items-center gap-2 rounded-full border px-3 py-1.5 shadow-xl backdrop-blur-md max-w-[calc(100%-16px)] whitespace-nowrap touch-none select-none ${
+            ? `pointer-events-auto absolute z-30 inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] shadow-xl backdrop-blur-md max-w-[calc(100%-16px)] whitespace-nowrap touch-none select-none ${
                 isDragging ? 'cursor-grabbing' : 'cursor-grab'
               }`
             : `atlas-ticker-enter pointer-events-auto absolute left-3 md:left-16 ${
-                rightDrawerVisible ? 'lg:left-16' : 'lg:left-1/2 lg:-translate-x-1/2'
-              } top-3 z-30 inline-flex items-center gap-2 rounded-full border px-3 py-1.5 shadow-xl backdrop-blur-md max-w-[calc(100%-16px)] whitespace-nowrap touch-none select-none ${
+                rightDrawerVisible ? 'lg:left-[calc(50%-210px)] lg:-translate-x-1/2' : 'lg:left-1/2 lg:-translate-x-1/2'
+              } top-2.5 z-30 inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] shadow-xl backdrop-blur-md max-w-[calc(100%-16px)] whitespace-nowrap touch-none select-none ${
                 isDragging ? 'cursor-grabbing' : 'cursor-grab'
               }`
         }
@@ -566,16 +565,16 @@ export function ChronicleTicker({
       ref={cardRef}
       className={
         pos
-          ? `pointer-events-auto absolute z-30 flex flex-col rounded-2xl border px-3.5 py-2.5 shadow-xl backdrop-blur-md max-w-[calc(100%-16px)] ${
+          ? `pointer-events-auto absolute z-30 flex flex-col overflow-hidden rounded-2xl border px-3.5 py-2.5 shadow-xl backdrop-blur-md max-w-[calc(100%-16px)] ${
               rightDrawerVisible ? 'lg:max-w-[calc(100%-450px)]' : ''
             }${maxHeightClass}`
           : rightDrawerVisible
             ? `atlas-ticker-enter pointer-events-auto absolute left-3 md:left-16 ${
                 size ? '' : 'right-3 lg:right-auto lg:w-[min(500px,calc(100%-504px))]'
-              } lg:left-16 max-w-full top-3 z-30 flex flex-col rounded-2xl border px-3.5 py-2.5 shadow-xl backdrop-blur-md${maxHeightClass}`
+              } lg:left-16 max-w-full top-3 z-30 flex flex-col overflow-hidden rounded-2xl border px-3.5 py-2.5 shadow-xl backdrop-blur-md${maxHeightClass}`
             : `atlas-ticker-enter pointer-events-auto absolute left-3 md:left-16 ${
                 size ? '' : 'right-3 lg:right-auto lg:w-[540px]'
-              } lg:left-1/2 lg:-translate-x-1/2 max-w-full top-3 z-30 flex flex-col rounded-2xl border px-3.5 py-2.5 shadow-xl backdrop-blur-md${maxHeightClass}`
+              } lg:left-1/2 lg:-translate-x-1/2 max-w-full top-3 z-30 flex flex-col overflow-hidden rounded-2xl border px-3.5 py-2.5 shadow-xl backdrop-blur-md${maxHeightClass}`
       }
       style={{
         ...(pos
@@ -639,7 +638,7 @@ export function ChronicleTicker({
           </span>
         </div>
 
-        <div className="flex items-center gap-1 shrink-0">
+        <div className="flex flex-wrap items-center gap-1 min-w-0 max-w-full">
           {activeMode && (
             <div ref={speedRef} className="relative">
               <button

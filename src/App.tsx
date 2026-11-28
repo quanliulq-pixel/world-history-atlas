@@ -37,6 +37,7 @@ import { MAX_YEAR, MIN_YEAR, REGION_META } from './data/eras';
 import { ALL_EVENTS, EVENT_MAP } from './data/events';
 import { ALL_FIGURES, FIGURE_MAP } from './data/figures';
 import { HISTORICAL_ROUTES } from './data/routes';
+import { getStoryEpisode, hasCuratedStoryEpisode } from './data/stories';
 import { useStudyStore } from './hooks/useStudyStore';
 import type {
   ClickedPolityPayload,
@@ -266,7 +267,7 @@ export function App() {
   const [narrationDepth, setNarrationDepth] = useState<NarrationDepth>(() =>
     getStoredNarrationDepth(),
   );
-  const [syncCardDuringPlay, setSyncCardDuringPlay] = useState(true);
+  const [syncCardDuringPlay, setSyncCardDuringPlay] = useState(false);
   const [ambientEnabled, setAmbientEnabledState] = useState(() => isAmbientEnabled());
   const [storyVoiceEnabled, setStoryVoiceEnabled] = useState(true);
   const [tickerNarrationStatus, setTickerNarrationStatus] = useState<
@@ -280,6 +281,7 @@ export function App() {
     'idle' | 'loading' | 'playing' | 'browser'
   >('idle');
   const [cinemaSubtitle, setCinemaSubtitle] = useState<string | null>(null);
+  const [liveSubtitleChunk, setLiveSubtitleChunk] = useState<string | null>(null);
   const [cinemaBeats, setCinemaBeats] = useState<AiDocumentaryBeat[] | null>(null);
   const [cinemaActiveBeatIdx, setCinemaActiveBeatIdx] = useState(0);
   const [cinemaChapterLabel, setCinemaChapterLabel] = useState<string | null>(null);
@@ -558,6 +560,7 @@ export function App() {
   // Smooth chronological playback via requestAnimationFrame with voice-synchronized milestone holds
   useEffect(() => {
     if (!isPlaying || cinemaMode) return;
+    setDesktopCollapsed(true);
     let cancelled = false;
     let rafId = 0;
     let resumeTimerId = 0;
@@ -661,6 +664,7 @@ export function App() {
             setTickerChapterLabel(step.chapterLabel);
             setTickerBeats(step.plan.beats);
             setTickerActiveBeatIdx(0);
+            setLiveSubtitleChunk(null);
             setTickerSpokenText(step.plan.beats[0]?.narration || step.plan.script);
             setTickerNarrationStatus('loading');
 
@@ -683,6 +687,7 @@ export function App() {
               onBeatStart: (beatIdx) => {
                 if (cancelled) return;
                 setTickerActiveBeatIdx(beatIdx);
+                setLiveSubtitleChunk(null);
                 const beatText = step.plan.beats[beatIdx]?.narration || step.plan.script;
                 setTickerSpokenText(beatText);
                 applyLiveNarrationFocus({
@@ -695,6 +700,7 @@ export function App() {
               },
               onChunkText: (chunkText, beatIdx) => {
                 if (cancelled) return;
+                setLiveSubtitleChunk(chunkText);
                 applyLiveNarrationFocus({
                   text: chunkText,
                   event: evObj,
@@ -714,6 +720,7 @@ export function App() {
           if (cancelled) return;
           voiceHoldActive = false;
           setTickerSpokenText(null);
+          setLiveSubtitleChunk(null);
           setTickerBeats(null);
           setTickerChapterLabel(null);
           setTickerScene(null);
@@ -893,6 +900,7 @@ export function App() {
       window.clearTimeout(resumeTimerId);
       stopActiveNarration();
       setTickerSpokenText(null);
+      setLiveSubtitleChunk(null);
       setTickerBeats(null);
       setTickerChapterLabel(null);
       setTickerScene(null);
@@ -976,11 +984,13 @@ export function App() {
     if (!cinemaMode) {
       setCinemaNarrationStatus('idle');
       setCinemaSubtitle(null);
+      setLiveSubtitleChunk(null);
       setCinemaBeats(null);
       setCinemaChapterLabel(null);
       setCinemaScene(null);
       return;
     }
+    setDesktopCollapsed(true);
     let cancelled = false;
     let rafId = 0;
     let timerId = 0;
@@ -1042,6 +1052,7 @@ export function App() {
     ) => {
       setCinemaBeats(plan.beats);
       setCinemaActiveBeatIdx(0);
+      setLiveSubtitleChunk(null);
       const firstText = plan.beats[0]?.narration || plan.script;
       setCinemaSubtitle(firstText);
       applyLiveNarrationFocus({
@@ -1062,6 +1073,7 @@ export function App() {
         onBeatStart: (beatIdx) => {
           if (cancelled) return;
           setCinemaActiveBeatIdx(beatIdx);
+          setLiveSubtitleChunk(null);
           const beatText = plan.beats[beatIdx]?.narration || plan.script;
           setCinemaSubtitle(beatText);
           const step = plan.storyboard.steps[beatIdx];
@@ -1078,6 +1090,7 @@ export function App() {
         },
         onChunkText: (chunkText, beatIdx) => {
           if (cancelled) return;
+          setLiveSubtitleChunk(chunkText);
           applyLiveNarrationFocus({
             text: chunkText,
             event: ev ?? null,
@@ -1160,6 +1173,9 @@ export function App() {
           ? (async () => {
               if (isStoryMode) {
                 const localPlan = buildDeepEventStoryPlan(ev, evEra, evSub);
+                if (hasCuratedStoryEpisode(ev.id)) {
+                  return { plan: localPlan, staticAudioUrls: undefined };
+                }
                 if (getVoicePrefs().engine !== 'browser' && Boolean(getStoredPasscode())) {
                   try {
                     setCinemaNarrationStatus('loading');
@@ -1314,6 +1330,7 @@ export function App() {
         stopActiveNarration();
         setCinemaNarrationStatus('idle');
         setCinemaSubtitle(null);
+        setLiveSubtitleChunk(null);
         setCinemaBeats(null);
         setCinemaChapterLabel(null);
         setCinemaScene(null);
@@ -1334,6 +1351,8 @@ export function App() {
       window.clearTimeout(timerId);
       stopActiveNarration();
       setCinemaNarrationStatus('idle');
+      setCinemaSubtitle(null);
+      setLiveSubtitleChunk(null);
       setCinemaScene(null);
       setCinemaBeats(null);
       setCinemaChapterLabel(null);
@@ -1349,6 +1368,7 @@ export function App() {
     setCardNarratingId(null);
     setCardNarrationLoadingId(null);
     setCardNarrationSubtitle(null);
+    setLiveSubtitleChunk(null);
     setCardNarrationBeats(null);
     setCinemaBeats(null);
     setCinemaScene(null);
@@ -1726,6 +1746,7 @@ export function App() {
     setCardNarratingId(null);
     setCardNarrationLoadingId(null);
     setCardNarrationSubtitle(null);
+    setLiveSubtitleChunk(null);
     setCardNarrationBeats(null);
     setNarrationFocus(null);
     lastVisualFocusKeyRef.current = '';
@@ -1761,17 +1782,20 @@ export function App() {
       const runId = ++cardNarrationRunIdRef.current;
       const isStoryMode = narrationDepthRef.current === 'story';
       setCinemaMode(false);
+      setDesktopCollapsed(true);
       stopActiveNarration();
       setCardNarrationLoadingId(params.itemId);
       setCardNarratingId(params.itemId);
       setCardNarrationBeats(null);
       setCardActiveBeatIdx(0);
+      setLiveSubtitleChunk(null);
       setCardNarrationSubtitle(params.loadingMessage);
       try {
         if (isStoryMode && params.localStoryPlan) {
           let plan = params.localStoryPlan;
           if (
             !params.skipRemote &&
+            !hasCuratedStoryEpisode(params.itemId) &&
             getVoicePrefs().engine !== 'browser' &&
             Boolean(getStoredPasscode())
           ) {
@@ -1828,8 +1852,20 @@ export function App() {
               if (cardNarrationRunIdRef.current !== runId) return;
               setCardActiveBeatIdx(beatIdx);
               setStoryboardStepIdx(beatIdx);
+              setLiveSubtitleChunk(null);
               applyLiveNarrationFocus({
                 text: plan.beats[beatIdx]?.narration || plan.script,
+                event: EVENT_MAP[params.itemId] ?? null,
+                baseStep: plan.storyboard.steps[beatIdx] ?? null,
+                targetMode: 'card',
+                fly: true,
+              });
+            },
+            onChunkText: (chunkText, beatIdx) => {
+              if (cardNarrationRunIdRef.current !== runId) return;
+              setLiveSubtitleChunk(chunkText);
+              applyLiveNarrationFocus({
+                text: chunkText,
                 event: EVENT_MAP[params.itemId] ?? null,
                 baseStep: plan.storyboard.steps[beatIdx] ?? null,
                 targetMode: 'card',
@@ -1889,6 +1925,7 @@ export function App() {
               if (cardNarrationRunIdRef.current !== runId) return;
               setCardActiveBeatIdx(beatIdx);
               setStoryboardStepIdx(beatIdx);
+              setLiveSubtitleChunk(null);
               applyLiveNarrationFocus({
                 text: plan.beats[beatIdx]?.narration || plan.script,
                 event: EVENT_MAP[params.itemId] ?? null,
@@ -1944,6 +1981,7 @@ export function App() {
             if (cardNarrationRunIdRef.current !== runId) return;
             setCardActiveBeatIdx(beatIdx);
             setStoryboardStepIdx(beatIdx);
+            setLiveSubtitleChunk(null);
             applyLiveNarrationFocus({
               text: plan.beats[beatIdx]?.narration || plan.script,
               event: EVENT_MAP[params.itemId] ?? null,
@@ -1954,6 +1992,7 @@ export function App() {
           },
           onChunkText: (chunkText, beatIdx) => {
             if (cardNarrationRunIdRef.current !== runId) return;
+            setLiveSubtitleChunk(chunkText);
             applyLiveNarrationFocus({
               text: chunkText,
               event: EVENT_MAP[params.itemId] ?? null,
@@ -1990,6 +2029,7 @@ export function App() {
         if (cardNarrationRunIdRef.current === runId) {
           setCardNarrationLoadingId(null);
           setCardNarratingId(null);
+          setLiveSubtitleChunk(null);
           setStoryboardVoiceSynced(false);
           setNarrationFocus(null);
           lastVisualFocusKeyRef.current = '';
@@ -2063,6 +2103,11 @@ export function App() {
           const bIdx = beatIdx + relIdx;
           setCardActiveBeatIdx(bIdx);
           setStoryboardStepIdx(bIdx);
+          setLiveSubtitleChunk(null);
+        },
+        onChunkText: (chunkText) => {
+          if (cardNarrationRunIdRef.current !== runId) return;
+          setLiveSubtitleChunk(chunkText);
         },
       });
     } catch (err) {
@@ -2492,6 +2537,58 @@ export function App() {
     return () => window.removeEventListener('keydown', handleKey);
   }, [aiOpen, activeCountry, pulseOpen, storyPickerOpen, searchOpen, handleExitCountryMode]);
 
+  const activeChapterLabel = cinemaMode
+    ? cinemaChapterLabel
+    : isPlaying
+      ? tickerChapterLabel
+      : null;
+
+  const cinemaOverlayVisible =
+    !activeCountry &&
+    !activeStoryline &&
+    !aiOpen &&
+    (cinemaMode ||
+      Boolean(cardNarratingId) ||
+      (isPlaying &&
+        timelineVoiceEnabled &&
+        (Boolean(tickerSpokenText) || Boolean(tickerBeats?.length))));
+
+  const activeEpisodeTargetId = cardNarratingId
+    ? cardNarratingId.startsWith('period:')
+      ? currentSubPeriod.id
+      : cardNarratingId
+    : activeChapterLabel
+      ? activeChapterLabel.includes('年代脉络')
+        ? currentSubPeriod.id
+        : currentEra.id
+      : tickerEvent?.id || selectedEvent?.id || null;
+
+  const activeStoryEpisode =
+    narrationDepth === 'story' ? getStoryEpisode(activeEpisodeTargetId) : null;
+
+  const handleStopActivePlayback = useCallback(() => {
+    setIsPlaying(false);
+    setCinemaMode(false);
+    setCardNarratingId(null);
+    setCardNarrationLoadingId(null);
+    setCardNarrationSubtitle(null);
+    setCardNarrationBeats(null);
+    setRecentTriggerEventId(null);
+    setCinemaBeats(null);
+    setCinemaChapterLabel(null);
+    setCinemaScene(null);
+    setTickerBeats(null);
+    setTickerChapterLabel(null);
+    setTickerSpokenText(null);
+    setTickerScene(null);
+    setLiveSubtitleChunk(null);
+    setNarrationFocus(null);
+    lastVisualFocusKeyRef.current = '';
+    cardNarrationRunIdRef.current += 1;
+    cardDocContextRef.current = null;
+    stopActiveNarration();
+  }, []);
+
   return (
     <div className="relative flex h-full w-full flex-col overflow-hidden">
       {activeCountry ? (
@@ -2666,20 +2763,12 @@ export function App() {
           {!activeCountry && (
             <>
               <CinemaStageOverlay
-                visible={
-                  !activeStoryline &&
-                  !aiOpen &&
-                  (cinemaMode ||
-                    Boolean(cardNarratingId) ||
-                    (isPlaying &&
-                      timelineVoiceEnabled &&
-                      (Boolean(tickerSpokenText) || Boolean(tickerBeats?.length))))
-                }
+                visible={cinemaOverlayVisible}
                 theme={theme}
                 currentYear={currentYear}
                 currentEra={currentEra}
                 event={cinemaMode ? tickerEvent : selectedEvent || tickerEvent}
-                chapterLabel={cinemaMode ? cinemaChapterLabel : isPlaying ? tickerChapterLabel : null}
+                chapterLabel={activeChapterLabel}
                 beats={
                   cinemaMode
                     ? cinemaBeats
@@ -2701,15 +2790,21 @@ export function App() {
                       ? cardNarrationSubtitle
                       : tickerSpokenText
                 }
+                liveChunkText={liveSubtitleChunk}
+                storyEpisodeCode={activeStoryEpisode?.episodeCode ?? null}
+                narrationDepth={narrationDepth}
+                isPlayingOrCinema={isPlaying || cinemaMode || Boolean(cardNarratingId)}
                 rightDrawerVisible={!desktopCollapsed}
                 focusedCountries={narrationFocus?.matchedCountries ?? []}
                 visualConcept={narrationFocus?.concept ?? null}
                 onExpandDetails={() => setDesktopCollapsed(false)}
                 onSelectCountryProfile={(id) => void handleSelectCuratedCountry(id)}
+                onToggleNarrationDepth={handleToggleNarrationDepth}
+                onStopPlayback={handleStopActivePlayback}
               />
 
               <ChronicleTicker
-                visible={!activeStoryline && tickerVisible}
+                visible={!activeStoryline && tickerVisible && !cinemaOverlayVisible}
                 cinemaMode={cinemaMode}
                 isPlaying={isPlaying}
                 currentYear={currentYear}
@@ -2740,6 +2835,7 @@ export function App() {
                         setCinemaBeats(null);
                         setCinemaChapterLabel(null);
                         setCinemaScene(null);
+                        setLiveSubtitleChunk(null);
                       }
                       return next;
                     });
@@ -2752,6 +2848,7 @@ export function App() {
                         setTickerSpokenText(null);
                         setTickerBeats(null);
                         setTickerChapterLabel(null);
+                        setLiveSubtitleChunk(null);
                       }
                       return next;
                     });
@@ -2760,20 +2857,7 @@ export function App() {
                 onToggleSyncCard={() => setSyncCardDuringPlay((v) => !v)}
                 rightDrawerVisible={!desktopCollapsed}
                 onSelectEvent={(ev) => handleSelectEvent(ev)}
-                onStopPlayback={() => {
-                  setIsPlaying(false);
-                  setCinemaMode(false);
-                  setRecentTriggerEventId(null);
-                  setCinemaBeats(null);
-                  setCinemaChapterLabel(null);
-                  setCinemaScene(null);
-                  setTickerBeats(null);
-                  setTickerChapterLabel(null);
-                  setTickerScene(null);
-                  setNarrationFocus(null);
-                  lastVisualFocusKeyRef.current = '';
-                  stopActiveNarration();
-                }}
+                onStopPlayback={handleStopActivePlayback}
                 onDismiss={() => setTickerVisible(false)}
               />
 
@@ -2901,7 +2985,7 @@ export function App() {
                 suppressDesktop={aiOpen}
               />
 
-              {!cinemaMode && activeStoryboard && (
+              {!cinemaMode && !cinemaOverlayVisible && activeStoryboard && (
                 <AiStageBar
                   storyboard={activeStoryboard}
                   stepIndex={storyboardStepIdx}
@@ -3006,7 +3090,10 @@ export function App() {
             setCinemaMode(false);
             setIsPlaying((p) => {
               const next = !p;
-              if (next) setTickerVisible(true);
+              if (next) {
+                setTickerVisible(true);
+                setDesktopCollapsed(true);
+              }
               return next;
             });
           }}
@@ -3017,8 +3104,12 @@ export function App() {
             setStoryAutoPlay(false);
             setCinemaMode((c) => {
               const next = !c;
-              if (next) setTickerVisible(true);
-              else setRecentTriggerEventId(null);
+              if (next) {
+                setTickerVisible(true);
+                setDesktopCollapsed(true);
+              } else {
+                setRecentTriggerEventId(null);
+              }
               return next;
             });
           }}

@@ -33,6 +33,7 @@ import { DIMENSION_META, FIGURE_ROLE_META, REGION_META } from '../data/eras';
 import { EVENT_MAP } from '../data/events';
 import { findFigureByName, getContemporaryFigures } from '../data/figures';
 import { HISTORICAL_ROUTES } from '../data/routes';
+import { getStoryCoverageStats, getStoryEpisode } from '../data/stories';
 import type { Era, HistoricalFigure, HistoryEvent, SubPeriod, ThemeMode } from '../types/history';
 import type { AiDocumentaryBeat } from '../utils/aiClient';
 import type { NarrationDepth } from '../utils/chronicleStory';
@@ -245,6 +246,7 @@ export function EventCardPanel({
     const causes = (ev.causes || []).map((id) => EVENT_MAP[id]).filter(Boolean);
     const effects = (ev.effects || []).map((id) => EVENT_MAP[id]).filter(Boolean);
     const routes = (ev.routeIds || []).map((id) => ROUTE_MAP[id]).filter(Boolean);
+    const storyEp = getStoryEpisode(ev.id);
 
     return (
       <div className="space-y-3.5 pb-6">
@@ -264,6 +266,18 @@ export function EventCardPanel({
               >
                 {REGION_META[ev.region].label}
               </span>
+              {storyEp && narrationDepth === 'story' && (
+                <span
+                  className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold"
+                  style={{
+                    backgroundColor: 'rgba(180, 116, 23, 0.14)',
+                    color: theme === 'obsidian' ? '#FBBF24' : '#9B5E0B',
+                  }}
+                >
+                  <BookOpen className="h-2.5 w-2.5" />
+                  <span>评书精写 · {storyEp.episodeCode}</span>
+                </span>
+              )}
               <span style={{ color: 'var(--text-muted)' }}>{ev.dateDisplay}</span>
             </div>
 
@@ -404,7 +418,13 @@ export function EventCardPanel({
                   ) : (
                     <>
                       <Volume2 className="h-3 w-3" />
-                      <span>{narrationDepth === 'story' ? '深度听书解说' : 'AI 语音解说'}</span>
+                      <span>
+                        {storyEp && narrationDepth === 'story'
+                          ? `听评书精讲（约 ${storyEp.estimatedMinutes} 分钟）`
+                          : narrationDepth === 'story'
+                            ? '深度听书解说'
+                            : 'AI 语音解说'}
+                      </span>
                     </>
                   )}
                 </button>
@@ -997,6 +1017,7 @@ export function EventCardPanel({
   const renderEraOverview = () => {
     const spBridge = SUBPERIOD_CHRONICLE_NARRATIVES[currentSubPeriod.id];
     const eraBridge = ERA_CHRONICLE_BRIDGES[currentEra.id];
+    const storyStats = getStoryCoverageStats();
     const periodItemId = `period:${currentSubPeriod.id}`;
     const isNarratingPeriod = narratingItemId === periodItemId;
     const isLoadingPeriod = narrationLoadingId === periodItemId;
@@ -1016,6 +1037,24 @@ export function EventCardPanel({
           >
             当期 {activeEvents.length} 件大事
           </span>
+        </div>
+
+        <div
+          className="flex items-center justify-between gap-2 rounded-lg border px-2.5 py-1.5 text-[10.5px]"
+          style={{
+            backgroundColor: 'rgba(180, 116, 23, 0.09)',
+            borderColor: 'rgba(180, 116, 23, 0.28)',
+            color: theme === 'obsidian' ? '#FCD34D' : '#92400E',
+          }}
+        >
+          <span className="inline-flex items-center gap-1.5 font-semibold truncate">
+            <BookOpen className="h-3 w-3 shrink-0" />
+            <span className="truncate">
+              《通史评书连载》已精写 {storyStats.curatedEpisodes} 回（{storyStats.curatedEvents}/
+              {storyStats.totalEvents} 节点）
+            </span>
+          </span>
+          <span className="shrink-0 text-[10px] opacity-85">连载至第一卷</span>
         </div>
 
         {/* Progressive Museum Era Artwork */}
@@ -1297,7 +1336,7 @@ export function EventCardPanel({
           <button
             type="button"
             onClick={onToggleDesktopCollapse}
-            className="pointer-events-auto inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold shadow-xl backdrop-blur-md hover:opacity-90 cursor-pointer max-w-[280px]"
+            className="pointer-events-auto inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-semibold shadow-xl backdrop-blur-md hover:opacity-90 cursor-pointer max-w-[188px]"
             style={{
               backgroundColor:
                 theme === 'obsidian' ? 'rgba(20, 30, 43, 0.94)' : 'rgba(251, 248, 241, 0.96)',

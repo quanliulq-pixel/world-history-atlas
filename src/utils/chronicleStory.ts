@@ -6,6 +6,7 @@ import { DIMENSION_META, REGION_META } from '../data/eras';
 import { ALL_EVENTS, EVENT_MAP } from '../data/events';
 import { findFigureByName } from '../data/figures';
 import { HISTORICAL_ROUTES } from '../data/routes';
+import { getStoryEpisode, type StoryEpisode } from '../data/stories';
 import type {
   Era,
   HistoricalFigure,
@@ -163,21 +164,21 @@ export function buildEventCinemaSteps(
   const causeFlows: AiStoryboardFlow[] = fallbackNearbyCauses.slice(0, 3).map((c) => ({
     from: c.coords,
     to: ev.coords,
-    label: causeEvents.includes(c) ? `前因：${c.title.slice(0, 12)}` : `同代背景：${c.title.slice(0, 10)}`,
+    label: c.title.slice(0, 10),
     color: '#D97706',
     kind: 'influence',
   }));
   const causeSpots: AiStoryboardSpot[] = [
     {
       coords: ev.coords,
-      label: ev.locationName.slice(0, 18),
+      label: ev.locationName.slice(0, 12),
       sublabel: ev.dateDisplay,
       color: accent,
       icon: 'landmark',
     },
     ...fallbackNearbyCauses.slice(0, 3).map((c) => ({
       coords: c.coords,
-      label: `${causeEvents.includes(c) ? '渊源' : '同步'}：${c.title.slice(0, 12)}`,
+      label: c.title.slice(0, 10),
       sublabel: c.dateDisplay,
       color: '#D97706',
       icon: 'city' as AiStoryboardSpotIcon,
@@ -235,21 +236,21 @@ export function buildEventCinemaSteps(
   const effectFlows: AiStoryboardFlow[] = fallbackNearbyEffects.slice(0, 3).map((e) => ({
     from: ev.coords,
     to: e.coords,
-    label: effectEvents.includes(e) ? `后效：${e.title.slice(0, 12)}` : `后续：${e.title.slice(0, 10)}`,
+    label: e.title.slice(0, 10),
     color: '#8B5CF6',
     kind: 'diffusion',
   }));
   const effectSpots: AiStoryboardSpot[] = [
     {
       coords: ev.coords,
-      label: ev.title.slice(0, 16),
-      sublabel: '冲击扩散中心',
+      label: ev.title.slice(0, 12),
+      sublabel: '冲击中心',
       color: accent,
       icon: 'landmark',
     },
     ...fallbackNearbyEffects.slice(0, 3).map((e) => ({
       coords: e.coords,
-      label: `扩散：${e.title.slice(0, 12)}`,
+      label: e.title.slice(0, 10),
       sublabel: e.dateDisplay,
       color: '#8B5CF6',
       icon: 'culture' as AiStoryboardSpotIcon,
@@ -380,7 +381,77 @@ export function buildRichEventStoryboard(
   };
 }
 
+function convertEpisodeToDocumentaryPlan(
+  episode: StoryEpisode,
+  fallback: {
+    year: number;
+    center: [number, number];
+    zoom: number;
+    accent: string;
+    event?: HistoryEvent | null;
+  },
+): AiDocumentaryPlan {
+  const beats: AiDocumentaryBeat[] = episode.beats.map((b) => ({
+    title: b.title,
+    narration: b.narration,
+  }));
+  const fallbackEventSteps = fallback.event
+    ? buildEventCinemaSteps(fallback.event, beats)
+    : [];
+
+  const steps: AiStoryboardStep[] = episode.beats.map((b, idx) => {
+    const baseEvStep = fallbackEventSteps[idx];
+    const resolvedCenter = b.center ?? baseEvStep?.center ?? fallback.center;
+    return {
+      title: `${episode.episodeCode} · ${b.title}`,
+      caption: b.narration,
+      matchSnippet: b.title,
+      year: b.year ?? baseEvStep?.year ?? fallback.year,
+      center: resolvedCenter,
+      zoom: b.zoom ?? baseEvStep?.zoom ?? fallback.zoom,
+      pitch: b.pitch ?? baseEvStep?.pitch ?? (idx % 2 === 0 ? 18 : 22),
+      bearing: b.bearing ?? baseEvStep?.bearing ?? (idx % 2 === 0 ? -8 : 8),
+      zones: b.zones ?? baseEvStep?.zones ?? [
+        {
+          center: resolvedCenter,
+          radiusKm: 420,
+          label: b.title.slice(0, 10),
+          color: fallback.accent,
+        },
+      ],
+      spots: b.spots ?? baseEvStep?.spots ?? [
+        {
+          coords: resolvedCenter,
+          label: b.title.slice(0, 10),
+          color: fallback.accent,
+          icon: 'landmark',
+        },
+      ],
+      flows: b.flows ?? baseEvStep?.flows ?? [],
+    };
+  });
+
+  return {
+    script: beats.map((b) => b.narration).join('\n\n'),
+    beats,
+    storyboard: {
+      title: `${episode.episodeCode} · ${episode.chapterTitle}`,
+      steps,
+    },
+  };
+}
+
 export function buildEraBridgePlan(era: Era): AiDocumentaryPlan {
+  const curated = getStoryEpisode(era.id);
+  if (curated) {
+    return convertEpisodeToDocumentaryPlan(curated, {
+      year: era.startYear,
+      center: [45, 30],
+      zoom: 2.3,
+      accent: era.accentColor,
+    });
+  }
+
   const bridge = ERA_CHRONICLE_BRIDGES[era.id];
   const center = bridge?.focusCoords ?? [42, 28];
   const zoom = bridge?.focusZoom ?? 1.8;
@@ -388,15 +459,15 @@ export function buildEraBridgePlan(era: Era): AiDocumentaryPlan {
   const endLabel = formatYear(era.endYear);
 
   const act1Narration = bridge
-    ? `我们来到${era.name}，时间跨度从${startLabel}到${endLabel}。${ensurePeriod(bridge.transitionFromPrev)}`
-    : `进入${era.name}（${startLabel}至${endLabel}）。${ensurePeriod(era.overview.geopolitics)}`;
+    ? `欢迎来到${era.name}，咱们的镜头先拉回${startLabel}到${endLabel}这段风云岁月。很多朋友看历史只看个热闹，可你要是顺着前头的线头摸过来，就会发现局面早就暗流涌动：${ensurePeriod(bridge.transitionFromPrev)}`
+    : `欢迎来到${era.name}，从${startLabel}一直讲到${endLabel}。把镜头拉到当年各国博弈的前线：${ensurePeriod(era.overview.geopolitics)}`;
 
   const act2Narration = bridge
-    ? `${ensurePeriod(bridge.macroArc)} 在这一时期，经济运行的核心逻辑在于：${ensurePeriod(era.overview.economy)}`
-    : `${ensurePeriod(era.overview.economy)} ${ensurePeriod(era.overview.geopolitics)}`;
+    ? `序幕拉开之后，真正的戏肉在各路势力的拉扯和算盘里。${ensurePeriod(bridge.macroArc)} 表面上看大家整天兵来将往、高喊口号，说白了其实还是兜里的钱粮、商路和赋税推着走：${ensurePeriod(era.overview.economy)}`
+    : `政权交锋背后，真正决定胜负的往往是账本：${ensurePeriod(era.overview.economy)} ${ensurePeriod(era.overview.geopolitics)}`;
 
   const act3Narration = bridge
-    ? `文化与精神维度上，${ensurePeriod(era.overview.culture)} ${ensurePeriod(bridge.foreshadowing)}`
+    ? `别小看人们脑子里的想法，风向一变，整个时代的底色也跟着换了：${ensurePeriod(bridge.foreshadowing)} 而在日常思潮与民间精神深处，${ensurePeriod(era.overview.culture)}`
     : ensurePeriod(era.overview.culture);
 
   const beats: AiDocumentaryBeat[] = [
@@ -518,6 +589,16 @@ export function buildEraBridgePlan(era: Era): AiDocumentaryPlan {
 }
 
 export function buildSubPeriodBridgePlan(era: Era, sp: SubPeriod): AiDocumentaryPlan {
+  const curated = getStoryEpisode(sp.id);
+  if (curated) {
+    return convertEpisodeToDocumentaryPlan(curated, {
+      year: sp.startYear,
+      center: [45, 30],
+      zoom: 2.35,
+      accent: era.accentColor,
+    });
+  }
+
   const chron = SUBPERIOD_CHRONICLE_NARRATIVES[sp.id];
   const eraBridge = ERA_CHRONICLE_BRIDGES[era.id];
   const center = chron?.focusCoords ?? eraBridge?.focusCoords ?? [42, 28];
@@ -525,16 +606,16 @@ export function buildSubPeriodBridgePlan(era: Era, sp: SubPeriod): AiDocumentary
   const midYear = Math.round((sp.startYear + sp.endYear) / 2);
 
   const act1 = chron
-    ? `现在进入${era.name}的「${sp.name}」阶段（${formatYear(sp.startYear)}至${formatYear(sp.endYear)}）。${ensurePeriod(chron.bridgeFromBefore)}`
-    : `进入「${sp.name}」阶段（${formatYear(sp.startYear)}至${formatYear(sp.endYear)}）。${ensurePeriod(sp.themeSummary)}`;
+    ? `接下来翻开${era.shortName}这一章的「${sp.name}」，时间从${formatYear(sp.startYear)}走到${formatYear(sp.endYear)}。好戏开场总得先交待前情，这一段到底是怎么接上前面剧情的呢？${ensurePeriod(chron.bridgeFromBefore)}`
+    : `现在翻开「${sp.name}」这一节（${formatYear(sp.startYear)}至${formatYear(sp.endYear)}）。${ensurePeriod(sp.themeSummary)}`;
 
   const act2 = chron
-    ? `放眼同期全球横截面：${ensurePeriod(chron.eraCrossSection)}`
-    : `宏观地缘脉络：${ensurePeriod(era.overview.geopolitics)}`;
+    ? `咱们把地图拉开看一眼同一时刻的地球东西两端，那真叫一个各有各的热闹：${ensurePeriod(chron.eraCrossSection)}`
+    : `同一片天空下，各国正在上演各自的兴衰剧本：${ensurePeriod(era.overview.geopolitics)}`;
 
   const act3 = chron
-    ? `拨开事件表象，驱动这一时期走向的深层机制在于：${ensurePeriod(chron.deepDrivers)}`
-    : `经济与文化推力：${ensurePeriod(era.overview.economy)} ${ensurePeriod(era.overview.culture)}`;
+    ? `表面上看是城头变幻大王旗，可拨开那层热闹往底下深挖，真正推着历史齿轮咔咔转的底盘在这里：${ensurePeriod(chron.deepDrivers)}`
+    : `归根结底，推动这一阶段往前挪步的硬通货还得看这两项：${ensurePeriod(era.overview.economy)} ${ensurePeriod(era.overview.culture)}`;
 
   const beats: AiDocumentaryBeat[] = [
     { title: '承前启后 · 年代脉络', narration: act1 },
@@ -663,6 +744,17 @@ export function buildDeepEventStoryPlan(
   era: Era,
   sp: SubPeriod,
 ): AiDocumentaryPlan {
+  const curated = getStoryEpisode(ev.id);
+  if (curated) {
+    return convertEpisodeToDocumentaryPlan(curated, {
+      year: ev.year,
+      center: ev.coords,
+      zoom: ev.importance === 3 ? 3.2 : 3.55,
+      accent: DIMENSION_META[ev.primaryDimension].color,
+      event: ev,
+    });
+  }
+
   const regionLabel = REGION_META[ev.region].label;
   const causeEvents = (ev.causes || [])
     .map((id) => EVENT_MAP[id])
@@ -677,16 +769,16 @@ export function buildDeepEventStoryPlan(
   // Act 1: 历史缘起、前因铺垫与地理舞台
   const causeIntro =
     causeEvents.length > 0
-      ? `这一变局并非凭空出现，它的前因直接承接自${causeEvents
+      ? `天底下没有平白无故冒出来的历史大戏，它的药引子其实早在${causeEvents
           .map((c) => `${c.dateDisplay}的「${c.title}」`)
-          .join('与')}。`
+          .join('和')}那会儿就已经悄悄埋下了。`
       : '';
 
   const act1Text = [
-    `${ev.dateDisplay}，处于「${era.name} · ${sp.name}」的${regionLabel}${ev.locationName}，迎来了改写格局的关键时刻——「${ev.title}」。`,
+    `让我们把镜头直接拉到${ev.dateDisplay}的${regionLabel}${ev.locationName}，这会儿正赶上「${era.shortName} · ${sp.name}」的当口，主角大戏名叫「${ev.title}」。`,
     causeIntro,
     ensurePeriod(ev.card.summary),
-    `从地理与空间条件来看，${ensurePeriod(ev.card.geography)}`,
+    `要弄懂当时的人为啥非走这步棋不可，得先看看他们脚下这片地理舞台：${ensurePeriod(ev.card.geography)}`,
   ]
     .filter(Boolean)
     .join('');
@@ -700,11 +792,11 @@ export function buildDeepEventStoryPlan(
     .filter(Boolean);
   const figureSentence =
     figureDetails.length > 0
-      ? `历史现场的推手与核心人物包括${figureDetails.join('、')}，他们在制度约束下做出了关键抉择。`
+      ? `风口浪尖上，${figureDetails.join('、')}等人粉墨登场，他们手里捏着的牌并不宽裕，每一步落子其实都在刀尖上算计。`
       : '';
 
   const act2Text = [
-    `回到政治与权力博弈层面：${ensurePeriod(ev.card.politics)}`,
+    `表面上看各路人物口号喊得震天响，说白了其实都是权位和规矩在重新洗牌：${ensurePeriod(ev.card.politics)}`,
     figureSentence,
   ]
     .filter(Boolean)
@@ -713,13 +805,13 @@ export function buildDeepEventStoryPlan(
   // Act 3: 经济、技术与跨区商贸脉络
   const routeSentence =
     linkedRoutes.length > 0
-      ? `依托「${linkedRoutes.map((r) => r.name).join('」「')}」等大动脉，人流、货流与知识持续扩散：${ensurePeriod(
+      ? `人要吃饭、打仗要花银子，顺着「${linkedRoutes.map((r) => r.name).join('」「')}」这几条大动脉，货流跟情报一点也没闲着：${ensurePeriod(
           linkedRoutes[0].description,
         )}`
       : '';
 
   const act3Text = [
-    `在深层的经济与技术脉络上：${ensurePeriod(ev.card.economy)}`,
+    `往账本最深处扒拉扒拉，支撑整件事翻起大浪的真家伙其实在这里：${ensurePeriod(ev.card.economy)}`,
     routeSentence,
   ]
     .filter(Boolean)
@@ -727,19 +819,19 @@ export function buildDeepEventStoryPlan(
 
   // Act 4: 文明冲击、长期后果、学术争鸣与后续连锁
   const debateSentence = ev.card.debate
-    ? `后世史学界对此也有多元讨论：${ensurePeriod(ev.card.debate)}`
+    ? `有意思的是，后世史学家坐在书斋里也没少为这事儿拍桌子争论：${ensurePeriod(ev.card.debate)}`
     : '';
   const effectSentence =
     effectEvents.length > 0
-      ? `顺着历史的因果链继续往下看，这一转折直接催生或深刻塑造了此后${effectEvents
+      ? `故事还远没完，今天这一下挥出去的拳头，在之后直接撬动了${effectEvents
           .slice(0, 3)
           .map((e) => `${e.dateDisplay}的「${e.title}」`)
           .join('、')}。`
       : '';
 
   const act4Text = [
-    `在文化观念与社会震荡维度：${ensurePeriod(ev.card.culture)}`,
-    `从长时段后果回望，${ensurePeriod(ev.card.consequence)}`,
+    `这一波折腾下来，老百姓的日常观念与世道人心也悄悄换了副模样：${ensurePeriod(ev.card.culture)}`,
+    `等尘埃落定再回头算总账，你会发现它的后劲才刚刚开始显现：${ensurePeriod(ev.card.consequence)}`,
     debateSentence,
     effectSentence,
   ]
@@ -747,10 +839,10 @@ export function buildDeepEventStoryPlan(
     .join('');
 
   const beats: AiDocumentaryBeat[] = [
-    { title: '前因与地理舞台', narration: act1Text },
-    { title: '权力与制度博弈', narration: act2Text },
-    { title: '经济与脉络推手', narration: act3Text },
-    { title: '文明震荡与连锁后效', narration: act4Text },
+    { title: '山雨欲来 · 地理舞台', narration: act1Text },
+    { title: '权谋交锋 · 关键抉择', narration: act2Text },
+    { title: '账本暗流 · 经济推手', narration: act3Text },
+    { title: '尘埃落定 · 后世伏笔', narration: act4Text },
   ];
 
   const steps = buildEventCinemaSteps(ev, beats);
@@ -767,39 +859,39 @@ export function buildDeepEventStoryPlan(
 
 export function buildDeepFigureStoryPlan(
   fig: HistoricalFigure,
-  era: Era,
+  _era: Era,
 ): AiDocumentaryPlan {
   const accent = DIMENSION_META[fig.primaryDimension].color;
   const relatedEvents = fig.relatedEventIds
     .map((id) => EVENT_MAP[id])
     .filter((item): item is HistoryEvent => Boolean(item));
 
-  const act1 = `${fig.lifespanDisplay}，在${REGION_META[fig.region].label}·${fig.locationName}（${era.name}），${fig.name}作为${fig.title}登上历史舞台。${ensurePeriod(fig.card.oneLiner)} ${ensurePeriod(fig.card.eraContext)}`;
+  const act1 = `${fig.lifespanDisplay}，在${REGION_META[fig.region].label}${fig.locationName}，一位名叫${fig.name}的人物正式拎包登上历史舞台，身份是${fig.title}。${ensurePeriod(fig.card.oneLiner)} 要理解他当年的不容易，先看这时代给他发的一手牌：${ensurePeriod(fig.card.eraContext)}`;
 
   const linkedEventsNote =
     relatedEvents.length > 0
-      ? `其人生轨迹与${relatedEvents
+      ? `他这辈子干的几票大事，和${relatedEvents
           .slice(0, 3)
           .map((e) => `${e.dateDisplay}「${e.title}」`)
-          .join('、')}紧密咬合。`
+          .join('、')}紧紧咬在了一起。`
       : '';
-  const act2 = `从其核心建树与关键突破来看：${ensurePeriod(fig.card.coreContributions)} ${linkedEventsNote}`;
+  const act2 = `轮到他自己上手破局了，这位狠人是这么出招的：${ensurePeriod(fig.card.coreContributions)} ${linkedEventsNote}`;
 
-  const act3 = `从跨越百年的历史回响回望：${ensurePeriod(fig.card.historicalImpact)}`;
+  const act3 = `人虽早已不在，可他留下的规矩、作品或者惹出的大风浪过了几百年还在发威：${ensurePeriod(fig.card.historicalImpact)}`;
 
   const controversyText = fig.card.controversy
-    ? `后世史学与舆论对其亦有深度辨析：${ensurePeriod(fig.card.controversy)}`
+    ? `不过评价这么复杂的人物从来不会一边倒，后人对他的功过也是褒贬交锋不断：${ensurePeriod(fig.card.controversy)}`
     : '';
   const quoteText = fig.card.famousQuote
-    ? `流传后世的名言「${fig.card.famousQuote}」，恰似对其时代志向与精神世界的注解。`
+    ? `当年他甩出的那句「${fig.card.famousQuote}」，如今念起来依然能听见那个年代扑面而来的精气神。`
     : '';
   const act4 = [controversyText, quoteText].filter(Boolean).join('');
 
   const beats: AiDocumentaryBeat[] = [
-    { title: '时代登场与舞台', narration: act1 },
-    { title: '核心建树与抉择', narration: act2 },
-    { title: '深远影响与回响', narration: act3 },
-    ...(act4 ? [{ title: '多维评述与铭言', narration: act4 }] : []),
+    { title: '闪亮登场 · 时代手牌', narration: act1 },
+    { title: '重手破局 · 关键建树', narration: act2 },
+    { title: '百年回响 · 历史余波', narration: act3 },
+    ...(act4 ? [{ title: '功过评点 · 金句留痕', narration: act4 }] : []),
   ];
 
   const steps: AiStoryboardStep[] = beats.map((b, idx) => ({

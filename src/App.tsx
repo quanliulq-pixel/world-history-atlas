@@ -4,6 +4,7 @@ import { AiStageBar } from './components/AiStageBar';
 import { AiStudioModal, type AiStudioIntent } from './components/AiStudioModal';
 import { CausalGraphModal } from './components/CausalGraphModal';
 import { ChronicleTicker } from './components/ChronicleTicker';
+import { CinemaStageOverlay } from './components/CinemaStageOverlay';
 import {
   CountryEvolutionHeader,
   CountryEvolutionPanel,
@@ -76,6 +77,7 @@ import {
   buildDeepFigureStoryPlan,
   buildEraBridgePlan,
   buildEventCausalContext,
+  buildRichEventStoryboard,
   buildSubPeriodBridgePlan,
   getStoredNarrationDepth,
   saveStoredNarrationDepth,
@@ -1009,7 +1011,7 @@ export function App() {
                 const plan: AiDocumentaryPlan = cachedPlan ?? {
                   script: staticEntry.script,
                   beats,
-                  storyboard: buildLocalFocusStoryboard(ev.title, ev.year, ev.coords, beats),
+                  storyboard: buildRichEventStoryboard(ev, beats),
                 };
                 return {
                   plan,
@@ -1636,10 +1638,13 @@ export function App() {
             title: b.title,
             narration: b.narration,
           }));
+          const matchedEv = params.cacheKey.startsWith('ev:') ? EVENT_MAP[params.itemId] : undefined;
           const plan: AiDocumentaryPlan = cachedPlan ?? {
             script: staticEntry.script,
             beats,
-            storyboard: buildLocalFocusStoryboard(params.title, params.year, params.coords, beats),
+            storyboard: matchedEv
+              ? buildRichEventStoryboard(matchedEv, beats)
+              : buildLocalFocusStoryboard(params.title, params.year, params.coords, beats),
           };
           const staticAudioUrls = staticEntry.beats.map((b) => resolveAudioFileUrl(b.file));
           cardDocContextRef.current = {
@@ -2349,6 +2354,9 @@ export function App() {
             showLandmarks={showLandmarks}
             countryFocus={countryFocus}
             isCountryMode={Boolean(activeCountry)}
+            cinemaMode={cinemaMode}
+            eraId={currentEra.id}
+            rightDrawerVisible={!desktopCollapsed}
             aiScene={!activeCountry ? (cinemaScene ?? activeStoryboard?.steps[storyboardStepIdx] ?? null) : null}
             aiStageOpen={aiOpen}
             cinemaTickerVisible={!activeCountry && !activeStoryline && tickerVisible && cinemaMode}
@@ -2411,6 +2419,44 @@ export function App() {
 
           {!activeCountry && (
             <>
+              <CinemaStageOverlay
+                visible={
+                  !activeStoryline &&
+                  !aiOpen &&
+                  (cinemaMode ||
+                    Boolean(cardNarratingId) ||
+                    (isPlaying && narrationDepth === 'story' && Boolean(tickerBeats?.length)))
+                }
+                theme={theme}
+                currentYear={currentYear}
+                currentEra={currentEra}
+                event={cinemaMode ? tickerEvent : selectedEvent || tickerEvent}
+                chapterLabel={cinemaMode ? cinemaChapterLabel : isPlaying ? tickerChapterLabel : null}
+                beats={
+                  cinemaMode
+                    ? cinemaBeats
+                    : cardNarratingId
+                      ? cardNarrationBeats
+                      : tickerBeats
+                }
+                activeBeatIndex={
+                  cinemaMode
+                    ? cinemaActiveBeatIdx
+                    : cardNarratingId
+                      ? cardActiveBeatIdx
+                      : tickerActiveBeatIdx
+                }
+                subtitle={
+                  cinemaMode
+                    ? cinemaSubtitle
+                    : cardNarratingId
+                      ? cardNarrationSubtitle
+                      : tickerSpokenText
+                }
+                rightDrawerVisible={!desktopCollapsed}
+                onExpandDetails={() => setDesktopCollapsed(false)}
+              />
+
               <ChronicleTicker
                 visible={!activeStoryline && tickerVisible}
                 cinemaMode={cinemaMode}

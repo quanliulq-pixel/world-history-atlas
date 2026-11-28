@@ -3,20 +3,23 @@ import {
   SUBPERIOD_CHRONICLE_NARRATIVES,
 } from '../data/chronicleChapters';
 import { DIMENSION_META, REGION_META } from '../data/eras';
-import { EVENT_MAP } from '../data/events';
+import { ALL_EVENTS, EVENT_MAP } from '../data/events';
 import { findFigureByName } from '../data/figures';
 import { HISTORICAL_ROUTES } from '../data/routes';
 import type {
   Era,
   HistoricalFigure,
+  HistoricalRoute,
   HistoryEvent,
   SubPeriod,
 } from '../types/history';
 import type {
   AiDocumentaryBeat,
   AiDocumentaryPlan,
+  AiStoryboard,
   AiStoryboardFlow,
   AiStoryboardSpot,
+  AiStoryboardSpotIcon,
   AiStoryboardStep,
 } from './aiClient';
 import { formatYear } from './timeline';
@@ -47,6 +50,39 @@ function ensurePeriod(text: string): string {
   const trimmed = text.trim();
   if (!trimmed) return '';
   return /[。！？…”』）]$/.test(trimmed) ? trimmed : `${trimmed}。`;
+}
+
+function inferFlowKind(route: HistoricalRoute): AiStoryboardFlow['kind'] {
+  if (/航海|航|洋|郑和|麦哲伦|达·伽马|哥伦布|大帆船/.test(route.name)) {
+    return 'voyage';
+  }
+  if (route.dimension === 'politics') return 'military';
+  if (route.dimension === 'economy') return 'trade';
+  return 'diffusion';
+}
+
+function pickDiverseRegionalEvents(
+  candidates: HistoryEvent[],
+  limit = 4,
+): HistoryEvent[] {
+  const sorted = [...candidates].sort((a, b) => b.importance - a.importance || a.year - b.year);
+  const picked: HistoryEvent[] = [];
+  const seenRegions = new Set<string>();
+
+  for (const ev of sorted) {
+    if (!seenRegions.has(ev.region)) {
+      picked.push(ev);
+      seenRegions.add(ev.region);
+      if (picked.length >= limit) return picked;
+    }
+  }
+  for (const ev of sorted) {
+    if (!picked.includes(ev)) {
+      picked.push(ev);
+      if (picked.length >= limit) break;
+    }
+  }
+  return picked;
 }
 
 export function buildEventCausalContext(ev: HistoryEvent): {
@@ -89,6 +125,261 @@ export function buildEventCausalContext(ev: HistoryEvent): {
   };
 }
 
+export function buildEventCinemaSteps(
+  ev: HistoryEvent,
+  beats: AiDocumentaryBeat[],
+): AiStoryboardStep[] {
+  const accent = DIMENSION_META[ev.primaryDimension].color;
+  const regionLabel = REGION_META[ev.region].label;
+  const causeEvents = (ev.causes || [])
+    .map((id) => EVENT_MAP[id])
+    .filter((item): item is HistoryEvent => Boolean(item));
+  const effectEvents = (ev.effects || [])
+    .map((id) => EVENT_MAP[id])
+    .filter((item): item is HistoryEvent => Boolean(item));
+  const linkedRoutes = (ev.routeIds || [])
+    .map((id) => ROUTE_MAP[id])
+    .filter((r): r is HistoricalRoute => Boolean(r));
+  const keyFigures = (ev.card.keyFigures || [])
+    .map((name) => findFigureByName(name))
+    .filter((f): f is HistoricalFigure => Boolean(f));
+
+  const fallbackNearbyCauses =
+    causeEvents.length > 0
+      ? causeEvents
+      : ALL_EVENTS.filter(
+          (cand) =>
+            cand.id !== ev.id &&
+            cand.eraId === ev.eraId &&
+            cand.year <= ev.year &&
+            Math.hypot(cand.coords[0] - ev.coords[0], cand.coords[1] - ev.coords[1]) > 2.5,
+        )
+          .slice(-2)
+          .reverse();
+
+  const baseZoom = ev.importance === 3 ? 3.15 : 3.5;
+
+  // Step 0: 前因缘起与地理舞台
+  const causeFlows: AiStoryboardFlow[] = fallbackNearbyCauses.slice(0, 3).map((c) => ({
+    from: c.coords,
+    to: ev.coords,
+    label: causeEvents.includes(c) ? `前因：${c.title.slice(0, 12)}` : `同代背景：${c.title.slice(0, 10)}`,
+    color: '#D97706',
+    kind: 'influence',
+  }));
+  const causeSpots: AiStoryboardSpot[] = [
+    {
+      coords: ev.coords,
+      label: ev.locationName.slice(0, 18),
+      sublabel: ev.dateDisplay,
+      color: accent,
+      icon: 'landmark',
+    },
+    ...fallbackNearbyCauses.slice(0, 3).map((c) => ({
+      coords: c.coords,
+      label: `${causeEvents.includes(c) ? '渊源' : '同步'}：${c.title.slice(0, 12)}`,
+      sublabel: c.dateDisplay,
+      color: '#D97706',
+      icon: 'city' as AiStoryboardSpotIcon,
+    })),
+  ];
+
+  // Step 1: 核心权力博弈 / 人物与主干路线展开
+  const primaryRouteFlows: AiStoryboardFlow[] = linkedRoutes.slice(0, 3).map((rt) => ({
+    from: rt.waypoints[0] || ev.coords,
+    to: rt.waypoints[rt.waypoints.length - 1] || ev.coords,
+    waypoints: rt.waypoints.length >= 2 ? rt.waypoints : undefined,
+    label: rt.name.slice(0, 16),
+    color: rt.color,
+    kind: inferFlowKind(rt),
+    bidirectional: rt.bidirectional,
+  }));
+  const figureSpots: AiStoryboardSpot[] = keyFigures
+    .filter((f) => Math.hypot(f.coords[0] - ev.coords[0], f.coords[1] - ev.coords[1]) > 2.2)
+    .slice(0, 2)
+    .map((f) => ({
+      coords: f.coords,
+      label: f.name,
+      sublabel: f.title,
+      color: '#B83B3B',
+      icon: 'ruler' as AiStoryboardSpotIcon,
+    }));
+
+  // Step 2 (if 4 acts): 经济、通道与跨区扩散
+  const routeEndpointSpots: AiStoryboardSpot[] = linkedRoutes.slice(0, 2).flatMap((rt) => {
+    if (rt.waypoints.length < 2) return [];
+    const endCoord = rt.waypoints[rt.waypoints.length - 1];
+    if (Math.hypot(endCoord[0] - ev.coords[0], endCoord[1] - ev.coords[1]) < 3) return [];
+    return [
+      {
+        coords: endCoord,
+        label: `${rt.name.slice(0, 10)}枢纽`,
+        color: rt.color,
+        icon: (inferFlowKind(rt) === 'voyage' ? 'port' : 'trade') as AiStoryboardSpotIcon,
+      },
+    ];
+  });
+
+  // Final Step: 文明震荡与连锁后效
+  const fallbackNearbyEffects =
+    effectEvents.length > 0
+      ? effectEvents
+      : ALL_EVENTS.filter(
+          (cand) =>
+            cand.id !== ev.id &&
+            cand.year >= ev.year &&
+            cand.year <= ev.year + 180 &&
+            Math.hypot(cand.coords[0] - ev.coords[0], cand.coords[1] - ev.coords[1]) > 3,
+        ).slice(0, 2);
+
+  const effectFlows: AiStoryboardFlow[] = fallbackNearbyEffects.slice(0, 3).map((e) => ({
+    from: ev.coords,
+    to: e.coords,
+    label: effectEvents.includes(e) ? `后效：${e.title.slice(0, 12)}` : `后续：${e.title.slice(0, 10)}`,
+    color: '#8B5CF6',
+    kind: 'diffusion',
+  }));
+  const effectSpots: AiStoryboardSpot[] = [
+    {
+      coords: ev.coords,
+      label: ev.title.slice(0, 16),
+      sublabel: '冲击扩散中心',
+      color: accent,
+      icon: 'landmark',
+    },
+    ...fallbackNearbyEffects.slice(0, 3).map((e) => ({
+      coords: e.coords,
+      label: `扩散：${e.title.slice(0, 12)}`,
+      sublabel: e.dateDisplay,
+      color: '#8B5CF6',
+      icon: 'culture' as AiStoryboardSpotIcon,
+    })),
+  ];
+
+  const count = Math.max(1, beats.length);
+  return beats.map((beat, idx) => {
+    if (idx === 0) {
+      return {
+        title: beat.title,
+        caption: beat.narration,
+        matchSnippet: ev.title,
+        year: ev.year,
+        center: ev.coords,
+        zoom: fallbackNearbyCauses.length > 0 ? Math.max(1.9, baseZoom - 0.85) : baseZoom,
+        pitch: 18,
+        bearing: -10,
+        zones: [
+          {
+            center: ev.coords,
+            radiusKm: 440,
+            label: ev.locationName.slice(0, 16),
+            color: accent,
+          },
+        ],
+        spots: causeSpots,
+        flows: causeFlows,
+      };
+    }
+
+    if (idx === count - 1) {
+      return {
+        title: beat.title,
+        caption: beat.narration,
+        matchSnippet: ev.card.consequence.slice(0, 16),
+        year: ev.endYear ?? ev.year,
+        center: ev.coords,
+        zoom: fallbackNearbyEffects.length > 0 ? Math.max(1.85, baseZoom - 0.9) : Math.max(2.2, baseZoom - 0.35),
+        pitch: 20,
+        bearing: 12,
+        zones: [
+          {
+            center: ev.coords,
+            radiusKm: 760,
+            label: '长时段文明辐射圈',
+            color: '#8B5CF6',
+          },
+        ],
+        spots: effectSpots,
+        flows: effectFlows,
+      };
+    }
+
+    if (idx === 1) {
+      return {
+        title: beat.title,
+        caption: beat.narration,
+        matchSnippet: ev.locationName,
+        year: ev.year,
+        center: ev.coords,
+        zoom: primaryRouteFlows.length > 0 ? Math.max(2.1, baseZoom - 0.65) : Math.min(4.8, baseZoom + 0.65),
+        pitch: 26,
+        bearing: 12,
+        zones: [
+          {
+            center: ev.coords,
+            radiusKm: 300,
+            label: '核心权力现场',
+            color: '#B83B3B',
+          },
+        ],
+        spots: [
+          {
+            coords: ev.coords,
+            label: ev.title.slice(0, 16),
+            sublabel: (ev.card.keyFigures || []).slice(0, 2).join(' · ') || ev.locationName,
+            color: '#B83B3B',
+            icon: 'ruler',
+          },
+          ...figureSpots,
+        ],
+        flows: primaryRouteFlows.length > 0 ? primaryRouteFlows : causeFlows.slice(0, 1),
+      };
+    }
+
+    return {
+      title: beat.title,
+      caption: beat.narration,
+      matchSnippet: ev.card.economy.slice(0, 16),
+      year: ev.endYear ? Math.round((ev.year + ev.endYear) / 2) : ev.year,
+      center: ev.coords,
+      zoom: linkedRoutes.length > 0 ? Math.max(1.85, baseZoom - 0.95) : baseZoom + 0.1,
+      pitch: 22,
+      bearing: -6,
+      zones: [
+        {
+          center: ev.coords,
+          radiusKm: 560,
+          label: `${regionLabel}商贸/传播域`,
+          color: '#10B981',
+        },
+      ],
+      spots: [
+        {
+          coords: ev.coords,
+          label: '经济与传播枢纽',
+          sublabel: linkedRoutes[0]?.name || regionLabel,
+          color: '#10B981',
+          icon: 'trade',
+        },
+        ...routeEndpointSpots,
+      ],
+      flows: primaryRouteFlows,
+    };
+  });
+}
+
+export function buildRichEventStoryboard(
+  ev: HistoryEvent,
+  beats: AiDocumentaryBeat[],
+): AiStoryboard {
+  const safeBeats =
+    beats.length > 0 ? beats : [{ title: '历史焦点', narration: ev.card.summary }];
+  return {
+    title: ev.title,
+    steps: buildEventCinemaSteps(ev, safeBeats),
+  };
+}
+
 export function buildEraBridgePlan(era: Era): AiDocumentaryPlan {
   const bridge = ERA_CHRONICLE_BRIDGES[era.id];
   const center = bridge?.focusCoords ?? [42, 28];
@@ -114,6 +405,34 @@ export function buildEraBridgePlan(era: Era): AiDocumentaryPlan {
     { title: '文化脉络与历史伏笔', narration: act3Narration },
   ];
 
+  const eraEvents = ALL_EVENTS.filter((ev) => ev.eraId === era.id);
+  const regionalHubs = pickDiverseRegionalEvents(eraEvents, 4);
+  const hubSpots: AiStoryboardSpot[] = regionalHubs.map((ev) => ({
+    coords: ev.coords,
+    label: ev.title.slice(0, 14),
+    sublabel: `${REGION_META[ev.region].label} · ${ev.dateDisplay}`,
+    color: DIMENSION_META[ev.primaryDimension].color,
+    icon: (ev.primaryDimension === 'politics'
+      ? 'ruler'
+      : ev.primaryDimension === 'economy'
+        ? 'trade'
+        : ev.primaryDimension === 'tech'
+          ? 'port'
+          : 'culture') as AiStoryboardSpotIcon,
+  }));
+
+  const crossFlows: AiStoryboardFlow[] = [];
+  for (let i = 0; i + 1 < regionalHubs.length; i++) {
+    crossFlows.push({
+      from: regionalHubs[i].coords,
+      to: regionalHubs[i + 1].coords,
+      label: `${REGION_META[regionalHubs[i].region].label}↔${REGION_META[regionalHubs[i + 1].region].label}`,
+      color: era.accentColor,
+      kind: i % 2 === 0 ? 'trade' : 'influence',
+      bidirectional: true,
+    });
+  }
+
   const steps: AiStoryboardStep[] = [
     {
       title: `${era.shortName} · 时代起笔`,
@@ -123,7 +442,7 @@ export function buildEraBridgePlan(era: Era): AiDocumentaryPlan {
       center,
       zoom,
       pitch: 14,
-      bearing: -6,
+      bearing: -8,
       zones: [
         {
           center,
@@ -132,62 +451,59 @@ export function buildEraBridgePlan(era: Era): AiDocumentaryPlan {
           color: era.accentColor,
         },
       ],
-      spots: [
-        {
-          coords: center,
-          label: era.name,
-          sublabel: `${startLabel} — ${endLabel}`,
-          color: era.accentColor,
-          icon: 'landmark',
-        },
-      ],
-      flows: [],
+      spots:
+        hubSpots.length > 0
+          ? hubSpots.slice(0, 3)
+          : [
+              {
+                coords: center,
+                label: era.name,
+                sublabel: `${startLabel} — ${endLabel}`,
+                color: era.accentColor,
+                icon: 'landmark',
+              },
+            ],
+      flows: crossFlows.slice(0, 2),
     },
     {
       title: `${era.shortName} · 政经主脉`,
       caption: act2Narration,
       matchSnippet: era.shortName,
       year: Math.round((era.startYear + era.endYear) / 2),
-      center,
-      zoom: Math.max(1.4, zoom - 0.15),
-      pitch: 18,
-      bearing: 6,
+      center: regionalHubs[0]?.coords ?? center,
+      zoom: Math.max(1.35, zoom - 0.15),
+      pitch: 20,
+      bearing: 8,
       zones: [
         {
-          center,
+          center: regionalHubs[0]?.coords ?? center,
           radiusKm: 1650,
-          label: `${era.shortName}核心圈`,
+          label: `${era.shortName}核心联动区`,
           color: era.accentColor,
         },
       ],
-      spots: [
-        {
-          coords: center,
-          label: `${era.shortName}演进核心`,
-          color: era.accentColor,
-          icon: 'trade',
-        },
-      ],
-      flows: [],
+      spots: hubSpots,
+      flows: crossFlows,
     },
     {
       title: `${era.shortName} · 伏笔与转承`,
       caption: act3Narration,
       matchSnippet: era.shortName,
       year: Math.max(era.startYear, era.endYear - Math.round((era.endYear - era.startYear) * 0.1)),
-      center,
+      center: regionalHubs[regionalHubs.length - 1]?.coords ?? center,
       zoom,
-      pitch: 12,
-      bearing: 0,
-      spots: [
+      pitch: 14,
+      bearing: -4,
+      zones: [
         {
-          coords: center,
-          label: `${era.shortName}尾声与转向`,
-          color: era.accentColor,
-          icon: 'culture',
+          center,
+          radiusKm: 1500,
+          label: `${era.shortName}格局重塑`,
+          color: '#8B5CF6',
         },
       ],
-      flows: [],
+      spots: hubSpots.slice(-3),
+      flows: crossFlows.map((f) => ({ ...f, color: '#8B5CF6', kind: 'diffusion' as const })),
     },
   ];
 
@@ -226,6 +542,48 @@ export function buildSubPeriodBridgePlan(era: Era, sp: SubPeriod): AiDocumentary
     { title: '底层动因 · 下一幕伏笔', narration: act3 },
   ];
 
+  const spEvents = ALL_EVENTS.filter(
+    (ev) => ev.year >= sp.startYear && ev.year <= sp.endYear,
+  );
+  const regionalHubs = pickDiverseRegionalEvents(spEvents, 4);
+  const spRoutes = HISTORICAL_ROUTES.filter(
+    (r) => r.endYear >= sp.startYear && r.startYear <= sp.endYear,
+  ).slice(0, 2);
+
+  const hubSpots: AiStoryboardSpot[] = regionalHubs.map((ev) => ({
+    coords: ev.coords,
+    label: ev.title.slice(0, 14),
+    sublabel: `${REGION_META[ev.region].label} · ${ev.dateDisplay}`,
+    color: DIMENSION_META[ev.primaryDimension].color,
+    icon: (ev.primaryDimension === 'politics'
+      ? 'city'
+      : ev.primaryDimension === 'economy'
+        ? 'trade'
+        : 'culture') as AiStoryboardSpotIcon,
+  }));
+
+  const routeFlows: AiStoryboardFlow[] = spRoutes.map((rt) => ({
+    from: rt.waypoints[0] || center,
+    to: rt.waypoints[rt.waypoints.length - 1] || center,
+    waypoints: rt.waypoints.length >= 2 ? rt.waypoints : undefined,
+    label: rt.name.slice(0, 14),
+    color: rt.color,
+    kind: inferFlowKind(rt),
+    bidirectional: rt.bidirectional,
+  }));
+
+  const linkFlows: AiStoryboardFlow[] = [];
+  for (let i = 0; i + 1 < regionalHubs.length; i++) {
+    linkFlows.push({
+      from: regionalHubs[i].coords,
+      to: regionalHubs[i + 1].coords,
+      label: `同代交汇`,
+      color: era.accentColor,
+      kind: 'influence',
+      bidirectional: true,
+    });
+  }
+
   const steps: AiStoryboardStep[] = [
     {
       title: `${sp.name} · 序幕`,
@@ -234,8 +592,8 @@ export function buildSubPeriodBridgePlan(era: Era, sp: SubPeriod): AiDocumentary
       year: sp.startYear,
       center,
       zoom,
-      pitch: 14,
-      bearing: -5,
+      pitch: 16,
+      bearing: -6,
       zones: [
         {
           center,
@@ -244,16 +602,19 @@ export function buildSubPeriodBridgePlan(era: Era, sp: SubPeriod): AiDocumentary
           color: era.accentColor,
         },
       ],
-      spots: [
-        {
-          coords: center,
-          label: sp.name,
-          sublabel: `${formatYear(sp.startYear)} — ${formatYear(sp.endYear)}`,
-          color: era.accentColor,
-          icon: 'landmark',
-        },
-      ],
-      flows: [],
+      spots:
+        hubSpots.length > 0
+          ? hubSpots.slice(0, 2)
+          : [
+              {
+                coords: center,
+                label: sp.name,
+                sublabel: `${formatYear(sp.startYear)} — ${formatYear(sp.endYear)}`,
+                color: era.accentColor,
+                icon: 'landmark',
+              },
+            ],
+      flows: routeFlows.slice(0, 1),
     },
     {
       title: `${sp.name} · 全球截面`,
@@ -261,37 +622,29 @@ export function buildSubPeriodBridgePlan(era: Era, sp: SubPeriod): AiDocumentary
       matchSnippet: sp.name,
       year: midYear,
       center,
-      zoom: Math.max(1.4, zoom - 0.15),
-      pitch: 18,
-      bearing: 6,
-      spots: [
-        {
-          coords: center,
-          label: `${sp.name}文明并发带`,
-          color: era.accentColor,
-          icon: 'culture',
-        },
-      ],
-      flows: [],
+      zoom: Math.max(1.35, zoom - 0.15),
+      pitch: 20,
+      bearing: 8,
+      zones: regionalHubs.slice(0, 2).map((h) => ({
+        center: h.coords,
+        radiusKm: 620,
+        label: REGION_META[h.region].label,
+        color: DIMENSION_META[h.primaryDimension].color,
+      })),
+      spots: hubSpots,
+      flows: [...routeFlows, ...linkFlows.slice(0, 2)],
     },
     {
       title: `${sp.name} · 深层张力`,
       caption: act3,
       matchSnippet: sp.name,
       year: sp.endYear,
-      center,
+      center: regionalHubs[regionalHubs.length - 1]?.coords ?? center,
       zoom,
-      pitch: 12,
-      bearing: 0,
-      spots: [
-        {
-          coords: center,
-          label: `${sp.name}转折点`,
-          color: era.accentColor,
-          icon: 'trade',
-        },
-      ],
-      flows: [],
+      pitch: 14,
+      bearing: -4,
+      spots: hubSpots.slice(-3),
+      flows: linkFlows.map((f) => ({ ...f, color: '#8B5CF6', kind: 'diffusion' as const })),
     },
   ];
 
@@ -310,7 +663,6 @@ export function buildDeepEventStoryPlan(
   era: Era,
   sp: SubPeriod,
 ): AiDocumentaryPlan {
-  const accent = DIMENSION_META[ev.primaryDimension].color;
   const regionLabel = REGION_META[ev.region].label;
   const causeEvents = (ev.causes || [])
     .map((id) => EVENT_MAP[id])
@@ -401,162 +753,7 @@ export function buildDeepEventStoryPlan(
     { title: '文明震荡与连锁后效', narration: act4Text },
   ];
 
-  // Build synchronized causal map flows & camera shots
-  const causeFlows: AiStoryboardFlow[] = causeEvents.slice(0, 3).map((c) => ({
-    from: c.coords,
-    to: ev.coords,
-    label: `前因：${c.title.slice(0, 14)}`,
-    color: '#D97706',
-    kind: 'influence',
-  }));
-  const causeSpots: AiStoryboardSpot[] = [
-    {
-      coords: ev.coords,
-      label: ev.locationName.slice(0, 18),
-      sublabel: ev.dateDisplay,
-      color: accent,
-      icon: 'landmark',
-    },
-    ...causeEvents.slice(0, 2).map((c) => ({
-      coords: c.coords,
-      label: `渊源：${c.title.slice(0, 12)}`,
-      sublabel: c.dateDisplay,
-      color: '#D97706',
-      icon: 'city' as const,
-    })),
-  ];
-
-  const routeFlows: AiStoryboardFlow[] = [];
-  if (linkedRoutes.length > 0) {
-    const wps = linkedRoutes[0].waypoints;
-    if (wps.length >= 2) {
-      routeFlows.push({
-        from: wps[0],
-        to: wps[wps.length - 1],
-        label: linkedRoutes[0].name.slice(0, 16),
-        color: '#10B981',
-        kind: linkedRoutes[0].dimension === 'politics' ? 'military' : 'trade',
-        bidirectional: linkedRoutes[0].bidirectional,
-      });
-    }
-  }
-
-  const effectFlows: AiStoryboardFlow[] = effectEvents.slice(0, 3).map((e) => ({
-    from: ev.coords,
-    to: e.coords,
-    label: `后效：${e.title.slice(0, 14)}`,
-    color: '#8B5CF6',
-    kind: 'diffusion',
-  }));
-  const effectSpots: AiStoryboardSpot[] = [
-    {
-      coords: ev.coords,
-      label: ev.title.slice(0, 16),
-      sublabel: '历史扩散源点',
-      color: accent,
-      icon: 'landmark',
-    },
-    ...effectEvents.slice(0, 2).map((e) => ({
-      coords: e.coords,
-      label: `延伸：${e.title.slice(0, 12)}`,
-      sublabel: e.dateDisplay,
-      color: '#8B5CF6',
-      icon: 'culture' as const,
-    })),
-  ];
-
-  const baseZoom = ev.importance === 3 ? 3.2 : 3.6;
-
-  const steps: AiStoryboardStep[] = [
-    {
-      title: '前因与地理舞台',
-      caption: act1Text,
-      matchSnippet: ev.title,
-      year: ev.year,
-      center: ev.coords,
-      zoom: causeEvents.length > 0 ? Math.max(2.1, baseZoom - 0.8) : baseZoom,
-      pitch: 16,
-      bearing: -8,
-      zones: [
-        {
-          center: ev.coords,
-          radiusKm: 420,
-          label: ev.locationName.slice(0, 16),
-          color: accent,
-        },
-      ],
-      spots: causeSpots,
-      flows: causeFlows,
-    },
-    {
-      title: '权力与制度博弈',
-      caption: act2Text,
-      matchSnippet: ev.locationName,
-      year: ev.year,
-      center: ev.coords,
-      zoom: Math.min(4.8, baseZoom + 0.65),
-      pitch: 24,
-      bearing: 10,
-      zones: [
-        {
-          center: ev.coords,
-          radiusKm: 280,
-          label: '核心权力现场',
-          color: '#B83B3B',
-        },
-      ],
-      spots: [
-        {
-          coords: ev.coords,
-          label: ev.title.slice(0, 16),
-          sublabel: (ev.card.keyFigures || []).slice(0, 2).join(' · ') || ev.locationName,
-          color: '#B83B3B',
-          icon: 'ruler',
-        },
-      ],
-      flows: [],
-    },
-    {
-      title: '经济与脉络推手',
-      caption: act3Text,
-      matchSnippet: ev.card.economy.slice(0, 16),
-      year: ev.endYear ? Math.round((ev.year + ev.endYear) / 2) : ev.year,
-      center: ev.coords,
-      zoom: linkedRoutes.length > 0 ? Math.max(2.0, baseZoom - 0.7) : baseZoom + 0.15,
-      pitch: 20,
-      bearing: -4,
-      spots: [
-        {
-          coords: ev.coords,
-          label: '经济与传播枢纽',
-          sublabel: linkedRoutes[0]?.name || regionLabel,
-          color: '#10B981',
-          icon: 'trade',
-        },
-      ],
-      flows: routeFlows,
-    },
-    {
-      title: '文明震荡与连锁后效',
-      caption: act4Text,
-      matchSnippet: ev.card.consequence.slice(0, 16),
-      year: ev.endYear ?? ev.year,
-      center: ev.coords,
-      zoom: effectEvents.length > 0 ? Math.max(2.0, baseZoom - 0.85) : baseZoom - 0.25,
-      pitch: 18,
-      bearing: 12,
-      zones: [
-        {
-          center: ev.coords,
-          radiusKm: 720,
-          label: '长时段文明回响',
-          color: '#8B5CF6',
-        },
-      ],
-      spots: effectSpots,
-      flows: effectFlows,
-    },
-  ];
+  const steps = buildEventCinemaSteps(ev, beats);
 
   return {
     script: beats.map((b) => b.narration).join('\n\n'),
@@ -611,13 +808,13 @@ export function buildDeepFigureStoryPlan(
     matchSnippet: fig.name,
     year: fig.activeYear,
     center: fig.coords,
-    zoom: idx === 1 ? 4.0 : idx === 2 ? 2.9 : 3.3,
-    pitch: idx === 1 ? 22 : 16,
+    zoom: idx === 1 ? 3.8 : idx === 2 ? 2.75 : 3.25,
+    pitch: idx === 1 ? 24 : 16,
     bearing: idx % 2 === 0 ? -8 : 10,
     zones: [
       {
         center: fig.coords,
-        radiusKm: idx === 2 ? 680 : 320,
+        radiusKm: idx === 2 ? 680 : 340,
         label: fig.locationName,
         color: accent,
       },
@@ -630,10 +827,17 @@ export function buildDeepFigureStoryPlan(
         color: accent,
         icon: fig.role === 'ruler' ? 'ruler' : fig.role === 'thinker' ? 'culture' : 'city',
       },
+      ...relatedEvents.slice(0, 2).map((re) => ({
+        coords: re.coords,
+        label: re.title.slice(0, 12),
+        sublabel: re.dateDisplay,
+        color: '#D97706',
+        icon: 'landmark' as AiStoryboardSpotIcon,
+      })),
     ],
     flows:
-      idx === 1 && relatedEvents.length > 0
-        ? relatedEvents.slice(0, 2).map((re) => ({
+      relatedEvents.length > 0
+        ? relatedEvents.slice(0, 3).map((re) => ({
             from: fig.coords,
             to: re.coords,
             label: re.title.slice(0, 14),

@@ -105,6 +105,7 @@ export interface AiStoryboardZone {
 export interface AiStoryboardFlow {
   from: [number, number];
   to: [number, number];
+  waypoints?: [number, number][];
   label: string;
   color: string;
   kind: 'trade' | 'diffusion' | 'military' | 'voyage' | 'influence';

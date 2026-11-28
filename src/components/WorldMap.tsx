@@ -7,6 +7,7 @@ import { GEO_FEATURES } from '../data/geoFeatures';
 import { HISTORICAL_MEGA_STRUCTURES, HISTORICAL_PLACES } from '../data/historicalPlaces';
 import type {
   ClickedPolityPayload,
+  Dimension,
   HistoricalFigure,
   HistoricalRoute,
   HistoryEvent,
@@ -26,6 +27,7 @@ import {
   slicePolylineWindow,
 } from '../utils/geo';
 import type { DecodedSnapshot, PhysicalAtlasData } from '../utils/snapshotLoader';
+import { MapCinemaCanvas } from './MapCinemaCanvas';
 
 export interface VisibleEventItem {
   event: HistoryEvent;
@@ -64,6 +66,9 @@ interface WorldMapProps {
   showLandmarks?: boolean;
   countryFocus?: CountryFocusSpec | null;
   isCountryMode?: boolean;
+  cinemaMode?: boolean;
+  eraId?: string;
+  rightDrawerVisible?: boolean;
   aiScene?: AiStoryboardStep | null;
   aiStageOpen?: boolean;
   cinemaTickerVisible?: boolean;
@@ -199,6 +204,9 @@ export function WorldMap({
   showLandmarks = true,
   countryFocus = null,
   isCountryMode = false,
+  cinemaMode = false,
+  eraId = 'era-1',
+  rightDrawerVisible = true,
   aiScene = null,
   aiStageOpen = false,
   cinemaTickerVisible = false,
@@ -266,6 +274,8 @@ export function WorldMap({
   aiStageOpenRef.current = aiStageOpen;
   const cinemaTickerVisibleRef = useRef(cinemaTickerVisible);
   cinemaTickerVisibleRef.current = cinemaTickerVisible;
+  const rightDrawerVisibleRef = useRef(rightDrawerVisible);
+  rightDrawerVisibleRef.current = rightDrawerVisible;
   const pointerOverMarkerRef = useRef(false);
 
   const syncGlobeMarkerVisibility = useCallback((map: maplibregl.Map) => {
@@ -355,6 +365,7 @@ export function WorldMap({
       color: string;
       focused: boolean;
       bidirectional: boolean;
+      dimension: Dimension;
     }[];
   }>(() => {
     const features: GeoJSON.Feature[] = [];
@@ -364,6 +375,7 @@ export function WorldMap({
       color: string;
       focused: boolean;
       bidirectional: boolean;
+      dimension: Dimension;
     }[] = [];
 
     for (const route of activeRoutes) {
@@ -396,6 +408,7 @@ export function WorldMap({
         color: route.color,
         focused,
         bidirectional: !!route.bidirectional,
+        dimension: route.dimension,
       });
     }
 
@@ -498,7 +511,10 @@ export function WorldMap({
   const aiFlowsMeta = useMemo(() => {
     if (!aiScene || !aiScene.flows.length) return [];
     return aiScene.flows.map((flow, idx) => {
-      const coords = buildCausalArc(flow.from, flow.to, 36);
+      const coords =
+        flow.waypoints && flow.waypoints.length >= 2
+          ? buildSmoothRouteLine(flow.waypoints, 16)
+          : buildCausalArc(flow.from, flow.to, 36);
       const cum = computePolylineLengths(coords);
       return {
         id: `ai-flow-${idx}`,
@@ -2217,6 +2233,7 @@ export function WorldMap({
     const isDesktop = window.innerWidth >= 1024;
     const targetPitch = projectionRef.current === 'globe' ? 0 : (flyTarget.pitch ?? 0);
     const targetBearing = projectionRef.current === 'globe' ? 0 : (flyTarget.bearing ?? 0);
+    const rightPad = rightDrawerVisibleRef.current ? 432 : 28;
     const padding = isCountryModeRef.current
       ? isDesktop
         ? { top: 20, bottom: 84, left: 20, right: 20 }
@@ -2224,9 +2241,9 @@ export function WorldMap({
       : aiStageOpenRef.current && isDesktop
         ? { top: 52, bottom: 215, left: 28, right: 492 }
         : cinemaTickerVisibleRef.current && isDesktop
-          ? { top: 176, bottom: 48, left: 28, right: 432 }
+          ? { top: 136, bottom: 112, left: 28, right: rightPad }
           : isDesktop
-            ? { top: 28, bottom: 32, left: 24, right: 430 }
+            ? { top: 28, bottom: 32, left: 24, right: rightPad }
             : { top: 24, bottom: 220, left: 16, right: 16 };
     map.easeTo({
       center: flyTarget.center,
@@ -2237,6 +2254,65 @@ export function WorldMap({
       padding,
     });
   }, [flyTarget, mapReady]);
+
+  // Subtle continuous documentary camera glide after flight settles (yields immediately on user interaction)
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapReady) return;
+    if ((!cinemaMode && !aiScene) || isCountryMode || projection === 'globe') return;
+    const reducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reducedMotion) return;
+
+    let cancelled = false;
+    let driftRaf = 0;
+    let baseBearing = map.getBearing();
+    let baseZoom = map.getZoom();
+    let startMs = 0;
+
+    const stopOnUser = () => {
+      cancelled = true;
+      window.cancelAnimationFrame(driftRaf);
+    };
+
+    map.once('dragstart', stopOnUser);
+    map.once('wheel', stopOnUser);
+    map.once('touchstart', stopOnUser);
+    map.once('rotatestart', stopOnUser);
+
+    const delayTimer = window.setTimeout(() => {
+      if (cancelled || !mapRef.current) return;
+      baseBearing = mapRef.current.getBearing();
+      baseZoom = mapRef.current.getZoom();
+      startMs = performance.now();
+
+      const step = (now: number) => {
+        if (cancelled || !mapRef.current) return;
+        if (!document.hidden) {
+          const t = (now - startMs) * 0.001;
+          const nextBearing = baseBearing + Math.sin(t * 0.22) * 4.5;
+          const zoomDelta = Math.min(0.14, t * 0.006);
+          mapRef.current.jumpTo({
+            bearing: nextBearing,
+            zoom: Math.min(8.2, baseZoom + zoomDelta),
+          });
+        }
+        driftRaf = window.requestAnimationFrame(step);
+      };
+      driftRaf = window.requestAnimationFrame(step);
+    }, (flyTarget?.duration ?? 850) + 180);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(delayTimer);
+      window.cancelAnimationFrame(driftRaf);
+      map.off('dragstart', stopOnUser);
+      map.off('wheel', stopOnUser);
+      map.off('touchstart', stopOnUser);
+      map.off('rotatestart', stopOnUser);
+    };
+  }, [cinemaMode, aiScene, isCountryMode, projection, flyTarget, mapReady]);
 
   // Render & synchronize HTML event markers
   useEffect(() => {
@@ -2443,6 +2519,20 @@ export function WorldMap({
   return (
     <div className="relative z-0 isolate h-full w-full select-none">
       <div ref={containerRef} className="h-full w-full" />
+
+      <MapCinemaCanvas
+        map={mapRef.current}
+        mapReady={mapReady}
+        theme={theme}
+        projection={projection}
+        eraId={eraId}
+        isPlaying={isPlaying}
+        cinemaMode={cinemaMode}
+        selectedEvent={selectedEvent}
+        aiScene={aiScene}
+        aiFlowsMeta={aiFlowsMeta}
+        routesMeta={routesRenderMeta.particlesMeta}
+      />
 
       {/* Hovered polity tooltip on desktop */}
       {hoveredPolity && (

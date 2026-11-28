@@ -9,6 +9,7 @@ import type {
 } from '../types/history';
 import type { AiStoryboardFlow, AiStoryboardStep } from '../utils/aiClient';
 import { samplePolylineAt } from '../utils/geo';
+import type { VisualConceptKind } from '../utils/narrationFocus';
 
 export interface MapCinemaRouteMeta {
   coords: [number, number][];
@@ -36,6 +37,8 @@ interface MapCinemaCanvasProps {
     cum: number[];
   }>;
   routesMeta: MapCinemaRouteMeta[];
+  focusedCountries?: Array<{ id?: string; label: string; coords: [number, number]; color: string }>;
+  narrationConceptKind?: VisualConceptKind | null;
 }
 
 interface DustSeed {
@@ -169,6 +172,8 @@ export function MapCinemaCanvas({
   aiScene,
   aiFlowsMeta,
   routesMeta,
+  focusedCountries = [],
+  narrationConceptKind = null,
 }: MapCinemaCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const seeds = useMemo(() => createSeeds(34), []);
@@ -183,6 +188,8 @@ export function MapCinemaCanvas({
     aiScene,
     aiFlowsMeta,
     routesMeta,
+    focusedCountries,
+    narrationConceptKind,
   });
   stateRef.current = {
     theme,
@@ -194,6 +201,8 @@ export function MapCinemaCanvas({
     aiScene,
     aiFlowsMeta,
     routesMeta,
+    focusedCountries,
+    narrationConceptKind,
   };
 
   useEffect(() => {
@@ -378,11 +387,60 @@ export function MapCinemaCanvas({
         ctx.restore();
       }
 
-      // 2. Cartographic compass astrolabe & multi-ring radar shockwave around epicenter
+      // 1b. Focused Country Territory Spotlight Beacons & Corner Target Brackets
+      if (st.focusedCountries.length > 0 && (activeCinema || st.selectedEvent)) {
+        st.focusedCountries.forEach((fc, idx) => {
+          const cpt = projectPoint(fc.coords, isGlobe, sinLat0, cosLat0, lng0);
+          if (!cpt || cpt.x < -80 || cpt.x > width + 80 || cpt.y < -80 || cpt.y > height + 80) {
+            return;
+          }
+          const pulse = 0.5 + 0.5 * Math.sin(sec * 2.6 + idx * 1.1);
+          const boxR = 28 + pulse * 5;
+          const arm = 9;
+          ctx.save();
+          ctx.translate(cpt.x, cpt.y);
+          ctx.strokeStyle = fc.color;
+          ctx.lineWidth = 2;
+          ctx.globalAlpha = 0.72;
+          // 4 cartographic corner target brackets around the narrated country hub
+          const corners: Array<[number, number, number, number]> = [
+            [-1, -1, 1, 1],
+            [1, -1, -1, 1],
+            [1, 1, -1, -1],
+            [-1, 1, 1, -1],
+          ];
+          for (const [cx, cy, dx, dy] of corners) {
+            ctx.beginPath();
+            ctx.moveTo(cx * boxR, cy * (boxR - arm));
+            ctx.lineTo(cx * boxR, cy * boxR);
+            ctx.lineTo(cx * (boxR - arm), cy * boxR);
+            ctx.stroke();
+            ctx.fillStyle = fc.color;
+            ctx.globalAlpha = 0.25 + pulse * 0.25;
+            ctx.fillRect(cx * boxR - (dx < 0 ? 2 : 0), cy * boxR - (dy < 0 ? 2 : 0), 2, 2);
+            ctx.globalAlpha = 0.72;
+          }
+
+          // Pulsing territory beacon halo
+          const haloR = 34 + ((sec * 22 + idx * 14) % 28);
+          ctx.globalAlpha = Math.max(0, 0.34 * (1 - ((sec * 22 + idx * 14) % 28) / 28));
+          ctx.beginPath();
+          ctx.arc(0, 0, haloR, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.restore();
+        });
+      }
+
+      // 2. Cartographic compass astrolabe & concept-tailored radar shockwave around epicenter
       const focalCoords =
-        st.aiScene?.spots?.[0]?.coords ?? st.aiScene?.center ?? st.selectedEvent?.coords ?? null;
+        st.aiScene?.spots?.[0]?.coords ??
+        st.aiScene?.center ??
+        st.selectedEvent?.coords ??
+        st.focusedCountries[0]?.coords ??
+        null;
       const focalColor =
         st.aiScene?.spots?.[0]?.color ??
+        st.focusedCountries[0]?.color ??
         (st.selectedEvent
           ? isDark
             ? DIMENSION_META[st.selectedEvent.primaryDimension].darkColor
@@ -409,36 +467,62 @@ export function MapCinemaCanvas({
 
           // Rotating cartographic astrolabe bezel
           ctx.translate(pt.x, pt.y);
-          ctx.rotate(sec * 0.22);
+          const concept = st.narrationConceptKind;
+          ctx.save();
+          ctx.rotate(sec * (concept === 'tech' ? 0.55 : 0.22));
           const outerR = activeCinema ? 44 : 34;
-          ctx.globalAlpha = 0.55 * intensity;
+          ctx.globalAlpha = 0.58 * intensity;
           ctx.strokeStyle = focalColor;
-          ctx.lineWidth = 1.15;
-          ctx.setLineDash([5, 5]);
+          ctx.lineWidth = concept === 'military' ? 1.5 : 1.15;
+          ctx.setLineDash(concept === 'tech' ? [8, 4] : [5, 5]);
           ctx.beginPath();
           ctx.arc(0, 0, outerR, 0, Math.PI * 2);
           ctx.stroke();
 
           ctx.setLineDash([]);
-          for (let t = 0; t < 12; t++) {
-            const a = (t / 12) * Math.PI * 2;
-            const inner = t % 3 === 0 ? outerR - 7 : outerR - 3.5;
-            ctx.globalAlpha = (t % 3 === 0 ? 0.72 : 0.35) * intensity;
+          const tickCount = concept === 'military' ? 8 : concept === 'tech' ? 16 : 12;
+          for (let t = 0; t < tickCount; t++) {
+            const a = (t / tickCount) * Math.PI * 2;
+            const inner = t % 3 === 0 ? outerR - 8 : outerR - 4;
+            ctx.globalAlpha = (t % 3 === 0 ? 0.78 : 0.36) * intensity;
             ctx.beginPath();
             ctx.moveTo(Math.cos(a) * inner, Math.sin(a) * inner);
             ctx.lineTo(Math.cos(a) * outerR, Math.sin(a) * outerR);
             ctx.stroke();
           }
+          ctx.restore();
 
-          // Counter-rotating inner hairline arc
-          ctx.rotate(-sec * 0.45);
-          ctx.globalAlpha = 0.42 * intensity;
-          ctx.beginPath();
-          ctx.arc(0, 0, outerR * 0.64, 0, Math.PI * 0.85);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.arc(0, 0, outerR * 0.64, Math.PI, Math.PI * 1.85);
-          ctx.stroke();
+          // Concept-specific orbiting visual accents
+          if (concept === 'economy' && activeCinema) {
+            for (let g = 0; g < 4; g++) {
+              const a = sec * 0.9 + (g * Math.PI) / 2;
+              ctx.globalAlpha = 0.82;
+              ctx.fillStyle = '#F59E0B';
+              ctx.beginPath();
+              ctx.arc(Math.cos(a) * 34, Math.sin(a) * 34, 2.5, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          } else if (concept === 'military' && activeCinema) {
+            ctx.globalAlpha = 0.65;
+            ctx.strokeStyle = '#EF4444';
+            ctx.lineWidth = 1.4;
+            for (let k = 0; k < 4; k++) {
+              const a = (k * Math.PI) / 2 + Math.PI / 4;
+              ctx.beginPath();
+              ctx.moveTo(Math.cos(a) * 20, Math.sin(a) * 20);
+              ctx.lineTo(Math.cos(a) * 32, Math.sin(a) * 32);
+              ctx.stroke();
+            }
+          } else {
+            ctx.rotate(-sec * 0.45);
+            ctx.globalAlpha = 0.42 * intensity;
+            ctx.beginPath();
+            ctx.arc(0, 0, outerR * 0.64, 0, Math.PI * 0.85);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(0, 0, outerR * 0.64, Math.PI, Math.PI * 1.85);
+            ctx.stroke();
+          }
 
           ctx.restore();
         }

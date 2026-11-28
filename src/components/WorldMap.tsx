@@ -27,6 +27,7 @@ import {
   slicePolylineWindow,
 } from '../utils/geo';
 import type { DecodedSnapshot, PhysicalAtlasData } from '../utils/snapshotLoader';
+import type { VisualConceptKind } from '../utils/narrationFocus';
 import { MapCinemaCanvas } from './MapCinemaCanvas';
 
 export interface VisibleEventItem {
@@ -65,6 +66,8 @@ interface WorldMapProps {
   showRelief?: boolean;
   showLandmarks?: boolean;
   countryFocus?: CountryFocusSpec | null;
+  focusedCountries?: Array<{ id?: string; label: string; coords: [number, number]; color: string }>;
+  narrationConceptKind?: VisualConceptKind | null;
   isCountryMode?: boolean;
   cinemaMode?: boolean;
   eraId?: string;
@@ -203,6 +206,8 @@ export function WorldMap({
   showRelief = true,
   showLandmarks = true,
   countryFocus = null,
+  focusedCountries = [],
+  narrationConceptKind = null,
   isCountryMode = false,
   cinemaMode = false,
   eraId = 'era-1',
@@ -794,7 +799,7 @@ export function WorldMap({
           layout: { 'line-join': 'round', 'line-cap': 'round' },
           paint: {
             'line-color': '#D97706',
-            'line-width': ['interpolate', ['linear'], ['zoom'], 1, 2.0, 5, 3.6],
+            'line-width': ['interpolate', ['linear'], ['zoom'], 1, 2.4, 5, 4.6],
             'line-opacity': 0,
             'line-opacity-transition': { duration: 0, delay: 0 },
           },
@@ -807,7 +812,7 @@ export function WorldMap({
           layout: { 'line-join': 'round', 'line-cap': 'round' },
           paint: {
             'line-color': '#D97706',
-            'line-width': ['interpolate', ['linear'], ['zoom'], 1, 2.0, 5, 3.6],
+            'line-width': ['interpolate', ['linear'], ['zoom'], 1, 2.4, 5, 4.6],
             'line-opacity': 0,
             'line-opacity-transition': { duration: 0, delay: 0 },
           },
@@ -1675,11 +1680,17 @@ export function WorldMap({
       map.setPaintProperty(`empire-focus-border-${buf}`, 'line-color', accent);
     }
 
-    map.setPaintProperty(`empire-focus-fill-${activeBuf}`, 'fill-opacity', countryFocus ? 0.18 : 0);
-    map.setPaintProperty(`empire-focus-border-${activeBuf}`, 'line-opacity', countryFocus ? 0.95 : 0);
+    map.setPaintProperty(`empire-focus-fill-${activeBuf}`, 'fill-opacity', countryFocus ? 0.28 : 0);
+    map.setPaintProperty(`empire-focus-border-${activeBuf}`, 'line-opacity', countryFocus ? 0.98 : 0);
     map.setPaintProperty(`empire-focus-fill-${otherBuf}`, 'fill-opacity', 0);
     map.setPaintProperty(`empire-focus-border-${otherBuf}`, 'line-opacity', 0);
-  }, [countryFocus, mapReady]);
+    const fillBase = THEME_COLORS[themeRef.current].empireFillOpacity;
+    map.setPaintProperty(
+      `empire-fills-${activeBuf}`,
+      'fill-opacity',
+      countryFocus && !isCountryMode ? fillBase * 0.68 : fillBase,
+    );
+  }, [countryFocus, isCountryMode, theme, mapReady]);
 
   // Update historical routes
   useEffect(() => {
@@ -2532,6 +2543,8 @@ export function WorldMap({
         aiScene={aiScene}
         aiFlowsMeta={aiFlowsMeta}
         routesMeta={routesRenderMeta.particlesMeta}
+        focusedCountries={focusedCountries}
+        narrationConceptKind={narrationConceptKind}
       />
 
       {/* Hovered polity tooltip on desktop */}

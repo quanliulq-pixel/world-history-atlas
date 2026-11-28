@@ -83,6 +83,10 @@ import {
   saveStoredNarrationDepth,
   type NarrationDepth,
 } from './utils/chronicleStory';
+import {
+  resolveNarrationVisualFocus,
+  type NarrationFocusMatch,
+} from './utils/narrationFocus';
 import { buildDocumentarySpeechChunks } from './utils/speechSync';
 import {
   loadManifest,
@@ -145,6 +149,7 @@ async function playPlanWithFallback(params: {
   plan: AiDocumentaryPlan;
   onStartAudio?: (mode: 'gemini' | 'browser') => void;
   onBeatStart?: (beatIdx: number) => void;
+  onChunkText?: (speechText: string, beatIdx: number) => void;
 }): Promise<'gemini' | 'browser'> {
   const chunks = buildDocumentarySpeechChunks(params.plan.beats);
   const prefs = getVoicePrefs();
@@ -152,11 +157,14 @@ async function playPlanWithFallback(params: {
   let started = false;
   let lastBeat = -1;
 
-  const emitChunk = (chunk: { sceneIndex?: number }) => {
+  const emitChunk = (chunk: { sceneIndex?: number; speechText?: string }) => {
     const bIdx = chunk.sceneIndex ?? 0;
     if (bIdx !== lastBeat) {
       lastBeat = bIdx;
       params.onBeatStart?.(bIdx);
+    }
+    if (chunk.speechText) {
+      params.onChunkText?.(chunk.speechText, bIdx);
     }
   };
 
@@ -276,6 +284,8 @@ export function App() {
   const [cinemaActiveBeatIdx, setCinemaActiveBeatIdx] = useState(0);
   const [cinemaChapterLabel, setCinemaChapterLabel] = useState<string | null>(null);
   const [cinemaScene, setCinemaScene] = useState<AiStoryboardStep | null>(null);
+  const [tickerScene, setTickerScene] = useState<AiStoryboardStep | null>(null);
+  const [narrationFocus, setNarrationFocus] = useState<NarrationFocusMatch | null>(null);
   const [cardNarratingId, setCardNarratingId] = useState<string | null>(null);
   const [cardNarrationLoadingId, setCardNarrationLoadingId] = useState<string | null>(null);
   const [cardNarrationSubtitle, setCardNarrationSubtitle] = useState<string | null>(null);
@@ -317,6 +327,9 @@ export function App() {
   const [physical, setPhysical] = useState<PhysicalAtlasData | null>(null);
   const [snapshots, setSnapshots] = useState<SnapshotMeta[]>([]);
   const [activeSnapshot, setActiveSnapshot] = useState<DecodedSnapshot | null>(null);
+  const activeSnapshotRef = useRef<DecodedSnapshot | null>(null);
+  activeSnapshotRef.current = activeSnapshot;
+  const lastVisualFocusKeyRef = useRef<string>('');
   const [dataError, setDataError] = useState<string | null>(null);
 
   const currentEra = useMemo(() => getEraForYear(currentYear), [currentYear]);
@@ -402,6 +415,127 @@ export function App() {
   const countryVoiceEnabledRef = useRef(countryVoiceEnabled);
   countryVoiceEnabledRef.current = countryVoiceEnabled;
 
+  const flyToLocation = useCallback(
+    (
+      center: [number, number],
+      zoom = 3.2,
+      opts?: { pitch?: number; bearing?: number; duration?: number; exactZoom?: boolean },
+    ) => {
+      setFlyTarget({
+        center,
+        zoom,
+        exactZoom: opts?.exactZoom,
+        pitch: opts?.pitch ?? 0,
+        bearing: opts?.bearing ?? 0,
+        duration: opts?.duration ?? 850,
+        nonce: Date.now() + Math.random(),
+      });
+    },
+    [],
+  );
+
+  const applyLiveNarrationFocus = useCallback(
+    (opts: {
+      text: string;
+      event?: HistoryEvent | null;
+      baseStep?: AiStoryboardStep | null;
+      targetMode: 'cinema' | 'ticker' | 'card';
+      fly?: boolean;
+    }) => {
+      const focus = resolveNarrationVisualFocus({
+        text: opts.text,
+        event: opts.event ?? null,
+        snapshot: activeSnapshotRef.current,
+        fallbackCenter: opts.baseStep?.center,
+      });
+      setNarrationFocus(focus);
+
+      const base = opts.baseStep ?? null;
+      const baseFlows = base?.flows || [];
+      const mergedFlows = [...baseFlows];
+      for (const fl of focus.interactionFlows) {
+        if (!mergedFlows.some((x) => x.label === fl.label)) {
+          mergedFlows.push(fl);
+        }
+      }
+
+      const baseSpots = base?.spots || [];
+      const mergedSpots = [...baseSpots];
+      for (const mc of focus.matchedCountries) {
+        const exists = mergedSpots.some(
+          (sp) => Math.hypot(sp.coords[0] - mc.coords[0], sp.coords[1] - mc.coords[1]) < 3,
+        );
+        if (!exists && mergedSpots.length < 5) {
+          mergedSpots.push({
+            coords: mc.coords,
+            label: mc.label.split(' · ').pop() || mc.label,
+            color: mc.color,
+            icon: 'city',
+          });
+        }
+      }
+
+      const fallbackCoord = opts.event?.coords ?? focus.cameraCenter ?? [35, 25];
+      const enrichedStep: AiStoryboardStep = base
+        ? {
+            ...base,
+            flows: mergedFlows,
+            spots: mergedSpots,
+          }
+        : {
+            title: opts.event?.title || focus.concept.label,
+            caption: opts.text,
+            year: opts.event?.year ?? currentYearRef.current,
+            center: focus.cameraCenter ?? fallbackCoord,
+            zoom: focus.cameraZoom ?? 2.8,
+            pitch: 18,
+            bearing: 0,
+            zones: focus.matchedCountries.slice(0, 2).map((mc) => ({
+              center: mc.coords,
+              radiusKm: 620,
+              label: mc.label.split(' · ').pop() || mc.label,
+              color: mc.color,
+            })),
+            spots:
+              mergedSpots.length > 0
+                ? mergedSpots
+                : [
+                    {
+                      coords: fallbackCoord,
+                      label: opts.event?.locationName || focus.concept.label,
+                      color: focus.concept.color,
+                      icon: 'landmark',
+                    },
+                  ],
+            flows: mergedFlows,
+          };
+
+      if (opts.targetMode === 'cinema') {
+        setCinemaScene(enrichedStep);
+      } else if (opts.targetMode === 'ticker') {
+        setTickerScene(enrichedStep);
+      }
+
+      if (opts.fly !== false && focus.cameraCenter && focus.key !== lastVisualFocusKeyRef.current) {
+        lastVisualFocusKeyRef.current = focus.key;
+        const useStepCam = Boolean(
+          base && base.flows.length > 0 && focus.matchedCountries.length <= 1,
+        );
+        flyToLocation(
+          useStepCam ? base!.center : focus.cameraCenter,
+          useStepCam ? base!.zoom : (focus.cameraZoom ?? 2.8),
+          {
+            exactZoom: true,
+            pitch: base?.pitch ?? 20,
+            bearing: base?.bearing ?? 0,
+            duration: 1050,
+          },
+        );
+      }
+    },
+    [flyToLocation],
+  );
+
   // Sync Era mood to ambient documentary background audio
   useEffect(() => {
     setAmbientEra(currentEra.id);
@@ -442,11 +576,24 @@ export function App() {
       cacheKey: string;
       fallbackEventKey?: string;
       fallbackScript: string;
+      event?: HistoryEvent | null;
     }) => {
       voiceHoldActive = true;
       setTickerChapterLabel(null);
       setTickerBeats(null);
       setTickerSpokenText(opts.fallbackScript);
+      const richStep = opts.event
+        ? buildRichEventStoryboard(opts.event, [
+            { title: opts.event.title, narration: opts.fallbackScript },
+          ]).steps[0]
+        : null;
+      applyLiveNarrationFocus({
+        text: opts.fallbackScript,
+        event: opts.event ?? null,
+        baseStep: richStep,
+        targetMode: 'ticker',
+        fly: true,
+      });
       void (async () => {
         try {
           let entry =
@@ -460,6 +607,13 @@ export function App() {
           const relFile = entry?.file ?? entry?.beats?.[0]?.file ?? null;
           const script = entry?.beats?.[0]?.narration || entry?.script || opts.fallbackScript;
           setTickerSpokenText(script);
+          applyLiveNarrationFocus({
+            text: script,
+            event: opts.event ?? null,
+            baseStep: richStep,
+            targetMode: 'ticker',
+            fly: true,
+          });
           const audioUrl = relFile ? resolveAudioFileUrl(relFile) : null;
           setTickerNarrationStatus(audioUrl ? 'playing' : 'browser');
           const mode = await playSingleStaticAudio({
@@ -477,6 +631,9 @@ export function App() {
           if (cancelled) return;
           voiceHoldActive = false;
           setTickerSpokenText(null);
+          setTickerScene(null);
+          setNarrationFocus(null);
+          lastVisualFocusKeyRef.current = '';
           setTickerNarrationStatus('idle');
           lastTime = performance.now();
         }, pauseGapMs);
@@ -499,12 +656,21 @@ export function App() {
             if (step.eventId !== undefined) {
               setTickerEventId(step.eventId);
             }
+            const evObj = step.eventId ? EVENT_MAP[step.eventId] || null : null;
             setTickerVisible(true);
             setTickerChapterLabel(step.chapterLabel);
             setTickerBeats(step.plan.beats);
             setTickerActiveBeatIdx(0);
             setTickerSpokenText(step.plan.beats[0]?.narration || step.plan.script);
             setTickerNarrationStatus('loading');
+
+            applyLiveNarrationFocus({
+              text: step.plan.beats[0]?.narration || step.plan.script,
+              event: evObj,
+              baseStep: step.plan.storyboard.steps[0] ?? null,
+              targetMode: 'ticker',
+              fly: true,
+            });
 
             await playPlanWithFallback({
               cachePrefix: step.cacheKey,
@@ -517,7 +683,25 @@ export function App() {
               onBeatStart: (beatIdx) => {
                 if (cancelled) return;
                 setTickerActiveBeatIdx(beatIdx);
-                setTickerSpokenText(step.plan.beats[beatIdx]?.narration || step.plan.script);
+                const beatText = step.plan.beats[beatIdx]?.narration || step.plan.script;
+                setTickerSpokenText(beatText);
+                applyLiveNarrationFocus({
+                  text: beatText,
+                  event: evObj,
+                  baseStep: step.plan.storyboard.steps[beatIdx] ?? null,
+                  targetMode: 'ticker',
+                  fly: true,
+                });
+              },
+              onChunkText: (chunkText, beatIdx) => {
+                if (cancelled) return;
+                applyLiveNarrationFocus({
+                  text: chunkText,
+                  event: evObj,
+                  baseStep: step.plan.storyboard.steps[beatIdx] ?? null,
+                  targetMode: 'ticker',
+                  fly: true,
+                });
               },
             });
           }
@@ -532,6 +716,9 @@ export function App() {
           setTickerSpokenText(null);
           setTickerBeats(null);
           setTickerChapterLabel(null);
+          setTickerScene(null);
+          setNarrationFocus(null);
+          lastVisualFocusKeyRef.current = '';
           setTickerNarrationStatus('idle');
           lastTime = performance.now();
         }, pauseGapMs);
@@ -681,11 +868,13 @@ export function App() {
               cacheKey: `ticker:ev:${bestVoiceEvent.id}`,
               fallbackEventKey: `ev:${bestVoiceEvent.id}`,
               fallbackScript: `${bestVoiceEvent.dateDisplay}，${bestVoiceEvent.title}。${bestVoiceEvent.card.summary}`,
+              event: bestVoiceEvent,
             });
           } else if (eraChanged) {
             triggerTickerNarration({
               cacheKey: `ticker:era:${nextEra.id}`,
               fallbackScript: `进入${nextEra.name}。${nextEra.overview.geopolitics}`,
+              event: null,
             });
           }
         }
@@ -706,9 +895,12 @@ export function App() {
       setTickerSpokenText(null);
       setTickerBeats(null);
       setTickerChapterLabel(null);
+      setTickerScene(null);
+      setNarrationFocus(null);
+      lastVisualFocusKeyRef.current = '';
       setTickerNarrationStatus('idle');
     };
-  }, [isPlaying, cinemaMode, timelineZoom, dimensionFilteredEvents]);
+  }, [isPlaying, cinemaMode, timelineZoom, dimensionFilteredEvents, applyLiveNarrationFocus]);
 
   const visibleEvents = useMemo<VisibleEventItem[]>(() => {
     const items: VisibleEventItem[] = [];
@@ -779,25 +971,6 @@ export function App() {
     });
   }, [showRoutes, activeStoryline, storyStepIdx, focusRouteId, selectedDimensions, currentYear]);
 
-  const flyToLocation = useCallback(
-    (
-      center: [number, number],
-      zoom = 3.2,
-      opts?: { pitch?: number; bearing?: number; duration?: number; exactZoom?: boolean },
-    ) => {
-      setFlyTarget({
-        center,
-        zoom,
-        exactZoom: opts?.exactZoom,
-        pitch: opts?.pitch ?? 0,
-        bearing: opts?.bearing ?? 0,
-        duration: opts?.duration ?? 850,
-        nonce: Date.now() + Math.random(),
-      });
-    },
-    [],
-  );
-
   // Cinema Documentary Mode: smooth year progression + tilted camera flight + deep/concise choreography
   useEffect(() => {
     if (!cinemaMode) {
@@ -862,10 +1035,22 @@ export function App() {
         timerId = window.setTimeout(resolve, ms);
       });
 
-    const playCinemaPlan = async (cachePrefix: string, plan: AiDocumentaryPlan) => {
+    const playCinemaPlan = async (
+      cachePrefix: string,
+      plan: AiDocumentaryPlan,
+      ev?: HistoryEvent | null,
+    ) => {
       setCinemaBeats(plan.beats);
       setCinemaActiveBeatIdx(0);
-      setCinemaSubtitle(plan.beats[0]?.narration || plan.script);
+      const firstText = plan.beats[0]?.narration || plan.script;
+      setCinemaSubtitle(firstText);
+      applyLiveNarrationFocus({
+        text: firstText,
+        event: ev ?? null,
+        baseStep: plan.storyboard.steps[0] ?? null,
+        targetMode: 'cinema',
+        fly: true,
+      });
       await playPlanWithFallback({
         cachePrefix,
         plan,
@@ -877,18 +1062,29 @@ export function App() {
         onBeatStart: (beatIdx) => {
           if (cancelled) return;
           setCinemaActiveBeatIdx(beatIdx);
-          setCinemaSubtitle(plan.beats[beatIdx]?.narration || plan.script);
+          const beatText = plan.beats[beatIdx]?.narration || plan.script;
+          setCinemaSubtitle(beatText);
           const step = plan.storyboard.steps[beatIdx];
           if (step) {
-            setCinemaScene(step);
             setCurrentYear(step.year);
-            flyToLocation(step.center, step.zoom, {
-              exactZoom: true,
-              pitch: step.pitch ?? 22,
-              bearing: step.bearing ?? 0,
-              duration: 1050,
-            });
           }
+          applyLiveNarrationFocus({
+            text: beatText,
+            event: ev ?? null,
+            baseStep: step ?? null,
+            targetMode: 'cinema',
+            fly: true,
+          });
+        },
+        onChunkText: (chunkText, beatIdx) => {
+          if (cancelled) return;
+          applyLiveNarrationFocus({
+            text: chunkText,
+            event: ev ?? null,
+            baseStep: plan.storyboard.steps[beatIdx] ?? null,
+            targetMode: 'cinema',
+            fly: true,
+          });
         },
       });
     };
@@ -1079,30 +1275,32 @@ export function App() {
                     setCinemaActiveBeatIdx(beatIdx);
                     const step = plan.storyboard.steps[beatIdx];
                     if (step) {
-                      setCinemaScene(step);
                       setCurrentYear(step.year);
-                      flyToLocation(step.center, step.zoom, {
-                        exactZoom: true,
-                        pitch: step.pitch ?? 24,
-                        bearing: step.bearing ?? 0,
-                        duration: 1050,
-                      });
                     }
+                    applyLiveNarrationFocus({
+                      text: plan.beats[beatIdx]?.narration || plan.script,
+                      event: ev,
+                      baseStep: step ?? null,
+                      targetMode: 'cinema',
+                      fly: true,
+                    });
                   },
                 });
               } catch {
                 if (!cancelled) {
-                  await playCinemaPlan(`story:ev:${ev.id}`, plan);
+                  await playCinemaPlan(`story:ev:${ev.id}`, plan, ev);
                 }
               }
             } else {
-              await playCinemaPlan(`${isStoryMode ? 'story' : 'doc'}:ev:${ev.id}`, plan);
+              await playCinemaPlan(`${isStoryMode ? 'story' : 'doc'}:ev:${ev.id}`, plan, ev);
             }
           }
           if (cancelled) break;
           setCinemaScene(null);
           setCinemaBeats(null);
           setCinemaChapterLabel(null);
+          setNarrationFocus(null);
+          lastVisualFocusKeyRef.current = '';
           await sleep(650);
         } else {
           setCinemaNarrationStatus('idle');
@@ -1119,6 +1317,8 @@ export function App() {
         setCinemaBeats(null);
         setCinemaChapterLabel(null);
         setCinemaScene(null);
+        setNarrationFocus(null);
+        lastVisualFocusKeyRef.current = '';
         setCinemaMode(false);
         setRecentTriggerEventId(null);
         const lastEv = milestones[milestones.length - 1];
@@ -1137,8 +1337,10 @@ export function App() {
       setCinemaScene(null);
       setCinemaBeats(null);
       setCinemaChapterLabel(null);
+      setNarrationFocus(null);
+      lastVisualFocusKeyRef.current = '';
     };
-  }, [cinemaMode, timelineZoom, narrationDepth, dimensionFilteredEvents, flyToLocation]);
+  }, [cinemaMode, timelineZoom, narrationDepth, dimensionFilteredEvents, flyToLocation, applyLiveNarrationFocus]);
 
   const stopAiNarrationAndStage = useCallback((clearStage = true, closeStudio = false) => {
     cardNarrationRunIdRef.current += 1;
@@ -1150,6 +1352,9 @@ export function App() {
     setCardNarrationBeats(null);
     setCinemaBeats(null);
     setCinemaScene(null);
+    setTickerScene(null);
+    setNarrationFocus(null);
+    lastVisualFocusKeyRef.current = '';
     setStoryboardVoiceSynced(false);
     if (clearStage) {
       setStoryboardPlaying(false);
@@ -1522,6 +1727,8 @@ export function App() {
     setCardNarrationLoadingId(null);
     setCardNarrationSubtitle(null);
     setCardNarrationBeats(null);
+    setNarrationFocus(null);
+    lastVisualFocusKeyRef.current = '';
     setStoryboardVoiceSynced(false);
   }, []);
 
@@ -1621,6 +1828,13 @@ export function App() {
               if (cardNarrationRunIdRef.current !== runId) return;
               setCardActiveBeatIdx(beatIdx);
               setStoryboardStepIdx(beatIdx);
+              applyLiveNarrationFocus({
+                text: plan.beats[beatIdx]?.narration || plan.script,
+                event: EVENT_MAP[params.itemId] ?? null,
+                baseStep: plan.storyboard.steps[beatIdx] ?? null,
+                targetMode: 'card',
+                fly: true,
+              });
             },
           });
           return;
@@ -1675,6 +1889,13 @@ export function App() {
               if (cardNarrationRunIdRef.current !== runId) return;
               setCardActiveBeatIdx(beatIdx);
               setStoryboardStepIdx(beatIdx);
+              applyLiveNarrationFocus({
+                text: plan.beats[beatIdx]?.narration || plan.script,
+                event: EVENT_MAP[params.itemId] ?? null,
+                baseStep: plan.storyboard.steps[beatIdx] ?? null,
+                targetMode: 'card',
+                fly: true,
+              });
             },
           });
           return;
@@ -1723,6 +1944,23 @@ export function App() {
             if (cardNarrationRunIdRef.current !== runId) return;
             setCardActiveBeatIdx(beatIdx);
             setStoryboardStepIdx(beatIdx);
+            applyLiveNarrationFocus({
+              text: plan.beats[beatIdx]?.narration || plan.script,
+              event: EVENT_MAP[params.itemId] ?? null,
+              baseStep: plan.storyboard.steps[beatIdx] ?? null,
+              targetMode: 'card',
+              fly: false,
+            });
+          },
+          onChunkText: (chunkText, beatIdx) => {
+            if (cardNarrationRunIdRef.current !== runId) return;
+            applyLiveNarrationFocus({
+              text: chunkText,
+              event: EVENT_MAP[params.itemId] ?? null,
+              baseStep: plan.storyboard.steps[beatIdx] ?? null,
+              targetMode: 'card',
+              fly: true,
+            });
           },
         });
       } catch (err) {
@@ -1753,10 +1991,12 @@ export function App() {
           setCardNarrationLoadingId(null);
           setCardNarratingId(null);
           setStoryboardVoiceSynced(false);
+          setNarrationFocus(null);
+          lastVisualFocusKeyRef.current = '';
         }
       }
     },
-    [openAiWithIntent],
+    [openAiWithIntent, applyLiveNarrationFocus],
   );
 
   const handleSelectCardNarrationBeat = useCallback(async (beatIdx: number) => {
@@ -2352,12 +2592,18 @@ export function App() {
             focusRouteId={focusRouteId}
             showRelief={showRelief}
             showLandmarks={showLandmarks}
-            countryFocus={countryFocus}
+            countryFocus={activeCountry ? countryFocus : (narrationFocus?.countryFocus ?? null)}
+            focusedCountries={!activeCountry ? (narrationFocus?.matchedCountries ?? []) : []}
+            narrationConceptKind={!activeCountry ? (narrationFocus?.concept.kind ?? null) : null}
             isCountryMode={Boolean(activeCountry)}
             cinemaMode={cinemaMode}
             eraId={currentEra.id}
             rightDrawerVisible={!desktopCollapsed}
-            aiScene={!activeCountry ? (cinemaScene ?? activeStoryboard?.steps[storyboardStepIdx] ?? null) : null}
+            aiScene={
+              !activeCountry
+                ? (cinemaScene ?? tickerScene ?? activeStoryboard?.steps[storyboardStepIdx] ?? null)
+                : null
+            }
             aiStageOpen={aiOpen}
             cinemaTickerVisible={!activeCountry && !activeStoryline && tickerVisible && cinemaMode}
             flyTarget={flyTarget}
@@ -2425,7 +2671,9 @@ export function App() {
                   !aiOpen &&
                   (cinemaMode ||
                     Boolean(cardNarratingId) ||
-                    (isPlaying && narrationDepth === 'story' && Boolean(tickerBeats?.length)))
+                    (isPlaying &&
+                      timelineVoiceEnabled &&
+                      (Boolean(tickerSpokenText) || Boolean(tickerBeats?.length))))
                 }
                 theme={theme}
                 currentYear={currentYear}
@@ -2454,7 +2702,10 @@ export function App() {
                       : tickerSpokenText
                 }
                 rightDrawerVisible={!desktopCollapsed}
+                focusedCountries={narrationFocus?.matchedCountries ?? []}
+                visualConcept={narrationFocus?.concept ?? null}
                 onExpandDetails={() => setDesktopCollapsed(false)}
+                onSelectCountryProfile={(id) => void handleSelectCuratedCountry(id)}
               />
 
               <ChronicleTicker
@@ -2518,6 +2769,9 @@ export function App() {
                   setCinemaScene(null);
                   setTickerBeats(null);
                   setTickerChapterLabel(null);
+                  setTickerScene(null);
+                  setNarrationFocus(null);
+                  lastVisualFocusKeyRef.current = '';
                   stopActiveNarration();
                 }}
                 onDismiss={() => setTickerVisible(false)}
